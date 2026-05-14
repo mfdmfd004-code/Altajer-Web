@@ -2,45 +2,105 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>إنشاء فاتورة - التاجر برو</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فاتورة مبيعات - تاجر برو</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="main-content">
-        <div class="card">
-            <h2><i class="fas fa-file-invoice"></i> نظام الفواتير المطور</h2>
-            
-            <!-- خيارات الضريبة -->
-            <div style="margin: 20px 0; background: #eef2f3; padding: 15px; border-radius: 10px;">
-                <label>نوع الضريبة:</label>
-                <select id="tax-type" class="form-control" onchange="App.calculateTotals()">
-                    <option value="exclude">15% غير شاملة (تضاف فوق السعر)</option>
-                    <option value="include">15% شاملة (تستقطع من السعر)</option>
-                </select>
+    <div class="card">
+        <h2><i class="fas fa-file-invoice"></i> نظام الفواتير المطور</h2>
+        
+        <div class="form-group" style="background: #f1f8ff; padding: 15px; border-radius: 8px;">
+            <label>نوع الضريبة:</label>
+            <select id="vat-type" onchange="calculateAllRows()">
+                <option value="15-include">15% شاملة (تستقطع من السعر)</option>
+                <option value="15-exclude">15% غير شاملة (تضاف فوق السعر)</option>
+            </select>
+        </div>
+
+        <table class="accounting-table" id="invoice-table">
+            <thead>
+                <tr>
+                    <th>المنتج</th>
+                    <th>السعر</th>
+                    <th>الكمية</th>
+                    <th>المجموع</th>
+                </tr>
+            </thead>
+            <tbody id="invoice-body">
+                <!-- البند الأول تلقائي -->
+                <tr id="inv-row-1">
+                    <td><input type="text" placeholder="اسم المنتج" class="inv-name"></td>
+                    <td><input type="number" value="0" class="inv-price" oninput="calculateRow(1)"></td>
+                    <td><input type="number" value="0" class="inv-qty" oninput="calculateRow(1)"></td>
+                    <td><input type="text" value="0.00" class="inv-total" readonly style="background: #eee;"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <button class="btn-main" onclick="addInvoiceRow()"><i class="fas fa-plus"></i> إضافة بند</button>
+            <button class="btn-main" style="background: #28a745;" onclick="window.print()"><i class="fas fa-print"></i> طباعة حرارية / PDF</button>
+        </div>
+
+        <div class="card" style="margin-top: 20px; border-top: 3px solid var(--light-green);">
+            <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                <span>الإجمالي (بدون ضريبة):</span> <span id="sub-total">0.00</span>
             </div>
-
-            <table class="accounting-table" id="items-table">
-                <thead>
-                    <tr>
-                        <th>المنتج</th>
-                        <th>السعر</th>
-                        <th>الكمية</th>
-                        <th>المجموع</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- سيتم تعبئتها ديناميكياً من المخزن -->
-                </tbody>
-            </table>
-
-            <div style="margin-top: 30px;">
-                <button class="btn-main" onclick="App.printInvoice('thermal')"><i class="fas fa-print"></i> طباعة حرارية (دوس/ويندوز)</button>
-                <button class="btn-main" style="background:#2d6a4f; margin-top:10px;" onclick="App.printInvoice('pdf')"><i class="fas fa-file-pdf"></i> حفظ كـ PDF للجوال</button>
+            <div style="display: flex; justify-content: space-between; color: var(--sea-blue);">
+                <span>ضريبة القيمة المضافة (15%):</span> <span id="vat-amount">0.00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 1.2rem; color: #d32f2f;">
+                <span>الصافي النهائي:</span> <span id="final-total">0.00</span>
             </div>
         </div>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <script>
+        let rowCount = 1;
+        function addInvoiceRow() {
+            rowCount++;
+            const tbody = document.getElementById('invoice-body');
+            const newRow = document.createElement('tr');
+            newRow.id = `inv-row-${rowCount}`;
+            newRow.innerHTML = `
+                <td><input type="text" placeholder="اسم المنتج" class="inv-name"></td>
+                <td><input type="number" value="0" class="inv-price" oninput="calculateRow(${rowCount})"></td>
+                <td><input type="number" value="0" class="inv-qty" oninput="calculateRow(${rowCount})"></td>
+                <td><input type="text" value="0.00" class="inv-total" readonly style="background: #eee;"></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function calculateRow(id) {
+            const row = document.getElementById(`inv-row-${id}`);
+            const price = row.querySelector('.inv-price').value || 0;
+            const qty = row.querySelector('.inv-qty').value || 0;
+            row.querySelector('.inv-total').value = (price * qty).toFixed(2);
+            calculateGrandTotal();
+        }
+
+        function calculateGrandTotal() {
+            let total = 0;
+            document.querySelectorAll('.inv-total').forEach(input => total += parseFloat(input.value || 0));
+            
+            const vatType = document.getElementById('vat-type').value;
+            let subTotal, vat;
+
+            if(vatType === "15-include") {
+                subTotal = total / 1.15;
+                vat = total - subTotal;
+            } else {
+                subTotal = total;
+                vat = total * 0.15;
+                total = subTotal + vat;
+            }
+
+            document.getElementById('sub-total').innerText = subTotal.toFixed(2);
+            document.getElementById('vat-amount').innerText = vat.toFixed(2);
+            document.getElementById('final-total').innerText = total.toFixed(2) + " ر.س";
+        }
+    </script>
 </body>
 </html>

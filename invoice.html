@@ -3,95 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فاتورة مبيعات - التاجر برو</title>
-
+    <title>فاتورة المبيعات - التاجر برو</title>
+    
+    <!-- إعدادات التطبيق للجوال -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="التاجر برو">
     <meta name="theme-color" content="#0077b6">
 
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root { --sea-blue: #0077b6; --light-green: #90be6d; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
+        .card { background: var(--white); border-radius: 12px; padding: 20px; border-top: 5px solid var(--sea-blue); margin-bottom: 15px; }
+        
+        /* مربع إدخال العميل المطور */
+        .search-box { position: relative; width: 100%; }
+        .customer-results { 
+            position: absolute; top: 100%; left: 0; right: 0; 
+            background: white; border: 1px solid #ccc; z-index: 100; 
+            max-height: 150px; overflow-y: auto; display: none; 
+            border-radius: 0 0 8px 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .customer-results div { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .customer-results div:hover { background-color: #f0f7ff; }
+
+        .input-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .label-text { font-weight: bold; color: var(--sea-blue); flex: 1; }
+        .input-field { flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center; }
+    </style>
 </head>
 <body>
+
     <div class="card">
-        <h2><i class="fas fa-file-invoice"></i> نظام الفواتير المطور</h2>
+        <h2 style="text-align: center; color: var(--sea-blue);"><i class="fas fa-file-invoice-dollar"></i> فاتورة مبيعات جديدة</h2>
         
-        <div class="form-group">
-            <label>نوع الضريبة:</label>
-            <select id="vat-type" onchange="calculateGrandTotal()">
-                <option value="15-include">15% شاملة (تستقطع من السعر)</option>
-                <option value="15-exclude">15% غير شاملة (تضاف فوق السعر)</option>
-            </select>
+        <!-- نظام البحث في العملاء -->
+        <div class="search-box">
+            <div class="input-row">
+                <span class="label-text">اسم العميل:</span>
+                <input type="text" id="customer-search" class="input-field" placeholder="ابدأ بكتابة اسم العميل..." autocomplete="off">
+            </div>
+            <div id="customer-results" class="customer-results"></div>
         </div>
 
-        <table class="accounting-table" id="invoice-table">
-            <thead>
-                <tr>
-                    <th>المنتج</th>
-                    <th>السعر</th>
-                    <th>الكمية</th>
-                    <th>المجموع</th>
-                </tr>
-            </thead>
-            <tbody id="invoice-body">
-                <tr id="inv-row-1">
-                    <td data-label="المنتج"><input type="text" placeholder="اسم المنتج" class="inv-name"></td>
-                    <td data-label="السعر"><input type="number" value="0" class="inv-price" oninput="calculateRow(1)"></td>
-                    <td data-label="الكمية"><input type="number" value="0" class="inv-qty" oninput="calculateRow(1)"></td>
-                    <td data-label="المجموع"><input type="text" value="0.00" class="inv-total" readonly style="background: #f0fdf4;"></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-            <button class="btn-main" onclick="addInvoiceRow()"><i class="fas fa-plus"></i> إضافة بند جديد</button>
-            <button class="btn-main" style="background: #28a745;" onclick="window.print()"><i class="fas fa-print"></i> طباعة / حفظ PDF</button>
-        </div>
-
-        <div class="card" style="margin-top: 20px; border-top: 3px solid var(--light-green);">
-            <div style="display: flex; justify-content: space-between;"><b>الإجمالي:</b> <span id="sub-total">0.00</span></div>
-            <div style="display: flex; justify-content: space-between; color: var(--sea-blue);"><b>الضريبة (15%):</b> <span id="vat-amount">0.00</span></div>
-            <hr>
-            <div style="display: flex; justify-content: space-between; font-size: 1.3rem; color: #d32f2f;"><b>الصافي:</b> <span id="final-total">0.00 ر.س</span></div>
+        <div class="input-row">
+            <span class="label-text">رقم الجوال:</span>
+            <input type="text" id="customer-phone" class="input-field" readonly style="background: #f9f9f9;">
         </div>
     </div>
 
-    <script>
-        let rowCount = 1;
-        function addInvoiceRow() {
-            rowCount++;
-            const tbody = document.getElementById('invoice-body');
-            const newRow = document.createElement('tr');
-            newRow.id = `inv-row-${rowCount}`;
-            newRow.innerHTML = `
-                <td data-label="المنتج"><input type="text" placeholder="اسم المنتج" class="inv-name"></td>
-                <td data-label="السعر"><input type="number" value="0" class="inv-price" oninput="calculateRow(${rowCount})"></td>
-                <td data-label="الكمية"><input type="number" value="0" class="inv-qty" oninput="calculateRow(${rowCount})"></td>
-                <td data-label="المجموع"><input type="text" value="0.00" class="inv-total" readonly style="background: #f0fdf4;"></td>
-            `;
-            tbody.appendChild(newRow);
-        }
+    <!-- كود الربط البرمجي السحابي -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        function calculateRow(id) {
-            const row = document.getElementById(`inv-row-${id}`);
-            const price = row.querySelector('.inv-price').value || 0;
-            const qty = row.querySelector('.inv-qty').value || 0;
-            row.querySelector('.inv-total').value = (price * qty).toFixed(2);
-            calculateGrandTotal();
-        }
+        const firebaseConfig = { /* بياناتك هنا */ };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        function calculateGrandTotal() {
-            let total = 0;
-            document.querySelectorAll('.inv-total').forEach(input => total += parseFloat(input.value || 0));
-            const vatType = document.getElementById('vat-type').value;
-            let subTotal, vat;
-            if(vatType === "15-include") { subTotal = total / 1.15; vat = total - subTotal; } 
-            else { subTotal = total; vat = total * 0.15; total = subTotal + vat; }
-            document.getElementById('sub-total').innerText = subTotal.toFixed(2);
-            document.getElementById('vat-amount').innerText = vat.toFixed(2);
-            document.getElementById('final-total').innerText = total.toFixed(2) + " ر.س";
-        }
+        const searchInput = document.getElementById('customer-search');
+        const resultsDiv = document.getElementById('customer-results');
+
+        searchInput.oninput = async () => {
+            const val = searchInput.value;
+            if (val.length < 1) { resultsDiv.style.display = 'none'; return; }
+
+            const querySnapshot = await getDocs(collection(db, "customers"));
+            resultsDiv.innerHTML = '';
+            let found = false;
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if (data.name.includes(val)) {
+                    found = true;
+                    const div = document.createElement('div');
+                    div.innerText = data.name;
+                    div.onclick = () => {
+                        searchInput.value = data.name;
+                        document.getElementById('customer-phone').value = data.phone;
+                        resultsDiv.style.display = 'none';
+                    };
+                    resultsDiv.appendChild(div);
+                }
+            });
+
+            resultsDiv.style.display = found ? 'block' : 'none';
+        };
     </script>
 </body>
 </html>

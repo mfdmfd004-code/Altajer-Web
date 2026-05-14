@@ -1,21 +1,71 @@
-<!-- لوحة التحكم - التاجر برو -->
-<div class="dashboard-grid">
-    <!-- الصف الأول -->
-    <button onclick="location.href='invoice.html'"><i class="fas fa-file-invoice-dollar"></i> فاتورة مبيعات</button>
-    <button onclick="location.href='products.html'"><i class="fas fa-boxes-stacked"></i> المستودع (الأصناف)</button>
-    <button onclick="location.href='purchases.html'"><i class="fas fa-shopping-cart"></i> المشتريات</button>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تاجر برو المحاسبي - اللوحة الرئيسية</title>
+    <!-- ربط الستايل الموحد الذي طلبته -->
+    <link rel="stylesheet" href="style.css">
+    <!-- مكتبة الأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
 
-    <!-- الصف الثاني -->
-    <button onclick="location.href='returns.html'"><i class="fas fa-undo"></i> المرتجعات</button>
-    <button onclick="location.href='profits.html'"><i class="fas fa-chart-line"></i> الأرباح</button>
-    <button onclick="location.href='vat-filing.html'"><i class="fas fa-percent"></i> الإقرار الضريبي</button>
+    <div class="card">
+        <header style="text-align: center; margin-bottom: 30px;">
+            <i class="fas fa-chart-pie" style="font-size: 3rem; color: #0077b6;"></i>
+            <h1 style="color: #0077b6;">تاجر برو المحاسبي</h1>
+            <p>مرحباً، فايز (المدير العام)</p>
+        </header>
 
-    <!-- الصف الثالث -->
-    <button onclick="location.href='inventory-count.html'"><i class="fas fa-clipboard-list"></i> الجرد الدوري</button>
-    <button onclick="location.href='suppliers.html'"><i class="fas fa-truck-field"></i> الموردين</button>
-    <button onclick="location.href='barcode-gen.html'"><i class="fas fa-barcode"></i> الباركود</button>
+        <div class="dashboard-grid">
+            <!-- الصف الأول: العمليات اليومية -->
+            <button onclick="location.href='invoice.html'">
+                <i class="fas fa-file-invoice-dollar"></i> فاتورة مبيعات
+            </button>
+            <button onclick="location.href='products.html'">
+                <i class="fas fa-boxes-stacked"></i> المستودع (الأصناف)
+            </button>
+            <button onclick="location.href='purchases.html'">
+                <i class="fas fa-shopping-cart"></i> المشتريات
+            </button>
 
-    <!-- الصف الرابع (إعدادات النظام) -->
-    <button onclick="location.href='settings.html'"><i class="fas fa-cog"></i> الإعدادات</button>
-    <button onclick="location.href='https://t.me/faez1972_bot'"><i class="fas fa-headset"></i> الدعم الفني</button>
-</div>
+            <!-- الصف الثاني: المالية والضرائب -->
+            <button onclick="location.href='returns.html'">
+                <i class="fas fa-undo"></i> المرتجعات
+            </button>
+            <button onclick="location.href='profits.html'">
+                <i class="fas fa-chart-line"></i> الأرباح
+            </button>
+            <button onclick="location.href='vat-filing.html'">
+                <i class="fas fa-percent"></i> الإقرار الضريبي
+            </button>
+
+            <!-- الصف الثالث: الرقابة والمخزون -->
+            <button onclick="location.href='inventory-count.html'">
+                <i class="fas fa-clipboard-list"></i> الجرد الدوري
+            </button>
+            <button onclick="location.href='expenses.html'">
+                <i class="fas fa-wallet"></i> المصاريف
+            </button>
+            <button onclick="location.href='vouchers.html'">
+                <i class="fas fa-money-bill-wave"></i> السندات
+            </button>
+
+            <!-- الصف الرابع: الإدارة والدعم -->
+            <button onclick="location.href='settings.html'">
+                <i class="fas fa-cog"></i> الإعدادات
+            </button>
+            <button onclick="location.href='employees.html'">
+                <i class="fas fa-users-cog"></i> الموظفين
+            </button>
+            <button onclick="location.href='https://t.me/faez1972_bot'">
+                <i class="fas fa-headset"></i> الدعم الفني
+            </button>
+        </div>
+    </div>
+
+    <!-- ملف المحرك الأساسي لربط Firebase -->
+    <script src="app.js"></script>
+</body>
+</html>

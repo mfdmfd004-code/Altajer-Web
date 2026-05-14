@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>الإقرار الضريبي - التاجر برو</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="card">
+        <h2><i class="fas fa-file-contract"></i> ملخص ضريبة القيمة المضافة</h2>
+        <div class="form-group">
+            <label>الفترة الضريبية</label>
+            <input type="month" id="vat-period" class="form-control">
+        </div>
+        <table class="accounting-table">
+            <tr><td>ضريبة المبيعات (المخرجات)</td><td id="vat-out">0.00</td></tr>
+            <tr><td>ضريبة المشتريات (المدخلات)</td><td id="vat-in">0.00</td></tr>
+            <tr style="background:#f1f1f1; font-weight:bold;"><td>الضريبة المستحقة للدفع</td><td id="vat-due">0.00</td></tr>
+        </table>
+        <button class="btn-main" style="margin-top:20px;" onclick="App.generateVatReport()">إصدار تقرير الإقرار</button>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

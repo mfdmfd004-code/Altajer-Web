@@ -1,11 +1,12 @@
-/**
- * Altajer Pro - المحرك المركزي الشامل
- * إدارة: فايز (Operations Manager)
- */
+/* 
+   مشروع: تاجر برو المحاسبي
+   المطور: فايز
+   التحديث: نظام جداول البيانات الذكي (بديل الإكسل)
+*/
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-// إعدادات Firebase الثابتة لمشروعك
+// إعدادات مشروعك في Firebase (نفس التي استخدمناها سابقاً)
 const firebaseConfig = {
     apiKey: "AIzaSyADh8KorayFEiM1JIETYr8LDubkJpja_yU",
     authDomain: "altajer-pro-accountant.firebaseapp.com",
@@ -19,54 +20,58 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const App = {
-    // 1. وظيفة حفظ منتج جديد (المستودع)
+    // وظيفة حفظ تفاصيل الصنف في "جدول البيانات"
     saveProduct: async function() {
         const name = document.getElementById('p-name').value;
         const price = parseFloat(document.getElementById('p-price').value);
         const stock = parseInt(document.getElementById('p-stock').value);
 
-        if (!name || isNaN(price)) return alert("يرجى إكمال البيانات");
+        if (!name || isNaN(price) || isNaN(stock)) {
+            alert("يرجى إكمال جميع تفاصيل الصنف");
+            return;
+        }
 
         try {
+            // حفظ البيانات مع طابع زمني (Timestamp) لترتيب الجداول
             await addDoc(collection(db, "products"), {
-                name, price, stock, createdAt: serverTimestamp()
+                name: name,
+                price: price,
+                stock: stock,
+                addedBy: "فايز", // توثيق عملية الإدخال
+                createdAt: serverTimestamp()
             });
-            alert("تمت إضافة الصنف للمخزن بنجاح ✅");
-            this.loadProducts(); // تحديث الجدول فوراً
-        } catch (e) { console.error(e); }
+            alert("تم حفظ الصنف وتحديث جدول البيانات ✅");
+            this.loadProducts(); // تحديث الجدول تلقائياً
+        } catch (e) {
+            console.error("خطأ في الحفظ: ", e);
+        }
     },
 
-    // 2. وظيفة عرض المنتجات (جدول الإكسل البرمجي)
+    // وظيفة عرض البيانات في جدول (يشبه الإكسل)
     loadProducts: async function() {
         const list = document.getElementById('product-list');
         if (!list) return;
-        list.innerHTML = "جاري التحميل...";
-        
+
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
-        list.innerHTML = "";
         
+        list.innerHTML = "";
         snapshot.forEach(doc => {
             const p = doc.data();
+            const date = p.createdAt ? p.createdAt.toDate().toLocaleString('ar-SA') : 'قيد المعالجة';
+            
             list.innerHTML += `
                 <tr>
                     <td>${p.name}</td>
-                    <td>${p.price.toFixed(2)}</td>
+                    <td>${p.price.toFixed(2)} ر.س</td>
                     <td>${p.stock}</td>
-                    <td><button onclick="App.deleteDoc('products', '${doc.id}')">حذف</button></td>
+                    <td>${date}</td>
                 </tr>`;
         });
-    },
-
-    // 3. وظيفة تصدير البيانات لإكسل حقيقي (عند الحاجة)
-    exportToExcel: function(tableId) {
-        let table = document.getElementById(tableId);
-        let html = table.outerHTML;
-        window.open('data:application/vnd.ms-excel,' + encodeURIComponent(html));
     }
 };
 
-// تشغيل الوظائف بناءً على الصفحة
+// تفعيل الوظائف عند تحميل الصفحة
 window.onload = () => {
     if (document.getElementById('product-list')) App.loadProducts();
 };

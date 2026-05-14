@@ -1,87 +1,44 @@
-/* Altajer Pro - المظهر الموحد */
 :root {
-    --primary-blue: #005f73;
-    --dark-ocean: #0a2d42;
-    --success-green: #2d6a4f;
-    --soft-white: #ffffff;
-    --gray-bg: #f8f9fa;
-    --sidebar-width: 260px;
+    --sea-blue: #0077b6;
+    --light-green: #90be6d;
+    --clean-white: #ffffff;
 }
 
 body {
-    font-family: 'Tajawal', sans-serif;
-    background-color: var(--gray-bg);
-    margin: 0;
-    direction: rtl;
+    background-color: #f0f4f8;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
 }
 
-/* القائمة الجانبية المحدثة */
-.sidebar {
-    width: var(--sidebar-width);
-    background: var(--dark-ocean);
+.header {
+    background: var(--sea-blue);
     color: white;
-    height: 100vh;
-    position: fixed;
-    right: 0;
-    top: 0;
-    transition: 0.3s;
-    z-index: 1000;
-}
-
-/* لجعلها تختفي في الجوال وتظهر عند الضغط */
-@media (max-width: 992px) {
-    .sidebar {
-        transform: translateX(100%);
-    }
-    .sidebar.active {
-        transform: translateX(0);
-    }
-}
-
-.nav-item {
-    padding: 15px 25px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    border-right: 4px solid transparent;
-    transition: 0.2s;
-}
-
-.nav-item:hover {
-    background: rgba(255,255,255,0.1);
-    border-right-color: var(--success-green);
-}
-
-/* أزرار الفواتير والعمليات */
-.btn-main {
-    background: var(--primary-blue);
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    width: 100%;
-    font-weight: bold;
-}
-
-/* الجداول المحاسبية */
-.accounting-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.accounting-table th {
-    background: var(--primary-blue);
-    color: white;
-    padding: 12px;
-}
-
-.accounting-table td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
+    padding: 20px;
     text-align: center;
+    border-radius: 0 0 20px 20px;
 }
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    padding: 20px;
+}
+
+.menu-item {
+    background: white;
+    padding: 20px 10px;
+    text-align: center;
+    border-radius: 15px;
+    text-decoration: none;
+    color: var(--sea-blue);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.menu-item i { font-size: 24px; margin-bottom: 10px; color: var(--light-green); }
+.menu-item span { font-size: 12px; font-weight: bold; }
+.menu-item:active { transform: scale(0.9); }

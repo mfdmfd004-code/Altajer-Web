@@ -1,27 +1,48 @@
-<!-- التاجر برو المحاسبي - إدارة العملاء -->
-<div class="card" id="manageCustomer">
-    <h2 style="text-align: center; color: #0077b6;"><i class="fas fa-user-plus"></i> إدارة بيانات العملاء</h2>
+// نموذج العميل المطور - تاجر برو
+export class Customer {
+    constructor(id, name, address, mobileNo, birthday, gen, vatNumber = "") {
+        this._id = id;
+        this._name = name;
+        this._address = address;
+        this._mobileNo = mobileNo;
+        this._birthday = birthday;
+        this._gen = gen;
+        this._vatNumber = vatNumber; // إضافة الرقم الضريبي للعملاء التجاريين
+    }
+    // ... (نفس الـ Getters والـ Setters السابقة)
 
-    <!-- المربع الموحد المطور -->
-    <div style="border: 2px solid #0077b6; border-radius: 10px; padding: 15px; background: #fff; margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
-            <span style="flex: 1; font-weight: bold; color: #0077b6;">رقم العميل (ID)</span>
-            <input type="text" id="id" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;" placeholder="للبحث أو التعديل">
-        </div>
-        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
-            <span style="flex: 1; font-weight: bold; color: #0077b6;">اسم العميل</span>
-            <input type="text" id="name" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
-        </div>
-        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
-            <span style="flex: 1; font-weight: bold; color: #0077b6;">رقم الجوال</span>
-            <input type="tel" id="contact" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
-        </div>
-    </div>
+    get vatNumber() { return this._vatNumber; }
+    set vatNumber(value) { this._vatNumber = value; }
+}
 
-    <!-- أزرار التحكم -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <button onclick="addCustomer()" style="grid-column: span 2; background: #0077b6; color: white; padding: 15px; border: none; border-radius: 8px; font-weight: bold;">إضافة عميل</button>
-        <button onclick="searchCustomer()" style="background: #6c757d; color: white; padding: 12px; border: none; border-radius: 8px;">بحث</button>
-        <button onclick="updateCustomer()" style="background: #90be6d; color: #000; padding: 12px; border: none; border-radius: 8px;">تعديل</button>
-    </div>
-</div>
+// نموذج المنتج المطور - حساب الضريبة 15%
+export class Item {
+    constructor(itemCode, itemName, itemPrice, itemQty) {
+        this._itemCode = itemCode;
+        this._itemName = itemName;
+        this._itemPrice = itemPrice;
+        this._itemQty = itemQty;
+    }
+
+    // دالة جديدة لحساب السعر شامل الضريبة (تراكمي)
+    get priceWithVat() {
+        return (this._itemPrice * 1.15).toFixed(2);
+    }
+    // ... (بقية الكود القديم يبقى كما هو)
+}
+
+// نموذج السلة المطور - حساب صافي الضريبة
+export class CartItem {
+    constructor(itemCode, itemName, itemPrice, itemQty, itemSubtotal) {
+        this._itemCode = itemCode;
+        this._itemName = itemName;
+        this._itemPrice = itemPrice;
+        this._itemQty = itemQty;
+        this._itemSubtotal = itemSubtotal;
+    }
+
+    // دالة لحساب مبلغ الضريبة المنفصل (للفاتورة الضريبية)
+    get vatAmount() {
+        return (this._itemSubtotal * 0.15).toFixed(2);
+    }
+}

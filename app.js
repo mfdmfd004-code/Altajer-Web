@@ -1,14 +1,14 @@
 /**
- * Altajer Pro - Integrated Core Engine
- * Connected to Firebase & ZATCA Ready
- * Developed for: Faez (Operations Manager)
+ * Altajer Pro - المطور والكامل
+ * نظام متكامل للمحاسبة، المخزون، والربط الضريبي
+ * إعداد: فايز (Operations Manager)
  */
 
-// 1. استيراد مكتبات Firebase السحابية
+// 1. استيراد مكتبات Firebase (النسخة الحديثة)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-// 2. إعدادات الربط الخاصة بمشروع Altajer Pro
+// 2. إعدادات الربط (Firebase Config) - كما في ملفك الأصلي
 const firebaseConfig = {
     apiKey: "AIzaSyADh8KorayFEiM1JIETYr8LDubkJpja_yU",
     authDomain: "altajer-pro-accountant.firebaseapp.com",
@@ -19,119 +19,174 @@ const firebaseConfig = {
     measurementId: "G-WM6KN5NKTC"
 };
 
-// 3. محرك التطبيق الرئيسي
+// 3. كائن التطبيق الرئيسي (The Core Engine)
 const App = {
     db: null,
-    user: null,
-    
-    init: function() {
-        console.log("جاري تشغيل محرك التاجر برو الاحترافي...");
-        
-        // تشغيل الاتصال بالسحابة
-        const firebaseApp = initializeApp(firebaseConfig);
-        this.db = getFirestore(firebaseApp);
-        
-        this.bindEvents();
-        this.checkAuth();
-    },
+    invoiceItems: [],
+    VAT_RATE: 0.15,
 
-    bindEvents: function() {
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                const view = e.currentTarget.getAttribute('onclick').match(/'([^']+)'/)[1];
-                this.loadView(view);
-            });
-        });
-    },
-
-    loadView: function(viewName) {
-        if(viewName === 'sales') this.initSalesModule();
-        if(viewName === 'zatca') this.initZatcaModule();
-    },
-
-    // وحدة الزكاة والدخل
-    initZatcaModule: function() {
-        const container = document.getElementById('zatca');
-        if(!container) return;
-        container.innerHTML = `
-            <div class="data-section">
-                <h3><i class="fas fa-shield-check"></i> وحدة الربط مع هيئة الزكاة والضريبة</h3>
-                <div style="margin-top:20px; border:1px dashed #005f73; padding:20px; border-radius:10px;">
-                    <p>المشروع: <strong>Altajer Pro</strong></p>
-                    <label>حالة الربط:</label> <span class="badge" style="background:#27ae60; color:white; padding:5px 10px; border-radius:5px;">متصل بالسحابة (Live)</span>
-                    <hr style="margin:20px 0; opacity:0.1;">
-                    <button class="btn-action" onclick="App.generateCSR()">توليد ملفات التعريف (CSR)</button>
-                </div>
-            </div>
-        `;
-    },
-
-    // وحدة المبيعات والضريبة 15%
-    initSalesModule: function() {
-        const container = document.getElementById('sales');
-        if(!container) return;
-        container.innerHTML = `
-            <div class="data-section">
-                <h2>إصدار فاتورة ضريبية مبسطة</h2>
-                <div class="sales-form" style="display:grid; grid-template-columns: 1fr; gap:20px;">
-                    <div class="items-entry">
-                        <table style="width:100%; border-collapse: collapse;">
-                            <thead style="background:#005f73; color:white;">
-                                <tr>
-                                    <th style="padding:10px;">الصنف</th>
-                                    <th>الكمية</th>
-                                    <th>السعر</th>
-                                    <th>المجموع</th>
-                                </tr>
-                            </thead>
-                            <tbody id="invoiceItems"></tbody>
-                        </table>
-                        <button class="btn-action" style="margin-top:10px;" onclick="App.addItemRow()">+ إضافة صنف</button>
-                    </div>
-                    <div class="summary-side" style="background:#f8f9fa; padding:20px; border-radius:10px; border: 1px solid #ddd;">
-                        <h4>ملخص الفاتورة (الضريبة 15%)</h4>
-                        <div id="totalsArea">
-                            <p>الإجمالي: <span id="grandTotal">0.00</span> ر.س</p>
-                        </div>
-                        <button class="btn-action" style="width:100%; background:#27ae60;" onclick="App.finalizeInvoice()">حفظ وإصدار QR</button>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    addItemRow: function() {
-        const tbody = document.getElementById('invoiceItems');
-        const row = `<tr>
-            <td><input type="text" class="item-name" placeholder="المنتج" style="width:90%; padding:8px;"></td>
-            <td><input type="number" class="item-qty" value="1" style="width:50px; padding:8px;"></td>
-            <td><input type="number" class="item-price" value="0" style="width:70px; padding:8px;"></td>
-            <td class="row-total">0.00</td>
-        </tr>`;
-        tbody.insertAdjacentHTML('beforeend', row);
-    },
-
-    // حفظ الفاتورة في Firestore مباشرة
-    finalizeInvoice: async function() {
+    init: async function() {
+        console.log("جاري تشغيل محرك التاجر برو المتكامل...");
         try {
-            const docRef = await addDoc(collection(this.db, "invoices"), {
-                timestamp: serverTimestamp(),
-                total: document.getElementById('grandTotal').innerText,
-                status: "Finalized",
-                zatca_compliant: true
-            });
-            alert("تم حفظ الفاتورة بنجاح في السحابة! رقم المرجع: " + docRef.id);
-        } catch (e) {
-            console.error("خطأ في الحفظ: ", e);
-            alert("فشل الاتصال بالقاعدة، تأكد من إعدادات الـ Rules");
+            const firebaseApp = initializeApp(firebaseConfig);
+            this.db = getFirestore(firebaseApp);
+            
+            this.loadDashboardData();
+            this.setupListeners();
+            console.log("تم الاتصال بالسحابة بنجاح ✅");
+        } catch (error) {
+            console.error("فشل بدء النظام:", error);
         }
     },
 
-    checkAuth: function() {
-        console.log("نظام التاجر برو متصل وجاهز للعمل.");
+    // --- إدارة واجهة المبيعات والضرائب ---
+    
+    addItemRow: function() {
+        const name = document.getElementById('item-name').value;
+        const price = parseFloat(document.getElementById('item-price').value);
+        const qty = parseInt(document.getElementById('item-qty').value);
+
+        if (!name || isNaN(price) || price <= 0) {
+            alert("يرجى إدخال اسم المنتج وسعره");
+            return;
+        }
+
+        const total = price * qty;
+        const item = { name, price, qty, total };
+        
+        this.invoiceItems.push(item);
+        this.renderTable();
+        this.calculateTotals();
+
+        // مسح الحقول للإدخال التالي
+        document.getElementById('item-name').value = '';
+        document.getElementById('item-price').value = '';
+        document.getElementById('item-qty').value = '1';
+    },
+
+    renderTable: function() {
+        const tbody = document.querySelector('#invoice-table tbody');
+        if (!tbody) return;
+        tbody.innerHTML = this.invoiceItems.map((item, index) => `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.price.toFixed(2)}</td>
+                <td>${item.qty}</td>
+                <td>${item.total.toFixed(2)}</td>
+                <td><button onclick="App.deleteItem(${index})" style="color:red; border:none; background:none;"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+    },
+
+    deleteItem: function(index) {
+        this.invoiceItems.splice(index, 1);
+        this.renderTable();
+        this.calculateTotals();
+    },
+
+    calculateTotals: function() {
+        const subtotal = this.invoiceItems.reduce((s, i) => s + i.total, 0);
+        const tax = subtotal * this.VAT_RATE;
+        const grandTotal = subtotal + tax;
+        
+        const totalDisplay = document.getElementById('final-total');
+        if (totalDisplay) totalDisplay.innerText = grandTotal.toFixed(2) + " ر.س";
+        
+        return { subtotal, tax, grandTotal };
+    },
+
+    // --- عمليات الحفظ السحابي (Firestore) ---
+
+    saveInvoice: async function() {
+        if (this.invoiceItems.length === 0) {
+            alert("أضف أصنافاً للفاتورة أولاً");
+            return;
+        }
+
+        const totals = this.calculateTotals();
+        const invoiceData = {
+            customer: document.getElementById('inv-customer').value,
+            date: document.getElementById('inv-date').value,
+            items: this.invoiceItems,
+            subtotal: totals.subtotal,
+            tax: totals.tax,
+            total: totals.grandTotal,
+            timestamp: serverTimestamp(),
+            zatca_status: "READY"
+        };
+
+        try {
+            const docRef = await addDoc(collection(this.db, "invoices"), invoiceData);
+            alert("تم حفظ الفاتورة بنجاح! رقم المرجع: " + docRef.id);
+            this.resetForm();
+            this.loadDashboardData();
+        } catch (e) {
+            console.error("خطأ أثناء الحفظ:", e);
+            alert("فشل الحفظ، تأكد من إعدادات الـ Rules في Firebase");
+        }
+    },
+
+    resetForm: function() {
+        this.invoiceItems = [];
+        this.renderTable();
+        this.calculateTotals();
+        document.getElementById('inv-date').valueAsDate = new Date();
+    },
+
+    // --- إدارة البيانات (Dashboard & Contacts) ---
+
+    loadDashboardData: async function() {
+        try {
+            const q = query(collection(this.db, "invoices"), orderBy("timestamp", "desc"), limit(5));
+            const querySnapshot = await getDocs(q);
+            
+            let dailyTotal = 0;
+            const recentBody = document.getElementById('recent-activity');
+            if (recentBody) recentBody.innerHTML = "";
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                dailyTotal += data.total;
+                // تحديث واجهة النشاط الأخير (إذا كان العنصر موجوداً)
+                if (recentBody) {
+                    recentBody.innerHTML += `<div style="border-bottom:1px solid #eee; padding:10px;">فاتورة بمبلغ ${data.total.toFixed(2)} ر.س - ${data.customer}</div>`;
+                }
+            });
+
+            const dailyDisp = document.getElementById('dash-daily');
+            const countDisp = document.getElementById('dash-count');
+            if (dailyDisp) dailyDisp.innerText = dailyTotal.toFixed(2) + " ر.س";
+            if (countDisp) countDisp.innerText = querySnapshot.size;
+
+        } catch (e) {
+            console.log("بانتظار البيانات الأولى...");
+        }
+    },
+
+    addContact: async function() {
+        const name = document.getElementById('contact-name').value;
+        const type = document.getElementById('contact-type').value;
+
+        if (!name) return alert("يرجى إدخال الاسم");
+
+        try {
+            await addDoc(collection(this.db, "contacts"), { name, type, createdAt: serverTimestamp() });
+            alert("تمت الإضافة بنجاح");
+            document.getElementById('contact-name').value = '';
+        } catch (e) {
+            alert("خطأ في إضافة جهة الاتصال");
+        }
+    },
+
+    setupListeners: function() {
+        // ربط زر الحفظ الأساسي في واجهة المبيعات
+        const saveBtn = document.querySelector('button[onclick="submitToFirebase()"]');
+        if (saveBtn) {
+            saveBtn.setAttribute("onclick", "App.saveInvoice()");
+        }
     }
 };
 
-// إطلاق النظام
+// إطلاق النظام وجعله متاحاً عالمياً
 window.onload = () => App.init();
-window.App = App; // لجعل الوظائف متاحة في HTML
+window.App = App;

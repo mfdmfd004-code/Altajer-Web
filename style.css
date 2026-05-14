@@ -1,112 +1,56 @@
-/* 
-   المشروع: تاجر برو المحاسبي
-   المطور: فايز
-   الهوية: أزرق بحري، أبيض، وأخضر فاتح
-*/
+/* تطوير التاجر: التوافق الشامل مع الجوال */
+@media screen and (max-width: 600px) {
+    /* تحويل الجدول إلى نظام عامودي */
+    .accounting-table table, 
+    .accounting-table thead, 
+    .accounting-table tbody, 
+    .accounting-table th, 
+    .accounting-table td, 
+    .accounting-table tr { 
+        display: block; 
+    }
 
-:root {
-    --sea-blue: #0077b6;
-    --light-green: #90be6d;
-    --rustic-white: #f8f9fa;
-    --dark-text: #2d3436;
-}
+    /* إخفاء رأس الجدول التقليدي في الجوال */
+    .accounting-table thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
 
-body {
-    background-color: var(--rustic-white);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    direction: rtl;
-    margin: 0;
-    padding: 20px;
-    color: var(--dark-text);
-}
+    .accounting-table tr { 
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px;
+    }
 
-.card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    border-top: 6px solid var(--sea-blue);
-    margin-bottom: 25px;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-}
+    .accounting-table td { 
+        border: none;
+        position: relative;
+        padding-right: 50%; /* ترك مساحة للعنوان الجانبي */
+        text-align: left;
+        margin-bottom: 5px;
+    }
 
-h2 {
-    color: var(--sea-blue);
-    border-bottom: 2px solid var(--light-green);
-    padding-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+    /* إضافة عناوين جانبية داخل الخانات */
+    .accounting-table td:before { 
+        position: absolute;
+        right: 10px;
+        width: 45%; 
+        white-space: nowrap;
+        font-weight: bold;
+        color: var(--sea-blue);
+    }
 
-.form-group {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
+    /* تسميات الخانات في وضع الجوال */
+    .accounting-table td:nth-of-type(1):before { content: "الصنف:"; }
+    .accounting-table td:nth-of-type(2):before { content: "السعر:"; }
+    .accounting-table td:nth-of-type(3):before { content: "الكمية:"; }
+    .accounting-table td:nth-of-type(4):before { content: "الإجمالي:"; }
 
-input, select {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-}
-
-.btn-main {
-    background-color: var(--sea-blue);
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn-main:hover {
-    background-color: #00b4d8;
-    transform: translateY(-2px);
-}
-
-.accounting-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.accounting-table th {
-    background-color: var(--sea-blue);
-    color: white;
-    padding: 12px;
-    text-align: right;
-}
-
-.accounting-table td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-}
-
-/* تحسين لوحة التحكم الرئيسية */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
-}
-
-.dashboard-grid button {
-    height: 120px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-}
-
-.dashboard-grid i {
-    font-size: 24px;
-    color: var(--light-green);
+    input, select {
+        width: 100% !important; /* ملء العرض بالكامل للجوال */
+        box-sizing: border-box;
+    }
 }

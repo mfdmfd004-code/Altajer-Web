@@ -5,108 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة العملاء - التاجر برو</title>
     
-    <!-- إعدادات التطبيق للجوال -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="التاجر برو">
-    <meta name="theme-color" content="#0077b6">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root { --sea-blue: #0077b6; --light-green: #90be6d; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .card { background: var(--white); border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; border-top: 5px solid var(--sea-blue); }
-        h2 { color: var(--sea-blue); text-align: center; }
-
-        /* ستايل المربع الموحد المطور */
-        .customer-card-unit { border: 2px solid var(--sea-blue); border-radius: 10px; padding: 10px; background: #fff; margin-bottom: 20px; }
-        .input-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .input-row:last-child { border-bottom: none; }
+        
+        .card { background: var(--white); border-radius: 12px; padding: 20px; border-top: 5px solid var(--sea-blue); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        /* نظام المربع الواحد المطور لبحث وإدخال بيانات العميل */
+        .input-group-box { border: 2px solid var(--sea-blue); border-radius: 10px; padding: 15px; background: #fff; margin-bottom: 20px; }
+        .row-input { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .row-input:last-child { border-bottom: none; }
         .label-text { font-weight: bold; color: var(--sea-blue); flex: 1; font-size: 0.9rem; }
-        .input-field { flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center; font-size: 1rem; }
+        .field-input { flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center; }
 
-        /* الأزرار بنظام التاجر */
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .btn { padding: 14px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; }
-        .btn-save { background-color: var(--sea-blue); grid-column: span 2; }
-        .btn-find { background-color: #6c757d; }
-        .btn-edit { background-color: var(--light-green); color: #000; }
-        .btn-remove { background-color: #d32f2f; }
+        .btn-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-add { background: var(--sea-blue); grid-column: span 2; }
+        .btn-search { background: #6c757d; }
+        .btn-update { background: var(--light-green); color: #000; }
+        .btn-delete { background: #d32f2f; }
+
+        /* جدول العملاء المطور للجوال */
+        .table-container { margin-top: 20px; overflow-x: auto; background: white; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th { background: var(--sea-blue); color: white; padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2><i class="fas fa-users"></i> إدارة العملاء (التاجر برو)</h2>
+    <div class="card" id="manageCustomer">
+        <h2 style="text-align: center; color: var(--sea-blue);"><i class="fas fa-user-plus"></i> إدارة بيانات العملاء</h2>
 
-        <div class="customer-card-unit">
-            <div class="input-row">
-                <span class="label-text">كود العميل</span>
-                <input type="text" id="c-id" class="input-field" placeholder="أدخل كود للبحث أو الحفظ">
+        <div class="input-group-box">
+            <div class="row-input">
+                <span class="label-text">رقم العميل (ID)</span>
+                <input type="text" id="id" class="field-input" placeholder="تلقائي أو للبحث">
             </div>
-            <div class="input-row">
+            <div class="row-input">
                 <span class="label-text">اسم العميل</span>
-                <input type="text" id="c-name" class="input-field" placeholder="الاسم الكامل">
+                <input type="text" id="name" class="field-input">
             </div>
-            <div class="input-row">
+            <div class="row-input">
                 <span class="label-text">رقم الجوال</span>
-                <input type="tel" id="c-phone" class="input-field" placeholder="05xxxxxxxx">
+                <input type="tel" id="contact" class="field-input">
             </div>
-            <div class="input-row">
+            <div class="row-input">
                 <span class="label-text">العنوان</span>
-                <input type="text" id="c-address" class="input-field" placeholder="المدينة / المنطقة">
+                <input type="text" id="address" class="field-input">
+            </div>
+            <div class="row-input">
+                <span class="label-text">تاريخ الميلاد</span>
+                <input type="date" id="birthDay" class="field-input">
+            </div>
+            <div class="row-input gender">
+                <span class="label-text">الجنس</span>
+                <div style="flex: 2; text-align: center;">
+                    <input type="radio" name="gen" value="Male" checked> ذكر 
+                    <input type="radio" name="gen" value="Female"> أنثى
+                </div>
             </div>
         </div>
 
-        <div class="btn-grid">
-            <button class="btn btn-save" id="btn-save-cust"><i class="fas fa-save"></i> حفظ العميل في السحابة</button>
-            <button class="btn btn-find" id="btn-find-cust"><i class="fas fa-search"></i> بحث</button>
-            <button class="btn btn-edit" id="btn-edit-cust"><i class="fas fa-edit"></i> تعديل</button>
-            <button class="btn btn-remove" id="btn-remove-cust"><i class="fas fa-trash-alt"></i> حذف</button>
+        <div class="btn-container">
+            <button class="btn btn-add">إضافة عميل جديد</button>
+            <button class="btn btn-search">بحث بالرقم</button>
+            <button class="btn btn-update">تعديل البيانات</button>
+            <button class="btn btn-delete">حذف العميل</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>الاسم</th>
+                        <th>الجوال</th>
+                        <th>العنوان</th>
+                        <th>الجنس</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- البيانات تظهر هنا -->
+                </tbody>
+            </table>
         </div>
     </div>
 
+    <!-- المنطق البرمجي السحابي المطور بناءً على كودك -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        // إعدادات Firebase (سيتم سحبها تلقائياً من مشروعك "تاجر برو المحاسبي")
-        const firebaseConfig = { /* بياناتك هنا */ };
+        const firebaseConfig = { /* بياناتك السحابية هنا */ };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // وظيفة الحفظ المباشر
-        document.getElementById('btn-save-cust').onclick = async () => {
-            const id = document.getElementById('c-id').value || Date.now().toString();
-            const data = {
-                name: document.getElementById('c-name').value,
-                phone: document.getElementById('c-phone').value,
-                address: document.getElementById('c-address').value
+        // وظيفة التحديث الفوري للجدول (تطوير setTable و getAll)
+        async function refreshTable() {
+            const querySnapshot = await getDocs(collection(db, "customers"));
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                tbody.innerHTML += `<tr><td>${doc.id}</td><td>${data.name}</td><td>${data.mobileNo}</td><td>${data.address}</td><td>${data.gen}</td></tr>`;
+            });
+        }
+
+        // إضافة وتعديل (تطوير addCustomer و updateCustomer)
+        document.querySelector('.btn-add, .btn-update').onclick = async () => {
+            const id = document.getElementById('id').value || Date.now().toString();
+            const customerData = {
+                name: document.getElementById('name').value,
+                address: document.getElementById('address').value,
+                mobileNo: document.getElementById('contact').value,
+                birthday: document.getElementById('birthDay').value,
+                gen: document.querySelector('input[name="gen"]:checked').value
             };
-            await setDoc(doc(db, "customers", id), data);
-            alert("تم الحفظ بنجاح يا فايز");
+            await setDoc(doc(db, "customers", id), customerData);
+            alert("تم حفظ البيانات بنجاح يا فايز");
+            refreshTable();
         };
 
-        // وظيفة البحث المباشر
-        document.getElementById('btn-find-cust').onclick = async () => {
-            const id = document.getElementById('c-id').value;
+        // بحث (تطوير searchCustomer)
+        document.querySelector('.btn-search').onclick = async () => {
+            const id = document.getElementById('id').value;
             const snap = await getDoc(doc(db, "customers", id));
             if (snap.exists()) {
                 const d = snap.data();
-                document.getElementById('c-name').value = d.name;
-                document.getElementById('c-phone').value = d.phone;
-                document.getElementById('c-address').value = d.address;
-            } else { alert("العميل غير مسجل"); }
+                document.getElementById('name').value = d.name;
+                document.getElementById('address').value = d.address;
+                document.getElementById('contact').value = d.mobileNo;
+                document.getElementById('birthDay').value = d.birthday;
+            } else { alert("العميل غير موجود"); }
         };
 
-        // وظيفة الحذف
-        document.getElementById('btn-remove-cust').onclick = async () => {
-            const id = document.getElementById('c-id').value;
-            await deleteDoc(doc(db, "customers", id));
-            alert("تم حذف العميل");
-            location.reload();
-        };
+        window.onload = refreshTable;
     </script>
 </body>
 </html>

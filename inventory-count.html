@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>جرد المخزون - التاجر برو</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="card">
+        <h2><i class="fas fa-clipboard-check"></i> تسوية وجرد المخزون</h2>
+        <table class="accounting-table">
+            <thead>
+                <tr>
+                    <th>الصنف</th>
+                    <th>الرصيد الدفتري</th>
+                    <th>الرصيد الفعلي</th>
+                    <th>الفرق</th>
+                </tr>
+            </thead>
+            <tbody id="inventory-list">
+                <!-- يتم التحميل ديناميكياً من Firestore -->
+            </tbody>
+        </table>
+        <button class="btn-main" style="margin-top:20px;" onclick="App.syncInventory()">اعتماد تسوية المخزون</button>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

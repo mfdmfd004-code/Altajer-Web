@@ -109,7 +109,6 @@
         </header>
 
         <div class="content-body">
-            
             <!-- 1. الرئيسية -->
             <section id="dashboard" class="page-view active">
                 <div class="stats-grid">
@@ -119,18 +118,18 @@
                 </div>
                 <div class="data-section">
                     <h3>ملخص العمليات الأخيرة</h3>
-                    <div id="recent-activity" style="text-align: center; padding: 20px; color: #999;">لا توجد بيانات، بانتظار الربط بـ Firebase.</div>
+                    <div id="recent-activity" style="text-align: center; padding: 20px; color: #999;">بانتظار البيانات...</div>
                 </div>
             </section>
 
-            <!-- 2. واجهة إصدار الفاتورة المتطورة -->
+            <!-- 2. واجهة إصدار الفاتورة -->
             <section id="sales" class="page-view">
                 <div class="data-section">
                     <h2 class="section-title"><i class="fas fa-plus-circle"></i> فاتورة ضريبية جديدة</h2>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
                         <div>
                             <label class="form-label">العميل</label>
-                            <select id="inv-customer" class="form-select"><option value="cash">عميل نقدي</option></select>
+                            <select id="inv-customer" class="form-select"><option value="نقدي">عميل نقدي</option></select>
                         </div>
                         <div>
                             <label class="form-label">التاريخ</label>
@@ -143,11 +142,11 @@
                             <input type="number" id="item-price" class="form-control" placeholder="السعر">
                             <input type="number" id="item-qty" class="form-control" value="1">
                         </div>
-                        <button class="btn-action" onclick="addRow()" style="background: var(--rustic-green)">+ إضافة المنتج</button>
+                        <button class="btn-action" onclick="App.addItemRow()" style="background: var(--rustic-green)">+ إضافة المنتج</button>
                     </div>
                     <div class="table-responsive">
                         <table id="invoice-table">
-                            <thead><tr><th>الصنف</th><th>السعر</th><th>الكمية</th><th>المجموع</th></tr></thead>
+                            <thead><tr><th>الصنف</th><th>السعر</th><th>الكمية</th><th>المجموع</th><th>حذف</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
@@ -156,75 +155,28 @@
                             <span>الإجمالي النهائي (15% ضريبة):</span>
                             <span id="final-total">0.00 ر.س</span>
                         </div>
-                        <button class="btn-action" style="margin-top: 15px;" onclick="submitToFirebase()">حفظ وإصدار QR Code</button>
+                        <button class="btn-action" style="margin-top: 15px;" onclick="App.saveInvoice()">حفظ وإصدار الفاتورة سحابياً</button>
                     </div>
                 </div>
             </section>
 
-            <!-- 3. سجل الفواتير -->
-            <section id="invoices-list" class="page-view">
-                <div class="data-section">
-                    <h2>سجل الفواتير المصدرة</h2>
-                    <div class="table-responsive">
-                        <table>
-                            <thead><tr><th>رقم الفاتورة</th><th>العميل</th><th>التاريخ</th><th>المبلغ</th><th>الحالة</th></tr></thead>
-                            <tbody id="all-invoices-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 4. العملاء والموردين -->
+            <!-- الأقسام الأخرى (سجل الفواتير، العملاء، الخ) -->
+            <section id="invoices-list" class="page-view"><div class="data-section"><h2>سجل الفواتير</h2><div id="all-invoices-body"></div></div></section>
             <section id="customers" class="page-view">
                 <div class="data-section">
-                    <h2>إدارة العملاء والموردين</h2>
-                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <input type="text" id="contact-name" class="form-control" placeholder="الاسم">
-                        <select id="contact-type" class="form-select" style="width: 150px;"><option value="customer">عميل</option><option value="supplier">مورد</option></select>
-                        <button class="btn-action" onclick="addContact()" style="width: 120px;">إضافة</button>
-                    </div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead><tr><th>الاسم</th><th>النوع</th><th>الرصيد</th><th>إجراء</th></tr></thead>
-                            <tbody id="contacts-body"></tbody>
-                        </table>
-                    </div>
+                    <h2>إدارة العملاء</h2>
+                    <input type="text" id="contact-name" class="form-control" placeholder="الاسم">
+                    <select id="contact-type" class="form-select"><option value="customer">عميل</option><option value="supplier">مورد</option></select>
+                    <button class="btn-action" onclick="App.addContact()">إضافة جهة اتصال</button>
                 </div>
             </section>
-
-            <!-- 5. ZATCA -->
-            <section id="zatca" class="page-view">
-                <div class="data-section">
-                    <h2>الامتثال لهيئة الزكاة والضريبة (ZATCA)</h2>
-                    <div class="alert" style="background: var(--light-green); padding: 15px; border-radius: 8px; color: var(--rustic-green);">
-                        <i class="fas fa-check-circle"></i> النظام مهيأ لتوليد الفاتورة الإلكترونية (المرحلة الثانية).
-                    </div>
-                    <div style="margin-top: 20px;">
-                        <label class="form-label">رقم التسجيل الضريبي للمنشأة</label>
-                        <input type="text" class="form-control" placeholder="15 رقم ضريبي">
-                        <button class="btn-action">تحديث بيانات الربط</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 6. الإعدادات -->
-            <section id="settings" class="page-view">
-                <div class="data-section">
-                    <h2>إعدادات المنشأة و SaaS</h2>
-                    <label class="form-label">اسم المتجر / المؤسسة</label>
-                    <input type="text" class="form-control" value="مؤسسة فايز التجارية">
-                    <label class="form-label">نوع الاشتراك</label>
-                    <input type="text" class="form-control" value="الباقة الاحترافية" readonly>
-                    <button class="btn-action">حفظ التغييرات</button>
-                </div>
-            </section>
-
+            <section id="zatca" class="page-view"><div class="data-section"><h2>بيانات ZATCA</h2><p>النظام جاهز للمرحلة الثانية.</p></div></section>
         </div>
     </main>
 </div>
 
+<!-- الجافا سكريبت الأساسي للتنقل -->
 <script>
-    // نظام التنقل المتطور
     function switchPage(pageId, element) {
         document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
@@ -232,39 +184,11 @@
         element.classList.add('active');
         if(window.innerWidth < 992) toggleMobileMenu();
     }
-
-    function toggleMobileMenu() {
-        document.getElementById('sidebar').classList.toggle('mobile-open');
-    }
-
-    // دوال إدارة الفاتورة (سيتم ربطها بـ app.js لاحقاً)
-    function addRow() {
-        const name = document.getElementById('item-name').value;
-        const price = parseFloat(document.getElementById('item-price').value);
-        const qty = parseInt(document.getElementById('item-qty').value);
-        if(name && price > 0) {
-            const table = document.getElementById('invoice-table').getElementsByTagName('tbody')[0];
-            const row = table.insertRow();
-            row.innerHTML = `<td>${name}</td><td>${price}</td><td>${qty}</td><td>${(price * qty).toFixed(2)}</td>`;
-            updateTotal(price * qty);
-            // تفريغ الحقول
-            document.getElementById('item-name').value = '';
-            document.getElementById('item-price').value = '';
-        }
-    }
-
-    let totalSum = 0;
-    function updateTotal(amount) {
-        totalSum += amount;
-        const tax = totalSum * 0.15;
-        document.getElementById('final-total').innerText = (totalSum + tax).toFixed(2) + " ر.س";
-    }
-
-    window.onload = () => {
-        document.getElementById('inv-date').valueAsDate = new Date();
-        console.log("Altajer Pro System Ready...");
-    };
+    function toggleMobileMenu() { document.getElementById('sidebar').classList.toggle('mobile-open'); }
 </script>
+
+<!-- استدعاء المحرك البرمجي (تم تصحيح السطر) -->
+<script type="module" src="app.js"></script>
 
 </body>
 </html>

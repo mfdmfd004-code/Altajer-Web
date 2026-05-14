@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Altajer Pro - النظام المحاسبي المتكامل</title>
+    <!-- الأيقونات والخطوط -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --sea-blue: #005f73;
+            --ocean-dark: #0a2d42;
+            --rustic-green: #2d6a4f;
+            --light-green: #d8f3dc;
+            --clean-white: #ffffff;
+            --bg-soft: #f8f9fa;
+            --sidebar-width: 260px;
+            --transition-speed: 0.3s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--bg-soft); overflow-x: hidden; }
+
+        /* الهيكل الرئيسي */
+        .app-wrapper { display: flex; min-height: 100vh; }
+
+        /* القائمة الجانبية الملحمية */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--ocean-dark);
+            color: white;
+            transition: var(--transition-speed);
+            position: fixed;
+            height: 100%;
+            z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .brand-section {
+            padding: 25px;
+            text-align: center;
+            background: var(--sea-blue);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-menu { padding-top: 20px; list-style: none; }
+        .nav-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; transition: 0.2s; border-right: 4px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--light-green); }
+        .nav-item.active { background: rgba(255,255,255,0.1); border-right-color: var(--light-green); color: var(--light-green); }
+        .nav-item i { margin-left: 15px; width: 25px; font-size: 1.2rem; }
+
+        /* المحتوى والـ Header */
+        .main-container {
+            flex: 1;
+            margin-right: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition-speed);
+        }
+
+        .top-navbar {
+            height: 70px;
+            background: var(--clean-white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* نظام التنبيهات واشتراك SaaS */
+        .subscription-status {
+            background: var(--light-green);
+            color: var(--rustic-green);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* لوحة التحكم والبيانات */
+        .content-body { padding: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: var(--sea-blue); }
+        .stat-card.green::after { background: var(--rustic-green); }
+        .stat-card.orange::after { background: #f39c12; }
+
+        .stat-val { font-size: 2rem; font-weight: 700; margin-top: 10px; color: var(--ocean-dark); }
+        .stat-label { color: #7f8c8d; font-size: 1rem; }
+
+        /* الجداول والقوائم */
+        .data-section { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .section-title { margin-bottom: 20px; color: var(--ocean-dark); display: flex; justify-content: space-between; align-items: center; }
+
+        /* زر الإجراء السريع */
+        .btn-action {
+            background: var(--sea-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-action:hover { background: var(--ocean-dark); }
+
+        /* استجابة الجوال */
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(100%); }
+            .main-container { margin-right: 0; }
+            .sidebar.mobile-open { transform: translateX(0); }
+        }
+
+        /* إخفاء الأقسام غير النشطة */
+        .page-view { display: none; }
+        .page-view.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <!--Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand-section">ALTAJER PRO</div>
+        <ul class="nav-menu">
+            <li class="nav-item active" onclick="switchPage('dashboard', this)">
+                <i class="fas fa-chart-pie"></i> الرئيسية
+            </li>
+            <li class="nav-item" onclick="switchPage('sales', this)">
+                <i class="fas fa-file-invoice-dollar"></i> فواتير المبيعات
+            </li>
+            <li class="nav-item" onclick="switchPage('products', this)">
+                <i class="fas fa-box-open"></i> المخزون والأصناف
+            </li>
+            <li class="nav-item" onclick="switchPage('customers', this)">
+                <i class="fas fa-users"></i> العملاء والموردين
+            </li>
+            <li class="nav-item" onclick="switchPage('zatca', this)">
+                <i class="fas fa-shield-check"></i> هيئة الزكاة (ZATCA)
+            </li>
+            <li class="nav-item" onclick="switchPage('settings', this)">
+                <i class="fas fa-user-gear"></i> إعدادات المنشأة
+            </li>
+            <li class="nav-item" style="color: #e74c3c; margin-top: 50px;">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </li>
+        </ul>
+    </aside>
+
+    <main class="main-container">
+        <!-- Top Nav -->
+        <header class="top-navbar">
+            <div class="menu-toggle" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></div>
+            <div class="subscription-status" id="trialStatus">
+                <i class="fas fa-hourglass-half"></i> الفترة التجريبية: <span id="daysLeft">15</span> يوم متبقي
+            </div>
+            <div class="user-profile">
+                <span>أهلاً بك، <strong>فايز</strong></span>
+            </div>
+        </header>
+
+        <div class="content-body">
+            
+            <!-- VIEW: DASHBOARD -->
+            <section id="dashboard" class="page-view active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">مبيعات اليوم</div>
+                        <div class="stat-val" id="totalDaily">0.00 ر.س</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-label">التحصيل الشهري</div>
+                        <div class="stat-val">0.00 ر.س</div>
+                    </div>
+                    <div class="stat-card orange">
+                        <div class="stat-label">تنبيهات المخزن</div>
+                        <div class="stat-val">0 أصناف</div>
+                    </div>
+                </div>
+                
+                <div class="data-section">
+                    <div class="section-title">
+                        <h2>آخر الفواتير المصدرة</h2>
+                        <button class="btn-action">+ فاتورة جديدة</button>
+                    </div>
+                    <p style="text-align: center; padding: 40px; color: #95a5a6;">لا توجد بيانات مسجلة حالياً، ابدأ بربط Firebase.</p>
+                </div>
+            </section>
+
+            <!-- VIEW: SALES (ZATCA READY) -->
+            <section id="sales" class="page-view">
+                <div class="data-section">
+                    <h2>إصدار فاتورة ضريبية</h2>
+                    <hr style="margin: 15px 0; opacity: 0.2;">
+                    <p>هنا سيتم وضع نظام توليد الـ XML والـ QR Code المتوافق مع ZATCA.</p>
+                </div>
+            </section>
+
+            <!-- VIEW: SETTINGS -->
+            <section id="settings" class="page-view">
+                <div class="data-section">
+                    <h2>إعدادات الحساب والاشتراك</h2>
+                    <p>إدارة التراخيص والمدد الزمنية للمشتركين.</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    // نظام تبديل الصفحات SaaS المتطور
+    function switchPage(pageId, element) {
+        // إخفاء كل الصفحات
+        document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+        // إظهار الصفحة المطلوبة
+        document.getElementById(pageId).classList.add('active');
+        
+        // تحديث القائمة الجانبية
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        element.classList.add('active');
+
+        // إغلاق قائمة الجوال إذا كانت مفتوحة
+        if(window.innerWidth < 992) toggleMobileMenu();
+    }
+
+    function toggleMobileMenu() {
+        document.getElementById('sidebar').classList.toggle('mobile-open');
+    }
+
+    // منطق فحص الاشتراك (SaaS Logic)
+    function initializeApp() {
+        console.log("Altajer Pro Initialized...");
+        // سيتم وضع كود جلب بيانات المستخدم من Firestore هنا
+    }
+
+    window.onload = initializeApp;
+</script>
+
+</body>
+</html>

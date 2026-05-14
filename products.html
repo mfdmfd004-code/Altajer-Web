@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المستودع - التاجر برو</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* تنسيق جدول المنتجات الاحترافي */
+        body { font-family: 'Tajawal', sans-serif; background: #f4f7f6; padding: 20px; }
+        .inventory-card { background: white; border-radius: 15px; padding: 20px; shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .product-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .product-table th, .product-table td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        .product-table th { background-color: #005f73; color: white; }
+        .btn-add { background: #2d6a4f; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+<div class="inventory-card">
+    <h2><i class="fas fa-boxes-stacked"></i> إدارة المستودع والمنتجات</h2>
+    <div style="margin-top: 15px;">
+        <input type="text" id="p-name" placeholder="اسم المنتج" style="width: 40%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+        <input type="number" id="p-price" placeholder="السعر" style="width: 25%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+        <input type="number" id="p-stock" placeholder="الكمية" style="width: 25%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+    </div>
+    <button class="btn-add" onclick="App.saveProduct()" style="margin-top: 10px;">إضافة للمخزن</button>
+
+    <table class="product-table">
+        <thead>
+            <tr>
+                <th>المنتج</th>
+                <th>السعر</th>
+                <th>المخزون</th>
+                <th>إجراء</th>
+            </tr>
+        </thead>
+        <tbody id="product-list">
+            <!-- سيتم جلب البيانات من Firebase هنا -->
+        </tbody>
+    </table>
+</div>
+
+<script type="module">
+    import { App } from './app.js';
+    window.App = App;
+    // هنا سنضيف دالة جلب المنتجات لعرضها كجدول إكسل
+</script>
+</body>
+</html>

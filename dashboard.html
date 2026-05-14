@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - التاجر برو</title>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0077b6">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- مكتبة الرسوم البيانية التي طلبها الكود -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root { --sea-blue: #0077b6; --light-green: #90be6d; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
+        
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--white); padding: 15px; border-radius: 10px; text-align: center; border-bottom: 4px solid var(--sea-blue); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-card i { font-size: 1.5rem; color: var(--sea-blue); }
+        .stat-card h3 { margin: 5px 0; font-size: 1.2rem; }
+        .stat-card p { font-size: 1.5rem; font-weight: bold; margin: 0; color: #333; }
+
+        .chart-container { background: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 2px solid var(--sea-blue); }
+        h4 { color: var(--sea-blue); margin-top: 0; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <!-- كروت الإحصائيات (تطوير getOrderCount و getCustomerCount) -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i class="fas fa-shopping-basket"></i>
+            <h3>الطلبات</h3>
+            <p id="orderCount">0</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-users"></i>
+            <h3>العملاء</h3>
+            <p id="customerCount">0</p>
+        </div>
+    </div>
+
+    <!-- الرسوم البيانية (تطوير setChart و setChart2) -->
+    <div class="chart-container">
+        <h4><i class="fas fa-chart-pie"></i> تحليل الدخل الشهري</h4>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <h4><i class="fas fa-chart-line"></i> نمو المبيعات</h4>
+        <canvas id="chart2"></canvas>
+    </div>
+
+    <script type="module">
+        // هنا قمنا بدمج منطق DashBoardController المطور
+        window.onload = function() {
+            // بيانات تجريبية (سيتم ربطها بـ Firebase لاحقاً)
+            const months = ['يناير', 'فبراير', 'مارس'];
+            const income = [5000, 7000, 4500];
+            const colors = ['#0077b6', '#90be6d', '#ffca3a'];
+
+            // رسم المخطط الدائري (تطوير setChart)
+            new Chart(document.getElementById('myChart'), {
+                type: 'pie',
+                data: {
+                    labels: months,
+                    datasets: [{ data: income, backgroundColor: colors }]
+                }
+            });
+
+            // رسم المخطط الخطي (تطوير setChart2)
+            new Chart(document.getElementById('chart2'), {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'كمية المبيعات',
+                        data: [120, 190, 150],
+                        borderColor: '#0077b6',
+                        tension: 0.3,
+                        fill: true,
+                        backgroundColor: 'rgba(0, 119, 182, 0.1)'
+                    }]
+                }
+            });
+
+            // تحديث الأرقام (تطوير الأكواد الأولى)
+            document.getElementById('orderCount').innerText = "150";
+            document.getElementById('customerCount').innerText = "45";
+        };
+    </script>
+</body>
+</html>

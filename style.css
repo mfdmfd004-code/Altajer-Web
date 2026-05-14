@@ -1,56 +1,74 @@
-/* تطوير التاجر: التوافق الشامل مع الجوال */
+/* ألوان التاجر برو المعتمدة */
+:root {
+    --sea-blue: #0077b6;
+    --light-green: #90be6d;
+    --rustic-white: #f8f9fa;
+}
+
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--rustic-white); margin: 0; padding: 10px; }
+
+/* إصلاح القائمة الرئيسية - لمنع تداخل الأزرار الظاهر في صورة 1000338944.png */
+.main-menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.menu-item {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    text-decoration: none;
+    color: #333;
+}
+
+.menu-item:hover { transform: translateY(-5px); border-color: var(--sea-blue); }
+
+/* تصميم الجداول الاحترافي */
+.accounting-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+.accounting-table th { background: var(--sea-blue); color: white; padding: 12px; text-align: center; }
+.accounting-table td { border: 1px solid #eee; padding: 8px; text-align: center; }
+
+/* تطوير الجوال بأسلوب "البطاقة" دون تخريب الصفحة الخارجية */
 @media screen and (max-width: 600px) {
-    /* تحويل الجدول إلى نظام عامودي */
-    .accounting-table table, 
-    .accounting-table thead, 
-    .accounting-table tbody, 
-    .accounting-table th, 
-    .accounting-table td, 
-    .accounting-table tr { 
-        display: block; 
+    /* نطبق التصميم العمودي فقط داخل صفحة الفاتورة والمستودع */
+    #invoice-table, #inventory-table {
+        display: block;
     }
-
-    /* إخفاء رأس الجدول التقليدي في الجوال */
-    .accounting-table thead tr { 
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-    }
-
-    .accounting-table tr { 
-        border: 1px solid #ccc;
-        margin-bottom: 10px;
-        background: #fff;
-        border-radius: 8px;
+    
+    #invoice-table tr, #inventory-table tr {
+        display: flex;
+        flex-direction: column;
+        border: 2px solid var(--sea-blue);
+        margin-bottom: 15px;
+        border-radius: 10px;
         padding: 10px;
+        background: #fff;
     }
 
-    .accounting-table td { 
+    #invoice-table td, #inventory-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         border: none;
-        position: relative;
-        padding-right: 50%; /* ترك مساحة للعنوان الجانبي */
-        text-align: left;
-        margin-bottom: 5px;
+        padding: 8px 5px;
+        border-bottom: 1px dashed #eee;
     }
 
-    /* إضافة عناوين جانبية داخل الخانات */
-    .accounting-table td:before { 
-        position: absolute;
-        right: 10px;
-        width: 45%; 
-        white-space: nowrap;
+    #invoice-table td:before, #inventory-table td:before {
         font-weight: bold;
         color: var(--sea-blue);
+        margin-left: 10px;
     }
 
-    /* تسميات الخانات في وضع الجوال */
-    .accounting-table td:nth-of-type(1):before { content: "الصنف:"; }
-    .accounting-table td:nth-of-type(2):before { content: "السعر:"; }
-    .accounting-table td:nth-of-type(3):before { content: "الكمية:"; }
-    .accounting-table td:nth-of-type(4):before { content: "الإجمالي:"; }
-
-    input, select {
-        width: 100% !important; /* ملء العرض بالكامل للجوال */
-        box-sizing: border-box;
-    }
+    /* تسميات ذكية للجدول العمودي */
+    #invoice-table td:nth-of-type(1):before { content: "الصنف"; }
+    #invoice-table td:nth-of-type(2):before { content: "السعر"; }
+    #invoice-table td:nth-of-type(3):before { content: "الكمية"; }
+    #invoice-table td:nth-of-type(4):before { content: "الإجمالي"; }
 }

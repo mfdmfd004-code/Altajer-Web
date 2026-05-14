@@ -1,39 +1,21 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تاجر برو المحاسبي - اللوحة الرئيسية</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <div class="header">
-        <h1>تاجر برو المحاسبي <i class="fas fa-chart-pie"></i></h1>
-        <p>مرحباً، فايز (المدير العام)</p>
-    </div>
+<!-- لوحة التحكم - التاجر برو -->
+<div class="dashboard-grid">
+    <!-- الصف الأول -->
+    <button onclick="location.href='invoice.html'"><i class="fas fa-file-invoice-dollar"></i> فاتورة مبيعات</button>
+    <button onclick="location.href='products.html'"><i class="fas fa-boxes-stacked"></i> المستودع (الأصناف)</button>
+    <button onclick="location.href='purchases.html'"><i class="fas fa-shopping-cart"></i> المشتريات</button>
 
-    <div class="container">
-        <!-- شبكة الأيقونات للوصول السريع لملفاتك الـ 15 -->
-        <div class="menu-grid">
-            <a href="invoice.html" class="menu-item"><i class="fas fa-file-invoice-dollar"></i><span>فاتورة مبيعات</span></a>
-            <a href="products.html" class="menu-item"><i class="fas fa-box-open"></i><span>المستودع (الإكسل)</span></a>
-            <a href="purchases.html" class="menu-item"><i class="fas fa-shopping-cart"></i><span>المشتريات</span></a>
-            <a href="returns.html" class="menu-item"><i class="fas fa-undo"></i><span>المرتجعات</span></a>
-            <a href="الأرباح.html" class="menu-item"><i class="fas fa-hand-holding-usd"></i><span>الأرباح</span></a>
-            <a href="vat-filing.html" class="menu-item"><i class="fas fa-percent"></i><span>الضرائب</span></a>
-            <a href="inventory-count.html" class="menu-item"><i class="fas fa-list-check"></i><span>الجرد الدوري</span></a>
-            <a href="expenses.html" class="menu-item"><i class="fas fa-wallet"></i><span>المصاريف</span></a>
-            <a href="vouchers.html" class="menu-item"><i class="fas fa-money-bill-wave"></i><span>السندات</span></a>
-            <a href="users.html" class="menu-item"><i class="fas fa-user-gear"></i><span>الموظفين</span></a>
-            <a href="printer-config.html" class="menu-item"><i class="fas fa-print"></i><span>الطابعة</span></a>
-            <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>الإعدادات</span></a>
-            <a href="analytics.html" class="menu-item"><i class="fas fa-chart-line"></i><span>التحليلات</span></a>
-            <a href="backup.html" class="menu-item"><i class="fas fa-shield-alt"></i><span>النسخ الاحتياطي</span></a>
-            <a href="help.html" class="menu-item"><i class="fas fa-question-circle"></i><span>الدعم</span></a>
-        </div>
-    </div>
+    <!-- الصف الثاني -->
+    <button onclick="location.href='returns.html'"><i class="fas fa-undo"></i> المرتجعات</button>
+    <button onclick="location.href='profits.html'"><i class="fas fa-chart-line"></i> الأرباح</button>
+    <button onclick="location.href='vat-filing.html'"><i class="fas fa-percent"></i> الإقرار الضريبي</button>
 
-    <script type="module" src="app.js"></script>
-</body>
-</html>
+    <!-- الصف الثالث -->
+    <button onclick="location.href='inventory-count.html'"><i class="fas fa-clipboard-list"></i> الجرد الدوري</button>
+    <button onclick="location.href='suppliers.html'"><i class="fas fa-truck-field"></i> الموردين</button>
+    <button onclick="location.href='barcode-gen.html'"><i class="fas fa-barcode"></i> الباركود</button>
+
+    <!-- الصف الرابع (إعدادات النظام) -->
+    <button onclick="location.href='settings.html'"><i class="fas fa-cog"></i> الإعدادات</button>
+    <button onclick="location.href='https://t.me/faez1972_bot'"><i class="fas fa-headset"></i> الدعم الفني</button>
+</div>

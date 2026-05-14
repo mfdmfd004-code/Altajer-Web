@@ -1,78 +1,47 @@
-/* 
-   مشروع: تاجر برو المحاسبي
-   المطور: فايز
-   التحديث: نظام جداول البيانات الذكي (بديل الإكسل)
-*/
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+// إضافة وظيفة حفظ كافة الأصناف من الجدول إلى Firebase
+App.saveAllProducts = async function() {
+    const rows = document.querySelectorAll('#product-list tr');
+    const productsData = [];
 
-// إعدادات مشروعك في Firebase (نفس التي استخدمناها سابقاً)
-const firebaseConfig = {
-    apiKey: "AIzaSyADh8KorayFEiM1JIETYr8LDubkJpja_yU",
-    authDomain: "altajer-pro-accountant.firebaseapp.com",
-    projectId: "altajer-pro-accountant",
-    storageBucket: "altajer-pro-accountant.firebasestorage.app",
-    messagingSenderId: "982176278219",
-    appId: "1:982176278219:web:5fede7cef02cce60a35d4e"
-};
+    rows.forEach(row => {
+        const id = row.id.replace('row-', ''); // جلب الكود مثل 1001
+        const name = document.getElementById(`p-name-${id}`).value;
+        const unit = document.getElementById(`p-unit-${id}`).value;
+        const size = document.getElementById(`p-size-${id}`).value;
+        const price = document.getElementById(`p-price-${id}`).value;
+        const qty = document.getElementById(`p-qty-${id}`).value;
+        const total = document.getElementById(`p-total-${id}`).value;
+        const notes = document.getElementById(`p-notes-${id}`).value;
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const App = {
-    // وظيفة حفظ تفاصيل الصنف في "جدول البيانات"
-    saveProduct: async function() {
-        const name = document.getElementById('p-name').value;
-        const price = parseFloat(document.getElementById('p-price').value);
-        const stock = parseInt(document.getElementById('p-stock').value);
-
-        if (!name || isNaN(price) || isNaN(stock)) {
-            alert("يرجى إكمال جميع تفاصيل الصنف");
-            return;
-        }
-
-        try {
-            // حفظ البيانات مع طابع زمني (Timestamp) لترتيب الجداول
-            await addDoc(collection(db, "products"), {
+        // فقط نجمع الصفوف التي تحتوي على اسم صنف
+        if (name.trim() !== "") {
+            productsData.push({
+                code: id,
                 name: name,
-                price: price,
-                stock: stock,
-                addedBy: "فايز", // توثيق عملية الإدخال
-                createdAt: serverTimestamp()
+                unit: unit,
+                size: size,
+                price: parseFloat(price),
+                quantity: parseFloat(qty),
+                total: parseFloat(total),
+                notes: notes,
+                timestamp: new Date()
             });
-            alert("تم حفظ الصنف وتحديث جدول البيانات ✅");
-            this.loadProducts(); // تحديث الجدول تلقائياً
-        } catch (e) {
-            console.error("خطأ في الحفظ: ", e);
         }
-    },
+    });
 
-    // وظيفة عرض البيانات في جدول (يشبه الإكسل)
-    loadProducts: async function() {
-        const list = document.getElementById('product-list');
-        if (!list) return;
+    if (productsData.length === 0) {
+        alert("الرجاء إدخال اسم صنف واحد على الأقل قبل الحفظ.");
+        return;
+    }
 
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        
-        list.innerHTML = "";
-        snapshot.forEach(doc => {
-            const p = doc.data();
-            const date = p.createdAt ? p.createdAt.toDate().toLocaleString('ar-SA') : 'قيد المعالجة';
-            
-            list.innerHTML += `
-                <tr>
-                    <td>${p.name}</td>
-                    <td>${p.price.toFixed(2)} ر.س</td>
-                    <td>${p.stock}</td>
-                    <td>${date}</td>
-                </tr>`;
-        });
+    try {
+        // هنا يتم الربط التراكمي مع قاعدة بيانات التاجر برو
+        for (const product of productsData) {
+            await db.collection("products").doc(product.code).set(product);
+        }
+        alert("تم حفظ جميع الأصناف بنجاح في نظام التاجر برو.");
+    } catch (error) {
+        console.error("خطأ في الحفظ: ", error);
+        alert("حدث خطأ أثناء الحفظ، تأكد من اتصال الإنترنت.");
     }
 };
-
-// تفعيل الوظائف عند تحميل الصفحة
-window.onload = () => {
-    if (document.getElementById('product-list')) App.loadProducts();
-};
-window.App = App;

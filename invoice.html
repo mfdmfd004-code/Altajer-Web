@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إنشاء فاتورة - التاجر برو</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="card">
+            <h2><i class="fas fa-file-invoice"></i> نظام الفواتير المطور</h2>
+            
+            <!-- خيارات الضريبة -->
+            <div style="margin: 20px 0; background: #eef2f3; padding: 15px; border-radius: 10px;">
+                <label>نوع الضريبة:</label>
+                <select id="tax-type" class="form-control" onchange="App.calculateTotals()">
+                    <option value="exclude">15% غير شاملة (تضاف فوق السعر)</option>
+                    <option value="include">15% شاملة (تستقطع من السعر)</option>
+                </select>
+            </div>
+
+            <table class="accounting-table" id="items-table">
+                <thead>
+                    <tr>
+                        <th>المنتج</th>
+                        <th>السعر</th>
+                        <th>الكمية</th>
+                        <th>المجموع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- سيتم تعبئتها ديناميكياً من المخزن -->
+                </tbody>
+            </table>
+
+            <div style="margin-top: 30px;">
+                <button class="btn-main" onclick="App.printInvoice('thermal')"><i class="fas fa-print"></i> طباعة حرارية (دوس/ويندوز)</button>
+                <button class="btn-main" style="background:#2d6a4f; margin-top:10px;" onclick="App.printInvoice('pdf')"><i class="fas fa-file-pdf"></i> حفظ كـ PDF للجوال</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

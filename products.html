@@ -2,40 +2,48 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مستودع التاجر - إدارة الأصناف</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جداول أصناف التاجر برو</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="card">
-        <h2><i class="fas fa-boxes"></i> جداول البيانات (المخزن)</h2>
-        <!-- نموذج إدخال صنف جديد -->
+        <h2><i class="fas fa-table"></i> سجل إدخال الأصناف (بديل الإكسل)</h2>
+        
+        <!-- حقول الإدخال لتغذية الجدول -->
         <div class="form-group">
-            <input type="text" id="p-name" class="form-control" placeholder="اسم المنتج">
-            <input type="number" id="p-price" class="form-control" placeholder="السعر (شامل الضريبة)">
-            <input type="number" id="p-stock" class="form-control" placeholder="الكمية المتوفرة">
-            <button class="btn-main" onclick="App.saveProduct()">إضافة إلى الجدول</button>
+            <input type="text" id="p-name" class="form-control" placeholder="اسم الصنف">
+            <input type="number" id="p-price" class="form-control" placeholder="السعر شامل الضريبة (15%)">
+            <input type="number" id="p-stock" class="form-control" placeholder="الكمية الافتتاحية">
+            <button class="btn-main" onclick="App.saveProduct()">حفظ في الجدول</button>
         </div>
 
         <hr>
-        
-        <!-- جدول عرض البيانات (بديل الإكسل) -->
+
+        <!-- جدول البيانات الديناميكي -->
         <div style="overflow-x:auto;">
-            <table class="accounting-table" id="excel-table">
+            <table class="accounting-table" id="inventory-table">
                 <thead>
                     <tr>
-                        <th>المنتج</th>
-                        <th>السعر (15%)</th>
-                        <th>الكمية</th>
-                        <th>إجراءات</th>
+                        <th>اسم الصنف</th>
+                        <th>السعر (ر.س)</th>
+                        <th>المخزون الحالي</th>
+                        <th>تاريخ الإدخال</th>
                     </tr>
                 </thead>
                 <tbody id="product-list">
-                    <!-- البيانات تسحب من Firebase وتظهر هنا تلقائياً -->
+                    <!-- البيانات تسحب هنا من Firebase تلقائياً -->
                 </tbody>
             </table>
         </div>
+        
+        <!-- زر تصدير لإكسل عند الحاجة -->
+        <button class="btn-main" style="background: #27ae60; margin-top: 15px;" onclick="App.exportToExcel('inventory-table')">
+            <i class="fas fa-file-excel"></i> تصدير البيانات إلى Excel
+        </button>
     </div>
+
     <script type="module" src="app.js"></script>
 </body>
 </html>

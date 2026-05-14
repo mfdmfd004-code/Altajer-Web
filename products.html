@@ -4,46 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جداول أصناف التاجر برو</title>
+    <!-- الألوان البحرية والريفية المعتمدة -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="card">
-        <h2><i class="fas fa-table"></i> سجل إدخال الأصناف (بديل الإكسل)</h2>
+        <h2><i class="fas fa-boxes"></i> سجل إدخال الأصناف (نظام التاجر المتتابع)</h2>
         
-        <!-- حقول الإدخال لتغذية الجدول -->
-        <div class="form-group">
-            <input type="text" id="p-name" class="form-control" placeholder="اسم الصنف">
-            <input type="number" id="p-price" class="form-control" placeholder="السعر شامل الضريبة (15%)">
-            <input type="number" id="p-stock" class="form-control" placeholder="الكمية الافتتاحية">
-            <button class="btn-main" onclick="App.saveProduct()">حفظ في الجدول</button>
-        </div>
-
-        <hr>
-
-        <!-- جدول البيانات الديناميكي -->
+        <!-- حقول الإدخال الاحترافية المعتمدة سابقاً -->
         <div style="overflow-x:auto;">
             <table class="accounting-table" id="inventory-table">
                 <thead>
                     <tr>
+                        <th>الكود</th>
                         <th>اسم الصنف</th>
-                        <th>السعر (ر.س)</th>
-                        <th>المخزون الحالي</th>
-                        <th>تاريخ الإدخال</th>
+                        <th>النوع (الوحدة)</th>
+                        <th>الحجم (العبوة)</th>
+                        <th>السعر (15%)</th>
+                        <th>العدد</th>
+                        <th>الإجمالي</th>
+                        <th>ملاحظات</th>
                     </tr>
                 </thead>
                 <tbody id="product-list">
-                    <!-- البيانات تسحب هنا من Firebase تلقائياً -->
+                    <!-- الصف الأول يبدأ من 1001 كما اتفقنا -->
+                    <tr id="row-1001">
+                        <td><input type="text" value="1001" readonly style="width: 50px; background: #eee;"></td>
+                        <td><input type="text" id="p-name-1001" placeholder="اسم الصنف"></td>
+                        <td>
+                            <select id="p-unit-1001">
+                                <option>كرتون</option>
+                                <option>علبة</option>
+                                <option>كيلو</option>
+                                <option>سطل</option>
+                                <option>شد</option>
+                            </select>
+                        </td>
+                        <td><input type="text" id="p-size-1001" placeholder="24×1" style="width: 70px;"></td>
+                        <td><input type="number" id="p-price-1001" value="0" oninput="calculateTotal(1001)" style="width: 80px;"></td>
+                        <td><input type="number" id="p-qty-1001" value="0" oninput="calculateTotal(1001)" style="width: 60px;"></td>
+                        <td><input type="text" id="p-total-1001" value="0.00" readonly style="width: 90px; background: #f0fdf4;"></td>
+                        <td><input type="text" id="p-notes-1001" placeholder="ملاحظات..."></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-        
-        <!-- زر تصدير لإكسل عند الحاجة -->
-        <button class="btn-main" style="background: #27ae60; margin-top: 15px;" onclick="App.exportToExcel('inventory-table')">
-            <i class="fas fa-file-excel"></i> تصدير البيانات إلى Excel
-        </button>
+
+        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-main" onclick="addNewRow()">
+                <i class="fas fa-plus"></i> إضافة بند جديد
+            </button>
+            <button class="btn-main" style="background-color: var(--light-green);" onclick="App.saveAllProducts()">
+                <i class="fas fa-cloud-upload-alt"></i> حفظ الكل في Firebase
+            </button>
+            <button class="btn-main" style="background: #27ae60;" onclick="App.exportToExcel('inventory-table')">
+                <i class="fas fa-file-excel"></i> تصدير إلى Excel
+            </button>
+        </div>
     </div>
 
     <script type="module" src="app.js"></script>
+    <script>
+        let currentCode = 1001;
+
+        function addNewRow() {
+            currentCode++;
+            const tbody = document.getElementById('product-list');
+            const newRow = document.createElement('tr');
+            newRow.id = `row-${currentCode}`;
+            newRow.innerHTML = `
+                <td><input type="text" value="${currentCode}" readonly style="width: 50px; background: #eee;"></td>
+                <td><input type="text" id="p-name-${currentCode}" placeholder="اسم الصنف"></td>
+                <td>
+                    <select id="p-unit-${currentCode}">
+                        <option>كرتون</option> <option>علبة</option> <option>كيلو</option> <option>سطل</option> <option>شد</option>
+                    </select>
+                </td>
+                <td><input type="text" id="p-size-${currentCode}" placeholder="24×1" style="width: 70px;"></td>
+                <td><input type="number" id="p-price-${currentCode}" value="0" oninput="calculateTotal(${currentCode})" style="width: 80px;"></td>
+                <td><input type="number" id="p-qty-${currentCode}" value="0" oninput="calculateTotal(${currentCode})" style="width: 60px;"></td>
+                <td><input type="text" id="p-total-${currentCode}" value="0.00" readonly style="width: 90px; background: #f0fdf4;"></td>
+                <td><input type="text" id="p-notes-${currentCode}" placeholder="ملاحظات..."></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function calculateTotal(code) {
+            const price = document.getElementById(`p-price-${code}`).value || 0;
+            const qty = document.getElementById(`p-qty-${code}`).value || 0;
+            const totalField = document.getElementById(`p-total-${code}`);
+            totalField.value = (parseFloat(price) * parseFloat(qty)).toFixed(2);
+        }
+    </script>
 </body>
 </html>

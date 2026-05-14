@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة العملاء - التاجر برو</title>
+    
+    <!-- ميثاق التاجر: تحويل الموقع لتطبيق -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="التاجر برو">
+    <meta name="theme-color" content="#0077b6">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root { --sea-blue: #0077b6; --light-green: #90be6d; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
+        .card { background: var(--white); border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; border-top: 5px solid var(--sea-blue); }
+        h2 { color: var(--sea-blue); text-align: center; }
+        
+        /* نظام المربع المدمج (تطوير تراكمي) */
+        .customer-card { border: 2px solid var(--sea-blue); border-radius: 10px; padding: 15px; background: #fff; margin-bottom: 20px; }
+        .input-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .label-text { font-weight: bold; color: var(--sea-blue); flex: 1; }
+        .input-field { flex: 2; padding: 8px; border: 1px solid #ccc; border-radius: 5px; text-align: center; }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn { padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-add { background-color: var(--sea-blue); grid-column: span 2; }
+        .btn-search { background-color: #6c757d; }
+        .btn-update { background-color: var(--light-green); color: #000; }
+        .btn-delete { background-color: #d32f2f; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2><i class="fas fa-users"></i> إدارة العملاء (التاجر المطور)</h2>
+
+        <div class="customer-card">
+            <div class="input-row">
+                <span class="label-text">رقم العميل (ID)</span>
+                <input type="text" id="id" class="input-field" placeholder="تلقائي أو أدخل للبحث">
+            </div>
+            <div class="input-row">
+                <span class="label-text">اسم العميل</span>
+                <input type="text" id="name" class="input-field" placeholder="الاسم الكامل">
+            </div>
+            <div class="input-row">
+                <span class="label-text">رقم التواصل</span>
+                <input type="tel" id="contact" class="input-field" placeholder="05xxxxxxxx">
+            </div>
+            <div class="input-row">
+                <span class="label-text">العنوان</span>
+                <input type="text" id="address" class="input-field" placeholder="المدينة / الحي">
+            </div>
+            <div class="input-row">
+                <span class="label-text">تاريخ الميلاد</span>
+                <input type="date" id="birthDay" class="input-field">
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-add" id="btn-add"><i class="fas fa-user-plus"></i> إضافة عميل جديد</button>
+            <button class="btn btn-search" id="btn-search"><i class="fas fa-search"></i> بحث</button>
+            <button class="btn btn-update" id="btn-update"><i class="fas fa-user-edit"></i> تعديل</button>
+            <button class="btn btn-delete" id="btn-delete"><i class="fas fa-user-times"></i> حذف</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (الربط التراكمي المعتمد) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        // إعدادات Firebase الخاصة بك
+        const firebaseConfig = { /* بيانات مشروعك */ };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // وظيفة الإضافة (تطوير الكود الذي أحضرته ليعمل مع Firebase)
+        document.getElementById('btn-add').onclick = async () => {
+            const customer = {
+                name: document.getElementById('name').value,
+                contact: document.getElementById('contact').value,
+                address: document.getElementById('address').value,
+                birthday: document.getElementById('birthDay').value
+            };
+            const id = document.getElementById('id').value || Date.now().toString();
+            await setDoc(doc(db, "customers", id), customer);
+            alert("تم تسجيل العميل بنجاح في التاجر برو");
+        };
+
+        // وظيفة البحث
+        document.getElementById('btn-search').onclick = async () => {
+            const id = document.getElementById('id').value;
+            const docRef = doc(db, "customers", id);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('name').value = data.name;
+                document.getElementById('contact').value = data.contact;
+                document.getElementById('address').value = data.address;
+                document.getElementById('birthDay').value = data.birthday;
+            } else { alert("العميل غير موجود"); }
+        };
+    </script>
+</body>
+</html>

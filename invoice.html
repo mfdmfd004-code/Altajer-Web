@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فاتورة مبيعات - تاجر برو</title>
+    <title>فاتورة مبيعات - التاجر برو</title>
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="التاجر برو">
+    <meta name="theme-color" content="#0077b6">
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -11,9 +17,9 @@
     <div class="card">
         <h2><i class="fas fa-file-invoice"></i> نظام الفواتير المطور</h2>
         
-        <div class="form-group" style="background: #f1f8ff; padding: 15px; border-radius: 8px;">
+        <div class="form-group">
             <label>نوع الضريبة:</label>
-            <select id="vat-type" onchange="calculateAllRows()">
+            <select id="vat-type" onchange="calculateGrandTotal()">
                 <option value="15-include">15% شاملة (تستقطع من السعر)</option>
                 <option value="15-exclude">15% غير شاملة (تضاف فوق السعر)</option>
             </select>
@@ -29,31 +35,25 @@
                 </tr>
             </thead>
             <tbody id="invoice-body">
-                <!-- البند الأول تلقائي -->
                 <tr id="inv-row-1">
-                    <td><input type="text" placeholder="اسم المنتج" class="inv-name"></td>
-                    <td><input type="number" value="0" class="inv-price" oninput="calculateRow(1)"></td>
-                    <td><input type="number" value="0" class="inv-qty" oninput="calculateRow(1)"></td>
-                    <td><input type="text" value="0.00" class="inv-total" readonly style="background: #eee;"></td>
+                    <td data-label="المنتج"><input type="text" placeholder="اسم المنتج" class="inv-name"></td>
+                    <td data-label="السعر"><input type="number" value="0" class="inv-price" oninput="calculateRow(1)"></td>
+                    <td data-label="الكمية"><input type="number" value="0" class="inv-qty" oninput="calculateRow(1)"></td>
+                    <td data-label="المجموع"><input type="text" value="0.00" class="inv-total" readonly style="background: #f0fdf4;"></td>
                 </tr>
             </tbody>
         </table>
 
-        <div style="margin-top: 15px; display: flex; gap: 10px;">
-            <button class="btn-main" onclick="addInvoiceRow()"><i class="fas fa-plus"></i> إضافة بند</button>
-            <button class="btn-main" style="background: #28a745;" onclick="window.print()"><i class="fas fa-print"></i> طباعة حرارية / PDF</button>
+        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-main" onclick="addInvoiceRow()"><i class="fas fa-plus"></i> إضافة بند جديد</button>
+            <button class="btn-main" style="background: #28a745;" onclick="window.print()"><i class="fas fa-print"></i> طباعة / حفظ PDF</button>
         </div>
 
         <div class="card" style="margin-top: 20px; border-top: 3px solid var(--light-green);">
-            <div style="display: flex; justify-content: space-between; font-weight: bold;">
-                <span>الإجمالي (بدون ضريبة):</span> <span id="sub-total">0.00</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; color: var(--sea-blue);">
-                <span>ضريبة القيمة المضافة (15%):</span> <span id="vat-amount">0.00</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 1.2rem; color: #d32f2f;">
-                <span>الصافي النهائي:</span> <span id="final-total">0.00</span>
-            </div>
+            <div style="display: flex; justify-content: space-between;"><b>الإجمالي:</b> <span id="sub-total">0.00</span></div>
+            <div style="display: flex; justify-content: space-between; color: var(--sea-blue);"><b>الضريبة (15%):</b> <span id="vat-amount">0.00</span></div>
+            <hr>
+            <div style="display: flex; justify-content: space-between; font-size: 1.3rem; color: #d32f2f;"><b>الصافي:</b> <span id="final-total">0.00 ر.س</span></div>
         </div>
     </div>
 
@@ -65,10 +65,10 @@
             const newRow = document.createElement('tr');
             newRow.id = `inv-row-${rowCount}`;
             newRow.innerHTML = `
-                <td><input type="text" placeholder="اسم المنتج" class="inv-name"></td>
-                <td><input type="number" value="0" class="inv-price" oninput="calculateRow(${rowCount})"></td>
-                <td><input type="number" value="0" class="inv-qty" oninput="calculateRow(${rowCount})"></td>
-                <td><input type="text" value="0.00" class="inv-total" readonly style="background: #eee;"></td>
+                <td data-label="المنتج"><input type="text" placeholder="اسم المنتج" class="inv-name"></td>
+                <td data-label="السعر"><input type="number" value="0" class="inv-price" oninput="calculateRow(${rowCount})"></td>
+                <td data-label="الكمية"><input type="number" value="0" class="inv-qty" oninput="calculateRow(${rowCount})"></td>
+                <td data-label="المجموع"><input type="text" value="0.00" class="inv-total" readonly style="background: #f0fdf4;"></td>
             `;
             tbody.appendChild(newRow);
         }
@@ -84,19 +84,10 @@
         function calculateGrandTotal() {
             let total = 0;
             document.querySelectorAll('.inv-total').forEach(input => total += parseFloat(input.value || 0));
-            
             const vatType = document.getElementById('vat-type').value;
             let subTotal, vat;
-
-            if(vatType === "15-include") {
-                subTotal = total / 1.15;
-                vat = total - subTotal;
-            } else {
-                subTotal = total;
-                vat = total * 0.15;
-                total = subTotal + vat;
-            }
-
+            if(vatType === "15-include") { subTotal = total / 1.15; vat = total - subTotal; } 
+            else { subTotal = total; vat = total * 0.15; total = subTotal + vat; }
             document.getElementById('sub-total').innerText = subTotal.toFixed(2);
             document.getElementById('vat-amount').innerText = vat.toFixed(2);
             document.getElementById('final-total').innerText = total.toFixed(2) + " ر.س";

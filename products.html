@@ -1,203 +1,27 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سجل إدخال الأصناف - التاجر برو</title>
-    
-    <!-- ميثاق التاجر: تحويل الموقع لتطبيق -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="التاجر برو">
-    <meta name="theme-color" content="#0077b6">
+<!-- التاجر برو المحاسبي - إدارة المنتجات -->
+<div class="card" id="manageItem">
+    <h2 style="text-align: center; color: #0077b6;"><i class="fas fa-boxes-stacked"></i> إدارة المخزن والأصناف</h2>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        /* الستايل المطور لدمج الكلام مع الإدخال في مربع واحد */
-        :root {
-            --sea-blue: #0077b6;
-            --light-green: #90be6d;
-            --white: #ffffff;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 10px;
-        }
-
-        .card {
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-top: 5px solid var(--sea-blue);
-        }
-
-        h2 {
-            color: var(--sea-blue);
-            text-align: center;
-            font-size: 1.2rem;
-        }
-
-        /* حل مشكلة الصورة 1000338975.png: دمج العناوين مع الخانات */
-        .accounting-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .accounting-table thead {
-            display: none; /* إخفاء المربع الأزرق المنفصل */
-        }
-
-        .product-item-card {
-            border: 2px solid var(--sea-blue); /* مربع واحد يجمع الكل */
-            border-radius: 10px;
-            margin-bottom: 20px;
-            background: #fff;
-            padding: 10px;
-        }
-
-        .input-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .input-row:last-child { border-bottom: none; }
-
-        .label-text {
-            font-weight: bold;
-            color: var(--sea-blue);
-            flex: 1;
-        }
-
-        .input-field {
-            flex: 2;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 1rem;
-        }
-
-        .total-field {
-            background-color: #f0fdf4;
-            color: #166534;
-            font-weight: bold;
-        }
-
-        /* الأزرار */
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .btn-add { background-color: #4a4a4a; }
-        .btn-save { background-color: var(--light-green); color: #000; }
-        .btn-excel { background-color: #1d6f42; }
-
-    </style>
-</head>
-<body>
-
-    <div class="card">
-        <h2><i class="fas fa-boxes-stacked"></i> سجل إدخال الأصناف (نظام التاجر الموحد)</h2>
-
-        <div id="products-container">
-            <!-- هذا هو المربع الواحد المدمج المطور -->
-            <div class="product-item-card" id="product-1">
-                <div class="input-row">
-                    <span class="label-text">الكود</span>
-                    <input type="text" class="input-field" value="1001">
-                </div>
-                <div class="input-row">
-                    <span class="label-text">اسم الصنف</span>
-                    <input type="text" class="input-field" placeholder="ادخل الاسم">
-                </div>
-                <div class="input-row">
-                    <span class="label-text">النوع (الوحدة)</span>
-                    <select class="input-field">
-                        <option>كرتون</option>
-                        <option>حبة</option>
-                        <option>درزن</option>
-                    </select>
-                </div>
-                <div class="input-row">
-                    <span class="label-text">الحجم (العبوة)</span>
-                    <input type="text" class="input-field" value="1x24">
-                </div>
-                <div class="input-row">
-                    <span class="label-text">السعر (15%)</span>
-                    <input type="number" class="input-field price-input" value="0" oninput="calculate(1)">
-                </div>
-                <div class="input-row">
-                    <span class="label-text">العدد</span>
-                    <input type="number" class="input-field qty-input" value="0" oninput="calculate(1)">
-                </div>
-                <div class="input-row">
-                    <span class="label-text">الإجمالي</span>
-                    <input type="text" class="input-field total-field" value="0.00" readonly>
-                </div>
-                <div class="input-row">
-                    <span class="label-text">ملاحظات</span>
-                    <input type="text" class="input-field" placeholder="أضف ملاحظة...">
-                </div>
-            </div>
+    <!-- المربع الموحد للمنتجات -->
+    <div style="border: 2px solid #0077b6; border-radius: 10px; padding: 15px; background: #fff; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+            <span style="flex: 1; font-weight: bold; color: #0077b6;">كود الصنف (Barcode)</span>
+            <input type="text" id="itemCode" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;" placeholder="امسح الباركود">
         </div>
-
-        <div class="btn-group">
-            <button class="btn btn-add" onclick="addNewProduct()"><i class="fas fa-plus"></i> إضافة بند جديد</button>
-            <button class="btn btn-save"><i class="fas fa-cloud-upload-alt"></i> حفظ الكل في Firebase</button>
-            <button class="btn btn-excel"><i class="fas fa-file-excel"></i> تصدير إلى Excel</button>
+        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+            <span style="flex: 1; font-weight: bold; color: #0077b6;">اسم المنتج</span>
+            <input type="text" id="itemName" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
+        </div>
+        <div style="display: flex; align-items: center; padding: 10px 0;">
+            <span style="flex: 1; font-weight: bold; color: #0077b6;">السعر (SAR)</span>
+            <input type="number" id="itemPrice" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
         </div>
     </div>
 
-    <script>
-        let pCount = 1;
-        function addNewProduct() {
-            pCount++;
-            const container = document.getElementById('products-container');
-            const newProduct = document.getElementById('product-1').cloneNode(true);
-            newProduct.id = `product-${pCount}`;
-            // تصفير القيم في المربع الجديد
-            newProduct.querySelectorAll('input').forEach(input => {
-                if(!input.classList.contains('total-field')) input.value = "";
-                else input.value = "0.00";
-            });
-            // تحديث وظيفة الحساب للمربع الجديد
-            newProduct.querySelector('.price-input').setAttribute('oninput', `calculate(${pCount})`);
-            newProduct.querySelector('.qty-input').setAttribute('oninput', `calculate(${pCount})`);
-            container.appendChild(newProduct);
-        }
-
-        function calculate(id) {
-            const row = document.getElementById(`product-${id}`);
-            const price = row.querySelector('.price-input').value || 0;
-            const qty = row.querySelector('.qty-input').value || 0;
-            row.querySelector('.total-field').value = (price * qty).toFixed(2);
-        }
-    </script>
-</body>
-</html>
+    <!-- أزرار التحكم في المخزن -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button onclick="addItem()" style="grid-column: span 2; background: #0077b6; color: white; padding: 15px; border: none; border-radius: 8px; font-weight: bold;">تسجيل صنف</button>
+        <button onclick="searchItem()" style="background: #6c757d; color: white; padding: 12px; border: none; border-radius: 8px;">بحث بالكود</button>
+        <button onclick="deleteItem()" style="background: #d32f2f; color: white; padding: 12px; border: none; border-radius: 8px;">حذف صنف</button>
+    </div>
+</div>

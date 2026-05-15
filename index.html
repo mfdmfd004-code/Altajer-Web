@@ -515,14 +515,7 @@
                             </tr>
                         </thead>
                         <tbody id="customerTableBody">
-                            <tr>
-                                <td>01</td>
-                                <td>شركة فايز المحدودة</td>
-                                <td>300012345600003</td>
-                                <td>0500000000</td>
-                                <td>المملكة العربية السعودية</td>
-                            </tr>
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -573,13 +566,7 @@
                             </tr>
                         </thead>
                         <tbody id="itemTableBody">
-                            <tr>
-                                <td>I-001</td>
-                                <td>منتج نموذجي فاخر</td>
-                                <td>115.00 ر.س</td>
-                                <td>50</td>
-                            </tr>
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -693,8 +680,7 @@
                                 <th data-i18n="th-action">الخيارات</th>
                             </tr>
                         </thead>
-                        <tbody id="tblPlaceOrder">
-                            </tbody>
+                        <tbody id="tblPlaceOrder"></tbody>
                     </table>
                 </div>
             </div>
@@ -702,14 +688,14 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<script src="app.js"></script>
+<script type="module" src="app.js"></script>
 
 <script>
-    /* محرك اللغات العالمي الصارم والديناميكي (i18n Translation Dictionary) */
+    /* محرك اللغات العالمي والـ SPA للمتصفح */
     const translations = {
         ar: {
             "app-title": "تاجر برو المحاسبي", "nav-dashboard": "الرئيسية", "nav-customers": "العملاء", "nav-items": "المخزن", "nav-pos": "الكاشير",
@@ -736,7 +722,7 @@
             "th-id": "ID", "th-name": "Name", "th-vat": "VAT No", "th-phone": "Phone", "th-address": "Address",
             "lbl-item-code": "Item Code / Barcode", "lbl-item-name": "Item Name", "lbl-item-price": "Price (Inc. VAT)", "lbl-item-qty": "Available Qty",
             "th-item-code": "Code", "th-item-name": "Item Name", "th-item-price": "Price", "th-item-qty": "Stock Qty",
-            "pos-cust-sec": "Customer Details", "opt-select-cust": "Select Customer", "pos-item-sec": "Item Details", "opt-select-item": "Select Item",
+            "pos-cust-sec": "Customer Details", "opt-select-cust": "Select Customer", "pos-item-sec": "Select Item", "opt-select-item": "Select Item",
             "pos-qty-avail": "Available", "pos-qty-req": "Qty", "btn-add-cart": "Add", "pos-summary": "Calculations Summary (SAR)",
             "pos-subtotal": "Subtotal (Excl. VAT):", "pos-tax": "VAT (15%):", "pos-discount": "Discount:", "pos-total": "Net Total:",
             "btn-pay": "Commit & Save Invoice", "th-subtotal": "Subtotal", "th-action": "Action"
@@ -747,24 +733,22 @@
         const htmlTag = document.documentElement;
         htmlTag.lang = lang;
         htmlTag.dir = lang === 'ar' ? 'rtl' : 'ltr';
-        
         $('[data-i18n]').each(function() {
             const key = $(this).data('i18n');
-            if (translations[lang][key]) {
-                $(this).text(translations[lang][key]);
-            }
+            if (translations[lang][key]) $(this).text(translations[lang][key]);
         });
     }
+    window.changeLanguage = changeLanguage;
 
-    /* محرك الـ SPA الفوري للتبديل بين شاشات العرض بدون إبطاء الجهاز */
     function switchView(index) {
         $('.nav-btn').removeClass('active-nav');
         $('.nav-btn').eq(index).addClass('active-nav');
         $('body > .view-section').removeClass('show');
         $('body > .view-section').eq(index).addClass('show');
     }
+    window.switchView = switchView;
 
-    /* تشغيل محرك الرسوم البيانية المتجاوب Chart.js */
+    // تشغيل محرك الرسوم البيانية المتجاوب Chart.js
     const ctxChart = document.getElementById('myChart').getContext('2d');
     new Chart(ctxChart, {
         type: 'doughnut',
@@ -779,7 +763,7 @@
         options: { responsive: true, plugins: { legend: { labels: { color: 'white' } } } }
     });
 
-    /* بناء وتشغيل ساعة الحائط التفاعلية عبر خوارزميات الـ Canvas */
+    // بناء وتشغيل ساعة الحائط التفاعلية عبر خوارزميات الـ Canvas
     const canvas = document.getElementById("clock");
     canvas.width = 160; canvas.height = 160;
     const ctxClock = canvas.getContext("2d");
@@ -788,17 +772,14 @@
     radius = radius * 0.90;
     setInterval(() => {
         ctxClock.clearRect(-radius, -radius, canvas.width, canvas.height);
-        // Face
         ctxClock.beginPath(); ctxClock.arc(0, 0, radius, 0, 2 * Math.PI);
         ctxClock.fillStyle = '#1b263b'; ctxClock.fill();
         ctxClock.strokeStyle = '#00b4d8'; ctxClock.lineWidth = radius * 0.05; ctxClock.stroke();
         ctxClock.beginPath(); ctxClock.arc(0, 0, radius * 0.08, 0, 2 * Math.PI);
         ctxClock.fillStyle = '#ffffff'; ctxClock.fill();
-        // Time calculations
         const now = new Date(); let hour = now.getHours() % 12; let min = now.getMinutes(); let sec = now.getSeconds();
         hour = (hour * Math.PI / 6) + (min * Math.PI / (6 * 60)) + (sec * Math.PI / (360 * 60));
         min = (min * Math.PI / 30) + (sec * Math.PI / (30 * 60)); sec = (sec * Math.PI / 30);
-        // Draw hands
         drawHand(ctxClock, hour, radius * 0.5, radius * 0.07, '#ffffff');
         drawHand(ctxClock, min, radius * 0.75, radius * 0.05, '#00b4d8');
         drawHand(ctxClock, sec, radius * 0.85, radius * 0.02, '#e81cff');

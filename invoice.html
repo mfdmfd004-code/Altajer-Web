@@ -10,7 +10,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0c3f65">
 
-    <!-- Bootstrap 5 & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -233,11 +232,10 @@
 <body>
 
 <div class="invoice-container">
-    <!-- الهيدر العلوي وطابع الفاتورة -->
     <div class="invoice-header">
         <div class="row align-items-center g-3">
             <div class="col-md-6 text-center text-md-start" id="brandHeaderSide">
-                <div class="brand-title"><i class='bx bxs-badge-dollar'></i> <span data-i18n="brand-name">تاجر برو المحاسبي</span></div>
+                <div class="brand-title"><i class='bx bxs-badge-dollar'></i> <span id="lblInvoiceSystemTitle" data-i18n="brand-name">تاجر برو المحاسبي</span></div>
                 <div class="text-muted mt-1" data-i18n="invoice-subtitle">نظام الفاتورة الضريبية المبسطة المتكامل</div>
             </div>
             <div class="col-md-6 text-center text-md-end" id="metaHeaderSide">
@@ -249,20 +247,17 @@
         </div>
     </div>
 
-    <!-- الهيدر المزدوج: المورد على اليمين والعميل على اليسار -->
     <div class="row g-4">
-        <!-- بيانات المورد (اليمين في حالة RTL) -->
         <div class="col-md-6 order-1" id="supplierSide">
             <div class="party-box">
                 <h5 data-i18n="supplier-title"><i class="fas fa-building me-2"></i> بيانات المورد (البائع)</h5>
-                <p><strong data-i18n="sup-name">الاسم/المؤسسة:</strong> <span id="supNameField">مؤسسة التطوير الرقمي للحلول البرمجية</span></p>
-                <p><strong data-i18n="sup-vat">الرقم الضريبي:</strong> <span id="supVatField">310123456700003</span></p>
-                <p><strong data-i18n="sup-address">العنوان:</strong> <span id="supAddressField">المملكة العربية السعودية، المدينة المنورة</span></p>
-                <p><strong data-i18n="sup-phone">رقم الاتصال:</strong> <span>+966 500000000</span></p>
+                <p><strong data-i18n="sup-name">الاسم/المؤسسة:</strong> <span id="supNameField">---</span></p>
+                <p><strong data-i18n="sup-vat">الرقم الضريبي:</strong> <span id="supVatField">---</span></p>
+                <p><strong data-i18n="sup-address">العنوان الوطني:</strong> <span id="supAddressField">---</span></p>
+                <p><strong data-i18n="sup-phone">رقم الاتصال:</strong> <span id="supPhoneField">---</span></p>
             </div>
         </div>
         
-        <!-- بيانات العميل (اليسار في حالة RTL) -->
         <div class="col-md-6 order-2" id="customerSide">
             <div class="party-box">
                 <h5 data-i18n="customer-title"><i class="fas fa-user-tag me-2"></i> بيانات العميل المستهدف</h5>
@@ -274,7 +269,6 @@
         </div>
     </div>
 
-    <!-- جدول تشتيت وتوزيع مصفوفة الأصناف -->
     <div class="table-responsive-custom">
         <table class="table table-dark table-striped table-invoice text-center">
             <thead>
@@ -289,12 +283,10 @@
                 </tr>
             </thead>
             <tbody id="invoiceItemsTableBody">
-                <!-- يتم تعبئتها ديناميكياً من محرك الحفظ -->
-            </tbody>
+                </tbody>
         </table>
     </div>
 
-    <!-- الفوتر السفلي: الحسابات والـ QR Code النيون -->
     <div class="row g-4 align-items-center mt-2">
         <div class="col-md-7 order-2 order-md-1">
             <div class="summary-box">
@@ -324,10 +316,9 @@
         </div>
     </div>
 
-    <!-- أزرار العمليات والتحكم للقص واللصق السريع على الجوال -->
     <div class="btn-action-group">
-        <button onclick="window.print()" class="btn-neon-action" style="--clr: var(--neon-cyan)">
-            <i class="fas fa-print me-2"></i> <span data-i18n="btn-print">طباعة الفاتورة الفورية</span>
+        <button id="btnPrintTrigger" onclick="executeInvoiceAction()" class="btn-neon-action" style="--clr: var(--neon-cyan)">
+            <i class="fas fa-print me-2"></i> <span id="lblActionBtn" data-i18n="btn-print">طباعة الفاتورة الفورية</span>
         </button>
         <button onclick="window.location.href='index.html'" class="btn-neon-action" style="--clr: var(--warning-orange)">
             <i class="fas fa-arrow-right me-2"></i> <span data-i18n="btn-back">العودة للوحة التحكم</span>
@@ -335,9 +326,7 @@
     </div>
 </div>
 
-<!-- مكاتب التشغيل المطلوبة للـ QR Code اللحظي والترجمة -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<!-- مكتبة توليد الـ QR المعتمدة المتوافقة عالمياً -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
@@ -345,40 +334,63 @@
         ar: {
             "brand-name": "تاجر برو المحاسبي", "invoice-subtitle": "نظام الفاتورة الضريبية المبسطة المتكامل",
             "inv-number-label": "رقم الفاتورة:", "supplier-title": "بيانات المورد (البائع)",
-            "sup-name": "الاسم/المؤسسة:", "sup-vat": "الرقم الضريبي:", "sup-address": "العنوان:", "sup-phone": "رقم الاتصال:",
+            "sup-name": "الاسم/المؤسسة:", "sup-vat": "الرقم الضريبي:", "sup-address": "العنوان الوطني:", "sup-phone": "رقم الاتصال:",
             "customer-title": "بيانات العميل المستهدف", "cust-id-lbl": "معرّف العميل (ID):", "cust-name-lbl": "اسم العميل:",
             "cust-vat-lbl": "الرقم الضريبي:", "cust-address-lbl": "العنوان الجغرافي:", "th-code": "كود الصنف",
             "th-desc": "اسم المنتج / البيان", "th-unit-price": "سعر الوحدة (قبل الضريبة)", "th-qty": "الكمية",
             "th-tax-rate": "نسبة الضريبة", "th-tax-val": "قيمة الضريبة", "th-total": "المجموع (شامل الضريبة)",
             "sum-subtotal": "الإجمالي الخاضع للضريبة (ر.س):", "sum-tax": "ضريبة القيمة المضافة (15%):",
             "sum-discount": "الخصم الممنوح (ر.س):", "sum-net": "الصافي النهائي المستحق:", "qr-hint": "فاتورة ضريبية إلكترونية معتمدة",
-            "btn-print": "طباعة الفاتورة الفورية", "btn-back": "العودة للوحة التحكم"
+            "btn-print": "طباعة الفاتورة الفورية", "btn-back": "العودة للوحة التحكم", "btn-pdf": "تصدير وحفظ كـ PDF رقمي"
         },
         en: {
             "brand-name": "Altajer Pro Accounting", "invoice-subtitle": "Integrated Simplified Tax Invoice System",
             "inv-number-label": "Invoice No:", "supplier-title": "Supplier Info (Seller)",
-            "sup-name": "Name/Company:", "sup-vat": "VAT Number:", "sup-address": "Address:", "sup-phone": "Contact No:",
+            "sup-name": "Name/Company:", "sup-vat": "VAT Number:", "sup-address": "National Address:", "sup-phone": "Contact No:",
             "customer-title": "Customer Info (Buyer)", "cust-id-lbl": "Customer ID:", "cust-name-lbl": "Customer Name:",
             "cust-vat-lbl": "VAT Number:", "cust-address-lbl": "Address:", "th-code": "Item Code",
             "th-desc": "Product Description", "th-unit-price": "Unit Price (Excl. VAT)", "th-qty": "Qty",
             "th-tax-rate": "VAT Rate", "th-tax-val": "VAT Amount", "th-total": "Total (Incl. VAT)",
             "sum-subtotal": "Taxable Subtotal (SAR):", "sum-tax": "VAT Amount (15%):",
             "sum-discount": "Discount Granted (SAR):", "sum-net": "Net Total Due:", "qr-hint": "Certified Electronic Tax Invoice",
-            "btn-print": "Print Invoice Now", "btn-back": "Back to Dashboard"
+            "btn-print": "Print Invoice Now", "btn-back": "Back to Dashboard", "btn-pdf": "Export & Save as Digital PDF"
         }
     };
 
+    let currentPrintOption = "80mm";
+
     document.addEventListener("DOMContentLoaded", function () {
-        // 1. جلب معرّف الفاتورة من الرابط الممرر
+        // 1. قراءة وإعداد بيانات المورد من شاشة الإعدادات المطورة والمنفصلة
+        const enterpriseSettings = JSON.parse(localStorage.getItem('altajer_enterprise_settings'));
+        
+        if (enterpriseSettings) {
+            document.getElementById('supNameField').innerText = enterpriseSettings.company_name || '---';
+            document.getElementById('supVatField').innerText = enterpriseSettings.vat_number || '---';
+            document.getElementById('supPhoneField').innerText = enterpriseSettings.phone || '---';
+            currentPrintOption = enterpriseSettings.print_option || '80mm';
+
+            // تجميع وتنسيق حقول العنوان الوطني المجزأ هندسياً لنظام الهيئة
+            const fullNationalAddress = `${enterpriseSettings.building_no || ''} ${enterpriseSettings.street || ''}، ${enterpriseSettings.district || ''}، ${enterpriseSettings.city || ''} ${enterpriseSettings.postal_code || ''} ${enterpriseSettings.additional_no ? ' - ' + enterpriseSettings.additional_no : ''}`;
+            document.getElementById('supAddressField').innerText = fullNationalAddress.trim() !== '،' ? fullNationalAddress : '---';
+        }
+
+        // 2. ضبط تسمية وإيقونة زر التشغيل الرئيسي بناءً على خيار الطباعة والتصدير
+        if (currentPrintOption === "PDF") {
+            const btnLabel = document.getElementById('lblActionBtn');
+            if (btnLabel) { btnLabel.setAttribute('data-i18n', 'btn-pdf'); }
+            document.getElementById('btnPrintTrigger').style.setProperty('--clr', 'var(--neon-pink)');
+            document.getElementById('btnPrintTrigger').querySelector('i').className = "fas fa-file-pdf me-2";
+        }
+
+        // 3. جلب معرّف سياق الفاتورة الحالية من الرابط الممرر
         const urlParams = new URLSearchParams(window.location.search);
         const invoiceId = urlParams.get('id') || Math.floor(Math.random() * 90000) + 10000;
         document.getElementById('lblInvoiceId').innerText = invoiceId;
 
-        // 2. سحب وحقن المصفوفة المخزنة من الكاشير
+        // 4. سحب وحقن مصفوفة منتجات الفاتورة الممررة من الكاشير الرئيسي
         const invoiceData = JSON.parse(localStorage.getItem('last_processed_invoice'));
 
         if (invoiceData) {
-            // توزيع البيانات الأساسية للعميل والفاتورة
             document.getElementById('lblInvoiceDate').innerText = new Date(invoiceData.invoice_date).toLocaleString('ar-EG') || new Date().toLocaleString('ar-EG');
             document.getElementById('invCustId').innerText = invoiceData.customer_id || '---';
             document.getElementById('invCustName').innerText = invoiceData.customer_name || '---';
@@ -390,7 +402,6 @@
             document.getElementById('invDiscount').innerText = parseFloat(invoiceData.discount).toFixed(2);
             document.getElementById('invTotalNet').innerText = parseFloat(invoiceData.total_net).toFixed(2);
 
-            // ضخ جدول المنتجات ديناميكياً
             const tbody = document.getElementById('invoiceItemsTableBody');
             tbody.innerHTML = '';
             
@@ -407,13 +418,13 @@
                         <td>${itemPriceExcl.toFixed(2)} ر.س</td>
                         <td>${itemQty}</td>
                         <td>15%</td>
-                        <td>${totalTaxForItem.toFixed(2)} ر.س</td>
+                        <td>${totalTaxForItem.toFixed(2)} ر.s</td>
                         <td>${totalItemIncl.toFixed(2)} ر.س</td>
                     </tr>
                 `;
             });
 
-            // 3. بناء وتوليد الـ QR Code المشفر المتوافق مع شروط الهيئة ZATCA
+            // بناء وتوليد الـ QR Code المشفر والمتوافق مع متطلبات التفتيش لهيئة ZATCA
             generateZatcaQR(
                 document.getElementById('supNameField').innerText,
                 document.getElementById('supVatField').innerText,
@@ -422,22 +433,25 @@
                 invoiceData.tax
             );
         } else {
-            // في حال تم فتح الصفحة بدون سياق كاشير
             document.getElementById('invoiceItemsTableBody').innerHTML = `<tr><td colspan="7" class="text-danger fw-bold">لم يتم العثور على مصفوفة بيانات صالحة للعرض الحسابي!</td></tr>`;
         }
 
-        // 4. فحص وضبط محرك اللغات بناءً على لغة المستند الرئيسي الممرر سابقاً
+        // 5. فحص ومزامنة محرك اللغات والاتجاهات
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         applyInvoiceLanguage(currentLang);
     });
 
-    // دالة تهيئة وتحويل الكلمات والاتجاهات لـ الهيدر المزدوج والمحتوى بالكامل
+    // دالة تنفيذ العمليات الذكية للطباعة أو التصدير لـ PDF
+    function executeInvoiceAction() {
+        // عند استدعاء الطباعة أو الحفظ المدمج للمتصفح، تتكفل الـ CSS Media @print بهيكلة الصفحة تلقائياً
+        window.print();
+    }
+
     function applyInvoiceLanguage(lang) {
         const htmlTag = document.documentElement;
         htmlTag.lang = lang;
         htmlTag.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
-        // تدوير التوزيع البصري للهيدر ليتناسب هندسياً مع الاتجاه
         if (lang === 'en') {
             document.getElementById('brandHeaderSide').className = "col-md-6 text-center text-md-end";
             document.getElementById('metaHeaderSide').className = "col-md-6 text-center text-md-start";
@@ -458,12 +472,8 @@
         });
     }
 
-    // دالة التشفير والبناء للـ QR الكود
     function generateZatcaQR(supplierName, vatNumber, timestamp, totalAmount, taxAmount) {
-        // معايير الهيئة تعتمد على تشفير النصوص لبيانات الفاتورة المقروءة إلكترونياً لتبسيط الفواتير
         const qrString = `المورد: ${supplierName}\nالرقم الضريبي: ${vatNumber}\nالتاريخ: ${timestamp}\nالإجمالي شامل الضريبة: ${parseFloat(totalAmount).toFixed(2)}\nقيمة الضريبة: ${parseFloat(taxAmount).toFixed(2)}`;
-        
-        // مسح محتوى الحاوية قبل البناء لتلافي التكرار اللحظي
         document.getElementById("qrcode").innerHTML = "";
         
         new QRCode(document.getElementById("qrcode"), {

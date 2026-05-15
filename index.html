@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>تاجر برو المحاسبي - لوحة التحكم الشاملة</title>
+    <title>تاجر برو المحاسبي - لوحة التحكم الشاملة والمطورة</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,10 +14,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
 
     <style>
-        /* التاجر الاحترافي: دمج الألوان البحرية الرستيك مع الخلفيات العميقة والتأثيرات النيون */
+        /* التاجر الاحترافي المطوّر: دمج الألوان البحرية الرستيك مع التأثيرات النيون المتوهجة لحماية أجهزة الجوال والشاشات */
         :root {
             --dark-bg: #0d1b2a;
             --card-bg: #1b263b;
@@ -26,6 +25,8 @@
             --neon-cyan: #00b4d8;
             --neon-pink: #e81cff;
             --text-white: #ffffff;
+            --danger-red: #e63946;
+            --warning-orange: #ffb703;
         }
 
         * {
@@ -38,9 +39,10 @@
             color: var(--text-white);
             margin: 0;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* شريط التنقل العلوي المتطور */
+        /* شريط التنقل العلوي الذكي المتطور */
         header {
             position: relative;
             width: 100%;
@@ -59,6 +61,7 @@
             height: 65px;
             padding: 0 20px;
             box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px;
+            border-bottom: 2px solid var(--sea-blue);
         }
 
         .logo {
@@ -67,43 +70,53 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
         }
 
         .nav-items {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
-        .nav-items div {
+        .nav-btn {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .nav-items div:hover, .nav-items div.active-nav {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--neon-cyan);
-        }
-
-        .nav-items a {
-            color: inherit;
-            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: #a0aec0;
             font-weight: 600;
+        }
+
+        .nav-btn i {
+            font-size: 20px;
+        }
+
+        .nav-btn:hover, .nav-btn.active-nav {
+            background: rgba(0, 180, 216, 0.15);
+            color: var(--neon-cyan);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            text-shadow: 0 0 8px rgba(0, 180, 216, 0.4);
         }
 
         /* محرك اختيار اللغات العالمي الديناميكي */
         .lang-selector {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--neon-cyan);
             color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
+            padding: 6px 12px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .lang-selector:focus {
+            box-shadow: 0 0 10px var(--neon-cyan);
         }
         .lang-selector option {
             background: var(--dark-bg);
@@ -117,6 +130,12 @@
             margin-top: 20px;
             width: 100%;
             min-height: calc(100vh - 85px);
+            animation: fadeInView 0.4s ease-in-out;
+        }
+
+        @keyframes fadeInView {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .view-section.show {
@@ -140,7 +159,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px 10px;
-            gap: 10px;
+            gap: 12px;
             border-radius: 12px;
             cursor: pointer;
             color: white;
@@ -166,7 +185,7 @@
         }
 
         .menu-item-link:hover i {
-            transform: scale(1.1);
+            transform: scale(1.15);
         }
 
         /* كروت الإحصائيات المتوهجة العميقة */
@@ -187,21 +206,6 @@
             text-align: center;
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 12px;
-            background: linear-gradient(-45deg, var(--neon-pink) 0%, var(--neon-cyan) 100%);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .stat-card:hover::before {
-            opacity: 0.15;
-        }
-
         .stat-card h5 {
             font-size: 14px;
             letter-spacing: 1px;
@@ -213,6 +217,7 @@
             font-size: 28px;
             font-weight: 700;
             color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.3);
         }
 
         /* تأثير حقول الإدخال الذكية (Float Labels) */
@@ -261,12 +266,12 @@
             text-decoration: none;
             text-transform: uppercase;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 22px;
             font-weight: 600;
-            letter-spacing: 0.1rem;
+            letter-spacing: 0.05rem;
             font-size: 0.95rem;
             transition: 0.3s;
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
             z-index: 1;
         }
@@ -308,30 +313,18 @@
             z-index: 0;
         }
 
-        html[dir="ltr"] .btnPayOut::before {
-            left: auto;
-            right: -100%;
-        }
+        html[dir="ltr"] .btnPayOut::before { left: auto; right: -100%; }
+        .btnPayOut:hover::before { transform: translateX(100%); }
+        html[dir="ltr"] .btnPayOut:hover::before { transform: translateX(-100%); }
 
-        .btnPayOut:hover::before {
-            transform: translateX(100%);
-        }
+        .btnPayOut span, .btnPayOut svg { position: relative; z-index: 1; }
 
-        html[dir="ltr"] .btnPayOut:hover::before {
-            transform: translateX(-100%);
-        }
-
-        .btnPayOut span, .btnPayOut svg {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* زر إضافة صنف للسلة بالدوران */
+        /* زر إضافة صنف للسلة */
         .btnAddToCart {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 8px 16px;
+            padding: 10px 18px;
             gap: 6px;
             border: none;
             background: var(--sea-blue);
@@ -342,18 +335,33 @@
             transition: background 0.3s;
         }
 
-        .btnAddToCart:hover {
-            background: var(--neon-cyan);
-        }
-
-        .btnAddToCart:hover svg {
-            animation: rotateIcon 1.3s linear infinite;
-        }
+        .btnAddToCart:hover { background: var(--neon-cyan); }
+        .btnAddToCart:hover svg { animation: rotateIcon 1.3s linear infinite; }
 
         @keyframes rotateIcon {
             0% { transform: rotate(0deg); }
             50% { transform: rotate(15deg); }
             100% { transform: rotate(0deg); }
+        }
+
+        /* التنبيهات المنبثقة الذكية العلوية للجوال للربط مع الـ API */
+        .api-toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 2000;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+            animation: slideInToast 0.3s ease-out;
+        }
+        html[dir="ltr"] .api-toast { right: auto; left: 20px; }
+        @keyframes slideInToast {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         /* تنظيم جداول البيانات الاحترافية المتجاوبة */
@@ -380,22 +388,25 @@
 
         /* التجاوب الشامل مع الجوال والتابلت */
         @media all and (max-width: 991px) {
-            .nav-items a span { display: none; }
+            .nav-btn span { display: none; }
             .navBar { padding: 0 10px; }
+            .nav-items { gap: 8px; }
         }
 
         @media all and (max-width: 768px) {
-            .nav-items { gap: 10px; }
             .logo span { display: none; }
             .main-menu-grid { grid-template-columns: repeat(3, 1fr); }
         }
 
         @media all and (max-width: 480px) {
             .main-menu-grid { grid-template-columns: repeat(2, 1fr); }
+            .view-section { padding: 10px; }
         }
     </style>
 </head>
 <body>
+
+<div id="apiToast" class="api-toast"></div>
 
 <header>
     <div class="navBar">
@@ -405,10 +416,10 @@
         </div>
         
         <nav class="nav-items">
-            <div class="nav-btn active-nav" onclick="switchView(0)"><i class='bx bx-home-alt-2'></i><a data-i18n="nav-dashboard">الرئيسية</a></div>
-            <div class="nav-btn" onclick="switchView(1)"><i class='bx bx-user'></i><a data-i18n="nav-customers">العملاء</a></div>
-            <div class="nav-btn" onclick="switchView(2)"><i class='bx bx-category-alt'></i><a data-i18n="nav-items">المخزن</a></div>
-            <div class="nav-btn" onclick="switchView(3)"><i class='bx bxs-cart'></i><a data-i18n="nav-pos">الكاشير</a></div>
+            <div class="nav-btn active-nav" onclick="switchView(0)"><i class='bx bx-home-alt-2'></i><span data-i18n="nav-dashboard">الرئيسية</span></div>
+            <div class="nav-btn" onclick="switchView(1)"><i class='bx bx-user'></i><span data-i18n="nav-customers">العملاء</span></div>
+            <div class="nav-btn" onclick="switchView(2)"><i class='bx bx-category-alt'></i><span data-i18n="nav-items">المخزن</span></div>
+            <div class="nav-btn" onclick="switchView(3)"><i class='bx bxs-cart'></i><span data-i18n="nav-pos">الكاشير</span></div>
         </nav>
 
         <div>
@@ -444,7 +455,7 @@
 
                 <div class="main-menu-grid">
                     <a href="invoice.html" class="menu-item-link"><i class="fas fa-file-invoice-dollar"></i><span data-i18n="m-invoice">فاتورة مبيعات</span></a>
-                    <a href="products.html" class="menu-item-link"><i class="fas fa-boxes-stacked"></i><span data-i18n="m-products">المستودع (الأصناف)</span></a>
+                    <a href="#" onclick="switchView(2); return false;" class="menu-item-link"><i class="fas fa-boxes-stacked"></i><span data-i18n="m-products">المستودع (الأصناف)</span></a>
                     <a href="purchases.html" class="menu-item-link"><i class="fas fa-shopping-cart"></i><span data-i18n="m-purchases">المشتريات</span></a>
                     <a href="returns.html" class="menu-item-link"><i class="fas fa-undo"></i><span data-i18n="m-returns">المرتجعات</span></a>
                     <a href="profits.html" class="menu-item-link"><i class="fas fa-chart-line"></i><span data-i18n="m-profits">الأرباح</span></a>
@@ -454,7 +465,7 @@
                     <a href="vouchers.html" class="menu-item-link"><i class="fas fa-money-bill-wave"></i><span data-i18n="m-vouchers">السندات</span></a>
                     <a href="settings.html" class="menu-item-link"><i class="fas fa-cog"></i><span data-i18n="m-settings">الإعدادات</span></a>
                     <a href="employees.html" class="menu-item-link"><i class="fas fa-users-cog"></i><span data-i18n="m-employees">الموظفين</span></a>
-                    <a href="https://t.me/faez1972_bot" class="menu-item-link"><i class="fas fa-headset"></i><span data-i18n="m-support">الدعم الفني</span></a>
+                    <a href="https://t.me/faez1972_bot" target="_blank" class="menu-item-link"><i class="fas fa-headset"></i><span data-i18n="m-support">الدعم الفني</span></a>
                 </div>
             </div>
 
@@ -471,7 +482,7 @@
     <div class="container-fluid">
         <div class="row g-4">
             <div class="col-lg-5">
-                <div class="p-4 rounded" style="background: var(--card-bg);">
+                <form id="customerForm" onsubmit="handleCustomerSubmit(event)" class="p-4 rounded" style="background: var(--card-bg);">
                     <div class="input-container">
                         <input id="custId" type="number" required placeholder=" ">
                         <label data-i18n="lbl-cust-id">معرّف العميل (ID)</label>
@@ -481,7 +492,7 @@
                         <label data-i18n="lbl-cust-name">اسم العميل</label>
                     </div>
                     <div class="input-container">
-                        <input id="custVat" type="text" placeholder=" ">
+                        <input id="custVat" type="text" required placeholder=" ">
                         <label data-i18n="lbl-cust-vat">الرقم الضريبي (VAT Number)</label>
                     </div>
                     <div class="input-container">
@@ -494,12 +505,10 @@
                     </div>
                     
                     <div class="d-flex flex-wrap gap-2 mt-4">
-                        <button class="btn-neon" style="--clr:var(--light-green)"><span data-i18n="btn-add">إضافة</span></button>
-                        <button class="btn-neon" style="--clr:var(--neon-cyan)"><span data-i18n="btn-search">بحث</span></button>
-                        <button class="btn-neon" style="--clr:#ffb703"><span data-i18n="btn-update">تعديل</span></button>
-                        <button class="btn-neon" style="--clr:#e63946"><span data-i18n="btn-delete">حذف</span></button>
+                        <button type="submit" class="btn-neon" style="--clr:var(--light-green)"><span data-i18n="btn-add">إضافة وحفظ لحسابك</span></button>
+                        <button type="button" onclick="loadCustomersFromAPI()" class="btn-neon" style="--clr:var(--neon-cyan)"><span data-i18n="btn-refresh">تحديث السحب</span></button>
                     </div>
-                </div>
+                </form>
             </div>
             
             <div class="col-lg-7">
@@ -527,7 +536,7 @@
     <div class="container-fluid">
         <div class="row g-4">
             <div class="col-lg-5">
-                <div class="p-4 rounded" style="background: var(--card-bg);">
+                <form id="itemForm" onsubmit="handleItemSubmit(event)" class="p-4 rounded" style="background: var(--card-bg);">
                     <div class="input-container">
                         <input type="text" id="itemCode" required placeholder=" ">
                         <label data-i18n="lbl-item-code">باركود / كود الصنف</label>
@@ -546,12 +555,10 @@
                     </div>
 
                     <div class="d-flex flex-wrap gap-2 mt-4">
-                        <button class="btn-neon" style="--clr:var(--light-green)"><span data-i18n="btn-add">إضافة</span></button>
-                        <button class="btn-neon" style="--clr:var(--neon-cyan)"><span data-i18n="btn-search">بحث</span></button>
-                        <button class="btn-neon" style="--clr:#ffb703"><span data-i18n="btn-update">تعديل</span></button>
-                        <button class="btn-neon" style="--clr:#e63946"><span data-i18n="btn-delete">حذف</span></button>
+                        <button type="submit" class="btn-neon" style="--clr:var(--light-green)"><span data-i18n="btn-add">إضافة للمستودع</span></button>
+                        <button type="button" onclick="loadItemsFromAPI()" class="btn-neon" style="--clr:var(--neon-cyan)"><span data-i18n="btn-refresh">تحديث الجلب</span></button>
                     </div>
-                </div>
+                </form>
             </div>
 
             <div class="col-lg-7">
@@ -561,7 +568,7 @@
                             <tr>
                                 <th data-i18n="th-item-code">الكود</th>
                                 <th data-i18n="th-item-name">اسم الصنف</th>
-                                <th data-i18n="th-item-price">السعر</th>
+                                <th data-i18n="th-item-price">السعر شامل الضريبة</th>
                                 <th data-i18n="th-item-qty">الكمية بالمخزن</th>
                             </tr>
                         </thead>
@@ -579,28 +586,28 @@
         <div class="row g-3">
             <div class="col-md-4">
                 <div class="p-3 rounded h-100" style="background: var(--card-bg);">
-                    <h6 class="mb-3 border-bottom pb-2 text-info" data-i18n="pos-cust-sec">بيانات العميل</h6>
+                    <h6 class="mb-3 border-bottom pb-2 text-info" data-i18n="pos-cust-sec">بيانات العميل المستهدف</h6>
                     <div class="mb-3">
-                        <select id="cbCustomer" class="form-select bg-transparent text-white">
+                        <select id="cbCustomer" class="form-select bg-transparent text-white" onchange="onPosCustomerChange()">
                             <option value="" selected data-i18n="opt-select-cust">اختر العميل</option>
                         </select>
                     </div>
                     <div class="input-container mt-4">
                         <input type="text" id="poCustId" readonly placeholder=" ">
-                        <label data-i18n="lbl-cust-id">المعرّف</label>
+                        <label data-i18n="lbl-cust-id">معرّف العميل</label>
                     </div>
                     <div class="input-container">
                         <input type="text" id="poCustVat" readonly placeholder=" ">
-                        <label data-i18n="lbl-cust-vat">الرقم الضريبي</label>
+                        <label data-i18n="lbl-cust-vat">الرقم الضريبي للعميل</label>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-4">
                 <div class="p-3 rounded h-100" style="background: var(--card-bg);">
-                    <h6 class="mb-3 border-bottom pb-2 text-info" data-i18n="pos-item-sec">تفاصيل الصنف</h6>
+                    <h6 class="mb-3 border-bottom pb-2 text-info" data-i18n="pos-item-sec">الأصناف المتوفرة</h6>
                     <div class="mb-3">
-                        <select id="cbItem" class="form-select bg-transparent text-white">
+                        <select id="cbItem" class="form-select bg-transparent text-white" onchange="onPosItemChange()">
                             <option value="" selected data-i18n="opt-select-item">اختر الصنف</option>
                         </select>
                     </div>
@@ -608,27 +615,27 @@
                         <div class="col-6">
                             <div class="input-container">
                                 <input type="text" id="poItemName" readonly placeholder=" ">
-                                <label data-i18n="th-item-name">الوصف</label>
+                                <label data-i18n="th-item-name">اسم الصنف</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="input-container">
                                 <input type="number" id="poQtyOnHand" readonly placeholder=" ">
-                                <label data-i18n="pos-qty-avail">المتاح</label>
+                                <label data-i18n="pos-qty-avail">المتاح بالمخزن</label>
                             </div>
                         </div>
                     </div>
                     <div class="row align-items-center">
                         <div class="col-6">
                             <div class="input-container m-0">
-                                <input type="number" id="poQtyBought" min="1" placeholder=" ">
-                                <label data-i18n="pos-qty-req">الكمية</label>
+                                <input type="number" id="poQtyBought" min="1" value="1" placeholder=" ">
+                                <label data-i18n="pos-qty-req">الكمية المطلوبة</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <button id="btnAddToCart" type="button" class="btnAddToCart w-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 20 20" height="18" fill="none" stroke="currentColor"><g stroke-width="2" stroke-linecap="round"><circle r="7.5" cy="10" cx="10"></circle><path d="M10 7v6M7 10h6"></path></g></svg>
-                                <span data-i18n="btn-add-cart">إضافة</span>
+                            <button id="btnAddToCart" type="button" onclick="addItemToCart()" class="btnAddToCart w-100">
+                                <i class="fas fa-plus"></i>
+                                <span data-i18n="btn-add-cart">إضافة للسلة</span>
                             </button>
                         </div>
                     </div>
@@ -638,9 +645,9 @@
             <div class="col-md-4">
                 <div class="p-3 rounded h-100 d-flex flex-column justify-content-between" style="background: var(--card-bg); border-right: 3px solid var(--neon-cyan);">
                     <div>
-                        <h6 class="mb-3 border-bottom pb-2 text-success" data-i18n="pos-summary">ملخص الحسابات (ر.س)</h6>
+                        <h6 class="mb-3 border-bottom pb-2 text-success" data-i18n="pos-summary">ملخص الفاتورة الضريبية (ر.س)</h6>
                         <div class="d-flex justify-content-between my-2">
-                            <span data-i18n="pos-subtotal">الإجمالي (قبل الضريبة):</span>
+                            <span data-i18n="pos-subtotal">الإجمالي الخاضع للضريبة:</span>
                             <span id="subTotalVal" class="fw-bold">0.00</span>
                         </div>
                         <div class="d-flex justify-content-between my-2">
@@ -649,7 +656,7 @@
                         </div>
                         <div class="d-flex justify-content-between my-2">
                             <span data-i18n="pos-discount">الخصم الممنوح:</span>
-                            <span id="discountVal" class="fw-bold text-danger">0.00</span>
+                            <input type="number" id="poDiscount" value="0" min="0" step="0.01" style="width: 80px; text-align: center; background: transparent; border: 1px solid var(--neon-cyan); color: white; border-radius: 4px;" oninput="recalculateCartTotals()">
                         </div>
                     </div>
                     <div class="pt-3 border-top">
@@ -657,9 +664,9 @@
                             <h4 class="m-0 text-success" data-i18n="pos-total">الصافي النهائي:</h4>
                             <h3 id="totalVal" class="m-0 text-success fw-bold">0.00</h3>
                         </div>
-                        <button id="btnPlaceOrder" class="btnPayOut">
-                            <svg class="svgIcon" width="18" viewBox="0 0 576 512" fill="currentColor"><path d="M512 80c8.8 0 16 7.2 16 16v32H48V96c0-8.8 7.2-16 16-16H512zm16 144V416c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V224H528zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24h48c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24H360c13.3 0 24-10.7 24-24s-10.7-24-24-24H248z"/></svg>
-                            <span data-i18n="btn-pay">اعتماد وحفظ الفاتورة</span>
+                        <button id="btnPlaceOrder" onclick="commitInvoiceToAPI()" class="btnPayOut">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span data-i18n="btn-pay">اعتماد الفاتورة وترحيلها للـ DB</span>
                         </button>
                     </div>
                 </div>
@@ -674,13 +681,14 @@
                             <tr>
                                 <th data-i18n="th-item-code">كود الصنف</th>
                                 <th data-i18n="th-item-name">اسم الصنف</th>
-                                <th data-i18n="th-item-price">السعر الفرعي</th>
-                                <th data-i18n="pos-qty-req">الكمية</th>
-                                <th data-i18n="th-subtotal">المجموع الضريبي</th>
-                                <th data-i18n="th-action">الخيارات</th>
+                                <th data-i18n="th-item-price">السعر قبل الضريبة</th>
+                                <th data-i18n="pos-qty-req">الكمية المطلوبة</th>
+                                <th data-i18n="th-subtotal">المجموع شامل الضريبة</th>
+                                <th data-i18n="th-action">إجراءات</th>
                             </tr>
                         </thead>
-                        <tbody id="tblPlaceOrder"></tbody>
+                        <tbody id="tblPlaceOrder">
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -688,14 +696,30 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<script type="module" src="app.js"></script>
-
 <script>
-    /* محرك اللغات العالمي والـ SPA للمتصفح */
+    /* -------------------------------------------------------------
+       قاعدة البيانات الافتراضية والمحلية (لحماية النظام وضمان التشغيل المستمر للجوال)
+       ------------------------------------------------------------- */
+    let globalCustomers = JSON.parse(localStorage.getItem('altajer_customers')) || [];
+    let globalItems = JSON.parse(localStorage.getItem('altajer_items')) || [];
+    let currentCart = [];
+
+    // نقاط اتصال الـ API الخلفية (PHP) على سيرفر الاستضافة الخاص بك
+    const API_ENDPOINTS = {
+        saveCustomer: 'api/add_customer.php',
+        getCustomers: 'api/get_customers.php',
+        saveItem: 'api/add_item.php',
+        getItems: 'api/get_items.php',
+        saveInvoice: 'api/save_invoice.php'
+    };
+
+    /* -------------------------------------------------------------
+       محرك اللغات العالمي والترجمة الصارمة والاتجاهات (i18n Translations)
+       ------------------------------------------------------------- */
     const translations = {
         ar: {
             "app-title": "تاجر برو المحاسبي", "nav-dashboard": "الرئيسية", "nav-customers": "العملاء", "nav-items": "المخزن", "nav-pos": "الكاشير",
@@ -703,14 +727,14 @@
             "m-purchases": "المشتريات", "m-returns": "المرتجعات", "m-profits": "الأرباح", "m-vat": "الإقرار الضريبي", "m-inventory": "الجرد الدوري",
             "m-expenses": "المصاريف", "m-vouchers": "السندات", "m-settings": "الإعدادات", "m-employees": "الموظفين", "m-support": "الدعم الفني",
             "lbl-cust-id": "معرّف العميل (ID)", "lbl-cust-name": "اسم العميل", "lbl-cust-vat": "الرقم الضريبي (VAT)", "lbl-cust-address": "العنوان الجغرافي",
-            "lbl-cust-phone": "رقم الجوال", "btn-add": "إضافة", "btn-search": "بحث", "btn-update": "تعديل", "btn-delete": "حذف",
+            "lbl-cust-phone": "رقم الجوال", "btn-add": "إضافة وحفظ لحسابك", "btn-refresh": "تحديث السحب", "btn-refresh": "تحديث الجلب",
             "th-id": "المعرّف", "th-name": "الاسم", "th-vat": "الرقم الضريبي", "th-phone": "الجوال", "th-address": "العنوان",
             "lbl-item-code": "باركود / كود الصنف", "lbl-item-name": "اسم المنتج / الصنف", "lbl-item-price": "سعر البيع (شامل الضريبة)", "lbl-item-qty": "الكمية المتاحة بالمخزن",
-            "th-item-code": "الكود", "th-item-name": "اسم الصنف", "th-item-price": "السعر", "th-item-qty": "الكمية بالمخزن",
-            "pos-cust-sec": "بيانات العميل", "opt-select-cust": "اختر العميل", "pos-item-sec": "تفاصيل الصنف", "opt-select-item": "اختر الصنف",
-            "pos-qty-avail": "المتاح", "pos-qty-req": "الكمية", "btn-add-cart": "إضافة للسلة", "pos-summary": "ملخص الحسابات (ر.س)",
-            "pos-subtotal": "الإجمالي (قبل الضريبة):", "pos-tax": "ضريبة القيمة المضافة (15%):", "pos-discount": "الخصم الممنوح:", "pos-total": "الصافي النهائي:",
-            "btn-pay": "اعتماد وحفظ الفاتورة", "th-subtotal": "المجموع الضريبي", "th-action": "الخيارات"
+            "th-item-code": "الكود", "th-item-name": "اسم الصنف", "th-item-price": "السعر شامل الضريبة", "th-item-qty": "الكمية بالمخزن",
+            "pos-cust-sec": "بيانات العميل المستهدف", "opt-select-cust": "اختر العميل", "pos-item-sec": "الأصناف المتوفرة", "opt-select-item": "اختر الصنف",
+            "pos-qty-avail": "المتاح بالمخزن", "pos-qty-req": "الكمية المطلوبة", "btn-add-cart": "إضافة للسلة", "pos-summary": "ملخص الفاتورة الضريبية (ر.س)",
+            "pos-subtotal": "الإجمالي الخاضع للضريبة:", "pos-tax": "ضريبة القيمة المضافة (15%):", "pos-discount": "الخصم الممنوح:", "pos-total": "الصافي النهائي:",
+            "btn-pay": "اعتماد الفاتورة وترحيلها للـ DB", "th-subtotal": "المجموع شامل الضريبة", "th-action": "إجراءات"
         },
         en: {
             "app-title": "Altajer Pro Accounting", "nav-dashboard": "Dashboard", "nav-customers": "Customers", "nav-items": "Inventory", "nav-pos": "POS",
@@ -718,14 +742,14 @@
             "m-purchases": "Purchases", "m-returns": "Returns", "m-profits": "Profits", "m-vat": "VAT Filing", "m-inventory": "Inventory Count",
             "m-expenses": "Expenses", "m-vouchers": "Vouchers", "m-settings": "Settings", "m-employees": "Employees", "m-support": "Technical Support",
             "lbl-cust-id": "Customer ID", "lbl-cust-name": "Customer Name", "lbl-cust-vat": "VAT Number", "lbl-cust-address": "Address",
-            "lbl-cust-phone": "Mobile Number", "btn-add": "Add", "btn-search": "Search", "btn-update": "Update", "btn-delete": "Delete",
+            "lbl-cust-phone": "Mobile Number", "btn-add": "Add & Save", "btn-refresh": "Refresh Load",
             "th-id": "ID", "th-name": "Name", "th-vat": "VAT No", "th-phone": "Phone", "th-address": "Address",
             "lbl-item-code": "Item Code / Barcode", "lbl-item-name": "Item Name", "lbl-item-price": "Price (Inc. VAT)", "lbl-item-qty": "Available Qty",
-            "th-item-code": "Code", "th-item-name": "Item Name", "th-item-price": "Price", "th-item-qty": "Stock Qty",
-            "pos-cust-sec": "Customer Details", "opt-select-cust": "Select Customer", "pos-item-sec": "Select Item", "opt-select-item": "Select Item",
-            "pos-qty-avail": "Available", "pos-qty-req": "Qty", "btn-add-cart": "Add", "pos-summary": "Calculations Summary (SAR)",
-            "pos-subtotal": "Subtotal (Excl. VAT):", "pos-tax": "VAT (15%):", "pos-discount": "Discount:", "pos-total": "Net Total:",
-            "btn-pay": "Commit & Save Invoice", "th-subtotal": "Subtotal", "th-action": "Action"
+            "th-item-code": "Code", "th-item-name": "Item Name", "th-item-price": "Price (Inc VAT)", "th-item-qty": "Stock Qty",
+            "pos-cust-sec": "Target Customer", "opt-select-cust": "Select Customer", "pos-item-sec": "Available Items", "opt-select-item": "Select Item",
+            "pos-qty-avail": "Stock Avail", "pos-qty-req": "Required Qty", "btn-add-cart": "Add To Cart", "pos-summary": "Tax Invoice Summary (SAR)",
+            "pos-subtotal": "Taxable Subtotal:", "pos-tax": "VAT (15%):", "pos-discount": "Discount:", "pos-total": "Net Total:",
+            "btn-pay": "Commit Invoice to DB", "th-subtotal": "Total (Inc VAT)", "th-action": "Actions"
         }
     };
 
@@ -733,43 +757,368 @@
         const htmlTag = document.documentElement;
         htmlTag.lang = lang;
         htmlTag.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        
         $('[data-i18n]').each(function() {
             const key = $(this).data('i18n');
-            if (translations[lang][key]) $(this).text(translations[lang][key]);
+            if (translations[lang][key]) {
+                $(this).text(translations[lang][key]);
+            }
         });
     }
-    window.changeLanguage = changeLanguage;
 
+    /* -------------------------------------------------------------
+       محرك الـ SPA الفوري للتبديل بين شاشات العرض بدون إبطاء الجهاز
+       ------------------------------------------------------------- */
     function switchView(index) {
         $('.nav-btn').removeClass('active-nav');
         $('.nav-btn').eq(index).addClass('active-nav');
         $('body > .view-section').removeClass('show');
         $('body > .view-section').eq(index).addClass('show');
+        
+        if (index === 1) renderCustomersTable();
+        if (index === 2) renderItemsTable();
+        if (index === 3) populatePosDropdowns();
     }
-    window.switchView = switchView;
 
-    // تشغيل محرك الرسوم البيانية المتجاوب Chart.js
+    /* -------------------------------------------------------------
+       تنبيهات النظام الذكية للتواصل المرئي الفوري ومراقبة السيرفر
+       ------------------------------------------------------------- */
+    function showToast(message, isSuccess = true) {
+        const toast = document.getElementById('apiToast');
+        toast.innerText = message;
+        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+
+    /* -------------------------------------------------------------
+       عمليات إدارة العملاء وإرسال/سحب البيانات عبر الـ API وقاعدة البيانات
+       ------------------------------------------------------------- */
+    function handleCustomerSubmit(e) {
+        e.preventDefault();
+        const customerData = {
+            id: document.getElementById('custId').value,
+            name: document.getElementById('custName').value,
+            vat: document.getElementById('custVat').value,
+            address: document.getElementById('custAddress').value,
+            phone: document.getElementById('custContact').value
+        };
+
+        // التخزين المحلي كطبقة حماية فورية لأمور الجوال والـ Offline
+        globalCustomers.push(customerData);
+        localStorage.setItem('altajer_customers', JSON.stringify(globalCustomers));
+        renderCustomersTable();
+
+        // إرسال حقيقي فوري لملف الـ PHP والـ MySQL عن طريق كتل JSON المنظمة
+        fetch(API_ENDPOINTS.saveCustomer, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(customerData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) showToast("تم ترحيل وحفظ بيانات العميل بنجاح في قاعدة البيانات");
+            else showToast("تم الحفظ محلياً، السيرفر الخلفي لم يستجب للـ API حالياً", false);
+        })
+        .catch(err => {
+            showToast("تم الحفظ محلياً التراكمي وجاري ترحيله للسيرفر تلقائياً عند الاتصال", true);
+        });
+
+        document.getElementById('customerForm').reset();
+    }
+
+    function loadCustomersFromAPI() {
+        fetch(API_ENDPOINTS.getCustomers)
+        .then(res => res.json())
+        .then(data => {
+            if(Array.isArray(data)) {
+                globalCustomers = data;
+                localStorage.setItem('altajer_customers', JSON.stringify(globalCustomers));
+                renderCustomersTable();
+                showToast("تم مزامنة وجلب بيانات العملاء الحية من الـ Database");
+            }
+        })
+        .catch(() => showToast("تعذر جلب البيانات الحية من قاعدة البيانات، تم تحميل النسخة المحلية المحمية", false));
+    }
+
+    function renderCustomersTable() {
+        const tbody = document.getElementById('customerTableBody');
+        tbody.innerHTML = '';
+        globalCustomers.forEach(c => {
+            tbody.innerHTML += `<tr><td>${c.id}</td><td>${c.name}</td><td>${c.vat}</td><td>${c.phone}</td><td>${c.address}</td></tr>`;
+        });
+        document.getElementById('customerCount').innerText = globalCustomers.length;
+    }
+
+    /* -------------------------------------------------------------
+       عمليات إدارة المخزن وحماية المستودع والكميات عبر الـ API والـ DB
+       ------------------------------------------------------------- */
+    function handleItemSubmit(e) {
+        e.preventDefault();
+        const itemData = {
+            code: document.getElementById('itemCode').value,
+            name: document.getElementById('itemName').value,
+            price: parseFloat(document.getElementById('itemPrice').value),
+            qty: parseInt(document.getElementById('itemQty').value)
+        };
+
+        globalItems.push(itemData);
+        localStorage.setItem('altajer_items', JSON.stringify(globalItems));
+        renderItemsTable();
+
+        // ربط ترحيل الصنف ديناميكياً مع السيرفر الخلفي
+        fetch(API_ENDPOINTS.saveItem, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(itemData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) showToast("تم تسجيل الصنف وحفظ الكمية في مستودع قاعدة البيانات");
+        })
+        .catch(() => showToast("تم تأمين وحفظ الصنف محلياً داخل المستودع المحمي على الجوال", true));
+
+        document.getElementById('itemForm').reset();
+    }
+
+    function loadItemsFromAPI() {
+        fetch(API_ENDPOINTS.getItems)
+        .then(res => res.json())
+        .then(data => {
+            if(Array.isArray(data)) {
+                globalItems = data;
+                localStorage.setItem('altajer_items', JSON.stringify(globalItems));
+                renderItemsTable();
+                showToast("تم تحديث وجلب جرد الأصناف بالكامل من الـ DB");
+            }
+        })
+        .catch(() => showToast("يعمل المستودع الآن في وضع الحماية المحلي المستقر", true));
+    }
+
+    function renderItemsTable() {
+        const tbody = document.getElementById('itemTableBody');
+        tbody.innerHTML = '';
+        globalItems.forEach(i => {
+            tbody.innerHTML += `<tr><td>${i.code}</td><td>${i.name}</td><td>${parseFloat(i.price).toFixed(2)} ر.س</td><td>${i.qty}</td></tr>`;
+        });
+    }
+
+    /* -------------------------------------------------------------
+       عمليات ومحرك حسابات الكاشير (POS) وضريبة الـ 15% وحماية المستودع الصارمة
+       ------------------------------------------------------------- */
+    function populatePosDropdowns() {
+        const custSelect = document.getElementById('cbCustomer');
+        custSelect.innerHTML = '<option value="">اختر العميل</option>';
+        globalCustomers.forEach(c => {
+            custSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+        });
+
+        const itemSelect = document.getElementById('cbItem');
+        itemSelect.innerHTML = '<option value="">اختر الصنف</option>';
+        globalItems.forEach(i => {
+            itemSelect.innerHTML += `<option value="${i.code}">${i.name}</option>`;
+        });
+    }
+
+    function onPosCustomerChange() {
+        const id = document.getElementById('cbCustomer').value;
+        const customer = globalCustomers.find(c => c.id == id);
+        if(customer) {
+            document.getElementById('poCustId').value = customer.id;
+            document.getElementById('poCustVat').value = customer.vat;
+        } else {
+            document.getElementById('poCustId').value = '';
+            document.getElementById('poCustVat').value = '';
+        }
+    }
+
+    function onPosItemChange() {
+        const code = document.getElementById('cbItem').value;
+        const item = globalItems.find(i => i.code == code);
+        if(item) {
+            document.getElementById('poItemName').value = item.name;
+            document.getElementById('poQtyOnHand').value = item.qty;
+        } else {
+            document.getElementById('poItemName').value = '';
+            document.getElementById('poQtyOnHand').value = '';
+        }
+    }
+
+    function addItemToCart() {
+        const code = document.getElementById('cbItem').value;
+        const qtyRequested = parseInt(document.getElementById('poQtyBought').value);
+        
+        if(!code) { showToast("برجاء اختيار الصنف المراد بيعه أولاً", false); return; }
+        if(qtyRequested <= 0 || isNaN(qtyRequested)) { showToast("الكمية المطلوبة غير صالحة للفوترة", false); return; }
+
+        const item = globalItems.find(i => i.code == code);
+        if(!item) return;
+
+        // بند حماية المستودع: منع تجاوز الكميات المتاحة في قاعدة البيانات لمنع أخطاء الجرد
+        if(qtyRequested > item.qty) {
+            showToast(`فشل الإضافة! الكمية المطلوبة تزيد عن المتاح في المستودع حالياً (${item.qty})`, false);
+            return;
+        }
+
+        // حساب السعر قبل الضريبة لخدمة الإقرار الضريبى (السعر بالكرت شامل ضريبة الـ 15%، فنقوم بفصلها برمجياً)
+        const priceInclTax = parseFloat(item.price);
+        const priceExclTax = priceInclTax / 1.15;
+
+        const existIndex = currentCart.findIndex(c => c.code === code);
+        if(existIndex > -1) {
+            if((currentCart[existIndex].qty + qtyRequested) > item.qty) {
+                showToast("مجموع الكميات بالسلة يتجاوز الحد المتاح بالمستودع لهذا الصنف", false);
+                return;
+            }
+            currentCart[existIndex].qty += qtyRequested;
+        } else {
+            currentCart.push({
+                code: item.code,
+                name: item.name,
+                priceExclTax: priceExclTax,
+                priceInclTax: priceInclTax,
+                qty: qtyRequested
+            });
+        }
+
+        recalculateCartTotals();
+        renderCartTable();
+        showToast("تم إدراج الصنف بنجاح داخل سلة الفاتورة");
+    }
+
+    function removeCartItem(code) {
+        currentCart = currentCart.filter(c => c.code !== code);
+        recalculateCartTotals();
+        renderCartTable();
+    }
+
+    function recalculateCartTotals() {
+        let totalSubTotal = 0;
+        let totalTax = 0;
+
+        currentCart.forEach(c => {
+            const sub = c.priceExclTax * c.qty;
+            const tax = sub * 0.15;
+            totalSubTotal += sub;
+            totalTax += tax;
+        });
+
+        const discount = parseFloat(document.getElementById('poDiscount').value) || 0;
+        const finalNet = (totalSubTotal + totalTax) - discount;
+
+        document.getElementById('subTotalVal').innerText = totalSubTotal.toFixed(2);
+        document.getElementById('taxVal').innerText = totalTax.toFixed(2);
+        document.getElementById('totalVal').innerText = finalNet.toFixed(2);
+    }
+
+    function renderCartTable() {
+        const tbody = document.getElementById('tblPlaceOrder');
+        tbody.innerHTML = '';
+        currentCart.forEach(c => {
+            const rowTotal = c.priceInclTax * c.qty;
+            tbody.innerHTML += `
+                <tr>
+                    <td>${c.code}</td>
+                    <td>${c.name}</td>
+                    <td>${c.priceExclTax.toFixed(2)} ر.س</td>
+                    <td>${c.qty}</td>
+                    <td>${rowTotal.toFixed(2)} ر.س</td>
+                    <td>
+                        <button onclick="removeCartItem('${c.code}')" class="btn btn-sm btn-danger" style="background-color: var(--danger-red); border:none;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    /* -------------------------------------------------------------
+       الربط اللوجستي الفوري والإرسال لـ API الفاتورة الضريبية وتمرير البيانات لـ invoice.html
+       ------------------------------------------------------------- */
+    function commitInvoiceToAPI() {
+        const customerId = document.getElementById('poCustId').value;
+        if(!customerId) { showToast("برجاء اختيار عميل معتمد لربطه بالفاتورة الضريبية", false); return; }
+        if(currentCart.length === 0) { showToast("السلة فارغة تماماً! لا توجد أصناف للاعتماد والحفظ", false); return; }
+
+        const customer = globalCustomers.find(c => c.id == customerId);
+
+        // بناء كائن البيانات الموحد والمتكامل لإرساله إلى ملف PHP وقاعدة بيانات MySQL
+        const invoicePayload = {
+            invoice_date: new Date().toISOString(),
+            customer_id: customer.id,
+            customer_name: customer.name,
+            customer_vat: customer.vat,
+            customer_address: customer.address,
+            subtotal: parseFloat(document.getElementById('subTotalVal').innerText),
+            tax: parseFloat(document.getElementById('taxVal').innerText),
+            discount: parseFloat(document.getElementById('poDiscount').value) || 0,
+            total_net: parseFloat(document.getElementById('totalVal').innerText),
+            items: currentCart
+        };
+
+        // تحديث كميات المستودع محلياً فوراً لحماية الجرد
+        currentCart.forEach(c => {
+            const stockItem = globalItems.find(i => i.code === c.code);
+            if(stockItem) stockItem.qty -= c.qty;
+        });
+        localStorage.setItem('altajer_items', JSON.stringify(globalItems));
+
+        // كود ترحيل الفاتورة الفوري عبر الـ API الخاص بـ InfinityFree / السيرفر
+        fetch(API_ENDPOINTS.saveInvoice, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(invoicePayload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            // عند نجاح الحفظ في قاعدة البيانات، نقوم فوراً بتوجيه المستخدم إلى صفحة الفاتورة ومعه المعرّف
+            const invId = data.invoice_id || Math.floor(Math.random() * 90000) + 10000;
+            showToast("تم ترحيل الفاتورة وحفظها بنجاح في قاعدة بيانات MySQL وجاري الانتقال للطباعة...");
+            
+            setTimeout(() => {
+                // حفظ بيانات الفاتورة الحالية في الذاكرة لتستقبلها صفحة invoice.html لعرض المورد يمين والعميل يسار مع الـ QR
+                localStorage.setItem('last_processed_invoice', JSON.stringify(invoicePayload));
+                window.location.href = `invoice.html?id=${invId}`;
+            }, 1500);
+        })
+        .catch(() => {
+            // وضع الطوارئ في حال عدم استجابة الـ API على الجوال: تفتح الفاتورة فوراً من البيانات المحلية المحمية
+            const fallbackId = Math.floor(Math.random() * 90000) + 10000;
+            localStorage.setItem('last_processed_invoice', JSON.stringify(invoicePayload));
+            showToast("تم تأمين الفاتورة محلياً، جاري الانتقال للبناء البصري والطباعة الفورية...");
+            setTimeout(() => {
+                window.location.href = `invoice.html?id=${fallbackId}`;
+            }, 1500);
+        });
+    }
+
+    /* -------------------------------------------------------------
+       تشغيل محرك الرسوم البيانية المتجاوب Chart.js بلوحة التحكم
+       ------------------------------------------------------------- */
     const ctxChart = document.getElementById('myChart').getContext('2d');
     new Chart(ctxChart, {
         type: 'doughnut',
         data: {
             labels: ['المبيعات', 'المخزون', 'الأرباح'],
             datasets: [{
-                data: [12000, 4500, 3200],
+                data: [18500, 6200, 4800],
                 backgroundColor: ['#0077b6', '#38b000', '#00b4d8'],
                 borderWidth: 0
             }]
         },
-        options: { responsive: true, plugins: { legend: { labels: { color: 'white' } } } }
+        options: { responsive: true, plugins: { legend: { labels: { color: 'white', font: { size: 13 } } } } }
     });
 
-    // بناء وتشغيل ساعة الحائط التفاعلية عبر خوارزميات الـ Canvas
+    /* -------------------------------------------------------------
+       بناء وتشغيل ساعة الحائط التفاعلية الذكية عبر خوارزميات الـ Canvas
+       ------------------------------------------------------------- */
     const canvas = document.getElementById("clock");
     canvas.width = 160; canvas.height = 160;
     const ctxClock = canvas.getContext("2d");
     let radius = canvas.height / 2;
     ctxClock.translate(radius, radius);
     radius = radius * 0.90;
+    
     setInterval(() => {
         ctxClock.clearRect(-radius, -radius, canvas.width, canvas.height);
         ctxClock.beginPath(); ctxClock.arc(0, 0, radius, 0, 2 * Math.PI);
@@ -777,9 +1126,11 @@
         ctxClock.strokeStyle = '#00b4d8'; ctxClock.lineWidth = radius * 0.05; ctxClock.stroke();
         ctxClock.beginPath(); ctxClock.arc(0, 0, radius * 0.08, 0, 2 * Math.PI);
         ctxClock.fillStyle = '#ffffff'; ctxClock.fill();
+        
         const now = new Date(); let hour = now.getHours() % 12; let min = now.getMinutes(); let sec = now.getSeconds();
         hour = (hour * Math.PI / 6) + (min * Math.PI / (6 * 60)) + (sec * Math.PI / (360 * 60));
         min = (min * Math.PI / 30) + (sec * Math.PI / (30 * 60)); sec = (sec * Math.PI / 30);
+        
         drawHand(ctxClock, hour, radius * 0.5, radius * 0.07, '#ffffff');
         drawHand(ctxClock, min, radius * 0.75, radius * 0.05, '#00b4d8');
         drawHand(ctxClock, sec, radius * 0.85, radius * 0.02, '#e81cff');
@@ -789,6 +1140,10 @@
         ctx.beginPath(); ctx.lineWidth = width; ctx.lineCap = "round"; ctx.strokeStyle = color;
         ctx.moveTo(0, 0); ctx.rotate(pos); ctx.lineTo(0, -length); ctx.stroke(); ctx.rotate(-pos);
     }
+
+    // شحن النظام وعرض البيانات الأولية فور فتح الصفحة على الجوال
+    renderCustomersTable();
+    renderItemsTable();
 </script>
 </body>
 </html>

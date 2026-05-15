@@ -191,7 +191,7 @@
             display: block;
         }
 
-        .national-address-box {
+        .national-address-box, .barcode-generator-box {
             background: rgba(13, 27, 42, 0.4);
             border: 1px dashed rgba(0, 180, 216, 0.2);
             border-radius: 12px;
@@ -238,6 +238,35 @@
         <div class="input-container">
             <input id="setPhone" type="text" required placeholder=" ">
             <label data-i18n="lbl-set-phone">رقم الهاتف / الاتصال المعتمد في الفاتورة</label>
+        </div>
+
+        <div class="section-subtitle">
+            <i class="fas fa-barcode"></i> <span data-i18n="sub-barcode-settings">نظام توليد الباركود التصاعدي التلقائي الأصلي</span>
+        </div>
+        <div class="barcode-generator-box">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-container">
+                        <select id="autoBarcodeToggle" onchange="toggleBarcodeFields(this.value)">
+                            <option value="true">تفعيل التوليد التلقائي للأصناف</option>
+                            <option value="false">إيقاف (إدخال يدوي فقط)</option>
+                        </select>
+                        <label>حالة محرك الأكواد</label>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="input-container">
+                        <input id="barcodePrefix" type="text" placeholder=" ">
+                        <label>بادئة الباركود (مثال: PRD)</label>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="input-container">
+                        <input id="barcodeNextNumber" type="number" placeholder=" ">
+                        <label>التسلسل التالي (يبدأ من)</label>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="section-subtitle">
@@ -312,46 +341,36 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<script>
-    const API_ENDPOINT = 'api/save_settings.php';
+<script src="app.js"></script>
 
+<script>
     const translations = {
         ar: {
-            "set-title": "إعدادات المؤسسة والمطابقة الضريبية", 
-            "sub-basic-info": "البيانات الأساسية للمنشأة",
-            "lbl-set-name": "اسم المنشأة / المؤسسة التجاري الرسمي",
-            "lbl-set-vat": "الرقم الضريبي للمنشأة (15 خانة يبدأ بـ 3)", 
-            "lbl-set-vat-hint": "إلزامي لهيئة الزكاة والضريبة والجمارك السعودية ZATCA",
-            "lbl-set-phone": "رقم الهاتف / الاتصال المعتمد في الفاتورة",
-            "sub-national-address": "تفاصيل العنوان الوطني المعتمد (الامتثال الضريبي)",
-            "lbl-addr-city": "المدينة", "lbl-addr-district": "الحي", "lbl-addr-street": "اسم الشارع رئيسي/فرعي",
-            "lbl-addr-building": "رقم المبنى", "lbl-addr-postal": "الرمز البريدي", "lbl-addr-additional": "الرقم الإضافي (إن وجد)",
-            "sub-print-settings": "خيارات الطباعة والتصدير",
-            "opt-80": "طابعة فواتير حرارية (80mm)", "opt-58": "طابعة فواتير حرارية صغيرة (58mm)", 
-            "opt-a4": "طابعة مكتبية عادية (A4)", "opt-pdf": "حفظ وتصدير كملف رقمي إلكتروني (PDF)",
-            "lbl-set-print": "خيار الطباعة والتصدير الافتراضي للفواتير", 
+            "set-title": "إعدادات المؤسسة والمطابقة الضريبية", "sub-basic-info": "البيانات الأساسية للمنشأة",
+            "lbl-set-name": "اسم المنشأة / المؤسسة التجاري الرسمي", "lbl-set-vat": "الرقم الضريبي للمنشأة (15 خانة يبدأ بـ 3)", 
+            "lbl-set-vat-hint": "إلزامي لهيئة الزكاة والضريبة والجمارك السعودية ZATCA", "lbl-set-phone": "رقم الهاتف / الاتصال المعتمد في الفاتورة",
+            "sub-national-address": "تفاصيل العنوان الوطني المعتمد (الامتثال الضريبي)", "lbl-addr-city": "المدينة", "lbl-addr-district": "الحي", 
+            "lbl-addr-street": "اسم الشارع رئيسي/فرعي", "lbl-addr-building": "رقم المبنى", "lbl-addr-postal": "الرمز البريدي", 
+            "lbl-addr-additional": "الرقم الإضافي (إن وجد)", "sub-print-settings": "خيارات الطباعة والتصدير", "sub-barcode-settings": "نظام توليد الباركود التصاعدي التلقائي الأصلي",
+            "opt-80": "طابعة فواتير حرارية (80mm)", "opt-58": "طابعة فواتير حرارية صغيرة (58mm)", "opt-a4": "طابعة مكتبية عادية (A4)", 
+            "opt-pdf": "حفظ وتصدير كملف رقمي إلكتروني (PDF)", "lbl-set-print": "خيار الطباعة والتصدير الافتراضي للفواتير", 
             "btn-save-settings": "حفظ الإعدادات ومزامنتها", "btn-dashboard": "العودة للرئيسية"
         },
         en: {
-            "set-title": "Enterprise Settings & Tax Compliance", 
-            "sub-basic-info": "Basic Enterprise Information",
-            "lbl-set-name": "Official Trade / Company Name",
-            "lbl-set-vat": "Enterprise VAT Number (15 Digits starts with 3)", 
-            "lbl-set-vat-hint": "Mandatory for Saudi ZATCA & Tax Regulations",
-            "lbl-set-phone": "Certified Contact Number for Invoices",
-            "sub-national-address": "National Address Details (Tax Compliance)",
-            "lbl-addr-city": "City", "lbl-addr-district": "District", "lbl-addr-street": "Street Name",
-            "lbl-addr-building": "Building No", "lbl-addr-postal": "Postal Code", "lbl-addr-additional": "Additional No",
-            "sub-print-settings": "Printing & Export Options",
-            "opt-80": "Thermal Receipt Printer (80mm)", "opt-58": "Small Thermal Printer (58mm)", 
-            "opt-a4": "Standard Office Printer (A4)", "opt-pdf": "Save & Export as Digital Document (PDF)",
-            "lbl-set-print": "Default Invoice Print/Export Option", 
+            "set-title": "Enterprise Settings & Tax Compliance", "sub-basic-info": "Basic Enterprise Information",
+            "lbl-set-name": "Official Trade / Company Name", "lbl-set-vat": "Enterprise VAT Number (15 Digits starts with 3)", 
+            "lbl-set-vat-hint": "Mandatory for Saudi ZATCA & Tax Regulations", "lbl-set-phone": "Certified Contact Number for Invoices",
+            "sub-national-address": "National Address Details (Tax Compliance)", "lbl-addr-city": "City", "lbl-addr-district": "District", 
+            "lbl-addr-street": "Street Name", "lbl-addr-building": "Building No", "lbl-addr-postal": "Postal Code", 
+            "lbl-addr-additional": "Additional No", "sub-print-settings": "Printing & Export Options", "sub-barcode-settings": "Automatic Serial Barcode Engine",
+            "opt-80": "Thermal Receipt Printer (80mm)", "opt-58": "Small Thermal Printer (58mm)", "opt-a4": "Standard Office Printer (A4)", 
+            "opt-pdf": "Save & Export as Digital Document (PDF)", "lbl-set-print": "Default Invoice Print/Export Option", 
             "btn-save-settings": "Save & Sync Settings", "btn-dashboard": "Back to Dashboard"
         }
     };
 
     document.addEventListener("DOMContentLoaded", function() {
-        // تحميل الإعدادات المحلية التراكمية وتأمين تعبئة الحقول فورياً
+        // تحميل الإعدادات من ذاكرة الجوال المحلية فوراً
         const savedSettings = JSON.parse(localStorage.getItem('altajer_enterprise_settings'));
         if (savedSettings) {
             document.getElementById('setCompanyName').value = savedSettings.company_name || '';
@@ -359,13 +378,22 @@
             document.getElementById('setPhone').value = savedSettings.phone || '';
             document.getElementById('setPrintOption').value = savedSettings.print_option || '80mm';
             
-            // تعبئة حقول العنوان المجزأة المحدثة
             document.getElementById('addrCity').value = savedSettings.city || '';
             document.getElementById('addrDistrict').value = savedSettings.district || '';
             document.getElementById('addrStreet').value = savedSettings.street || '';
             document.getElementById('addrBuildingNo').value = savedSettings.building_no || '';
             document.getElementById('addrPostalCode').value = savedSettings.postal_code || '';
             document.getElementById('addrAdditionalNo').value = savedSettings.additional_no || '';
+
+            // استعادة قيم تهيئة الباركود التلقائي
+            document.getElementById('autoBarcodeToggle').value = savedSettings.auto_barcode !== undefined ? String(savedSettings.auto_barcode) : 'true';
+            document.getElementById('barcodePrefix').value = savedSettings.barcode_prefix || 'PRD-';
+            document.getElementById('barcodeNextNumber').value = savedSettings.barcode_next_number || 1001;
+            toggleBarcodeFields(String(savedSettings.auto_barcode));
+        } else {
+            // تهيئة افتراضية لأول مرة
+            document.getElementById('barcodePrefix').value = 'PRD-';
+            document.getElementById('barcodeNextNumber').value = 1001;
         }
 
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
@@ -373,17 +401,19 @@
         changeLanguage(currentLang);
     });
 
+    function toggleBarcodeFields(status) {
+        const disabled = status === 'false';
+        document.getElementById('barcodePrefix').disabled = disabled;
+        document.getElementById('barcodeNextNumber').disabled = disabled;
+    }
+
     function changeLanguage(lang) {
         localStorage.setItem('altajer_lang', lang);
-        const htmlTag = document.documentElement; 
-        htmlTag.lang = lang; 
-        htmlTag.dir = lang === 'ar' ? 'rtl' : 'ltr';
-        
+        document.documentElement.lang = lang; 
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
         $('[data-i18n]').each(function() { 
             const key = $(this).data('i18n'); 
-            if (translations[lang] && translations[lang][key]) { 
-                $(this).text(translations[lang][key]); 
-            } 
+            if (translations[lang] && translations[lang][key]) { $(this).text(translations[lang][key]); } 
         });
     }
 
@@ -392,7 +422,7 @@
         toast.innerText = message;
         toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
         toast.style.display = 'block'; 
-        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+        setTimeout(() => { toast.style.display = 'none'; }, 3500);
     }
 
     function handleSettingsSubmit(e) {
@@ -403,36 +433,35 @@
             vat_number: document.getElementById('setVatNumber').value,
             phone: document.getElementById('setPhone').value,
             print_option: document.getElementById('setPrintOption').value,
-            
-            // تجميع تفاصيل العنوان المحدثة لإرسالها كـ JSON متكامل
             city: document.getElementById('addrCity').value,
             district: document.getElementById('addrDistrict').value,
             street: document.getElementById('addrStreet').value,
             building_no: document.getElementById('addrBuildingNo').value,
             postal_code: document.getElementById('addrPostalCode').value,
-            additional_no: document.getElementById('addrAdditionalNo').value
+            additional_no: document.getElementById('addrAdditionalNo').value,
+            
+            // تخزين إعدادات الباركود ليتم سحبها في شاشة المخزن أو المشتريات
+            auto_barcode: document.getElementById('autoBarcodeToggle').value === 'true',
+            barcode_prefix: document.getElementById('barcodePrefix').value,
+            barcode_next_number: parseInt(document.getElementById('barcodeNextNumber').value || 1001)
         };
 
-        // التخزين المحلي الفوري لخدمة ملف الفاتورة
+        // 1. التخزين الفوري والمحلي على الجوال لحماية البيانات
         localStorage.setItem('altajer_enterprise_settings', JSON.stringify(settingsPayload));
         
-        // ترحيل وإرسال البيانات للـ API على سيرفر InfinityFree
-        fetch(API_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(settingsPayload)
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                showToast("تم مزامنة وحفظ إعدادات المنشأة الممتثلة ضريبياً بنجاح");
-            } else {
-                showToast("تم الحفظ محلياً وجاري الترحيل تلقائياً عند استقرار السيرفر", true);
-            }
-        })
-        .catch(() => {
-            showToast("تم تأمين وحفظ الإعدادات على الجوال في وضع العمل دون اتصال", true);
-        });
+        // 2. المزامنة والترحيل الفوري لقاعدة بيانات Google Firebase المعتمدة لديك
+        if (typeof firebase !== 'undefined' && firebase.database) {
+            firebase.database().ref('enterprise_settings/').set(settingsPayload)
+            .then(() => {
+                showToast("تم مزامنة وحفظ إعدادات المنشأة وتأمينها في غوغل فايربيس بنجاح");
+            })
+            .catch((err) => {
+                showToast("تم الحفظ محلياً؛ جاري محاولة المزامنة مع فايربيس تلقائياً", true);
+            });
+        } else {
+            // ترحيل احتياطي محلي في بيئة اختبار متصفح الجوال
+            showToast("تم تأمين وحفظ الإعدادات على الجوال (وضع العمل دون اتصال المباشر)", true);
+        }
     }
 </script>
 </body>

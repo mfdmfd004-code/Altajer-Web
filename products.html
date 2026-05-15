@@ -1,8 +1,6 @@
-<!-- التاجر برو المحاسبي - إدارة المنتجات -->
 <div class="card" id="manageItem">
-    <h2 style="text-align: center; color: #0077b6;"><i class="fas fa-boxes-stacked"></i> إدارة المخزن والأصناف</h2>
+    <h2 style="text-align: center; color: #0077b6; margin-bottom: 20px;"><i class="fas fa-boxes-stacked"></i> إدارة المخزن والأصناف</h2>
 
-    <!-- المربع الموحد للمنتجات -->
     <div style="border: 2px solid #0077b6; border-radius: 10px; padding: 15px; background: #fff; margin-bottom: 20px;">
         <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
             <span style="flex: 1; font-weight: bold; color: #0077b6;">كود الصنف (Barcode)</span>
@@ -10,18 +8,35 @@
         </div>
         <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
             <span style="flex: 1; font-weight: bold; color: #0077b6;">اسم المنتج</span>
-            <input type="text" id="itemName" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
+            <input type="text" id="itemName" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;" placeholder="أدخل اسم المنتج">
+        </div>
+        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+            <span style="flex: 1; font-weight: bold; color: #0077b6;">السعر شامل الضريبة (SAR)</span>
+            <input type="number" id="itemPrice" step="0.01" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;" placeholder="0.00">
+        </div>
+        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+            <span style="flex: 1; font-weight: bold; color: #0077b6;">الكمية الحالية بالمخزن</span>
+            <input type="number" id="itemQty" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;" placeholder="0" value="0">
         </div>
         <div style="display: flex; align-items: center; padding: 10px 0;">
-            <span style="flex: 1; font-weight: bold; color: #0077b6;">السعر (SAR)</span>
-            <input type="number" id="itemPrice" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
+            <span style="flex: 1; font-weight: bold; color: #0077b6;">الحالة الضريبية</span>
+            <select id="itemVatType" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center; background: #fff;">
+                <option value="15">خاضع للضريبة الأساسية (15%)</option>
+                <option value="0">خاضع لنسبة الصفر (0%)</option>
+                <option value="exempt">معفى من الضريبة</option>
+            </select>
         </div>
     </div>
 
-    <!-- أزرار التحكم في المخزن -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <button onclick="addItem()" style="grid-column: span 2; background: #0077b6; color: white; padding: 15px; border: none; border-radius: 8px; font-weight: bold;">تسجيل صنف</button>
-        <button onclick="searchItem()" style="background: #6c757d; color: white; padding: 12px; border: none; border-radius: 8px;">بحث بالكود</button>
-        <button onclick="deleteItem()" style="background: #d32f2f; color: white; padding: 12px; border: none; border-radius: 8px;">حذف صنف</button>
+        <button id="btnItemAdd" style="grid-column: span 2; background: #0077b6; color: white; padding: 15px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer;">
+            <i class="fas fa-plus-circle"></i> تسجيل / تحديث صنف
+        </button>
+        <button id="btnItemSearch" style="background: #6c757d; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer;">
+            <i class="fas fa-search"></i> بحث بالكود
+        </button>
+        <button id="btnItemDelete" style="background: #d32f2f; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer;">
+            <i class="fas fa-trash-can"></i> حذف صنف
+        </button>
     </div>
 </div>

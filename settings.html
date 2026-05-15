@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>تاجر برو المحاسبي - إعدادات المؤسسة المطورة</title>
+    <title>تاجر برو المحاسبي - إعدادات المؤسسة والمطابقة الضريبية</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -42,7 +42,7 @@
         }
 
         .settings-container {
-            max-width: 750px;
+            max-width: 800px;
             margin: 0 auto;
             background-color: var(--card-bg);
             border: 2px solid var(--sea-blue);
@@ -79,6 +79,18 @@
             align-items: center;
             gap: 10px;
             text-shadow: 0 0 10px rgba(0, 180, 216, 0.4);
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--neon-cyan);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .input-container {
@@ -178,6 +190,14 @@
             margin-top: 5px;
             display: block;
         }
+
+        .national-address-box {
+            background: rgba(13, 27, 42, 0.4);
+            border: 1px dashed rgba(0, 180, 216, 0.2);
+            border-radius: 12px;
+            padding: 20px 15px 5px 15px;
+            margin-bottom: 25px;
+        }
     </style>
 </head>
 <body>
@@ -200,6 +220,10 @@
 
     <form id="settingsForm" onsubmit="handleSettingsSubmit(event)">
         
+        <div class="section-subtitle">
+            <i class="fas fa-building"></i> <span data-i18n="sub-basic-info">البيانات الأساسية للمنشأة</span>
+        </div>
+
         <div class="input-container">
             <input id="setCompanyName" type="text" required placeholder=" ">
             <label data-i18n="lbl-set-name">اسم المنشأة / المؤسسة التجاري الرسمي</label>
@@ -212,13 +236,57 @@
         </div>
 
         <div class="input-container">
-            <input id="setAddress" type="text" required placeholder=" ">
-            <label data-i18n="lbl-set-address">العنوان الجغرافي الكامل (المدينة، اسم الشارع، الفرع)</label>
-        </div>
-
-        <div class="input-container">
             <input id="setPhone" type="text" required placeholder=" ">
             <label data-i18n="lbl-set-phone">رقم الهاتف / الاتصال المعتمد في الفاتورة</label>
+        </div>
+
+        <div class="section-subtitle">
+            <i class="fas fa-map-marked-alt"></i> <span data-i18n="sub-national-address">تفاصيل العنوان الوطني المعتمد (الامتثال الضريبي)</span>
+        </div>
+
+        <div class="national-address-box">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-container">
+                        <input id="addrCity" type="text" required placeholder=" ">
+                        <label data-i18n="lbl-addr-city">المدينة</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-container">
+                        <input id="addrDistrict" type="text" required placeholder=" ">
+                        <label data-i18n="lbl-addr-district">الحي</label>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="input-container">
+                        <input id="addrStreet" type="text" required placeholder=" ">
+                        <label data-i18n="lbl-addr-street">اسم الشارع رئيسي/فرعي</label>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="input-container">
+                        <input id="addrBuildingNo" type="text" required placeholder=" ">
+                        <label data-i18n="lbl-addr-building">رقم المبنى</label>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="input-container">
+                        <input id="addrPostalCode" type="text" required placeholder=" ">
+                        <label data-i18n="lbl-addr-postal">الرمز البريدي</label>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="input-container">
+                        <input id="addrAdditionalNo" type="text" placeholder=" ">
+                        <label data-i18n="lbl-addr-additional">الرقم الإضافي (إن وجد)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-subtitle">
+            <i class="fas fa-print"></i> <span data-i18n="sub-print-settings">خيارات الطباعة والتصدير</span>
         </div>
 
         <div class="input-container">
@@ -226,8 +294,9 @@
                 <option value="80mm" selected data-i18n="opt-80">طابعة فواتير حرارية (80mm)</option>
                 <option value="58mm" data-i18n="opt-58">طابعة فواتير حرارية صغيرة (58mm)</option>
                 <option value="A4" data-i18n="opt-a4">طابعة مكتبية عادية (A4)</option>
+                <option value="PDF" data-i18n="opt-pdf">حفظ وتصدير كملف رقمي إلكتروني (PDF)</option>
             </select>
-            <label data-i18n="lbl-set-print">خيار الطباعة الافتراضي للفواتير</label>
+            <label data-i18n="lbl-set-print">خيار الطباعة والتصدير الافتراضي للفواتير</label>
         </div>
 
         <div class="d-flex flex-wrap gap-3 mt-4 justify-content-between">
@@ -248,30 +317,55 @@
 
     const translations = {
         ar: {
-            "set-title": "إعدادات المؤسسة والمطابقة الضريبية", "lbl-set-name": "اسم المنشأة / المؤسسة التجاري الرسمي",
-            "lbl-set-vat": "الرقم الضريبي للمنشأة (15 خانة يبدأ بـ 3)", "lbl-set-vat-hint": "إلزامي لهيئة الزكاة والضريبة والجمارك السعودية ZATCA",
-            "lbl-set-address": "العنوان الجغرافي الكامل (المدينة، اسم الشارع، الفرع)", "lbl-set-phone": "رقم الهاتف / الاتصال المعتمد في الفاتورة",
-            "opt-80": "طابعة فواتير حرارية (80mm)", "opt-58": "طابعة فواتير حرارية صغيرة (58mm)", "opt-a4": "طابعة مكتبية عادية (A4)",
-            "lbl-set-print": "خيار الطباعة الافتراضي للفواتير", "btn-save-settings": "حفظ الإعدادات ومزامنتها", "btn-dashboard": "العودة للرئيسية"
+            "set-title": "إعدادات المؤسسة والمطابقة الضريبية", 
+            "sub-basic-info": "البيانات الأساسية للمنشأة",
+            "lbl-set-name": "اسم المنشأة / المؤسسة التجاري الرسمي",
+            "lbl-set-vat": "الرقم الضريبي للمنشأة (15 خانة يبدأ بـ 3)", 
+            "lbl-set-vat-hint": "إلزامي لهيئة الزكاة والضريبة والجمارك السعودية ZATCA",
+            "lbl-set-phone": "رقم الهاتف / الاتصال المعتمد في الفاتورة",
+            "sub-national-address": "تفاصيل العنوان الوطني المعتمد (الامتثال الضريبي)",
+            "lbl-addr-city": "المدينة", "lbl-addr-district": "الحي", "lbl-addr-street": "اسم الشارع رئيسي/فرعي",
+            "lbl-addr-building": "رقم المبنى", "lbl-addr-postal": "الرمز البريدي", "lbl-addr-additional": "الرقم الإضافي (إن وجد)",
+            "sub-print-settings": "خيارات الطباعة والتصدير",
+            "opt-80": "طابعة فواتير حرارية (80mm)", "opt-58": "طابعة فواتير حرارية صغيرة (58mm)", 
+            "opt-a4": "طابعة مكتبية عادية (A4)", "opt-pdf": "حفظ وتصدير كملف رقمي إلكتروني (PDF)",
+            "lbl-set-print": "خيار الطباعة والتصدير الافتراضي للفواتير", 
+            "btn-save-settings": "حفظ الإعدادات ومزامنتها", "btn-dashboard": "العودة للرئيسية"
         },
         en: {
-            "set-title": "Enterprise Settings & Tax Compliance", "lbl-set-name": "Official Trade / Company Name",
-            "lbl-set-vat": "Enterprise VAT Number (15 Digits starts with 3)", "lbl-set-vat-hint": "Mandatory for Saudi ZATCA & Tax Regulations",
-            "lbl-set-address": "Full Address (City, Street Name, Branch)", "lbl-set-phone": "Certified Contact Number for Invoices",
-            "opt-80": "Thermal Receipt Printer (80mm)", "opt-58": "Small Thermal Printer (58mm)", "opt-a4": "Standard Office Printer (A4)",
-            "lbl-set-print": "Default Invoice Print Option", "btn-save-settings": "Save & Sync Settings", "btn-dashboard": "Back to Dashboard"
+            "set-title": "Enterprise Settings & Tax Compliance", 
+            "sub-basic-info": "Basic Enterprise Information",
+            "lbl-set-name": "Official Trade / Company Name",
+            "lbl-set-vat": "Enterprise VAT Number (15 Digits starts with 3)", 
+            "lbl-set-vat-hint": "Mandatory for Saudi ZATCA & Tax Regulations",
+            "lbl-set-phone": "Certified Contact Number for Invoices",
+            "sub-national-address": "National Address Details (Tax Compliance)",
+            "lbl-addr-city": "City", "lbl-addr-district": "District", "lbl-addr-street": "Street Name",
+            "lbl-addr-building": "Building No", "lbl-addr-postal": "Postal Code", "lbl-addr-additional": "Additional No",
+            "sub-print-settings": "Printing & Export Options",
+            "opt-80": "Thermal Receipt Printer (80mm)", "opt-58": "Small Thermal Printer (58mm)", 
+            "opt-a4": "Standard Office Printer (A4)", "opt-pdf": "Save & Export as Digital Document (PDF)",
+            "lbl-set-print": "Default Invoice Print/Export Option", 
+            "btn-save-settings": "Save & Sync Settings", "btn-dashboard": "Back to Dashboard"
         }
     };
 
     document.addEventListener("DOMContentLoaded", function() {
-        // تحميل الإعدادات المحلية فورياً وتعبئة الحقول لتأمين بيانات الجوال
+        // تحميل الإعدادات المحلية التراكمية وتأمين تعبئة الحقول فورياً
         const savedSettings = JSON.parse(localStorage.getItem('altajer_enterprise_settings'));
         if (savedSettings) {
             document.getElementById('setCompanyName').value = savedSettings.company_name || '';
             document.getElementById('setVatNumber').value = savedSettings.vat_number || '';
-            document.getElementById('setAddress').value = savedSettings.address || '';
             document.getElementById('setPhone').value = savedSettings.phone || '';
             document.getElementById('setPrintOption').value = savedSettings.print_option || '80mm';
+            
+            // تعبئة حقول العنوان المجزأة المحدثة
+            document.getElementById('addrCity').value = savedSettings.city || '';
+            document.getElementById('addrDistrict').value = savedSettings.district || '';
+            document.getElementById('addrStreet').value = savedSettings.street || '';
+            document.getElementById('addrBuildingNo').value = savedSettings.building_no || '';
+            document.getElementById('addrPostalCode').value = savedSettings.postal_code || '';
+            document.getElementById('addrAdditionalNo').value = savedSettings.additional_no || '';
         }
 
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
@@ -307,15 +401,22 @@
         const settingsPayload = {
             company_name: document.getElementById('setCompanyName').value,
             vat_number: document.getElementById('setVatNumber').value,
-            address: document.getElementById('setAddress').value,
             phone: document.getElementById('setPhone').value,
-            print_option: document.getElementById('setPrintOption').value
+            print_option: document.getElementById('setPrintOption').value,
+            
+            // تجميع تفاصيل العنوان المحدثة لإرسالها كـ JSON متكامل
+            city: document.getElementById('addrCity').value,
+            district: document.getElementById('addrDistrict').value,
+            street: document.getElementById('addrStreet').value,
+            building_no: document.getElementById('addrBuildingNo').value,
+            postal_code: document.getElementById('addrPostalCode').value,
+            additional_no: document.getElementById('addrAdditionalNo').value
         };
 
-        // حفظ محلي فوري لتحديث بيانات فاتورة invoice.html فورياً
+        // التخزين المحلي الفوري لخدمة ملف الفاتورة
         localStorage.setItem('altajer_enterprise_settings', JSON.stringify(settingsPayload));
         
-        // إرسال ومزامنة مع السيرفر وقاعدة البيانات MySQL
+        // ترحيل وإرسال البيانات للـ API على سيرفر InfinityFree
         fetch(API_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -324,13 +425,13 @@
         .then(res => res.json())
         .then(data => {
             if(data.success) {
-                showToast("تم مزامنة وحفظ إعدادات المؤسسة بنجاح في السيرفر وقاعدة البيانات");
+                showToast("تم مزامنة وحفظ إعدادات المنشأة الممتثلة ضريبياً بنجاح");
             } else {
-                showToast("تم الحفظ محلياً وجاري إعادة الترحيل للسيرفر عند استقرار الاتصال", true);
+                showToast("تم الحفظ محلياً وجاري الترحيل تلقائياً عند استقرار السيرفر", true);
             }
         })
         .catch(() => {
-            showToast("يعمل النظام في وضع الحماية المحلي المستقر، تم الحفظ بنجاح على الجوال", true);
+            showToast("تم تأمين وحفظ الإعدادات على الجوال في وضع العمل دون اتصال", true);
         });
     }
 </script>

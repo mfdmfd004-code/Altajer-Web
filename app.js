@@ -2,9 +2,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// إعدادات الربط بـ Firebase (تأكد من الحفاظ على بيانات مشروعك هنا)
+// إعدادات الربط بـ Firebase (ضع بيانات مشروعك السحابي هنا ليعمل الاتصال حياً فوراً)
 const firebaseConfig = {
-    // ضع بيانات مشروعك السحابي هنا ليعمل الاتصال حياً فوراً
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -13,6 +18,7 @@ const db = getFirestore(app);
 let cart = [];
 
 const MainApp = {
+    // 1. المخزن وإدارة المنتجات الجماعية والفردية
     saveAllProducts: async function() {
         const rows = document.querySelectorAll('#product-list tr');
         let productsData = [];
@@ -21,12 +27,13 @@ const MainApp = {
             const name = document.getElementById(`p-name-${id}`).value;
             if (name && name.trim() !== "") {
                 productsData.push({
-                    code: id, name: name,
+                    code: id, 
+                    name: name,
                     unit: document.getElementById(`p-unit-${id}`).value,
                     size: document.getElementById(`p-size-${id}`).value,
-                    price: parseFloat(document.getElementById(`p-price-${id}`).value),
-                    quantity: parseFloat(document.getElementById(`p-qty-${id}`).value),
-                    total: parseFloat(document.getElementById(`p-total-${id}`).value),
+                    price: parseFloat(document.getElementById(`p-price-${id}`).value) || 0,
+                    quantity: parseFloat(document.getElementById(`p-qty-${id}`).value) || 0,
+                    total: parseFloat(document.getElementById(`p-total-${id}`).value) || 0,
                     notes: document.getElementById(`p-notes-${id}`).value,
                     timestamp: new Date()
                 });
@@ -43,12 +50,16 @@ const MainApp = {
 
     exportToExcel: function(tableId) {
         const table = document.getElementById(tableId);
+        if(!table) return alert("الجدول غير موجود لتصديره.");
         let html = table.outerHTML;
         let url = 'data:application/vnd.ms-excel,' + escape(html);
         let link = document.createElement("a");
-        link.download = "مخزون_التاجر.xls"; link.href = url; link.click();
+        link.download = "مخزون_التاجر.xls"; 
+        link.href = url; 
+        link.click();
     },
 
+    // 2. إدارة ملفات العملاء
     customer: {
         addOrUpdate: async function() {
             const id = document.getElementById('custId').value.trim();
@@ -59,7 +70,8 @@ const MainApp = {
             if (!id || !name) return alert("يرجى إدخال معرّف واسم العميل.");
             try {
                 await setDoc(doc(db, "customers", id), { id, name, vat, address, contact, timestamp: new Date() });
-                alert("تم حفظ بيانات العميل بنجاح."); this.clearForm();
+                alert("تم حفظ بيانات العميل بنجاح."); 
+                this.clearForm();
             } catch (e) { alert("خطأ: " + e.message); }
         },
         search: async function() {
@@ -81,16 +93,21 @@ const MainApp = {
             if (!id) return alert("يرجى إدخال معرّف العميل للحذف.");
             if (!confirm("هل أنت متأكد من الحذف؟")) return;
             try {
-                await deleteDoc(doc(db, "customers", id)); alert("تم الحذف."); this.clearForm();
+                await deleteDoc(doc(db, "customers", id)); 
+                alert("تم الحذف بنجاح."); 
+                this.clearForm();
             } catch (e) { alert("خطأ: " + e.message); }
         },
         clearForm: function() {
-            document.getElementById('custId').value = ''; document.getElementById('custName').value = '';
-            document.getElementById('custVat').value = ''; document.getElementById('custAddress').value = '';
+            document.getElementById('custId').value = ''; 
+            document.getElementById('custName').value = '';
+            document.getElementById('custVat').value = ''; 
+            document.getElementById('custAddress').value = '';
             document.getElementById('custContact').value = '';
         }
     },
 
+    // 3. التحكم المنفرد في عناصر المخزن
     item: {
         addOrUpdate: async function() {
             const code = document.getElementById('itemCode').value.trim();
@@ -100,7 +117,8 @@ const MainApp = {
             if (!code || !name) return alert("يرجى إدخال كود واسم الصنف.");
             try {
                 await setDoc(doc(db, "products", code), { code, name, price, quantity: qty, timestamp: new Date() });
-                alert("تم حفظ الصنف بالمخزن."); this.clearForm();
+                alert("تم حفظ الصنف بالمخزن."); 
+                this.clearForm();
             } catch (e) { alert("خطأ: " + e.message); }
         },
         search: async function() {
@@ -113,78 +131,138 @@ const MainApp = {
                     document.getElementById('itemName').value = data.name || '';
                     document.getElementById('itemPrice').value = data.price || 0;
                     document.getElementById('itemQty').value = data.quantity || 0;
-                } else { alert("الصنف غير موجود."); }
+                } else { alert("الصنف غير موجود في المخزن."); }
             } catch (e) { alert("خطأ: " + e.message); }
         },
         delete: async function() {
             const code = document.getElementById('itemCode').value.trim();
             if (!code) return alert("يرجى إدخال الكود للحذف.");
-            if (!confirm("هل تريد الحذف؟")) return;
+            if (!confirm("هل تريد الحذف نهائياً؟")) return;
             try {
-                await deleteDoc(doc(db, "products", code)); alert("تم الحذف."); this.clearForm();
+                await deleteDoc(doc(db, "products", code)); 
+                alert("تم الحذف بنجاح."); 
+                this.clearForm();
             } catch (e) { alert("خطأ: " + e.message); }
         },
         clearForm: function() {
-            document.getElementById('itemCode').value = ''; document.getElementById('itemName').value = '';
-            document.getElementById('itemPrice').value = ''; document.getElementById('itemQty').value = '';
+            document.getElementById('itemCode').value = ''; 
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemPrice').value = ''; 
+            document.getElementById('itemQty').value = '';
         }
     },
 
+    // 4. نظام الكاشير المحاسبي وخصم المخزن
     pos: {
         addToCart: function() {
-            const itemSelect = document.getElementById('cbItem'); const code = itemSelect.value;
+            const itemSelect = document.getElementById('cbItem'); 
+            const code = itemSelect.value;
             const qtyBought = parseFloat(document.getElementById('poQtyBought').value) || 0;
             const maxQty = parseFloat(document.getElementById('poQtyOnHand').value) || 0;
             if (!code) return alert("اختر صنفاً أولاً.");
-            if (qtyBought <= 0 || qtyBought > maxQty) return alert("كمية غير صحيحة أو غير متوفرة.");
+            if (qtyBought <= 0 || qtyBought > maxQty) return alert("كمية غير صحيحة أو تجاوزت المتاح بالمخزن.");
+            
             const selectedOption = itemSelect.options[itemSelect.selectedIndex];
             const name = selectedOption.text.split(" - ")[0];
             const priceInclTax = parseFloat(selectedOption.dataset.price);
             const existingItem = cart.find(i => i.code === code);
+            
             if (existingItem) {
-                if ((existingItem.qty + qtyBought) > maxQty) return alert("تجاوزت المتاح!");
-                existingItem.qty += qtyBought; existingItem.subtotal = existingItem.price * existingItem.qty;
+                if ((existingItem.qty + qtyBought) > maxQty) return alert("إجمالي الكمية بالسلة تجاوز المتاح بالمخزن!");
+                existingItem.qty += qtyBought; 
+                existingItem.subtotal = existingItem.price * existingItem.qty;
             } else {
                 cart.push({ code: code, name: name, price: priceInclTax, qty: qtyBought, subtotal: priceInclTax * qtyBought });
             }
-            this.updateCartTable(); document.getElementById('poQtyBought').value = '';
+            this.updateCartTable(); 
+            document.getElementById('poQtyBought').value = '';
         },
         updateCartTable: function() {
-            const tbody = document.getElementById('tblPlaceOrder'); if(!tbody) return;
-            tbody.innerHTML = ''; let totalExclTax = 0; let totalTax = 0; let finalNet = 0;
+            const tbody = document.getElementById('tblPlaceOrder'); 
+            if(!tbody) return;
+            tbody.innerHTML = ''; 
+            let totalExclTax = 0; 
+            let totalTax = 0; 
+            let finalNet = 0;
+            
             cart.forEach((item, index) => {
-                const itemPriceExcl = item.price / 1.15; const itemSubtotalExcl = itemPriceExcl * item.qty;
-                totalExclTax += itemSubtotalExcl; totalTax += (itemSubtotalExcl * 0.15); finalNet += item.subtotal;
-                tbody.innerHTML += `<tr><td>${item.code}</td><td>${item.name}</td><td>${itemPriceExcl.toFixed(2)}</td><td>${item.qty}</td><td>${item.subtotal.toFixed(2)}</td><td><button class="btn btn-sm btn-danger" onclick="window.App.pos.removeItem(${index})"><i class="fas fa-trash"></i></button></td></tr>`;
+                const itemPriceExcl = item.price / 1.15; 
+                const itemSubtotalExcl = itemPriceExcl * item.qty;
+                totalExclTax += itemSubtotalExcl; 
+                totalTax += (itemSubtotalExcl * 0.15); 
+                finalNet += item.subtotal;
+                
+                tbody.innerHTML += `<tr>
+                    <td>${item.code}</td>
+                    <td>${item.name}</td>
+                    <td>${itemPriceExcl.toFixed(2)}</td>
+                    <td>${item.qty}</td>
+                    <td>${item.subtotal.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="window.App.pos.removeItem(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
             });
-            document.getElementById('subTotalVal').innerText = totalExclTax.toFixed(2);
-            document.getElementById('taxVal').innerText = totalTax.toFixed(2);
-            document.getElementById('totalVal').innerText = finalNet.toFixed(2);
+            
+            if(document.getElementById('subTotalVal')) document.getElementById('subTotalVal').innerText = totalExclTax.toFixed(2);
+            if(document.getElementById('taxVal')) document.getElementById('taxVal').innerText = totalTax.toFixed(2);
+            if(document.getElementById('totalVal')) document.getElementById('totalVal').innerText = finalNet.toFixed(2);
         },
-        removeItem: function(index) { cart.splice(index, 1); this.updateCartTable(); },
+        removeItem: function(index) { 
+            cart.splice(index, 1); 
+            this.updateCartTable(); 
+        },
         placeOrder: async function() {
-            if (cart.length === 0) return alert("السلة فارغة!");
+            if (cart.length === 0) return alert("السلة فارغة المحتوى!");
             try {
                 const orderId = "INV-" + Date.now();
-                await setDoc(doc(db, "orders", orderId), { customerId: document.getElementById('poCustId').value || "نقدي", items: cart, netTotal: parseFloat(document.getElementById('totalVal').innerText), timestamp: new Date() });
+                const netTotal = parseFloat(document.getElementById('totalVal').innerText) || 0;
+                const customerId = document.getElementById('poCustId').value || "نقدي";
+                
+                // حفظ رأس الفاتورة والبيانات المحاسبية في الكولكشن الأساسي
+                await setDoc(doc(db, "orders", orderId), { 
+                    customerId: customerId, 
+                    items: cart, 
+                    netTotal: netTotal, 
+                    timestamp: new Date() 
+                });
+                
+                // التعديل التراكمي: تحديث جرد المخزن المباشر بخصم الكميات المشتراة
                 for (const item of cart) {
-                    const itemRef = doc(db, "products", item.code); const itemSnap = await getDoc(itemRef);
-                    if (itemSnap.exists()) await setDoc(itemRef, { quantity: (itemSnap.data().quantity || 0) - item.qty }, { merge: true });
+                    const itemRef = doc(db, "products", item.code); 
+                    const itemSnap = await getDoc(itemRef);
+                    if (itemSnap.exists()) {
+                        const currentQty = parseFloat(itemSnap.data().quantity) || 0;
+                        await setDoc(itemRef, { quantity: currentQty - item.qty }, { merge: true });
+                    }
                 }
-                alert(`حُفظت الفاتورة: ${orderId}`); cart = []; this.updateCartTable();
-            } catch (e) { alert("خطأ: " + e.message); }
+                
+                // توليد بيانات الـ QR Code لمتطلبات الفاتورة المبسطة
+                if(typeof window.generateInvoiceQR === "function") {
+                    window.generateInvoiceQR(orderId, netTotal);
+                }
+                
+                alert(`حُفظت الفاتورة بنجاح برقم: ${orderId}`); 
+                cart = []; 
+                this.updateCartTable();
+            } catch (e) { alert("خطأ في معالجة الفاتورة: " + e.message); }
         }
     }
 };
 
-// جعل الكائن متاحاً على النطاق العالمي ليعمل داخل المتصفح مباشرة
+// إتاحة الكائن في النطاق العالمي ليعمل مع أزرار صفحة الـ HTML
 window.App = MainApp;
 
 $(document).ready(function() {
+    // الاستماع الحي لكولكشن العملاء وتحديث لوحة الكاشير والإدارة
     onSnapshot(collection(db, "customers"), (snapshot) => {
-        const tbody = document.getElementById('customerTableBody'); const cbCustomer = document.getElementById('cbCustomer');
+        const tbody = document.getElementById('customerTableBody'); 
+        const cbCustomer = document.getElementById('cbCustomer');
         if(tbody) tbody.innerHTML = '';
         if(cbCustomer) cbCustomer.innerHTML = '<option value="" selected>اختر العميل</option>';
+        
         snapshot.forEach((doc) => {
             const data = doc.data();
             if(tbody) tbody.innerHTML += `<tr><td>${data.id}</td><td>${data.name}</td><td>${data.vat || '--'}</td><td>${data.contact}</td><td>${data.address}</td></tr>`;
@@ -193,10 +271,13 @@ $(document).ready(function() {
         if(document.getElementById('customerCount')) document.getElementById('customerCount').innerText = snapshot.size;
     });
 
+    // الاستماع الحي لكولكشن المنتجات والمخزون
     onSnapshot(collection(db, "products"), (snapshot) => {
-        const tbody = document.getElementById('itemTableBody'); const cbItem = document.getElementById('cbItem');
+        const tbody = document.getElementById('itemTableBody'); 
+        const cbItem = document.getElementById('cbItem');
         if(tbody) tbody.innerHTML = '';
         if(cbItem) cbItem.innerHTML = '<option value="" selected>اختر الصنف</option>';
+        
         snapshot.forEach((doc) => {
             const data = doc.data();
             if(tbody) tbody.innerHTML += `<tr><td>${data.code}</td><td>${data.name}</td><td>${parseFloat(data.price || 0).toFixed(2)}</td><td>${data.quantity || 0}</td></tr>`;
@@ -204,10 +285,12 @@ $(document).ready(function() {
         });
     });
 
+    // مراقبة عدد الفواتير الإجمالي وعرضها في الكاونتر الرئيسي للـ Dashboard
     onSnapshot(collection(db, "orders"), (snapshot) => {
         if(document.getElementById('orderCount')) document.getElementById('orderCount').innerText = snapshot.size;
     });
 
+    // أحداث التغير في اختيار العميل والصنف لتعبئة البيانات التلقائية
     $('#cbCustomer').change(async function() {
         const id = $(this).val();
         if(id) {
@@ -227,20 +310,24 @@ $(document).ready(function() {
         }
     });
 
-    $('#manageCustomer .btn-neon').eq(0).click(() => window.App.customer.addOrUpdate());
-    $('#manageCustomer .btn-neon').eq(1).click(() => window.App.customer.search());
-    $('#manageCustomer .btn-neon').eq(2).click(() => window.App.customer.addOrUpdate());
-    $('#manageCustomer .btn-neon').eq(3).click(() => window.App.customer.delete());
-    $('#manageItem .btn-neon').eq(0).click(() => window.App.item.addOrUpdate());
-    $('#manageItem .btn-neon').eq(1).click(() => window.App.item.search());
-    $('#manageItem .btn-neon').eq(2).click(() => window.App.item.addOrUpdate());
-    $('#manageItem .btn-neon').eq(3).click(() => window.App.item.delete());
-    $('#btnAddToCart').click(() => window.App.pos.addToCart());
-    $('#btnPlaceOrder').click(() => window.App.pos.placeOrder());
+    // ربط مستقر ومباشر للأزرار لمنع تداخل العمليات
+    $(document).on('click', '#btnCustomerAdd, #btnCustomerUpdate', () => window.App.customer.addOrUpdate());
+    $(document).on('click', '#btnCustomerSearch', () => window.App.customer.search());
+    $(document).on('click', '#btnCustomerDelete', () => window.App.customer.delete());
+    
+    $(document).on('click', '#btnItemAdd, #btnItemUpdate', () => window.App.item.addOrUpdate());
+    $(document).on('click', '#btnItemSearch', () => window.App.item.search());
+    $(document).on('click', '#btnItemDelete', () => window.App.item.delete());
+    
+    $(document).on('click', '#btnAddToCart', () => window.App.pos.addToCart());
+    $(document).on('click', '#btnPlaceOrder', () => window.App.pos.placeOrder());
+    $(document).on('click', '#btnSaveAllProducts', () => window.App.saveAllProducts());
 });
 
 window.calculateTotal = function(code) {
-    const price = document.getElementById(`p-price-${code}`).value || 0;
-    const qty = document.getElementById(`p-qty-${code}`).value || 0;
-    if(document.getElementById(`p-total-${code}`)) document.getElementById(`p-total-${code}`).value = (price * qty).toFixed(2);
+    const price = parseFloat(document.getElementById(`p-price-${code}`).value) || 0;
+    const qty = parseFloat(document.getElementById(`p-qty-${code}`).value) || 0;
+    if(document.getElementById(`p-total-${code}`)) {
+        document.getElementById(`p-total-${code}`).value = (price * qty).toFixed(2);
+    }
 };

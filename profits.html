@@ -1,23 +1,361 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>الأرباح والخسائر - التاجر برو</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التاجر برو المحاسبي - إدارة الأصناف</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* الستايل الأزرق الرستيك الاحترافي الموحد للوحة التحكم */
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --accent-blue: #0284c7;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 50px;
+        }
+
+        .header-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-panel h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .form-card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        /* نظام Float Labels المريح للكتابة من الجوال */
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 40px 12px 12px;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .form-group i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .form-group textarea + i {
+            top: 25px;
+        }
+
+        .file-input-wrapper {
+            background-color: var(--bg-dark);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+        }
+
+        .btn-primary { background-color: var(--accent-blue); color: #fff; }
+        .btn-success { background-color: var(--accent-green); color: #fff; }
+        .btn-danger { background-color: var(--accent-red); color: #fff; }
+
+        /* جدول عرض الأصناف المضاف حياً */
+        .table-title {
+            font-size: 18px;
+            margin: 20px 0 10px 0;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 15px;
+        }
+
+        th {
+            background-color: rgba(2, 132, 199, 0.1);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        td img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            background-color: var(--bg-dark);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+    </style>
 </head>
 <body>
-    <div class="card">
-        <h2><i class="fas fa-chart-line"></i> تقرير الأرباح والخسائر</h2>
-        <div class="stats-grid">
-            <div class="stat-card" style="border-color: #27ae60;"><h5>صافي الربح</h5><p id="net-profit">0.00</p></div>
-            <div class="stat-card" style="border-color: #e74c3c;"><h5>إجمالي المصاريف</h5><p id="total-expenses">0.00</p></div>
-        </div>
-        <hr>
-        <div id="profit-details">
-            <!-- تفاصيل الحسابات تظهر هنا -->
-        </div>
+
+<div class="container">
+    
+    <div class="header-panel">
+        <h1><i class="fa-solid fa-box-open"></i> إدارة المخزن والأصناف المطور</h1>
     </div>
-    <script type="module" src="app.js"></script>
+
+    <div class="form-card">
+        <form id="productForm" onsubmit="event.preventDefault();">
+            
+            <div class="form-group">
+                <input type="text" id="prodBarcode" placeholder="كود الصنف / الباركود (Barcode)" required>
+                <i class="fa-solid fa-barcode"></i>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="prodName" placeholder="اسم المنتج الفعلي" required>
+                <i class="fa-solid fa-tag"></i>
+            </div>
+
+            <div class="form-group">
+                <select id="prodCategory" required>
+                    <option value="" disabled selected>اختر قسم الصنف الرئيسي هنا...</option>
+                    <option value="مواد غذائية">مواد غذائية</option>
+                    <option value="مخبوزات">مخبوزات / حلويات</option>
+                    <option value="لحوم ومبردات">لحوم ومبردات</option>
+                    <option value="مشروبات">مشروبات وعصائر</option>
+                    <option value="أخرى">أصناف أخرى</option>
+                </select>
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+
+            <div class="form-group">
+                <input type="number" step="0.01" id="prodPrice" placeholder="سعر البيع شامل الضريبة (SAR)" required>
+                <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
+
+            <div class="form-group">
+                <textarea id="prodDescription" placeholder="وصف وتفاصيل الصنف الاختيارية..."></textarea>
+                <i class="fa-solid fa-file-lines"></i>
+            </div>
+
+            <div class="form-group">
+                <div class="file-input-wrapper">
+                    <i class="fa-solid fa-cloud-arrow-up" style="position: static; color: var(--accent-blue);"></i>
+                    <p style="margin: 5px 0 0 0; font-size: 14px; color: var(--text-muted);">اضغط هنا لرفع صورة المنتج</p>
+                    <input type="file" id="prodImage" accept="image/*">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" onclick="saveProductToFirebase()">
+                    <i class="fa-solid fa-floppy-disk"></i> تسجيل صنف سحابياً
+                </button>
+            </div>
+            
+            <div class="btn-group">
+                <button type="button" class="btn btn-success" onclick="searchProductByBarcode()">
+                    <i class="fa-solid fa-magnifying-glass"></i> بحث بالباركود
+                </button>
+                <button type="button" class="btn btn-danger" onclick="deleteProductFromFirebase()">
+                    <i class="fa-solid fa-trash-can"></i> حذف الصنف
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="table-title">
+        <i class="fa-solid fa-list-check" style="color: var(--accent-blue);"></i> الأصناف المسجلة الحالية
+    </div>
+    
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>الصورة</th>
+                    <th>الباركود</th>
+                    <th>الاسم</th>
+                    <th>القسم</th>
+                    <th>السعر</th>
+                </tr>
+            </thead>
+            <tbody id="liveProductsTable">
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted);">بانتظار مزامنة الأصناف سحابياً...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    // هذه الدوال مجهزة للاتصال فوراً بـ الكود الخاص بك في app.js أو db.js
+    
+    function saveProductToFirebase() {
+        const barcode = document.getElementById('prodBarcode').value;
+        const name = document.getElementById('prodName').value;
+        const category = document.getElementById('prodCategory').value;
+        const price = document.getElementById('prodPrice').value;
+        const description = document.getElementById('prodDescription').value;
+        
+        if(!barcode || !name || !price) {
+            alert("يرجى إكمال الحقول الأساسية: الباركود، الاسم، والسعر!");
+            return;
+        }
+
+        // الكائن المجهز لإرساله إلى Firestore أو Realtime Database
+        const productData = {
+            barcode: barcode,
+            name: name,
+            category: category,
+            price: parseFloat(price),
+            description: description,
+            timestamp: new Date().getTime()
+        };
+
+        console.log("إرسال البيانات السحابية إلى Firebase:", productData);
+        
+        /* الربط السحابي:
+           هنا يتم استدعاء دالة الحفظ الخاصة بـ Firebase الموجودة في ملف app.js لديك، مثل:
+           db.collection("products").doc(barcode).set(productData)...
+        */
+        
+        // تنبيه مؤقت للتأكيد أثناء تشغيل السكريبت المباشر
+        alert("تم تجهيز الكائن السحابي لإضافة الصنف بنجاح وبشكل تراكمي!");
+        document.getElementById('productForm').reset();
+    }
+
+    function searchProductByBarcode() {
+        const barcode = document.getElementById('prodBarcode').value;
+        if(!barcode) {
+            alert("يرجى إدخال باركود البحث أولاً!");
+            return;
+        }
+        alert("جاري سحب بيانات الباركود " + barcode + " من Firebase...");
+    }
+
+    function deleteProductFromFirebase() {
+        const barcode = document.getElementById('prodBarcode').value;
+        if(!barcode) {
+            alert("يرجى تحديد الصنف عبر إدخال الباركود المراد حذفه!");
+            return;
+        }
+        if(confirm("هل أنت متأكد من حذف هذا الصنف نهائياً من قاعدة بيانات Firebase؟")) {
+            alert("تم تنفيذ أمر الحذف السحابي للصنف!");
+        }
+    }
+</script>
+
 </body>
 </html>

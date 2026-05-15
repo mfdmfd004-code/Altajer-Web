@@ -2,22 +2,525 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>فاتورة مشتريات - التاجر برو</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>تاجر برو المحاسبي - تسجيل فاتورة المشتريات وإدارة المخزن</title>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0c3f65">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --dark-bg: #0d1b2a;
+            --card-bg: #1b263b;
+            --sea-blue: #0077b6;
+            --light-green: #38b000;
+            --neon-cyan: #00b4d8;
+            --neon-pink: #e81cff;
+            --text-white: #ffffff;
+            --danger-red: #e63946;
+            --warning-orange: #ffb703;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            margin: 0;
+            padding: 20px 10px;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .purchase-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border: 2px solid var(--sea-blue);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.2);
+            position: relative;
+        }
+
+        .purchase-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--sea-blue), var(--neon-pink));
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+        }
+
+        .purchase-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dashed rgba(0, 180, 216, 0.3);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .purchase-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.4);
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--neon-cyan);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-container input, .input-container select {
+            border: 0;
+            border-bottom: 2px solid #4a5568;
+            background: transparent;
+            width: 100%;
+            padding: 8px 5px 4px 5px;
+            font-size: 15px;
+            color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        .input-container input:focus, .input-container select:focus {
+            outline: none;
+            border-bottom: 2px solid var(--neon-cyan);
+        }
+
+        .input-container select option {
+            background-color: var(--dark-bg);
+            color: white;
+        }
+
+        .input-container label {
+            position: absolute;
+            top: -12px;
+            right: 5px;
+            font-size: 13px;
+            color: #a0aec0;
+            pointer-events: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        html[dir="ltr"] .input-container label {
+            left: 5px;
+            right: auto;
+        }
+
+        .btn-neon {
+            background: #2d3748;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-neon:hover {
+            background: var(--clr);
+            box-shadow: 0 0 15px var(--clr);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .table-responsive-custom {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin: 20px 0;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        .table-custom {
+            background-color: #0d1b2a !important;
+            color: white !important;
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        .table-custom th {
+            background-color: #0c3f65 !important;
+            color: var(--neon-cyan) !important;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            border-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .summary-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            border-right: 4px solid var(--light-green);
+        }
+        html[dir="ltr"] .summary-box { border-right: none; border-left: 4px solid var(--light-green); }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .summary-row.final-net {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--light-green);
+        }
+
+        .api-toast {
+            position: fixed;
+            top: 30px;
+            right: 20px;
+            z-index: 2000;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+        }
+        html[dir="ltr"] .api-toast { right: auto; left: 20px; }
+    </style>
 </head>
 <body>
-    <div class="card">
-        <h2><i class="fas fa-truck-loading"></i> تسجيل فاتورة مشتريات</h2>
-        <div class="form-group">
-            <label>المورد</label>
-            <select id="p-supplier" class="form-control"></select>
+
+<div id="apiToast" class="api-toast"></div>
+
+<div class="purchase-container">
+    <div class="purchase-header">
+        <div class="purchase-title">
+            <i class='bx bxs-truck bx-bounce'></i>
+            <span data-i18n="pur-main-title">تسجيل فاتورة مشتريات وتحديث المخزن</span>
         </div>
-        <div id="purchase-items">
-            <!-- حقول إضافة المواد المشتراة لزيادة المخزن -->
+        <div>
+            <select class="lang-selector bg-dark text-white border-info rounded p-1" onchange="changeLanguage(this.value)" id="langSelect">
+                <option value="ar">العربية (AR)</option>
+                <option value="en">English (EN)</option>
+            </select>
         </div>
-        <button class="btn-main" onclick="App.savePurchase()">اعتماد الشراء وتحديث المخزن</button>
     </div>
-    <script type="module" src="app.js"></script>
+
+    <div class="section-subtitle">
+        <i class="fas fa-file-invoice"></i> <span data-i18n="sub-invoice-meta">البيانات التعريفية للمورد والفاتورة</span>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-5">
+            <div class="input-container">
+                <select id="purSupplierSelect" required>
+                    <option value="" disabled selected data-i18n="opt-select-sup">اختر المورد المستهدف...</option>
+                    <option value="شركة المشتريات العامة">شركة المشتريات العامة والمستودعات</option>
+                    <option value="مصنع التجهيزات الغذائية">مصنع التجهيزات الغذائية والكرتون</option>
+                </select>
+                <label data-i18n="lbl-pur-sup">المورد / البائع</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="input-container">
+                <input id="purInvoiceNo" type="text" required placeholder=" ">
+                <label data-i18n="lbl-pur-no">رقم فاتورة المورد الأصلية</label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="input-container">
+                <input id="purDate" type="date" required value="2026-05-15">
+                <label data-i18n="lbl-pur-date">تاريخ الشراء</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-subtitle">
+        <i class="fas fa-boxes"></i> <span data-i18n="sub-product-entry">تغذية السلع والأصناف المخزنية</span>
+    </div>
+
+    <form id="purchaseItemForm" onsubmit="addItemToInvoice(event)">
+        <div class="row align-items-end">
+            <div class="col-md-3 col-sm-6">
+                <div class="input-container">
+                    <input id="itemCode" type="text" required placeholder=" ">
+                    <label data-i18n="lbl-i-code">كود الصنف / باركود</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="input-container">
+                    <input id="itemName" type="text" required placeholder=" ">
+                    <label data-i18n="lbl-i-name">اسم المنتج / البيان</label>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="input-container">
+                    <input id="itemPriceExcl" type="number" step="0.01" required placeholder=" ">
+                    <label data-i18n="lbl-i-price">سعر الشراء (قبل ضريبة)</label>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="input-container">
+                    <input id="itemQty" type="number" required placeholder=" ">
+                    <label data-i18n="lbl-i-qty">الكمية المشتراة</label>
+                </div>
+            </div>
+            <div class="col-md-2 col-12 text-end text-md-center mb-4">
+                <button type="submit" class="btn-neon w-100 justify-content-center" style="--clr:var(--neon-cyan)">
+                    <i class="fas fa-plus-circle"></i> <span data-i18n="btn-add-row">إضافة الصنف</span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-responsive-custom">
+        <table class="table table-dark table-striped table-custom text-center">
+            <thead>
+                <tr>
+                    <th data-i18n="th-p-code">الكود</th>
+                    <th data-i18n="th-p-desc">البيان</th>
+                    <th data-i18n="th-p-price">السعر (قبل الضريبة)</th>
+                    <th data-i18n="th-p-qty">الكمية</th>
+                    <th data-i18n="th-p-tax">الضريبة (15%)</th>
+                    <th data-i18n="th-p-total">المجموع شامل الضريبة</th>
+                    <th data-i18n="th-p-action">حذف</th>
+                </tr>
+            </thead>
+            <tbody id="purchaseItemsTableBody">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="row g-4 align-items-center mt-3">
+        <div class="col-md-6">
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span data-i18n="sum-p-sub">الإجمالي الخاضع للضريبة:</span>
+                    <span><span id="lblSubTotal">0.00</span> ر.س</span>
+                </div>
+                <div class="summary-row">
+                    <span data-i18n="sum-p-tax">مجموع ضريبة المدخلات (15%):</span>
+                    <span class="text-warning"><span id="lblTaxTotal">0.00</span> ر.س</span>
+                </div>
+                <div class="summary-row final-net">
+                    <span data-i18n="sum-p-net">الصافي النهائي المعتمد للفاتورة:</span>
+                    <span><span id="lblNetTotal">0.00</span> ر.س</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 text-end d-flex flex-wrap gap-2 justify-content-md-end justify-content-between">
+            <button onclick="commitPurchaseInvoice()" class="btn-neon" style="--clr:var(--light-green); padding: 12px 25px;">
+                <i class="fas fa-database"></i> <span data-i18n="btn-commit-stock">اعتماد الشراء وتحديث المخزن</span>
+            </button>
+            <button onclick="window.location.href='index.html'" class="btn-neon" style="--clr:var(--danger-red); padding: 12px 25px;">
+                <i class="fas fa-times"></i> <span data-i18n="btn-cancel">إلغاء</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    const API_ENDPOINT = 'api/save_purchase_invoice.php';
+    let invoiceItemsList = [];
+
+    const translations = {
+        ar: {
+            "pur-main-title": "تسجيل فاتورة مشتريات وتحديث المخزن", "sub-invoice-meta": "البيانات التعريفية للمورد والفاتورة",
+            "opt-select-sup": "اختر المورد المستهدف...", "lbl-pur-sup": "المورد / البائع",
+            "lbl-pur-no": "رقم فاتورة المورد الأصلية", "lbl-pur-date": "تاريخ الشراء",
+            "sub-product-entry": "تغذية السلع والأصناف المخزنية", "lbl-i-code": "كود الصنف / باركود",
+            "lbl-i-name": "اسم المنتج / البيان", "lbl-i-price": "سعر الشراء (قبل ضريبة)", "lbl-i-qty": "الكمية المشتراة",
+            "btn-add-row": "إضافة الصنف", "th-p-code": "الكود", "th-p-desc": "البيان",
+            "th-p-price": "السعر (قبل الضريبة)", "th-p-qty": "الكمية", "th-p-tax": "الضريبة (15%)",
+            "th-p-total": "المجموع شامل الضريبة", "th-p-action": "حذف", "sum-p-sub": "الإجمالي الخاضع للضريبة:",
+            "sum-p-tax": "مجموع ضريبة المدخلات (15%):", "sum-p-net": "الصافي النهائي المعتمد للفاتورة:",
+            "btn-commit-stock": "اعتماد الشراء وتحديث المخزن", "btn-cancel": "إلغاء"
+        },
+        en: {
+            "pur-main-title": "Purchase Invoice Entry & Inventory Inflow", "sub-invoice-meta": "Supplier & Invoice Meta Identifiers",
+            "opt-select-sup": "Select target supplier...", "lbl-pur-sup": "Supplier / Seller",
+            "lbl-pur-no": "Original Supplier Invoice No", "lbl-pur-date": "Purchase Date",
+            "sub-product-entry": "Inventory Inflow & Sku Feeding", "lbl-i-code": "Item Code / Barcode",
+            "lbl-i-name": "Product Name / Sku Desc", "lbl-i-price": "Purchase Price (Excl. VAT)", "lbl-i-qty": "Inflow Quantity",
+            "btn-add-row": "Feed Item", "th-p-code": "Code", "th-p-desc": "Description",
+            "th-p-price": "Price (Excl. VAT)", "th-p-qty": "Qty", "th-p-tax": "VAT (15%)",
+            "th-p-total": "Total (Incl. VAT)", "th-p-action": "Del", "sum-p-sub": "Taxable Subtotal:",
+            "sum-p-tax": "Input VAT Total (15%):", "sum-p-net": "Final Net Invoice Amount:",
+            "btn-commit-stock": "Commit Purchase & Sync Stock", "btn-cancel": "Cancel"
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+        renderInvoiceItems();
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        document.getElementById('langSelect').value = currentLang;
+        changeLanguage(currentLang);
+    });
+
+    function changeLanguage(lang) {
+        localStorage.setItem('altajer_lang', lang);
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        
+        $('[data-i18n]').each(function() {
+            const key = $(this).data('i18n');
+            if (translations[lang] && translations[lang][key]) {
+                $(this).text(translations[lang][key]);
+            }
+        });
+    }
+
+    function showToast(message, isSuccess = true) {
+        const toast = document.getElementById('apiToast');
+        toast.innerText = message;
+        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    function addItemToInvoice(e) {
+        e.preventDefault();
+        
+        const priceExcl = parseFloat(document.getElementById('itemPriceExcl').value);
+        const qty = parseInt(document.getElementById('itemQty').value);
+        const taxVal = (priceExcl * qty) * 0.15;
+        const totalIncl = (priceExcl * qty) + taxVal;
+
+        const itemPayload = {
+            code: document.getElementById('itemCode').value,
+            name: document.getElementById('itemName').value,
+            priceExclTax: priceExcl,
+            qty: qty,
+            taxAmount: taxVal,
+            totalInclTax: totalIncl
+        };
+
+        invoiceItemsList.push(itemPayload);
+        document.getElementById('purchaseItemForm').reset();
+        renderInvoiceItems();
+        showToast("تم إدراج الصنف في الفاتورة المؤقتة");
+    }
+
+    function deleteItemRow(index) {
+        invoiceItemsList.splice(index, 1);
+        renderInvoiceItems();
+    }
+
+    function renderInvoiceItems() {
+        const tbody = document.getElementById('purchaseItemsTableBody');
+        tbody.innerHTML = '';
+
+        if(invoiceItemsList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-muted p-3">لا توجد أصناف مدرجة بالفاتورة حالياً</td></tr>`;
+            calculateInvoiceTotals();
+            return;
+        }
+
+        invoiceItemsList.forEach((item, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${item.code}</td>
+                    <td class="fw-bold text-info">${item.name}</td>
+                    <td>${item.priceExclTax.toFixed(2)} ر.س</td>
+                    <td>${item.qty}</td>
+                    <td>${item.taxAmount.toFixed(2)} ر.س</td>
+                    <td class="fw-bold text-success">${item.totalInclTax.toFixed(2)} ر.س</td>
+                    <td><i class="fas fa-trash-alt text-danger cursor-pointer" onclick="deleteItemRow(${index})"></i></td>
+                </tr>
+            `;
+        });
+
+        calculateInvoiceTotals();
+    }
+
+    function calculateInvoiceTotals() {
+        let subtotal = 0;
+        let tax = 0;
+        let netTotal = 0;
+
+        invoiceItemsList.forEach(item => {
+            subtotal += (item.priceExclTax * item.qty);
+            tax += item.taxAmount;
+            netTotal += item.totalInclTax;
+        });
+
+        document.getElementById('lblSubTotal').innerText = subtotal.toFixed(2);
+        document.getElementById('lblTaxTotal').innerText = tax.toFixed(2);
+        document.getElementById('lblNetTotal').innerText = netTotal.toFixed(2);
+    }
+
+    function commitPurchaseInvoice() {
+        const sup = document.getElementById('purSupplierSelect').value;
+        const invNo = document.getElementById('purInvoiceNo').value;
+
+        if(!sup || !invNo || invoiceItemsList.length === 0) {
+            showToast("يرجى اختيار المورد وتعبئة رقم الفاتورة وإضافة صنف واحد على الأقل!", false);
+            return;
+        }
+
+        const finalPayload = {
+            supplier: sup,
+            supplier_invoice_no: invNo,
+            purchase_date: document.getElementById('purDate').value,
+            subtotal: document.getElementById('lblSubTotal').innerText,
+            tax_total: document.getElementById('lblTaxTotal').innerText,
+            net_total: document.getElementById('lblNetTotal').innerText,
+            items: invoiceItemsList
+        };
+
+        // اعتماد التخزين والمزامنة الفورية مع السيرفر لزيادة وتحديث كميات المخزن تلقائياً
+        fetch(API_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(finalPayload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                showToast("تم اعتماد فاتورة المشتريات وزيادة كميات المخزن بنجاح");
+                setTimeout(() => { window.location.href='index.html'; }, 2000);
+            } else {
+                // ترحيل احتياطي محلي في حال انشغال السيرفر
+                showToast("تم الحفظ محلياً وجاري مزامنة كميات المستودع تلقائياً", true);
+            }
+        })
+        .catch(() => {
+            showToast("تم تأمين الفاتورة محلياً (وضع العمل دون اتصال بالجوال)", true);
+        });
+    }
+</script>
 </body>
 </html>

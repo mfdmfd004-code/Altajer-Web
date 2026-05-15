@@ -29,12 +29,13 @@ const MainApp = {
                 productsData.push({
                     code: id, 
                     name: name,
-                    unit: document.getElementById(`p-unit-${id}`).value,
-                    size: document.getElementById(`p-size-${id}`).value,
+                    unit: document.getElementById(`p-unit-${id}`).value || '',
+                    size: document.getElementById(`p-size-${id}`).value || '',
                     price: parseFloat(document.getElementById(`p-price-${id}`).value) || 0,
                     quantity: parseFloat(document.getElementById(`p-qty-${id}`).value) || 0,
                     total: parseFloat(document.getElementById(`p-total-${id}`).value) || 0,
-                    notes: document.getElementById(`p-notes-${id}`).value,
+                    notes: document.getElementById(`p-notes-${id}`).value || '',
+                    vatRate: document.getElementById(`p-vat-${id}`) ? document.getElementById(`p-vat-${id}`).value : "15",
                     timestamp: new Date()
                 });
             }
@@ -99,27 +100,36 @@ const MainApp = {
             } catch (e) { alert("خطأ: " + e.message); }
         },
         clearForm: function() {
-            document.getElementById('custId').value = ''; 
-            document.getElementById('custName').value = '';
-            document.getElementById('custVat').value = ''; 
-            document.getElementById('custAddress').value = '';
-            document.getElementById('custContact').value = '';
+            if(document.getElementById('custId')) document.getElementById('custId').value = ''; 
+            if(document.getElementById('custName')) document.getElementById('custName').value = '';
+            if(document.getElementById('custVat')) document.getElementById('custVat').value = ''; 
+            if(document.getElementById('custAddress')) document.getElementById('custAddress').value = '';
+            if(document.getElementById('custContact')) document.getElementById('custContact').value = '';
         }
     },
 
-    // 3. التحكم المنفرد في عناصر المخزن
+    // 3. التحكم المنفرد في عناصر المخزن (تم تطويرها تراكمياً لدعم حقول الواجهة الجديدة)
     item: {
         addOrUpdate: async function() {
             const code = document.getElementById('itemCode').value.trim();
             const name = document.getElementById('itemName').value.trim();
             const price = parseFloat(document.getElementById('itemPrice').value) || 0;
             const qty = parseFloat(document.getElementById('itemQty').value) || 0;
+            const vatRate = document.getElementById('itemVatType').value; // الحقل الجديد للضريبة
+            
             if (!code || !name) return alert("يرجى إدخال كود واسم الصنف.");
             try {
-                await setDoc(doc(db, "products", code), { code, name, price, quantity: qty, timestamp: new Date() });
-                alert("تم حفظ الصنف بالمخزن."); 
+                await setDoc(doc(db, "products", code), { 
+                    code, 
+                    name, 
+                    price, 
+                    quantity: qty, 
+                    vatRate: vatRate, 
+                    timestamp: new Date() 
+                });
+                alert("تم حفظ الصنف بالمخزن بنجاح."); 
                 this.clearForm();
-            } catch (e) { alert("خطأ: " + e.message); }
+            } catch (e) { alert("خطأ في الحفظ السحابي: " + e.message); }
         },
         search: async function() {
             const code = document.getElementById('itemCode').value.trim();
@@ -131,24 +141,28 @@ const MainApp = {
                     document.getElementById('itemName').value = data.name || '';
                     document.getElementById('itemPrice').value = data.price || 0;
                     document.getElementById('itemQty').value = data.quantity || 0;
+                    if(document.getElementById('itemVatType') && data.vatRate) {
+                        document.getElementById('itemVatType').value = data.vatRate;
+                    }
                 } else { alert("الصنف غير موجود في المخزن."); }
-            } catch (e) { alert("خطأ: " + e.message); }
+            } catch (e) { alert("خطأ أثناء البحث: " + e.message); }
         },
         delete: async function() {
             const code = document.getElementById('itemCode').value.trim();
             if (!code) return alert("يرجى إدخال الكود للحذف.");
-            if (!confirm("هل تريد الحذف نهائياً؟")) return;
+            if (!confirm("هل تريد حذف هذا الصنف نهائياً؟")) return;
             try {
                 await deleteDoc(doc(db, "products", code)); 
                 alert("تم الحذف بنجاح."); 
                 this.clearForm();
-            } catch (e) { alert("خطأ: " + e.message); }
+            } catch (e) { alert("خطأ أثناء الحذف: " + e.message); }
         },
         clearForm: function() {
-            document.getElementById('itemCode').value = ''; 
-            document.getElementById('itemName').value = '';
-            document.getElementById('itemPrice').value = ''; 
-            document.getElementById('itemQty').value = '';
+            if(document.getElementById('itemCode')) document.getElementById('itemCode').value = ''; 
+            if(document.getElementById('itemName')) document.getElementById('itemName').value = '';
+            if(document.getElementById('itemPrice')) document.getElementById('itemPrice').value = ''; 
+            if(document.getElementById('itemQty')) document.getElementById('itemQty').value = '0';
+            if(document.getElementById('itemVatType')) document.getElementById('itemVatType').value = '15';
         }
     },
 
@@ -221,7 +235,6 @@ const MainApp = {
                 const netTotal = parseFloat(document.getElementById('totalVal').innerText) || 0;
                 const customerId = document.getElementById('poCustId').value || "نقدي";
                 
-                // حفظ رأس الفاتورة والبيانات المحاسبية في الكولكشن الأساسي
                 await setDoc(doc(db, "orders", orderId), { 
                     customerId: customerId, 
                     items: cart, 
@@ -229,7 +242,6 @@ const MainApp = {
                     timestamp: new Date() 
                 });
                 
-                // التعديل التراكمي: تحديث جرد المخزن المباشر بخصم الكميات المشتراة
                 for (const item of cart) {
                     const itemRef = doc(db, "products", item.code); 
                     const itemSnap = await getDoc(itemRef);
@@ -239,7 +251,6 @@ const MainApp = {
                     }
                 }
                 
-                // توليد بيانات الـ QR Code لمتطلبات الفاتورة المبسطة
                 if(typeof window.generateInvoiceQR === "function") {
                     window.generateInvoiceQR(orderId, netTotal);
                 }
@@ -310,7 +321,7 @@ $(document).ready(function() {
         }
     });
 
-    // ربط مستقر ومباشر للأزرار لمنع تداخل العمليات
+    // ربط مستقر ومباشر للأزرار لمنع تداخل العمليات عبر المعرفات (IDs) الموحدة
     $(document).on('click', '#btnCustomerAdd, #btnCustomerUpdate', () => window.App.customer.addOrUpdate());
     $(document).on('click', '#btnCustomerSearch', () => window.App.customer.search());
     $(document).on('click', '#btnCustomerDelete', () => window.App.customer.delete());

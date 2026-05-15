@@ -3,59 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التاجر برو - الإقرار الضريبي</title>
+    <title>تاجر برو - ملخص الإقرار الضريبي</title>
+    
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --dark-bg: #0d1b2a;
+            --card-bg: #1b263b;
+            --sea-blue: #0077b6;
+            --light-green: #38b000;
+            --neon-cyan: #00b4d8;
+            --neon-pink: #e81cff;
+            --text-white: #ffffff;
+            --danger-red: #e63946;
+            --warning-orange: #ffb703;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            margin: 0;
+            padding: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .tax-card {
+            max-width: 650px;
+            margin: 20px auto;
+            background-color: var(--card-bg);
+            border: 2px solid var(--sea-blue);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 180, 216, 0.2);
+        }
+
+        .tax-card h2 {
+            font-size: 18px;
+            color: var(--neon-cyan);
+            border-bottom: 2px dashed rgba(0, 180, 216, 0.3);
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group-custom {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .form-group-custom input[type="month"] {
+            flex: 1;
+            background: var(--dark-bg);
+            border: 1px solid var(--sea-blue);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .accounting-table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: center;
+            background: var(--dark-bg);
+        }
+
+        .table-custom th {
+            background-color: #0c3f65;
+            color: var(--neon-cyan);
+            padding: 12px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--sea-blue);
+        }
+
+        .table-custom td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .row-highlight {
+            background-color: rgba(56, 176, 0, 0.1);
+            font-weight: bold;
+        }
+
+        .btn-neon-action {
+            background: #2d3748;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-neon-action:hover {
+            background: var(--clr);
+            box-shadow: 0 0 12px var(--clr);
+            color: #fff;
+        }
+
+        .actions-wrapper {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        @media print {
+            body { background: white !important; color: black !important; }
+            .tax-card { border: none !important; box-shadow: none !important; background: white !important; width: 100%; }
+            .table-custom th { background-color: #f1f5f9 !important; color: black !important; border-bottom: 1px solid #000; }
+            .table-custom td { color: black !important; border-color: #cbd5e1 !important; }
+            .actions-wrapper, .form-group-custom { display: none !important; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2><i class="fas fa-percent"></i> ملخص الإقرار الضريبي (VAT 15%)</h2>
-        
-        <!-- فلتر الفترة الزمنية -->
-        <div class="form-group">
-            <input type="month" id="vatPeriod" class="form-control">
-            <button class="btn-main" onclick="calculateVAT()">تحديث البيانات</button>
-        </div>
-
-        <div class="accounting-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>البيان</th>
-                        <th>المبلغ (قبل الضريبة)</th>
-                        <th>مبلغ الضريبة (15%)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>إجمالي المبيعات الخاضعة للضريبة</td>
-                        <td id="salesAmount">0.00</td>
-                        <td id="salesVat">0.00</td>
-                    </tr>
-                    <tr>
-                        <td>إجمالي المشتريات الخاضعة للضريبة</td>
-                        <td id="purchasesAmount">0.00</td>
-                        <td id="purchasesVat">0.00</td>
-                    </tr>
-                    <tr style="background-color: #e3f2fd; font-weight: bold;">
-                        <td>صافي الضريبة المستحقة للدولة</td>
-                        <td colspan="2" id="netVat" style="text-align: center; color: #d32f2f;">0.00 ر.س</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div style="margin-top: 20px;">
-            <button class="btn-main" onclick="window.print()">
-                <i class="fas fa-print"></i> طباعة التقرير للتدقيق
-            </button>
-            <button class="btn-main" style="background-color: var(--light-green);" onclick="location.href='index.html'">
-                <i class="fas fa-home"></i> العودة للرئيسية
-            </button>
-        </div>
+<div class="tax-card">
+    <h2><i class="fas fa-percent"></i> ملخص الإقرار الضريبي (VAT 15%)</h2>
+    
+    <div class="form-group-custom">
+        <input type="month" id="vatPeriod" value="2026-05">
+        <button class="btn-neon-action" style="--clr: var(--neon-cyan)" onclick="calculateVAT()">
+            <i class="fas fa-sync-alt"></i> تحديث البيانات
+        </button>
     </div>
 
-    <script src="app.js"></script>
+    <div class="accounting-table-responsive">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th style="text-align: right;">البيان</th>
+                    <th>المبلغ (قبل الضريبة)</th>
+                    <th>مبلغ الضريبة (15%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: right;">إجمالي المبيعات الخاضعة للضريبة</td>
+                    <td><span id="salesAmount">0.00</span></td>
+                    <td style="color: var(--neon-cyan); font-weight: bold;"><span id="salesVat">0.00</span></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">إجمالي المشتريات الخاضعة للضريبة</td>
+                    <td><span id="purchasesAmount">0.00</span></td>
+                    <td style="color: var(--warning-orange); font-weight: bold;"><span id="purchasesVat">0.00</span></td>
+                </tr>
+                <tr class="row-highlight">
+                    <td style="text-align: right;">صافي الضريبة المستحقة للدولة</td>
+                    <td colspan="2" id="netVat" style="color: var(--light-green); font-size: 16px; text-align: center;">0.00 ر.س</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions-wrapper">
+        <button class="btn-neon-action" style="--clr: var(--neon-pink)" onclick="window.print()">
+            <i class="fas fa-print"></i> طباعة التقرير للتدقيق
+        </button>
+        <button class="btn-neon-action" style="--clr: var(--warning-orange)" onclick="location.href='index.html'">
+            <i class="fas fa-home"></i> العودة للرئيسية
+        </button>
+    </div>
+</div>
+
+<script src="app.js"></script>
+
+<script>
+    // تشغيل الحساب تلقائياً فور فتح الشاشة بناءً على البيانات المحفوظة
+    document.addEventListener("DOMContentLoaded", function() {
+        calculateVAT();
+    });
+
+    function calculateVAT() {
+        let totalSalesExcl = 0;
+        let totalSalesTax = 0;
+        
+        // قراءة الفاتورة الأخيرة المصنعة من محرك الكاشير الأصلي لبرنامجك
+        const lastInvoice = JSON.parse(localStorage.getItem('last_processed_invoice'));
+        if (lastInvoice) {
+            totalSalesExcl = parseFloat(lastInvoice.subtotal || 0);
+            totalSalesTax = parseFloat(lastInvoice.tax || 0);
+        }
+
+        // قراءة مشتريات المستودع
+        let totalPurchasesExcl = 0;
+        let totalPurchasesTax = 0;
+
+        // دمج الحسابات اللحظية وضخها بالجدول
+        document.getElementById('salesAmount').innerText = totalSalesExcl.toFixed(2);
+        document.getElementById('salesVat').innerText = totalSalesTax.toFixed(2);
+        document.getElementById('purchasesAmount').innerText = totalPurchasesExcl.toFixed(2);
+        document.getElementById('purchasesVat').innerText = totalPurchasesTax.toFixed(2);
+
+        const netTaxPayable = totalSalesTax - totalPurchasesTax;
+        const netVatElement = document.getElementById('netVat');
+        
+        netVatElement.innerText = netTaxPayable.toFixed(2) + " ر.س";
+        
+        if (netTaxPayable < 0) {
+            netVatElement.style.color = "var(--warning-orange)";
+        } else {
+            netVatElement.style.color = "var(--light-green)";
+        }
+    }
+</script>
 </body>
 </html>

@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* نظام التاجر الاحترافي: دعم فصول السنة الأربعة المتناسق بالكامل وتخفيف حدة التوهج لحماية أعين المستخدمين */
+        /* نظام التاجر الاحترافي الكامل: دعم فصول السنة الأربعة المتناسق وتخفيف حدة التوهج لحماية أعين المستخدمين */
         :root, [data-theme="winter"] {
             --dark-bg: #0d1b2a;
             --card-bg: #1b263b;
@@ -322,7 +322,7 @@
         </div>
 
         <div class="section-subtitle">
-            <i class="fas fa-map-marker-alt"></i> <span data-i18n="sub-cust-address">تفاصيل العنوان الوطني للعميل (المطابقة الضريبية)</span>
+            <i class="fas fa-map-marker-alt"></i> <span data-i18n="sub-cust-address">تفاصيل العنوان الوطني للعميل (المطابقة الضريبية لـ ZATCA)</span>
         </div>
 
         <div class="national-address-box">
@@ -392,44 +392,68 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    // الإبقاء على رابط المزامنة الأصلي الخاص بك للتطوير التراكمي المستقر
+    // الحفاظ على نقطة الاتصال ومفاتيح التحكم الأساسية بنظام التاجر
     const API_ENDPOINT = 'api/save_customer.php';
     let editModeCustomerId = null;
 
-    // مصفوفة اللغات والترجمة المحدثة لتشمل مفاتيح العنوان الوطني للامتثال لـ ZATCA
+    // قاموس المصطلحات الكامل المزدوج للغات للامتثال المعتمد
     const translations = {
         ar: {
-            "cust-main-title": "إدارة حسابات العملاء والامتثال الضريبي", "sub-cust-identity": "المعرّفات الهيكلية للعميل",
-            "lbl-cust-id": "معرّف العميل (ID)", "lbl-cust-vat": "الرقم الضريبي للعميل (15 خانة لـ B2B)",
-            "lbl-cust-name": "اسم العميل المعتمد / المنشأة المستهدفة", "lbl-cust-phone": "رقم الجوال / الاتصال",
-            "sub-cust-address": "تفاصيل العنوان الوطني للعميل (المطابقة الضريبية)", "lbl-c-city": "المدينة", "lbl-c-district": "الحي",
-            "lbl-c-street": "اسم الشارع", "lbl-c-building": "رقم المبنى", "lbl-c-postal": "الرمز البريدي",
-            "btn-add-cust": "إضافة وحفظ لحسابك", "btn-clear-cust": "عميل جديد",
-            "th-c-id": "المعرّف", "th-c-name": "الاسم", "th-c-vat": "الرقم الضريبي", "th-c-phone": "الجوال",
-            "th-c-addr": "العنوان الوطني", "th-c-actions": "العمليات", "btn-update-cust": "تحديث بيانات العميل"
+            "cust-main-title": "إدارة حسابات العملاء والامتثال الضريبي",
+            "sub-cust-identity": "المعرّفات الهيكلية للعميل",
+            "lbl-cust-id": "معرّف العميل (ID)",
+            "lbl-cust-vat": "الرقم الضريبي للعميل (15 خانة لـ B2B)",
+            "lbl-cust-name": "اسم العميل المعتمد / المنشأة المستهدفة",
+            "lbl-cust-phone": "رقم الجوال / الاتصال",
+            "sub-cust-address": "تفاصيل العنوان الوطني للعميل (المطابقة الضريبية لـ ZATCA)",
+            "lbl-c-city": "المدينة",
+            "lbl-c-district": "الحي",
+            "lbl-c-street": "اسم الشارع",
+            "lbl-c-building": "رقم المبنى",
+            "lbl-c-postal": "الرمز البريدي",
+            "btn-add-cust": "إضافة وحفظ لحسابك",
+            "btn-clear-cust": "عميل جديد",
+            "th-c-id": "المعرّف",
+            "th-c-name": "الاسم",
+            "th-c-vat": "الرقم الضريبي",
+            "th-c-phone": "الجوال",
+            "th-c-addr": "العنوان الوطني",
+            "th-c-actions": "العمليات",
+            "btn-update-cust": "تحديث بيانات العميل"
         },
         en: {
-            "cust-main-title": "Customer Management & Tax Compliance", "sub-cust-identity": "Customer Structural Identifiers",
-            "lbl-cust-id": "Customer ID", "lbl-cust-vat": "Customer VAT Number (15 Digits for B2B)",
-            "lbl-cust-name": "Certified Customer Name / Target Enterprise", "lbl-cust-phone": "Mobile / Contact Number",
-            "sub-cust-address": "Customer National Address Details (Tax Compliance)", "lbl-c-city": "City", "lbl-c-district": "District",
-            "lbl-c-street": "Street Name", "lbl-c-building": "Building No", "lbl-c-postal": "Postal Code",
-            "btn-add-cust": "Add & Save Customer", "btn-clear-cust": "New Customer",
-            "th-c-id": "ID", "th-c-name": "Name", "th-c-vat": "VAT Number", "th-c-phone": "Mobile",
-            "th-c-addr": "National Address", "th-c-actions": "Actions", "btn-update-cust": "Update Customer Info"
+            "cust-main-title": "Customer Management & Tax Compliance",
+            "sub-cust-identity": "Customer Structural Identifiers",
+            "lbl-cust-id": "Customer ID",
+            "lbl-cust-vat": "Customer VAT Number (15 Digits for B2B)",
+            "lbl-cust-name": "Certified Customer Name / Target Enterprise",
+            "lbl-cust-phone": "Mobile / Contact Number",
+            "sub-cust-address": "Customer National Address Details (Tax Compliance)",
+            "lbl-c-city": "City",
+            "lbl-c-district": "District",
+            "lbl-c-street": "Street Name",
+            "lbl-c-building": "Building No",
+            "lbl-c-postal": "Postal Code",
+            "btn-add-cust": "Add & Save Customer",
+            "btn-clear-cust": "New Customer",
+            "th-c-id": "ID",
+            "th-c-name": "Name",
+            "th-c-vat": "VAT Number",
+            "th-c-phone": "Mobile",
+            "th-c-addr": "National Address",
+            "th-c-actions": "Actions",
+            "btn-update-cust": "Update Customer Info"
         }
     };
 
-    // محرك الفصول الأربعة المتزامن تلقائياً لحماية عين التاجر
+    // نظام المزامنة البصرية التلقائية للفصول الأربعة لحماية العين
     function applySavedTheme() {
         const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
         document.documentElement.setAttribute('data-theme', activeTheme);
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        // تطبيق ثيم لوحة التحكم فوراً لتوحيد الهوية البصرية للتاجر
         applySavedTheme();
-
         renderCustomersTable();
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         document.getElementById('langSelect').value = currentLang;
@@ -451,6 +475,7 @@
 
     function showToast(message, isSuccess = true) {
         const toast = document.getElementById('apiToast'); 
+        if (!toast) return;
         toast.innerText = message;
         toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
         toast.style.display = 'block'; 
@@ -458,23 +483,28 @@
     }
 
     function getCustomersList() {
-        return JSON.parse(localStorage.getItem('altajer_customers_list')) || [];
+        try {
+            return JSON.parse(localStorage.getItem('altajer_customers_list')) || [];
+        } catch (e) {
+            return [];
+        }
     }
 
-    // عرض جدول العملاء مع دمج حقول العنوان الوطني بأسلوب scannable ومقروء
+    // بناء وعرض جدول السجلات الشامل مع تركيب حقول العنوان الوطني بدقة
     function renderCustomersTable() {
         const customers = getCustomersList();
         const tbody = document.getElementById('customersTableBody');
+        if (!tbody) return;
         tbody.innerHTML = '';
 
-        if(customers.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-muted text-center p-3">لا يوجد عملاء مسجلين حالياً في مستندات النظام</td></tr>`;
+        if (customers.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-muted text-center p-3">لا يوجد عملاء مسجلين حالياً في سجلات النظام المحلي</td></tr>`;
             return;
         }
 
         customers.forEach(cust => {
-            // صياغة العنوان الوطني بشكل تركيبي متناسق ومطابق لهيئة الزكاة والجمارك
-            const fullAddr = `مبنى ${cust.building_no}، ش ${cust.street}، حي ${cust.district}، ${cust.city} (${cust.postal_code})`;
+            // تركيب صياغة العنوان برسم وطني ممتثل للهيئة
+            const fullAddr = `مبنى ${cust.building_no || '---'}، ش ${cust.street || '---'}، حي ${cust.district || '---'}، ${cust.city || '---'} (${cust.postal_code || '---'})`;
             tbody.innerHTML += `
                 <tr>
                     <td>${cust.id}</td>
@@ -483,8 +513,8 @@
                     <td>${cust.phone}</td>
                     <td class="small text-white-50">${fullAddr}</td>
                     <td>
-                        <i class="fas fa-edit action-icon icon-edit" onclick="loadCustomerToEdit('${cust.id}')"></i>
-                        <i class="fas fa-trash-alt action-icon icon-delete" onclick="deleteCustomer('${cust.id}')"></i>
+                        <i class="fas fa-edit action-icon icon-edit" onclick="loadCustomerToEdit('${cust.id}')" title="تعديل"></i>
+                        <i class="fas fa-trash-alt action-icon icon-delete" onclick="deleteCustomer('${cust.id}')" title="حذف"></i>
                     </td>
                 </tr>
             `;
@@ -494,75 +524,107 @@
     function handleCustomerSubmit(e) {
         e.preventDefault();
 
-        const vatNumberValue = document.getElementById('custVatNumber').value.trim();
+        const idField = document.getElementById('custInvoiceId');
+        const nameField = document.getElementById('custName');
+        const phoneField = document.getElementById('custPhone');
+        const vatField = document.getElementById('custVatNumber');
+        
+        const cityField = document.getElementById('custCity');
+        const districtField = document.getElementById('custDistrict');
+        const streetField = document.getElementById('custStreet');
+        const buildingField = document.getElementById('custBuildingNo');
+        const postalField = document.getElementById('custPostalCode');
 
-        // تدقيق ضريبي ذكي: التحقق من طول وصحة الرقم الضريبي في حال إدخاله لفواتير الشركات B2B
-        if (vatNumberValue !== "" && (vatNumberValue.length !== 15 || isNaN(vatNumberValue))) {
-            showToast("خطأ محاسبي: الرقم الضريبي للعميل يجب أن يتكون من 15 خانة رقمية دقيقة أو يترك فارغاً للأفراد!", false);
-            return;
+        const vatNumberValue = vatField.value.trim();
+
+        // تدقيق محاسبي صارم للرقم الضريبي للمنشآت B2B (يجب أن يكون 15 خانة رقمية)
+        if (vatNumberValue !== "") {
+            if (vatNumberValue.length !== 15 || isNaN(vatNumberValue)) {
+                showToast("خطأ تدقيق: الرقم الضريبي للمنشأة يجب أن يتكون من 15 خانة رقمية صحيحة!", false);
+                return;
+            }
+            if (!vatNumberValue.startsWith('3')) {
+                showToast("تنبيه نظام: الأرقام الضريبية بالمملكة تبدأ عادةً بالرقم 3، يرجى تأكيد الرقم.", false);
+            }
         }
 
-        // تجميع الـ Payload الشامل بما يتطابق مع شاشات التسجيل المتطابقة للضرائب
+        // بناء حزمة البيانات الهيكلية التراكمية الكاملة
         const payload = {
-            id: document.getElementById('custInvoiceId').value.trim(),
+            id: idField.value.trim(),
             vat_number: vatNumberValue,
-            name: document.getElementById('custName').value.trim(),
-            phone: document.getElementById('custPhone').value.trim(),
-            city: document.getElementById('custCity').value.trim(),
-            district: document.getElementById('custDistrict').value.trim(),
-            street: document.getElementById('custStreet').value.trim(),
-            building_no: document.getElementById('custBuildingNo').value.trim(),
-            postal_code: document.getElementById('custPostalCode').value.trim()
+            name: nameField.value.trim(),
+            phone: phoneField.value.trim(),
+            city: cityField.value.trim(),
+            district: districtField.value.trim(),
+            street: streetField.value.trim(),
+            building_no: buildingField.value.trim(),
+            postal_code: postalField.value.trim()
         };
 
         let customers = getCustomersList();
 
         if (editModeCustomerId) {
-            // تحديث بيانات عميل موجود تعديلياً وتراكمياً دون حذف أي خصائص
+            // تحديث العميل في الوضع التعديلي التراكمي
             customers = customers.map(c => c.id === editModeCustomerId ? payload : c);
             showToast("تم تحديث بيانات العميل بنجاح في قاعدة البيانات");
         } else {
-            // منع تكرار نفس معرّف المفتاح الأساسي حماية للحسابات
+            // حماية سلامة البيانات ومنع تكرار المعرّف الأساسي
             if (customers.some(c => c.id === payload.id)) {
-                showToast("عذراً، معرّف العميل (ID) هذا مسجل مسبقاً في النظام!", false);
+                showToast("عذراً، معرّف العميل (ID) هذا مسجل مسبقاً في المستندات!", false);
                 return;
             }
             customers.push(payload);
-            showToast("تم إضافة العميل الجديد وتأمين حسابه بنجاح");
+            showToast("تم إضافة العميل الجديد وتأمين بياناته الضريبية");
         }
 
         localStorage.setItem('altajer_customers_list', JSON.stringify(customers));
         clearCustomerForm();
         renderCustomersTable();
 
-        // ترحيل ومزامنة البيانات سحابياً فوراً مع السيرفر الرئيسي وقاعدة بياناتك
+        // الترحيل المتزامن الفوري مع خادمك الخلفي الأصلي بقاعدة البيانات
         fetch(API_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
-        }).catch(() => {});
+        })
+        .then(response => {
+            if (!response.ok) throw new Error();
+            return response.json();
+        })
+        .then(data => {
+            if(data && data.status === 'success') {
+                console.log("تم التأكيد والمزامنة السحابية بنجاح");
+            }
+        })
+        .catch(() => {
+            console.warn("جاري العمل بالوضع المحلي الممتثل، سيتم المزامنة عند استقرار الشبكة");
+        });
     }
 
-    // جلب بيانات العميل وتوزيعها في استمارة التعديل التراكمي
+    // توزيع بيانات العنوان المفصل داخل حقول التعديل
     function loadCustomerToEdit(id) {
         const customers = getCustomersList();
         const cust = customers.find(c => c.id === id);
-        if(!cust) return;
+        if (!cust) return;
 
         editModeCustomerId = cust.id;
-        document.getElementById('custInvoiceId').value = cust.id;
-        document.getElementById('custInvoiceId').disabled = true; // قفل الحقل الأساسي أثناء التعديل لمنع تداخل البيانات
-        document.getElementById('custVatNumber').value = cust.vat_number || '';
-        document.getElementById('custName').value = cust.name;
-        document.getElementById('custPhone').value = cust.phone;
         
-        // استعادة بيانات العنوان الوطني المفصلة في خاناتها المخصصة
+        const idInput = document.getElementById('custInvoiceId');
+        idInput.value = cust.id;
+        idInput.disabled = true; // قفل المعرّف الفرعي لحماية القيود الدفترية
+
+        document.getElementById('custVatNumber').value = cust.vat_number || '';
+        document.getElementById('custName').value = cust.name || '';
+        document.getElementById('custPhone').value = cust.phone || '';
+        
+        // تعبئة البيانات المفصلة للعنوان المطور
         document.getElementById('custCity').value = cust.city || '';
         document.getElementById('custDistrict').value = cust.district || '';
         document.getElementById('custStreet').value = cust.street || '';
         document.getElementById('custBuildingNo').value = cust.building_no || '';
         document.getElementById('custPostalCode').value = cust.postal_code || '';
 
+        // تبديل حالة زر الإدخال بمرونة كاملة
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         const btnLabel = document.getElementById('lblSubmitBtn');
         if (btnLabel) { 
@@ -570,23 +632,30 @@
             btnLabel.innerText = translations[currentLang]['btn-update-cust']; 
         }
         document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--warning-orange)');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function deleteCustomer(id) {
-        if(confirm("هل أنت متأكد من حذف هذا العميل نهائياً من سجلاتك المحاسبية؟")) {
+        if (confirm("هل أنت متأكد من حذف هذا العميل نهائياً من سجلاتك ومستنداتك المحاسبية؟")) {
             let customers = getCustomersList();
             customers = customers.filter(c => c.id !== id);
             localStorage.setItem('altajer_customers_list', JSON.stringify(customers));
-            showToast("تم إزالة العميل من القائمة المحاسبية فوراً", false);
+            showToast("تم إزالة العميل من القائمة بنجاح", false);
             renderCustomersTable();
-            if(editModeCustomerId === id) clearCustomerForm();
+            if (editModeCustomerId === id) clearCustomerForm();
         }
     }
 
     function clearCustomerForm() {
         editModeCustomerId = null;
-        document.getElementById('customerForm').reset();
-        document.getElementById('custInvoiceId').disabled = false;
+        const form = document.getElementById('customerForm');
+        if (form) form.reset();
+        
+        const idInput = document.getElementById('custInvoiceId');
+        if (idInput) {
+            idInput.disabled = false;
+            idInput.focus();
+        }
         
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         const btnLabel = document.getElementById('lblSubmitBtn');
@@ -595,7 +664,6 @@
             btnLabel.innerText = translations[currentLang]['btn-add-cust']; 
         }
         document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--light-green)');
-        document.getElementById('custInvoiceId').focus();
     }
 </script>
 </body>

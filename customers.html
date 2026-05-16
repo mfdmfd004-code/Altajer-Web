@@ -322,7 +322,7 @@
         </div>
 
         <div class="section-subtitle">
-            <i class="fas fa-map-marker-alt"></i> <span data-i18n="sub-cust-address">تفاصيل العنوان الوطني للعميل</span>
+            <i class="fas fa-map-marker-alt"></i> <span data-i18n="sub-cust-address">تفاصيل العنوان الوطني للعميل (المطابقة الضريبية)</span>
         </div>
 
         <div class="national-address-box">
@@ -380,7 +380,7 @@
                     <th data-i18n="th-c-name">الاسم</th>
                     <th data-i18n="th-c-vat">الرقم الضريبي</th>
                     <th data-i18n="th-c-phone">الجوال</th>
-                    <th data-i18n="th-c-addr">العنوان</th>
+                    <th data-i18n="th-c-addr">العنوان الوطني</th>
                     <th data-i18n="th-c-actions">العمليات</th>
                 </tr>
             </thead>
@@ -389,33 +389,34 @@
         </table>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
+    // الإبقاء على رابط المزامنة الأصلي الخاص بك للتطوير التراكمي المستقر
     const API_ENDPOINT = 'api/save_customer.php';
     let editModeCustomerId = null;
 
-    // مصفوفة اللغات والترجمة المتكاملة لنظام التاجر برو
+    // مصفوفة اللغات والترجمة المحدثة لتشمل مفاتيح العنوان الوطني للامتثال لـ ZATCA
     const translations = {
         ar: {
             "cust-main-title": "إدارة حسابات العملاء والامتثال الضريبي", "sub-cust-identity": "المعرّفات الهيكلية للعميل",
             "lbl-cust-id": "معرّف العميل (ID)", "lbl-cust-vat": "الرقم الضريبي للعميل (15 خانة لـ B2B)",
             "lbl-cust-name": "اسم العميل المعتمد / المنشأة المستهدفة", "lbl-cust-phone": "رقم الجوال / الاتصال",
-            "sub-cust-address": "تفاصيل العنوان الوطني للعميل", "lbl-c-city": "المدينة", "lbl-c-district": "الحي",
+            "sub-cust-address": "تفاصيل العنوان الوطني للعميل (المطابقة الضريبية)", "lbl-c-city": "المدينة", "lbl-c-district": "الحي",
             "lbl-c-street": "اسم الشارع", "lbl-c-building": "رقم المبنى", "lbl-c-postal": "الرمز البريدي",
             "btn-add-cust": "إضافة وحفظ لحسابك", "btn-clear-cust": "عميل جديد",
             "th-c-id": "المعرّف", "th-c-name": "الاسم", "th-c-vat": "الرقم الضريبي", "th-c-phone": "الجوال",
-            "th-c-addr": "العنوان", "th-c-actions": "العمليات", "btn-update-cust": "تحديث بيانات العميل"
+            "th-c-addr": "العنوان الوطني", "th-c-actions": "العمليات", "btn-update-cust": "تحديث بيانات العميل"
         },
         en: {
             "cust-main-title": "Customer Management & Tax Compliance", "sub-cust-identity": "Customer Structural Identifiers",
             "lbl-cust-id": "Customer ID", "lbl-cust-vat": "Customer VAT Number (15 Digits for B2B)",
             "lbl-cust-name": "Certified Customer Name / Target Enterprise", "lbl-cust-phone": "Mobile / Contact Number",
-            "sub-cust-address": "Customer National Address Details", "lbl-c-city": "City", "lbl-c-district": "District",
+            "sub-cust-address": "Customer National Address Details (Tax Compliance)", "lbl-c-city": "City", "lbl-c-district": "District",
             "lbl-c-street": "Street Name", "lbl-c-building": "Building No", "lbl-c-postal": "Postal Code",
             "btn-add-cust": "Add & Save Customer", "btn-clear-cust": "New Customer",
             "th-c-id": "ID", "th-c-name": "Name", "th-c-vat": "VAT Number", "th-c-phone": "Mobile",
-            "th-c-addr": "Address", "th-c-actions": "Actions", "btn-update-cust": "Update Customer Info"
+            "th-c-addr": "National Address", "th-c-actions": "Actions", "btn-update-cust": "Update Customer Info"
         }
     };
 
@@ -460,6 +461,7 @@
         return JSON.parse(localStorage.getItem('altajer_customers_list')) || [];
     }
 
+    // عرض جدول العملاء مع دمج حقول العنوان الوطني بأسلوب scannable ومقروء
     function renderCustomersTable() {
         const customers = getCustomersList();
         const tbody = document.getElementById('customersTableBody');
@@ -471,7 +473,8 @@
         }
 
         customers.forEach(cust => {
-            const fullAddr = `${cust.building_no}، ${cust.street}، ${cust.district}، ${cust.city}`;
+            // صياغة العنوان الوطني بشكل تركيبي متناسق ومطابق لهيئة الزكاة والجمارك
+            const fullAddr = `مبنى ${cust.building_no}، ش ${cust.street}، حي ${cust.district}، ${cust.city} (${cust.postal_code})`;
             tbody.innerHTML += `
                 <tr>
                     <td>${cust.id}</td>
@@ -499,6 +502,7 @@
             return;
         }
 
+        // تجميع الـ Payload الشامل بما يتطابق مع شاشات التسجيل المتطابقة للضرائب
         const payload = {
             id: document.getElementById('custInvoiceId').value.trim(),
             vat_number: vatNumberValue,
@@ -531,7 +535,7 @@
         clearCustomerForm();
         renderCustomersTable();
 
-        // ترحيل ومزامنة البيانات سحابياً فوراً مع السيرفر الرئيسي
+        // ترحيل ومزامنة البيانات سحابياً فوراً مع السيرفر الرئيسي وقاعدة بياناتك
         fetch(API_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -539,6 +543,7 @@
         }).catch(() => {});
     }
 
+    // جلب بيانات العميل وتوزيعها في استمارة التعديل التراكمي
     function loadCustomerToEdit(id) {
         const customers = getCustomersList();
         const cust = customers.find(c => c.id === id);
@@ -550,11 +555,13 @@
         document.getElementById('custVatNumber').value = cust.vat_number || '';
         document.getElementById('custName').value = cust.name;
         document.getElementById('custPhone').value = cust.phone;
-        document.getElementById('custCity').value = cust.city;
-        document.getElementById('custDistrict').value = cust.district;
-        document.getElementById('custStreet').value = cust.street;
-        document.getElementById('custBuildingNo').value = cust.building_no;
-        document.getElementById('custPostalCode').value = cust.postal_code;
+        
+        // استعادة بيانات العنوان الوطني المفصلة في خاناتها المخصصة
+        document.getElementById('custCity').value = cust.city || '';
+        document.getElementById('custDistrict').value = cust.district || '';
+        document.getElementById('custStreet').value = cust.street || '';
+        document.getElementById('custBuildingNo').value = cust.building_no || '';
+        document.getElementById('custPostalCode').value = cust.postal_code || '';
 
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         const btnLabel = document.getElementById('lblSubmitBtn');

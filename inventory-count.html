@@ -2,28 +2,413 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>جرد المخزون - التاجر برو</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>تسوية وجرد المخزون - التاجر برو</title>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0c3f65">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* نظام التاجر الاحترافي: دعم فصول السنة الأربعة المتناسق بالكامل لتأمين وحماية العين */
+        :root, [data-theme="winter"] {
+            --dark-bg: #0d1b2a;
+            --card-bg: #1b263b;
+            --sea-blue: #0077b6;
+            --light-green: #38b000;
+            --neon-cyan: #00b4d8;
+            --neon-pink: #e81cff;
+            --text-white: #ffffff;
+            --danger-red: #e63946;
+            --warning-orange: #ffb703;
+            --glow-soft: 0 0 6px rgba(0, 180, 216, 0.35);
+        }
+
+        [data-theme="spring"] {
+            --dark-bg: #1a2f16;
+            --card-bg: #243e1e;
+            --sea-blue: #52b788;
+            --light-green: #74c69d;
+            --neon-cyan: #95d5b2;
+            --neon-pink: #ff70a6;
+            --text-white: #f4f9f4;
+            --danger-red: #ff4d6d;
+            --warning-orange: #ff9f1c;
+            --glow-soft: 0 0 6px rgba(149, 213, 178, 0.35);
+        }
+
+        [data-theme="summer"] {
+            --dark-bg: #0f2a35;
+            --card-bg: #173f5f;
+            --sea-blue: #20639b;
+            --light-green: #3caea3;
+            --neon-cyan: #2a9d8f;
+            --neon-pink: #f4a261;
+            --text-white: #f8f9fa;
+            --danger-red: #e76f51;
+            --warning-orange: #f4a261;
+            --glow-soft: 0 0 6px rgba(42, 157, 143, 0.35);
+        }
+
+        [data-theme="autumn"] {
+            --dark-bg: #2b1810;
+            --card-bg: #3e261d;
+            --sea-blue: #b07d62;
+            --light-green: #9e2a2b;
+            --neon-cyan: #e36414;
+            --neon-pink: #ffb703;
+            --text-white: #fff8f5;
+            --danger-red: #6f1d1b;
+            --warning-orange: #ff9f1c;
+            --glow-soft: 0 0 6px rgba(227, 100, 20, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            margin: 0;
+            padding: 20px 10px;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .inventory-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border: 2px solid var(--sea-blue);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.15);
+            position: relative;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        .inventory-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--sea-blue), var(--neon-pink));
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+        }
+
+        .inventory-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dashed rgba(0, 180, 216, 0.25);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .inventory-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: var(--glow-soft);
+        }
+
+        .btn-neon-inventory {
+            background: #2d3748;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: 0.3s;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-neon-inventory:hover {
+            background: var(--clr);
+            box-shadow: 0 0 12px var(--clr);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .table-responsive-custom {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-top: 15px;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        .table-custom {
+            background-color: rgba(0, 0, 0, 0.15) !important;
+            color: white !important;
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        .table-custom th {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            color: var(--neon-cyan) !important;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            border-color: rgba(255, 255, 255, 0.04) !important;
+        }
+
+        .qty-input-jard {
+            width: 90px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--sea-blue);
+            color: #fff;
+            text-align: center;
+            padding: 4px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .qty-input-jard:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: var(--glow-soft);
+        }
+
+        .badge-diff {
+            font-size: 13px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .lang-selector {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--neon-cyan);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .api-toast {
+            position: fixed;
+            top: 30px;
+            right: 20px;
+            z-index: 2000;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+        }
+        html[dir="ltr"] .api-toast { right: auto; left: 20px; }
+    </style>
 </head>
 <body>
-    <div class="card">
-        <h2><i class="fas fa-clipboard-check"></i> تسوية وجرد المخزون</h2>
-        <table class="accounting-table">
+
+<div id="apiToast" class="api-toast"></div>
+
+<div class="inventory-container">
+    <div class="inventory-header">
+        <div class="inventory-title">
+            <i class="fas fa-clipboard-check bx-flashing"></i>
+            <span data-i18n="inv-main-title">تسوية وجرد المخزون الفعلي</span>
+        </div>
+        <div>
+            <select class="lang-selector" onchange="changeLanguage(this.value)" id="langSelect">
+                <option value="ar">العربية (AR)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive-custom">
+        <table class="table table-dark table-striped table-custom text-center">
             <thead>
                 <tr>
-                    <th>الصنف</th>
-                    <th>الرصيد الدفتري</th>
-                    <th>الرصيد الفعلي</th>
-                    <th>الفرق</th>
+                    <th data-i18n="th-i-barcode">الباركود</th>
+                    <th data-i18n="th-i-name">اسم الصنف المستهدف</th>
+                    <th data-i18n="th-i-book">الرصيد الدفتري (المخزن)</th>
+                    <th data-i18n="th-i-actual">الرصيد الفعلي (المستودع)</th>
+                    <th data-i18n="th-i-diff">الفرق المحاسبي</th>
                 </tr>
             </thead>
-            <tbody id="inventory-list">
-                <!-- يتم التحميل ديناميكياً من Firestore -->
-            </tbody>
+            <tbody id="inventoryListBody">
+                </tbody>
         </table>
-        <button class="btn-main" style="margin-top:20px;" onclick="App.syncInventory()">اعتماد تسوية المخزون</button>
     </div>
-    <script type="module" src="app.js"></script>
+
+    <div class="d-flex flex-wrap gap-2 justify-content-end mt-4">
+        <button type="button" onclick="syncInventoryAdjustment()" class="btn-neon-inventory" style="--clr:var(--light-green)">
+            <i class="fas fa-cloud-upload-alt"></i> <span data-i18n="btn-sync-inv">اعتماد تسوية المخزون وتحديث المخزن</span>
+        </button>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    // مصفوفة اللغات والترجمة المتكاملة لشاشة الجرد والتسوية
+    const translations = {
+        ar: {
+            "inv-main-title": "تسوية وجرد المخزون الفعلي",
+            "th-i-barcode": "الباركود", "th-i-name": "اسم الصنف المستهدف",
+            "th-i-book": "الرصيد الدفتري (المخزن)", "th-i-actual": "الرصيد الفعلي (المستودع)",
+            "th-i-diff": "الفرق المحاسبي", "btn-sync-inv": "اعتماد تسوية المخزون وتحديث المخزن"
+        },
+        en: {
+            "inv-main-title": "Stock Adjustment & Physical Audit",
+            "th-i-barcode": "Barcode", "th-i-name": "Target Item Name",
+            "th-i-book": "Book Qty (System)", "th-i-actual": "Actual Qty (Physical)",
+            "th-i-diff": "Variance / Diff", "btn-sync-inv": "Approve Stock Settlement & Update"
+        }
+    };
+
+    // مزامنة قالب فصول السنة الأربعة المتغيرة لحماية عين التاجر
+    function applySavedTheme() {
+        const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
+        document.documentElement.setAttribute('data-theme', activeTheme);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        applySavedTheme();
+        loadAndRenderInventory();
+
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        document.getElementById('langSelect').value = currentLang;
+        changeLanguage(currentLang);
+    });
+
+    function changeLanguage(lang) {
+        localStorage.setItem('altajer_lang', lang);
+        document.documentElement.lang = lang; 
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        
+        $('[data-i18n]').each(function() { 
+            const key = $(this).data('i18n'); 
+            if (translations[lang] && translations[lang][key]) { 
+                $(this).text(translations[lang][key]); 
+            } 
+        });
+    }
+
+    function showToast(message, isSuccess = true) {
+        const toast = document.getElementById('apiToast'); 
+        toast.innerText = message;
+        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
+        toast.style.display = 'block'; 
+        setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    function getProductsList() {
+        return JSON.parse(localStorage.getItem('altajer_products_list')) || [];
+    }
+
+    // بناء وتوليد جدول الجرد تلقائياً بناءً على المخزن الموحد للأصناف
+    function loadAndRenderInventory() {
+        const products = getProductsList();
+        const tbody = document.getElementById('inventoryListBody');
+        tbody.innerHTML = '';
+
+        if (products.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-muted text-center p-3">لا توجد أصناف في مخزن التاجر حالياً لغرض جردها! يرجى إضافة أصناف أولاً.</td></tr>`;
+            return;
+        }
+
+        products.forEach((prod, index) => {
+            const bookQty = parseInt(prod.qty) || 0;
+            const barcode = prod.code || prod.id;
+            
+            tbody.innerHTML += `
+                <tr data-barcode="${barcode}">
+                    <td class="text-warning fw-bold">${barcode}</td>
+                    <td class="fw-bold text-info">${prod.name}</td>
+                    <td class="fw-bold text-white-50" id="book-qty-${index}">${bookQty}</td>
+                    <td>
+                        <input type="number" class="qty-input-jard" id="actual-qty-${index}" value="${bookQty}" min="0" oninput="calculateVariance(${index})">
+                    </td>
+                    <td>
+                        <span id="variance-badge-${index}" class="badge badge-diff bg-primary">مطابق</span>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // محرك احتساب الفروقات الفوري والملون لتسهيل المراقبة من الجوال
+    function calculateVariance(index) {
+        const bookQty = parseInt(document.getElementById(`book-qty-${index}`).innerText) || 0;
+        const actualQty = parseInt(document.getElementById(`actual-qty-${index}`).value) || 0;
+        const variance = actualQty - bookQty;
+        const badge = document.getElementById(`variance-badge-${index}`);
+
+        if (variance === 0) {
+            badge.innerText = "مطابق";
+            badge.className = "badge badge-diff bg-primary";
+        } else if (variance > 0) {
+            badge.innerText = `+${variance} فائض`;
+            badge.className = "badge badge-diff bg-success";
+        } else {
+            badge.innerText = `${variance} عجز`;
+            badge.className = "badge badge-diff bg-danger";
+        }
+    }
+
+    // اعتماد المطابقة والتسوية وإعادة ترحيل البيانات وحفظها في القائمة الكبرى
+    function syncInventoryAdjustment() {
+        let products = getProductsList();
+        if (products.length === 0) return;
+
+        const rows = document.querySelectorAll("#inventoryListBody tr");
+        let isAdjusted = false;
+
+        rows.forEach((row, index) => {
+            const barcode = row.getAttribute("data-barcode");
+            const actualQtyInput = document.getElementById(`actual-qty-${index}`);
+            
+            if (actualQtyInput) {
+                const actualQtyValue = parseInt(actualQtyInput.value) || 0;
+                
+                // البحث وتحديث الكمية الفعّلية داخل المصفوفة المحاسبية الكبرى التراكمية
+                products = products.map(p => {
+                    if (p.code === barcode || p.id === barcode) {
+                        if (parseInt(p.qty) !== actualQtyValue) {
+                            isAdjusted = true;
+                        }
+                        return { ...p, qty: actualQtyValue };
+                    }
+                    return p;
+                });
+            }
+        });
+
+        // حفظ التحديثات في الذاكرة الموحدة التي تقرأ منها شاشات البيع والشراء
+        localStorage.setItem('altajer_products_list', JSON.stringify(products));
+        
+        if (isAdjusted) {
+            showToast("تم اعتماد تسوية المستودع بنجاح وتحديث الأرصدة الدفترية فوراً");
+        } else {
+            showToast("تم الفحص؛ الأرصدة الحالية متطابقة ومستقرة تماماً");
+        }
+
+        loadAndRenderInventory(); // إعادة تحميل الواجهة لتثبيت الحسابات
+    }
+</script>
 </body>
 </html>

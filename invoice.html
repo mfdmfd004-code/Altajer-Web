@@ -177,6 +177,38 @@
             display: inline-block;
         }
 
+        /* تنسيق مظهر لوحة الخيارات الوسيطة للجوال المتوافقة مع الهوية */
+        .altajer-modal-content {
+            background-color: var(--card-bg) !important;
+            color: var(--text-white) !important;
+            border: 2px solid var(--neon-cyan) !important;
+            border-radius: 16px !important;
+        }
+        .altajer-modal-header {
+            border-bottom: 1px dashed rgba(0, 180, 216, 0.3) !important;
+        }
+        .altajer-modal-footer {
+            border-top: 1px dashed rgba(0, 180, 216, 0.3) !important;
+        }
+        .hub-btn {
+            width: 100%;
+            padding: 14px;
+            font-weight: bold;
+            border-radius: 10px;
+            border: none;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .hub-btn-print { background: linear-gradient(135deg, var(--sea-blue), var(--neon-cyan)); }
+        .hub-btn-share { background: linear-gradient(135deg, var(--light-green), #248200); }
+        .hub-btn-close { background: transparent; border: 1px solid rgba(255,255,255,0.2); }
+        .hub-btn:active { transform: scale(0.98); }
+
         .btn-action-group {
             display: flex;
             gap: 12px;
@@ -201,31 +233,79 @@
             transform: translateY(-2px);
         }
 
+        /* هندسة محرك الطباعة الحرارية الحرج لدمج الخطوط والمعلومات ومنع البياض العشوائي للباركود */
         @media print {
             body {
-                background: white !important;
-                color: black !important;
-                padding: 0;
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                margin: 0 !important;
             }
             .invoice-container {
                 border: none !important;
                 box-shadow: none !important;
-                background: white !important;
-                color: black !important;
-                padding: 0;
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 10px !important;
+                max-width: 100% !important;
             }
             .party-box {
                 background: transparent !important;
-                border: 1px solid #cbd5e1 !important;
-                color: black !important;
+                border: 1px solid #000000 !important;
+                color: #000000 !important;
+                padding: 10px !important;
             }
-            .party-box p, .party-box p strong { color: black !important; }
-            .table-invoice th { background-color: #f1f5f9 !important; color: black !important; }
-            .table-invoice td { color: black !important; border-color: #cbd5e1 !important; }
-            .btn-action-group, .invoice-container::before { display: none !important; }
-            .qr-container { box-shadow: none !important; border: 2px solid #000; }
-            .summary-box { color: black !important; border-color: #000 !important; }
-            .brand-title, .meta-tag, .summary-row.final-net { color: black !important; text-shadow: none !important; }
+            .party-box h5 {
+                color: #000000 !important;
+                border-bottom: 1px solid #000000 !important;
+            }
+            .party-box p, .party-box p strong { 
+                color: #000000 !important; 
+            }
+            .table-responsive-custom {
+                box-shadow: none !important;
+                margin: 15px 0 !important;
+                border: 1px solid #000000 !important;
+            }
+            .table-invoice {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            .table-invoice th { 
+                background-color: #f2f2f2 !important; 
+                color: #000000 !important; 
+                border: 1px solid #000000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .table-invoice td { 
+                color: #000000 !important; 
+                border: 1px solid #000000 !important;
+                background-color: #ffffff !important;
+            }
+            .summary-box { 
+                background: transparent !important;
+                color: #000000 !important; 
+                border: 1px solid #000000 !important; 
+            }
+            .brand-title, .meta-tag, .summary-row.final-net { 
+                color: #000000 !important; 
+                text-shadow: none !important; 
+            }
+            .qr-container { 
+                box-shadow: none !important; 
+                border: 1px solid #000000 !important; 
+                background: #ffffff !important;
+                padding: 5px !important;
+            }
+            .qr-container img {
+                filter: brightness(0) contrast(100%) !important; /* تثبيت قراءة اللون الأسود للـ QR */
+            }
+            .btn-action-group, .invoice-container::before, .modal, .modal-backdrop, .small.text-white-50 { 
+                display: none !important; 
+            }
         }
     </style>
 </head>
@@ -283,7 +363,7 @@
                 </tr>
             </thead>
             <tbody id="invoiceItemsTableBody">
-                </tbody>
+            </tbody>
         </table>
     </div>
 
@@ -317,8 +397,8 @@
     </div>
 
     <div class="btn-action-group">
-        <button id="btnPrintTrigger" onclick="executeInvoiceAction()" class="btn-neon-action" style="--clr: var(--neon-cyan)">
-            <i class="fas fa-print me-2"></i> <span id="lblActionBtn" data-i18n="btn-print">طباعة الفاتورة الفورية</span>
+        <button id="btnOpenHubTrigger" onclick="openPrintShareHub()" class="btn-neon-action" style="--clr: var(--neon-cyan)">
+            <i class="fas fa-sliders-h me-2"></i> <span id="lblActionBtn" data-i18n="btn-print">خيارات الفاتورة الشاملة</span>
         </button>
         <button onclick="window.location.href='index.html'" class="btn-neon-action" style="--clr: var(--warning-orange)">
             <i class="fas fa-arrow-right me-2"></i> <span data-i18n="btn-back">العودة للوحة التحكم</span>
@@ -326,7 +406,34 @@
     </div>
 </div>
 
+<div class="modal fade" id="printShareHubModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered px-3">
+        <div class="modal-content altajer-modal-content">
+            <div class="modal-header altajer-modal-header">
+                <h5 class="modal-title fw-bold" style="color: var(--neon-cyan)"><i class="fas fa-print me-2"></i> مركز طباعة ومشاركة الفاتورة</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="small text-white-50 mb-4">اختر الإجراء المناسب لإصدار وتمرير الفاتورة الحالية:</p>
+                
+                <button class="hub-btn hub-btn-print" onclick="triggerHardwarePrint()">
+                    <i class="fas fa-print"></i> طباعة حرارية فورية (80mm / Bluetooth)
+                </button>
+                
+                <button class="hub-btn hub-btn-share" onclick="triggerSystemShare()">
+                    <i class="fas fa-share-nodes"></i> مشاركة الفاتورة عبر الـ WhatsApp والمنصات
+                </button>
+                
+                <button class="hub-btn hub-btn-close mt-3" data-bs-dismiss="modal">
+                    إلغاء وإغلاق النوافذ
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
@@ -341,7 +448,7 @@
             "th-tax-rate": "نسبة الضريبة", "th-tax-val": "قيمة الضريبة", "th-total": "المجموع (شامل الضريبة)",
             "sum-subtotal": "الإجمالي الخاضع للضريبة (ر.س):", "sum-tax": "ضريبة القيمة المضافة (15%):",
             "sum-discount": "الخصم الممنوح (ر.س):", "sum-net": "الصافي النهائي المستحق:", "qr-hint": "فاتورة ضريبية إلكترونية معتمدة",
-            "btn-print": "طباعة الفاتورة الفورية", "btn-back": "العودة للوحة التحكم", "btn-pdf": "تصدير وحفظ كـ PDF رقمي"
+            "btn-print": "خيارات الفاتورة الشاملة", "btn-back": "العودة للوحة التحكم"
         },
         en: {
             "brand-name": "Altajer Pro Accounting", "invoice-subtitle": "Integrated Simplified Tax Invoice System",
@@ -353,14 +460,15 @@
             "th-tax-rate": "VAT Rate", "th-tax-val": "VAT Amount", "th-total": "Total (Incl. VAT)",
             "sum-subtotal": "Taxable Subtotal (SAR):", "sum-tax": "VAT Amount (15%):",
             "sum-discount": "Discount Granted (SAR):", "sum-net": "Net Total Due:", "qr-hint": "Certified Electronic Tax Invoice",
-            "btn-print": "Print Invoice Now", "btn-back": "Back to Dashboard", "btn-pdf": "Export & Save as Digital PDF"
+            "btn-print": "Comprehensive Invoice Options", "btn-back": "Back to Dashboard"
         }
     };
 
     let currentPrintOption = "80mm";
+    let globalInvoiceId = "";
+    let globalNetTotal = "0.00";
 
     document.addEventListener("DOMContentLoaded", function () {
-        // 1. قراءة وإعداد بيانات المورد من شاشة الإعدادات المطورة والمنفصلة
         const enterpriseSettings = JSON.parse(localStorage.getItem('altajer_enterprise_settings'));
         
         if (enterpriseSettings) {
@@ -369,25 +477,14 @@
             document.getElementById('supPhoneField').innerText = enterpriseSettings.phone || '---';
             currentPrintOption = enterpriseSettings.print_option || '80mm';
 
-            // تجميع وتنسيق حقول العنوان الوطني المجزأ هندسياً لنظام الهيئة
             const fullNationalAddress = `${enterpriseSettings.building_no || ''} ${enterpriseSettings.street || ''}، ${enterpriseSettings.district || ''}، ${enterpriseSettings.city || ''} ${enterpriseSettings.postal_code || ''} ${enterpriseSettings.additional_no ? ' - ' + enterpriseSettings.additional_no : ''}`;
             document.getElementById('supAddressField').innerText = fullNationalAddress.trim() !== '،' ? fullNationalAddress : '---';
         }
 
-        // 2. ضبط تسمية وإيقونة زر التشغيل الرئيسي بناءً على خيار الطباعة والتصدير
-        if (currentPrintOption === "PDF") {
-            const btnLabel = document.getElementById('lblActionBtn');
-            if (btnLabel) { btnLabel.setAttribute('data-i18n', 'btn-pdf'); }
-            document.getElementById('btnPrintTrigger').style.setProperty('--clr', 'var(--neon-pink)');
-            document.getElementById('btnPrintTrigger').querySelector('i').className = "fas fa-file-pdf me-2";
-        }
-
-        // 3. جلب معرّف سياق الفاتورة الحالية من الرابط الممرر
         const urlParams = new URLSearchParams(window.location.search);
-        const invoiceId = urlParams.get('id') || Math.floor(Math.random() * 90000) + 10000;
-        document.getElementById('lblInvoiceId').innerText = invoiceId;
+        globalInvoiceId = urlParams.get('id') || Math.floor(Math.random() * 90000) + 10000;
+        document.getElementById('lblInvoiceId').innerText = globalInvoiceId;
 
-        // 4. سحب وحقن مصفوفة منتجات الفاتورة الممررة من الكاشير الرئيسي
         const invoiceData = JSON.parse(localStorage.getItem('last_processed_invoice'));
 
         if (invoiceData) {
@@ -400,7 +497,9 @@
             document.getElementById('invSubTotal').innerText = parseFloat(invoiceData.subtotal).toFixed(2);
             document.getElementById('invTaxVal').innerText = parseFloat(invoiceData.tax).toFixed(2);
             document.getElementById('invDiscount').innerText = parseFloat(invoiceData.discount).toFixed(2);
-            document.getElementById('invTotalNet').innerText = parseFloat(invoiceData.total_net).toFixed(2);
+            
+            globalNetTotal = parseFloat(invoiceData.total_net).toFixed(2);
+            document.getElementById('invTotalNet').innerText = globalNetTotal;
 
             const tbody = document.getElementById('invoiceItemsTableBody');
             tbody.innerHTML = '';
@@ -418,13 +517,12 @@
                         <td>${itemPriceExcl.toFixed(2)} ر.س</td>
                         <td>${itemQty}</td>
                         <td>15%</td>
-                        <td>${totalTaxForItem.toFixed(2)} ر.s</td>
+                        <td>${totalTaxForItem.toFixed(2)} ر.س</td>
                         <td>${totalItemIncl.toFixed(2)} ر.س</td>
                     </tr>
                 `;
             });
 
-            // بناء وتوليد الـ QR Code المشفر والمتوافق مع متطلبات التفتيش لهيئة ZATCA
             generateZatcaQR(
                 document.getElementById('supNameField').innerText,
                 document.getElementById('supVatField').innerText,
@@ -436,15 +534,50 @@
             document.getElementById('invoiceItemsTableBody').innerHTML = `<tr><td colspan="7" class="text-danger fw-bold">لم يتم العثور على مصفوفة بيانات صالحة للعرض الحسابي!</td></tr>`;
         }
 
-        // 5. فحص ومزامنة محرك اللغات والاتجاهات
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         applyInvoiceLanguage(currentLang);
     });
 
-    // دالة تنفيذ العمليات الذكية للطباعة أو التصدير لـ PDF
-    function executeInvoiceAction() {
-        // عند استدعاء الطباعة أو الحفظ المدمج للمتصفح، تتكفل الـ CSS Media @print بهيكلة الصفحة تلقائياً
-        window.print();
+    // دالة استدعاء لوحة الخيارات المجمعة (الـ Hub)
+    function openPrintShareHub() {
+        const myModal = new bootstrap.Modal(document.getElementById('printShareHubModal'));
+        myModal.show();
+    }
+
+    // خيار 1: تنفيذ أمر الطباعة المباشر مع التنسيق المصلح
+    function triggerHardwarePrint() {
+        // إغلاق المودال برمجياً أولاً لمنع ظهوره في المعاينة
+        const modalEl = document.getElementById('printShareHubModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+        
+        setTimeout(() => {
+            window.print();
+        }, 300);
+    }
+
+    // خيار 2: مشاركة الفاتورة عبر النظام ومحرك الجوال الذكي
+    function triggerSystemShare() {
+        const company = document.getElementById('supNameField').innerText;
+        const invId = globalInvoiceId;
+        const total = globalNetTotal;
+        const url = window.location.href;
+
+        const shareData = {
+            title: `فاتورة ضريبية من ${company}`,
+            text: `مرحبا بك، تم إصدار فاتورتك الضريبية رقم #${invId} من مؤسسة ${company} بمبلغ إجمالي قدره ${total} ر.س. يمكنك استعراض التفاصيل عبر الرابط:`,
+            url: url
+        };
+
+        if (navigator.share) {
+            navigator.share(shareData)
+                .then(() => console.log('تمت المشاركة بنجاح'))
+                .catch((error) => console.log('خطأ في المشاركة:', error));
+        } else {
+            // كود بديل للحواسب أو المتصفحات التي لا تدعم الهواتف مباشرة
+            const whatsappText = encodeURIComponent(`${shareData.text}\n${shareData.url}`);
+            window.open(`https://api.whatsapp.com/send?text=${whatsappText}`, '_blank');
+        }
     }
 
     function applyInvoiceLanguage(lang) {

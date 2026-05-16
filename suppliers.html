@@ -2,30 +2,520 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>سجل الموردين - التاجر برو</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>سجل الموردين - التاجر برو المحاسبي</title>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0c3f65">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* نظام التاجر الاحترافي: دعم فصول السنة الأربعة المتناسق بالكامل لتأمين وحماية العين */
+        :root, [data-theme="winter"] {
+            --dark-bg: #0d1b2a;
+            --card-bg: #1b263b;
+            --sea-blue: #0077b6;
+            --light-green: #38b000;
+            --neon-cyan: #00b4d8;
+            --neon-pink: #e81cff;
+            --text-white: #ffffff;
+            --danger-red: #e63946;
+            --warning-orange: #ffb703;
+            --glow-soft: 0 0 6px rgba(0, 180, 216, 0.35);
+        }
+
+        [data-theme="spring"] {
+            --dark-bg: #1a2f16;
+            --card-bg: #243e1e;
+            --sea-blue: #52b788;
+            --light-green: #74c69d;
+            --neon-cyan: #95d5b2;
+            --neon-pink: #ff70a6;
+            --text-white: #f4f9f4;
+            --danger-red: #ff4d6d;
+            --warning-orange: #ff9f1c;
+            --glow-soft: 0 0 6px rgba(149, 213, 178, 0.35);
+        }
+
+        [data-theme="summer"] {
+            --dark-bg: #0f2a35;
+            --card-bg: #173f5f;
+            --sea-blue: #20639b;
+            --light-green: #3caea3;
+            --neon-cyan: #2a9d8f;
+            --neon-pink: #f4a261;
+            --text-white: #f8f9fa;
+            --danger-red: #e76f51;
+            --warning-orange: #f4a261;
+            --glow-soft: 0 0 6px rgba(42, 157, 143, 0.35);
+        }
+
+        [data-theme="autumn"] {
+            --dark-bg: #2b1810;
+            --card-bg: #3e261d;
+            --sea-blue: #b07d62;
+            --light-green: #9e2a2b;
+            --neon-cyan: #e36414;
+            --neon-pink: #ffb703;
+            --text-white: #fff8f5;
+            --danger-red: #6f1d1b;
+            --warning-orange: #ff9f1c;
+            --glow-soft: 0 0 6px rgba(227, 100, 20, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            margin: 0;
+            padding: 20px 10px;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .supplier-container {
+            max-width: 950px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border: 2px solid var(--sea-blue);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.15);
+            position: relative;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        .supplier-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--sea-blue), var(--neon-pink));
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+        }
+
+        .supplier-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dashed rgba(0, 180, 216, 0.25);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .supplier-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: var(--glow-soft);
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--neon-cyan);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-container input, .input-container select {
+            border: 0;
+            border-bottom: 2px solid #4a5568;
+            background: transparent;
+            width: 100%;
+            padding: 8px 5px 4px 5px;
+            font-size: 15px;
+            color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        .input-container input:focus, .input-container select:focus {
+            outline: none;
+            border-bottom: 2px solid var(--neon-cyan);
+        }
+
+        .input-container label {
+            position: absolute;
+            top: -12px;
+            right: 5px;
+            font-size: 13px;
+            color: #a0aec0;
+            pointer-events: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        html[dir="ltr"] .input-container label {
+            left: 5px;
+            right: auto;
+        }
+
+        .btn-neon-action {
+            background: #2d3748;
+            color: #fff;
+            border: none;
+            padding: 11px 22px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-neon-action:hover {
+            background: var(--clr);
+            box-shadow: 0 0 12px var(--clr);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .table-responsive-custom {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin: 20px 0;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        .table-custom {
+            background-color: rgba(0, 0, 0, 0.15) !important;
+            color: white !important;
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        .table-custom th {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            color: var(--neon-cyan) !important;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            border-color: rgba(255, 255, 255, 0.04) !important;
+        }
+
+        .api-toast {
+            position: fixed;
+            top: 30px;
+            right: 20px;
+            z-index: 2000;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+        }
+        html[dir="ltr"] .api-toast { right: auto; left: 20px; }
+        .cursor-pointer { cursor: pointer; }
+    </style>
 </head>
 <body>
-    <div class="card">
-        <h2><i class="fas fa-truck-field"></i> إدارة الموردين</h2>
-        <div class="form-group">
-            <input type="text" id="s-name" class="form-control" placeholder="اسم المورد">
-            <input type="text" id="s-vat" class="form-control" placeholder="الرقم الضريبي للمورد">
-            <button class="btn-main" onclick="App.saveSupplier()">إضافة للمستندات</button>
+
+<div id="apiToast" class="api-toast"></div>
+
+<div class="supplier-container">
+    <div class="supplier-header">
+        <div class="supplier-title">
+            <i class='bx bxs-truck bx-flip-horizontal'></i>
+            <span data-i18n="sup-main-title">سجل الموردين وإدارة الشركات البائعة</span>
         </div>
-        <hr>
-        <table class="accounting-table">
+        <div>
+            <select class="lang-selector bg-dark text-white border-info rounded p-1" onchange="changeLanguage(this.value)" id="langSelect">
+                <option value="ar">العربية (AR)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="section-subtitle">
+        <i class="fas fa-id-card"></i> <span data-i18n="sub-sup-legal">البيانات القانونية والضريبية للمورد</span>
+    </div>
+    
+    <form id="supplierForm" onsubmit="saveSupplierData(event)">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="input-container">
+                    <input id="s-name" type="text" required placeholder=" " autofocus>
+                    <label data-i18n="lbl-sup-name">اسم المورد / الشركة</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-container">
+                    <input id="s-vat" type="text" maxlength="15" required placeholder=" ">
+                    <label data-i18n="lbl-sup-vat">الرقم الضريبي (15 خانة)</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-container">
+                    <input id="s-phone" type="tel" placeholder=" ">
+                    <label data-i18n="lbl-sup-phone">رقم الاتصال</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-subtitle">
+            <i class="fas fa-map-marked-alt"></i> <span data-i18n="sub-sup-address">مكونات العنوان الوطني (السعودية)</span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2 col-6">
+                <div class="input-container">
+                    <input id="s-building" type="number" placeholder=" ">
+                    <label data-i18n="lbl-sup-build">رقم المبنى</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="input-container">
+                    <input id="s-street" type="text" placeholder=" ">
+                    <label data-i18n="lbl-sup-street">اسم الشارع</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="input-container">
+                    <input id="s-district" type="text" placeholder=" ">
+                    <label data-i18n="lbl-sup-dist">الحي</label>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="input-container">
+                    <input id="s-city" type="text" placeholder=" ">
+                    <label data-i18n="lbl-sup-city">المدينة</label>
+                </div>
+            </div>
+            <div class="col-md-2 col-12">
+                <div class="input-container">
+                    <input id="s-postal" type="number" placeholder=" ">
+                    <label data-i18n="lbl-sup-postal">الرمز البريدي</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mb-4">
+            <button type="submit" class="btn-neon-action w-100 justify-content-center" style="--clr:var(--light-green)">
+                <i class="fas fa-folder-plus"></i> <span data-i18n="btn-save-sup">حفظ واعتماد بيانات المورد</span>
+            </button>
+        </div>
+    </form>
+
+    <hr style="border-color: rgba(0,180,216,0.25);">
+
+    <div class="section-subtitle">
+        <i class="fas fa-list-alt"></i> <span data-i18n="sub-sup-table">قاعدة بيانات الموردين الحالية</span>
+    </div>
+
+    <div class="table-responsive-custom">
+        <table class="table table-dark table-striped table-custom text-center">
             <thead>
                 <tr>
-                    <th>اسم المورد</th>
-                    <th>الرقم الضريبي</th>
-                    <th>تاريخ الإضافة</th>
+                    <th data-i18n="th-s-name">اسم المورد / الشركة</th>
+                    <th data-i18n="th-s-vat">الرقم الضريبي</th>
+                    <th data-i18n="th-s-phone">رقم الاتصال</th>
+                    <th data-i18n="th-s-address">العنوان الوطني</th>
+                    <th data-i18n="th-s-action">إجراءات</th>
                 </tr>
             </thead>
-            <tbody id="supplier-list"></tbody>
+            <tbody id="supplier-list">
+                </tbody>
         </table>
     </div>
-    <script type="module" src="app.js"></script>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    // مصفوفة اللغات والترجمة الموحدة المتناسقة مع تاجر برو المحاسبي
+    const translations = {
+        ar: {
+            "sup-main-title": "سجل الموردين وإدارة الشركات البائعة", "sub-sup-legal": "البيانات القانونية والضريبية للمورد",
+            "lbl-sup-name": "اسم المورد / الشركة", "lbl-sup-vat": "الرقم الضريبي (15 خانة)", "lbl-sup-phone": "رقم الاتصال",
+            "sub-sup-address": "مكونات العنوان الوطني (السعودية)", "lbl-sup-build": "رقم المبنى", "lbl-sup-street": "اسم الشارع",
+            "lbl-sup-dist": "الحي", "lbl-sup-city": "المدينة", "lbl-sup-postal": "الرمز البريدي",
+            "btn-save-sup": "حفظ واعتماد بيانات المورد", "sub-sup-table": "قاعدة بيانات الموردين الحالية",
+            "th-s-name": "اسم المورد / الشركة", "th-s-vat": "الرقم الضريبي", "th-s-phone": "رقم الاتصال",
+            "th-s-address": "العنوان الوطني", "th-s-action": "إجراءات"
+        },
+        en: {
+            "sup-main-title": "Suppliers Registry & Vendor Management", "sub-sup-legal": "Legal & Tax Information for Supplier",
+            "lbl-sup-name": "Supplier / Company Name", "lbl-sup-vat": "VAT Number (15 Digits)", "lbl-sup-phone": "Contact Number",
+            "sub-sup-address": "National Address Components (KSA)", "lbl-sup-build": "Building No", "lbl-sup-street": "Street Name",
+            "lbl-sup-dist": "District", "lbl-sup-city": "City", "lbl-sup-postal": "Postal Code",
+            "btn-save-sup": "Save & Authorize Supplier Data", "sub-sup-table": "Current Registered Suppliers Database",
+            "th-s-name": "Supplier Name", "th-s-vat": "VAT Reg Number", "th-s-phone": "Phone No",
+            "th-s-address": "National Address", "th-s-action": "Actions"
+        }
+    };
+
+    // محرك الفصول الأربعة المتزامن لحماية عين التاجر
+    function applySavedTheme() {
+        const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
+        document.documentElement.setAttribute('data-theme', activeTheme);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // تطبيق قالب فصل السنة الفعال فوراً
+        applySavedTheme();
+
+        // عرض وجرد الموردين المحفوظين بالذاكرة التراكمية
+        renderSuppliersTable();
+
+        // ضبط وتطبيق اللغة الفعالة للنظام
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        document.getElementById('langSelect').value = currentLang;
+        changeLanguage(currentLang);
+    });
+
+    function changeLanguage(lang) {
+        localStorage.setItem('altajer_lang', lang);
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        
+        $('[data-i18n]').each(function() {
+            const key = $(this).data('i18n');
+            if (translations[lang] && translations[lang][key]) {
+                $(this).text(translations[lang][key]);
+            }
+        });
+    }
+
+    function showToast(message, isSuccess = true) {
+        const toast = document.getElementById('apiToast');
+        toast.innerText = message;
+        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    // محرك معالجة وحفظ الموردين ضريبياً وتراكمياً
+    function saveSupplierData(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('s-name').value.trim();
+        const vat = document.getElementById('s-vat').value.trim();
+        const phone = document.getElementById('s-phone').value.trim() || '---';
+        
+        const building = document.getElementById('s-building').value.trim();
+        const street = document.getElementById('s-street').value.trim();
+        const district = document.getElementById('s-district').value.trim();
+        const city = document.getElementById('s-city').value.trim();
+        const postal = document.getElementById('s-postal').value.trim();
+
+        // التدقيق والتحقق الذكي من صحة الرقم الضريبي السعودي المكون من 15 خانة
+        if (vat.length !== 15 || isNaN(vat)) {
+            showToast("خطأ محاسبي: الرقم الضريبي للمورد يجب أن يتكون من 15 خانة رقمية دقيقة!", false);
+            return;
+        }
+
+        // صياغة وعاء العنوان الوطني بشكل متكامل ونظيف للمطابقة الضريبية بالفواتير
+        let fullAddress = '---';
+        if (building || street || district || city) {
+            fullAddress = `${building ? building + '، ' : ''}${street ? street + '، ' : ''}${district ? district + '، ' : ''}${city ? city + ' - ' : ''}${postal}`;
+        }
+
+        const supplierObject = {
+            name: name,
+            vat: vat,
+            phone: phone,
+            address: fullAddress,
+            details: { building, street, district, city, postal },
+            createdAt: new Date().toLocaleDateString('ar-EG')
+        };
+
+        // 1. التخزين الفوري في جدول تفاصيل الموردين الكاملة
+        let suppliersDetailsList = JSON.parse(localStorage.getItem('altajer_suppliers_details')) || [];
+        
+        // منع التكرار بناءً على الاسم أو الرقم الضريبي
+        const isExist = suppliersDetailsList.some(s => s.name === name || s.vat === vat);
+        if (isExist) {
+            showToast("تنبيه: هذا المورد أو الرقم الضريبي مسجل في النظام مسبقاً!", false);
+            return;
+        }
+
+        suppliersDetailsList.push(supplierObject);
+        localStorage.setItem('altajer_suppliers_details', JSON.stringify(suppliersDetailsList));
+
+        // 2. التخزين والمزامنة التراكمية الفورية مع قائمة الداتاليست لملف المشتريات (purchases.html)
+        let savedSupsNames = JSON.parse(localStorage.getItem('altajer_saved_suppliers')) || [];
+        if (!savedSupsNames.includes(name)) {
+            savedSupsNames.push(name);
+            localStorage.setItem('altajer_saved_suppliers', JSON.stringify(savedSupsNames));
+        }
+
+        // إعادة تهيئة حقول النموذج وإرجاع الفوكس لراحة يد التاجر بالجوال
+        document.getElementById('supplierForm').reset();
+        renderSuppliersTable();
+        showToast("تم اعتماد المورد ومزامنة بياناته مع نظام فواتير المشتريات بنجاح");
+        document.getElementById('s-name').focus();
+    }
+
+    // دالة بناء وجرد جدول الموردين ديناميكياً
+    function renderSuppliersTable() {
+        const tbody = document.getElementById('supplier-list');
+        tbody.innerHTML = '';
+
+        const suppliersDetailsList = JSON.parse(localStorage.getItem('altajer_suppliers_details')) || [];
+
+        if (suppliersDetailsList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-muted p-3">لا يوجد موردين مسجلين في مستندات النظام حالياً</td></tr>`;
+            return;
+        }
+
+        suppliersDetailsList.forEach((sup, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td class="fw-bold text-info">${sup.name}</td>
+                    <td class="text-warning">${sup.vat}</td>
+                    <td>${sup.phone}</td>
+                    <td class="small text-white-50">${sup.address}</td>
+                    <td>
+                        <i class="fas fa-trash-alt text-danger cursor-pointer" onclick="deleteSupplierRow(${index}, '${sup.name}')"></i>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // دالة حذف المورد الفردي مع إزالة ترابطه التراكمي بأمان
+    function deleteSupplierRow(index, supplierName) {
+        if (confirm(`هل أنت متأكد من رغبتك في حذف المورد (${supplierName}) نهائياً من مستندات النظام؟`)) {
+            // حذف من قائمة التفاصيل
+            let suppliersDetailsList = JSON.parse(localStorage.getItem('altajer_suppliers_details')) || [];
+            suppliersDetailsList.splice(index, 1);
+            localStorage.setItem('altajer_suppliers_details', JSON.stringify(suppliersDetailsList));
+
+            // حذف من قائمة المشتريات المبسطة
+            let savedSupsNames = JSON.parse(localStorage.getItem('altajer_saved_suppliers')) || [];
+            savedSupsNames = savedSupsNames.filter(name => name !== supplierName);
+            localStorage.setItem('altajer_saved_suppliers', JSON.stringify(savedSupsNames));
+
+            renderSuppliersTable();
+            showToast("تم إقصاء المورد وتحديث السجلات فوراً", false);
+        }
+    }
+</script>
 </body>
 </html>

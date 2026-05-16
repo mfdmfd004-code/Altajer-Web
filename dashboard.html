@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>لوحة التحكم المطورة - التاجر برو</title>
+    <title>لوحة التحكم الداكنة - التاجر برو</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0077b6">
+    <meta name="theme-color" content="#14080a">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root { 
-            --sea-blue: #0077b6; 
-            --light-green: #90be6d; 
-            --white: #ffffff; 
-            --bg-color: #f4f7f6;
-            --text-dark: #333333;
+            --bg-dark: #0a0305;      /* الخلفية العميقة للنظام */
+            --panel-dark: #14080a;   /* خلفية الكروت والحاويات */
+            --border-dark: #3d1522;  /* ألوان الحدود المتناسقة */
+            --accent-blue: #0077b6;  /* الأزرق المميز للتاجر برو */
+            --text-light: #e0d0d5;   /* النصوص الفاتحة الواضحة */
+            --text-dim: #a09095;     /* النصوص الفرعية المخففة */
         }
         
         * {
@@ -28,13 +29,13 @@
 
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--bg-color); 
+            background-color: var(--bg-dark); 
             margin: 0; 
             padding: 12px; 
-            color: var(--text-dark);
+            color: var(--text-light);
         }
         
-        /* شبكة الإحصائيات المتجاوبة تماماً مع الجوال */
+        /* شبكة الإحصائيات المتجاوبة مع الجوال */
         .stats-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -43,12 +44,13 @@
         }
         
         .stat-card { 
-            background: var(--white); 
+            background: var(--panel-dark); 
             padding: 18px 10px; 
             border-radius: 12px; 
             text-align: center; 
-            border-bottom: 4px solid var(--sea-blue); 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            border: 1px solid var(--border-dark);
+            border-bottom: 4px solid var(--accent-blue); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
             transition: transform 0.2s;
         }
         
@@ -58,14 +60,14 @@
 
         .stat-card i { 
             font-size: 1.8rem; 
-            color: var(--sea-blue); 
+            color: var(--accent-blue); 
             margin-bottom: 8px;
         }
         
         .stat-card h3 { 
             margin: 5px 0; 
             font-size: 1.05rem; 
-            color: #666;
+            color: var(--text-dim);
             font-weight: 600;
         }
         
@@ -73,21 +75,21 @@
             font-size: 1.7rem; 
             font-weight: bold; 
             margin: 5px 0 0 0; 
-            color: var(--text-dark); 
+            color: var(--text-light); 
         }
 
-        /* حاويات الرسوم البيانية الأنيقة والمحمية */
+        /* حاويات الرسوم البيانية الداكنة */
         .chart-container { 
-            background: var(--white); 
+            background: var(--panel-dark); 
             border-radius: 14px; 
             padding: 16px; 
             margin-bottom: 20px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04); 
-            border: 1px solid rgba(0, 119, 182, 0.15); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+            border: 1px solid var(--border-dark); 
         }
         
         h4 { 
-            color: var(--sea-blue); 
+            color: var(--text-light); 
             margin-top: 0; 
             margin-bottom: 15px;
             text-align: center; 
@@ -96,6 +98,10 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+        }
+        
+        h4 i {
+            color: var(--accent-blue);
         }
 
         canvas {
@@ -132,7 +138,7 @@
 
     <script type="module">
         window.onload = function() {
-            // 1. جلب البيانات الفعلية التراكمية من الذاكرة المحلية المحمية للمتصفح
+            // 1. جلب البيانات الفعلية التراكمية من الذاكرة المحلية
             const globalCustomers = JSON.parse(localStorage.getItem('altajer_customers')) || [];
             const globalInvoices = JSON.parse(localStorage.getItem('altajer_invoices')) || [];
 
@@ -142,28 +148,25 @@
 
             // 2. محرك قراءة وتحليل الفواتير لبناء رسوم بيانية حقيقية وديناميكية
             let months = ['يناير', 'فبراير', 'مارس'];
-            let incomeData = [0, 0, 0]; // مصفوفة لتجميع المبالغ
-            let salesQtyData = [0, 0, 0]; // مصفوفة لتجميع كميات الطلبات
+            let incomeData = [0, 0, 0]; 
+            let salesQtyData = [0, 0, 0]; 
 
-            // إذا كان هناك فواتير فعلية مسجلة، نقوم بتحليل مبالغها وتوزيعها
             if (globalInvoices.length > 0) {
-                // سيتم هنا مستقبلاً وضع خوارزمية التوزيع بالشهور الحية من Firebase
-                // حالياً نقوم بحساب الإجمالي التراكمي لعرضه بشكل ذكي لحين الربط بالسيرفر
                 let totalNetInvoices = 0;
                 globalInvoices.forEach(inv => {
                     totalNetInvoices += parseFloat(inv.total_net || 0);
                 });
                 
-                // توزيع المبالغ بشكل نسبي تجريبي ذكي بدلاً من الأرقام الثابتة الميتة
                 incomeData = [totalNetInvoices * 0.3, totalNetInvoices * 0.4, totalNetInvoices * 0.3];
                 salesQtyData = [globalInvoices.length * 0.3, globalInvoices.length * 0.5, globalInvoices.length * 0.2];
             } else {
-                // أرقام افتراضية نظيفة تظهر فقط إذا كان النظام جديداً بالكامل ولا توجد أي فاتورة
                 incomeData = [4000, 5500, 4800];
                 salesQtyData = [30, 45, 35];
             }
 
+            // ألوان المخططات المضيئة المتناسقة مع الخلفية الداكنة
             const chartColors = ['#0077b6', '#90be6d', '#ffca3a'];
+            const textLightColor = '#e0d0d5';
 
             // 3. بناء رسم المخطط الدائري (تحليل الدخل)
             new Chart(document.getElementById('myChart'), {
@@ -173,13 +176,21 @@
                     datasets: [{ 
                         data: incomeData, 
                         backgroundColor: chartColors,
-                        borderWidth: 1
+                        borderWidth: 2,
+                        borderColor: '#14080a' // لفصل الشرائح بلون الكارت الداكن
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 12 } } }
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                boxWidth: 12, 
+                                color: textLightColor, // تحويل نصوص التوضيح للأبيض
+                                font: { size: 12, family: 'Segoe UI' } 
+                            } 
+                        }
                     }
                 }
             });
@@ -196,14 +207,21 @@
                         borderWidth: 3,
                         tension: 0.3,
                         fill: true,
-                        backgroundColor: 'rgba(0, 119, 182, 0.08)'
+                        backgroundColor: 'rgba(0, 119, 182, 0.15)'
                     }]
                 },
                 options: {
                     responsive: true,
                     scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                        x: { grid: { display: false } }
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: 'rgba(224, 208, 213, 0.05)' }, // شبكة خفيفة جداً
+                            ticks: { color: textLightColor } // أرقام المحور Y بالفاتح
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: textLightColor } // أسماء الشهور بالفاتح
+                        }
                     },
                     plugins: {
                         legend: { display: false }

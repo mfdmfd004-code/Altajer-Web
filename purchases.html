@@ -15,7 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root {
+        /* نظام التاجر الاحترافي: دعم فصول السنة الأربعة المتناسق بالكامل وتخفيف حدة التوهج لحماية أعين المستخدمين */
+        :root, [data-theme="winter"] {
             --dark-bg: #0d1b2a;
             --card-bg: #1b263b;
             --sea-blue: #0077b6;
@@ -25,6 +26,49 @@
             --text-white: #ffffff;
             --danger-red: #e63946;
             --warning-orange: #ffb703;
+            --glow-soft: 0 0 6px rgba(0, 180, 216, 0.35);
+        }
+
+        /* قالب الربيع (Spring Theme): مظهر هادئ مريح للعين */
+        [data-theme="spring"] {
+            --dark-bg: #1a2f16;
+            --card-bg: #243e1e;
+            --sea-blue: #52b788;
+            --light-green: #74c69d;
+            --neon-cyan: #95d5b2;
+            --neon-pink: #ff70a6;
+            --text-white: #f4f9f4;
+            --danger-red: #ff4d6d;
+            --warning-orange: #ff9f1c;
+            --glow-soft: 0 0 6px rgba(149, 213, 178, 0.35);
+        }
+
+        /* قالب الصيف (Summer Theme): ألوان ساحلية فيروزية مريحة */
+        [data-theme="summer"] {
+            --dark-bg: #0f2a35;
+            --card-bg: #173f5f;
+            --sea-blue: #20639b;
+            --light-green: #3caea3;
+            --neon-cyan: #2a9d8f;
+            --neon-pink: #f4a261;
+            --text-white: #f8f9fa;
+            --danger-red: #e76f51;
+            --warning-orange: #f4a261;
+            --glow-soft: 0 0 6px rgba(42, 157, 143, 0.35);
+        }
+
+        /* قالب الخريف (Autumn Theme): درجات خشبية دافئة وعميقة */
+        [data-theme="autumn"] {
+            --dark-bg: #2b1810;
+            --card-bg: #3e261d;
+            --sea-blue: #b07d62;
+            --light-green: #9e2a2b;
+            --neon-cyan: #e36414;
+            --neon-pink: #ffb703;
+            --text-white: #fff8f5;
+            --danger-red: #6f1d1b;
+            --warning-orange: #ff9f1c;
+            --glow-soft: 0 0 6px rgba(227, 100, 20, 0.35);
         }
 
         * {
@@ -39,17 +83,19 @@
             padding: 20px 10px;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         .purchase-container {
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
             background-color: var(--card-bg);
             border: 2px solid var(--sea-blue);
             border-radius: 16px;
             padding: 25px;
-            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.2);
+            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.15);
             position: relative;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
 
         .purchase-container::before {
@@ -66,7 +112,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 2px dashed rgba(0, 180, 216, 0.3);
+            border-bottom: 2px dashed rgba(0, 180, 216, 0.25);
             padding-bottom: 15px;
             margin-bottom: 25px;
         }
@@ -78,7 +124,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            text-shadow: 0 0 10px rgba(0, 180, 216, 0.4);
+            text-shadow: var(--glow-soft);
         }
 
         .section-subtitle {
@@ -134,7 +180,6 @@
             right: auto;
         }
 
-        /* تنسيق مفتاح التبديل لشامل وغير شامل الضريبة */
         .tax-toggle-wrapper {
             display: flex;
             align-items: center;
@@ -175,7 +220,7 @@
 
         .btn-neon:hover {
             background: var(--clr);
-            box-shadow: 0 0 15px var(--clr);
+            box-shadow: 0 0 12px var(--clr);
             color: #fff;
             transform: translateY(-2px);
         }
@@ -189,20 +234,20 @@
         }
 
         .table-custom {
-            background-color: #0d1b2a !important;
+            background-color: rgba(0, 0, 0, 0.15) !important;
             color: white !important;
             margin-bottom: 0;
             font-size: 14px;
         }
 
         .table-custom th {
-            background-color: #0c3f65 !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
             color: var(--neon-cyan) !important;
         }
 
         .table-custom td {
             vertical-align: middle;
-            border-color: rgba(255, 255, 255, 0.05) !important;
+            border-color: rgba(255, 255, 255, 0.04) !important;
         }
 
         .summary-box {
@@ -296,8 +341,8 @@
     </div>
 
     <form id="purchaseItemForm" onsubmit="addItemToInvoice(event)">
-        <div class="row align-items-end">
-            <div class="col-md-3 col-sm-6">
+        <div class="row align-items-end g-2">
+            <div class="col-md-2 col-sm-6">
                 <div class="input-container">
                     <input id="itemCode" type="text" required placeholder=" " autofocus>
                     <label data-i18n="lbl-i-code">كود الصنف / باركود</label>
@@ -309,16 +354,37 @@
                     <label data-i18n="lbl-i-name">اسم المنتج / البيان</label>
                 </div>
             </div>
+            <div class="col-md-2 col-sm-6">
+                <div class="input-container">
+                    <select id="itemUnit" required>
+                        <option value="حبة">حبة</option>
+                        <option value="قطعة">قطعة</option>
+                        <option value="علبة">علبة</option>
+                        <option value="كرتون">كرتون</option>
+                        <option value="شد">شد</option>
+                        <option value="مطربان">مطربان</option>
+                        <option value="كيس">كيس</option>
+                        <option value="ربطة">ربطة</option>
+                        <option value="بالة">بالة</option>
+                        <option value="طبلية">طبلية</option>
+                        <option value="حاوية">حاوية</option>
+                        <option value="كيلو">كيلو</option>
+                        <option value="غرام">غرام</option>
+                        <option value="طن">طن</option>
+                    </select>
+                    <label data-i18n="lbl-i-unit">النوع / الوحدة</label>
+                </div>
+            </div>
             <div class="col-md-2 col-6">
                 <div class="input-container">
                     <input id="itemPriceInput" type="number" step="0.01" required placeholder=" ">
                     <label id="lblItemPrice" data-i18n="lbl-i-price">سعر الشراء</label>
                 </div>
             </div>
-            <div class="col-md-2 col-6">
+            <div class="col-md-1 col-6">
                 <div class="input-container">
                     <input id="itemQty" type="number" required placeholder=" ">
-                    <label data-i18n="lbl-i-qty">الكمية المشتراة</label>
+                    <label data-i18n="lbl-i-qty">الكمية</label>
                 </div>
             </div>
             
@@ -345,6 +411,7 @@
                 <tr>
                     <th data-i18n="th-p-code">كود الصنف</th>
                     <th data-i18n="th-p-desc">اسم المنتج / البيان</th>
+                    <th data-i18n="th-p-unit">النوع</th>
                     <th data-i18n="th-p-price">سعر الوحدة (قبل الضريبة)</th>
                     <th data-i18n="th-p-qty">الكمية</th>
                     <th data-i18n="th-p-tax-rate">نسبة الضريبة</th>
@@ -385,13 +452,13 @@
         </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
     const API_ENDPOINT = 'api/save_purchase_invoice.php';
     let invoiceItemsList = [];
 
+    // كتل الترجمة المتكاملة مع إضافة مفاتيح "الوحدة" لضمان عدم فقدان اللغات
     const translations = {
         ar: {
             "pur-main-title": "تسجيل فاتورة مشتريات وتحديث المخزن", "sub-invoice-meta": "البيانات التعريفية للمورد والفاتورة",
@@ -399,8 +466,9 @@
             "lbl-pur-no": "رقم فاتورة المورد الأصلية", "lbl-pur-date": "تاريخ الشراء",
             "sub-product-entry": "تغذية السلع والأصناف المخزنية", "lbl-i-code": "كود الصنف / باركود",
             "lbl-i-name": "اسم المنتج / البيان", "lbl-i-price": "سعر الشراء", "lbl-i-qty": "الكمية المشتراة",
-            "btn-add-row": "إضافة الصنف للجدول", "th-p-code": "كود الصنف", "th-p-desc": "اسم المنتج / البيان",
-            "th-p-price": "سعر الوحدة (قبل الضريبة)", "th-p-qty": "الكمية", "th-p-tax-rate": "نسبة الضريبة", "th-p-tax": "قيمة الضريبة",
+            "lbl-i-unit": "النوع / الوحدة", "btn-add-row": "إضافة الصنف للجدول", "th-p-code": "كود الصنف", 
+            "th-p-desc": "اسم المنتج / البيان", "th-p-unit": "النوع", "th-p-price": "سعر الوحدة (قبل الضريبة)", 
+            "th-p-qty": "الكمية", "th-p-tax-rate": "نسبة الضريبة", "th-p-tax": "قيمة الضريبة",
             "th-p-total": "المجموع شامل الضريبة", "th-p-action": "حذف", "sum-p-sub": "الإجمالي الخاضع للضريبة:",
             "sum-p-tax": "مجموع ضريبة المدخلات (15%):", "sum-p-net": "الصافي النهائي المعتمد للفاتورة:",
             "btn-commit-stock": "اعتماد الشراء وتحديث المخزن", "btn-clear-all": "تفريغ وإلغاء الفاتورة"
@@ -411,15 +479,25 @@
             "lbl-pur-no": "Original Supplier Invoice No", "lbl-pur-date": "Purchase Date",
             "sub-product-entry": "Inventory Inflow & Sku Feeding", "lbl-i-code": "Item Code / Barcode",
             "lbl-i-name": "Product Name / Sku Desc", "lbl-i-price": "Purchase Price", "lbl-i-qty": "Inflow Quantity",
-            "btn-add-row": "Add Item to Table", "th-p-code": "Item Code", "th-p-desc": "Product Description",
-            "th-p-price": "Unit Price (Excl. VAT)", "th-p-qty": "Qty", "th-p-tax-rate": "VAT Rate", "th-p-tax": "VAT Amount",
+            "lbl-i-unit": "Type / Unit", "btn-add-row": "Add Item to Table", "th-p-code": "Item Code", 
+            "th-p-desc": "Product Description", "th-p-unit": "Type", "th-p-price": "Unit Price (Excl. VAT)", 
+            "th-p-qty": "Qty", "th-p-tax-rate": "VAT Rate", "th-p-tax": "VAT Amount",
             "th-p-total": "Total (Incl. VAT)", "th-p-action": "Del", "sum-p-sub": "Taxable Subtotal:",
             "sum-p-tax": "Input VAT Total (15%):", "sum-p-net": "Final Net Invoice Amount:",
             "btn-commit-stock": "Commit Purchase & Sync Stock", "btn-clear-all": "Clear & Reset Invoice"
         }
     };
 
+    // محرك الفصول الأربعة التلقائي المتزامن مع لوحة التحكم الفورية
+    function applySavedTheme() {
+        const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
+        document.documentElement.setAttribute('data-theme', activeTheme);
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
+        // تطبيق ثيم فصول السنة فوراً لحماية العين وتوحيد الهوية البصرية للتاجر
+        applySavedTheme();
+
         // 1. تحديث وضبط حقل تاريخ الشراء تلقائياً لتوقيت اليوم الحالي للجوال
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('purDate').value = today;
@@ -454,13 +532,15 @@
         codeInput.addEventListener('input', function() {
             const scannedCode = this.value.trim();
             if (scannedCode.length >= 3) { 
-                // محاولة البحث عن الصنف المسجل في الذاكرة المحلية لتاجر برو لملء البيانات أوتوماتيكياً
                 const registeredProducts = JSON.parse(localStorage.getItem('altajer_products')) || [];
                 const matchedProduct = registeredProducts.find(p => p.code === scannedCode || p.barcode === scannedCode);
                 
                 if (matchedProduct) {
                     document.getElementById('itemName').value = matchedProduct.name || '';
                     document.getElementById('itemPriceInput').value = matchedProduct.purchase_price || matchedProduct.price || '';
+                    if (matchedProduct.unit) {
+                        document.getElementById('itemUnit').value = matchedProduct.unit;
+                    }
                     showToast("تم قراءة وتعبئة بيانات الصنف تلقائياً بنجاح");
                     document.getElementById('itemQty').focus(); // نقل المؤشر فوراً لحقل الكمية لراحة يد التاجر
                 }
@@ -473,7 +553,7 @@
         const savedSups = JSON.parse(localStorage.getItem('altajer_saved_suppliers')) || [];
         const datalist = document.getElementById('suppliersList');
         savedSups.forEach(sup => {
-            if (!Array.from(datalist.options).any(opt => opt.value === sup)) {
+            if (!Array.from(datalist.options).some(opt => opt.value === sup)) {
                 const opt = document.createElement('option');
                 opt.value = sup;
                 datalist.appendChild(opt);
@@ -508,6 +588,7 @@
         const rawPrice = parseFloat(document.getElementById('itemPriceInput').value);
         const qty = parseInt(document.getElementById('itemQty').value);
         const isPriceInclusive = document.getElementById('itemTaxMethodToggle').checked;
+        const selectedUnit = document.getElementById('itemUnit').value;
 
         let priceExcl = 0;
         let taxVal = 0;
@@ -527,6 +608,7 @@
         const itemPayload = {
             code: document.getElementById('itemCode').value,
             name: document.getElementById('itemName').value,
+            unit: selectedUnit,
             priceExclTax: priceExcl,
             qty: qty,
             taxAmount: taxVal,
@@ -540,6 +622,7 @@
         document.getElementById('itemTaxMethodToggle').checked = false;
         document.getElementById('lblTaxToggleText').innerText = "غير شامل";
         document.getElementById('lblTaxToggleText').style.color = "var(--text-white)";
+        document.getElementById('itemUnit').value = "حبة"; // إعادة التعيين الافتراضي للوحدة
         
         renderInvoiceItems();
         showToast("تم إدراج الصنف ومطابقة احتساب الضريبة بالجدول");
@@ -570,7 +653,7 @@
         tbody.innerHTML = '';
 
         if(invoiceItemsList.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-muted p-3">لا توجد أصناف مدرجة بالفاتورة حالياً</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="text-muted p-3">لا توجد أصناف مدرجة بالفاتورة حالياً</td></tr>`;
             calculateInvoiceTotals();
             return;
         }
@@ -580,6 +663,7 @@
                 <tr>
                     <td>${item.code}</td>
                     <td class="fw-bold text-info">${item.name}</td>
+                    <td class="text-warning small">${item.unit || 'حبة'}</td>
                     <td>${item.priceExclTax.toFixed(2)} ر.س</td>
                     <td>${item.qty}</td>
                     <td>15%</td>
@@ -618,7 +702,6 @@
             return;
         }
 
-        // حفظ اسم المورد الجديد تراكمياً في الذاكرة المحلية إذا لم يكن موجوداً من قبل لتسهيل استدعائه لاحقاً
         let savedSups = JSON.parse(localStorage.getItem('altajer_saved_suppliers')) || [];
         if(!savedSups.includes(sup)) {
             savedSups.push(sup);
@@ -644,6 +727,8 @@
         .then(res => res.json())
         .then(data => {
             if(data.success) {
+                // مزامنة تحديث المخزن المحلي فوراً بعد النجاح السحابي للتأكيد
+                updateLocalStockQuantities(finalPayload);
                 showToast("تم اعتماد فاتورة المشتريات وزيادة كميات المخزن بنجاح");
                 setTimeout(() => { window.location.href='index.html'; }, 2000);
             } else {
@@ -661,18 +746,33 @@
         localPurchases.push(payload);
         localStorage.setItem('altajer_local_purchases', JSON.stringify(localPurchases));
         
-        // تحديث كميات المنتجات المسجلة في localStorage فوراً ليعمل الكاشير بالكميات الجديدة مباشرة
+        updateLocalStockQuantities(payload);
+
+        showToast("تم تأمين الفاتورة وتحديث كميات المخزن محلياً بنجاح (وضع العمل بدون اتصال)", true);
+        setTimeout(() => { window.location.href='index.html'; }, 2200);
+    }
+
+    // دالة هندسية موحدة لتحديث كميات المنتجات ونوع وحداتها المسجلة في localStorage ليعمل الكاشير بالكميات الجديدة فوراً
+    function updateLocalStockQuantities(payload) {
         let registeredProducts = JSON.parse(localStorage.getItem('altajer_products')) || [];
         payload.items.forEach(purchasedItem => {
             let product = registeredProducts.find(p => p.code === purchasedItem.code);
             if(product) {
                 product.quantity = (parseInt(product.quantity) || 0) + parseInt(purchasedItem.qty);
+                product.unit = purchasedItem.unit; // حفظ وتحديث الوحدة الحالية للمنتج محاسبياً
+            } else {
+                // إذا كان الصنف مغذى لأول مرة يتم إنشاؤه تراكمياً في المخزن
+                registeredProducts.push({
+                    code: purchasedItem.code,
+                    barcode: purchasedItem.code,
+                    name: purchasedItem.name,
+                    purchase_price: purchasedItem.priceExclTax,
+                    quantity: purchasedItem.qty,
+                    unit: purchasedItem.unit
+                });
             }
         });
         localStorage.setItem('altajer_products', JSON.stringify(registeredProducts));
-
-        showToast("تم تأمين الفاتورة وتحديث كميات المخزن محلياً بنجاح (وضع العمل بدون اتصال)", true);
-        setTimeout(() => { window.location.href='index.html'; }, 2200);
     }
 </script>
 </body>

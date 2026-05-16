@@ -1,42 +1,587 @@
-<div class="card" id="manageItem">
-    <h2 style="text-align: center; color: #0077b6; margin-bottom: 20px;"><i class="fas fa-boxes-stacked"></i> إدارة المخزن والأصناف</h2>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>إدارة المخزن والأصناف المطور - التاجر برو</title>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0c3f65">
 
-    <div style="border: 2px solid #0077b6; border-radius: 10px; padding: 15px; background: #fff; margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
-            <span style="flex: 1; font-weight: bold; color: #0077b6;">كود الصنف (Barcode)</span>
-            <input type="text" id="itemCode" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;" placeholder="امسح الباركود">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* نظام التاجر الاحترافي: دعم فصول السنة الأربعة المتناسق بالكامل لتأمين وحماية العين */
+        :root, [data-theme="winter"] {
+            --dark-bg: #0d1b2a;
+            --card-bg: #1b263b;
+            --sea-blue: #0077b6;
+            --light-green: #38b000;
+            --neon-cyan: #00b4d8;
+            --neon-pink: #e81cff;
+            --text-white: #ffffff;
+            --danger-red: #e63946;
+            --warning-orange: #ffb703;
+            --glow-soft: 0 0 6px rgba(0, 180, 216, 0.35);
+        }
+
+        [data-theme="spring"] {
+            --dark-bg: #1a2f16;
+            --card-bg: #243e1e;
+            --sea-blue: #52b788;
+            --light-green: #74c69d;
+            --neon-cyan: #95d5b2;
+            --neon-pink: #ff70a6;
+            --text-white: #f4f9f4;
+            --danger-red: #ff4d6d;
+            --warning-orange: #ff9f1c;
+            --glow-soft: 0 0 6px rgba(149, 213, 178, 0.35);
+        }
+
+        [data-theme="summer"] {
+            --dark-bg: #0f2a35;
+            --card-bg: #173f5f;
+            --sea-blue: #20639b;
+            --light-green: #3caea3;
+            --neon-cyan: #2a9d8f;
+            --neon-pink: #f4a261;
+            --text-white: #f8f9fa;
+            --danger-red: #e76f51;
+            --warning-orange: #f4a261;
+            --glow-soft: 0 0 6px rgba(42, 157, 143, 0.35);
+        }
+
+        [data-theme="autumn"] {
+            --dark-bg: #2b1810;
+            --card-bg: #3e261d;
+            --sea-blue: #b07d62;
+            --light-green: #9e2a2b;
+            --neon-cyan: #e36414;
+            --neon-pink: #ffb703;
+            --text-white: #fff8f5;
+            --danger-red: #6f1d1b;
+            --warning-orange: #ff9f1c;
+            --glow-soft: 0 0 6px rgba(227, 100, 20, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            margin: 0;
+            padding: 20px 10px;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .products-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border: 2px solid var(--sea-blue);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.15);
+            position: relative;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        .products-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--sea-blue), var(--neon-pink));
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+        }
+
+        .products-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dashed rgba(0, 180, 216, 0.25);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .products-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: var(--glow-soft);
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--neon-cyan);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-container input, .input-container select {
+            border: 0;
+            border-bottom: 2px solid #4a5568;
+            background: transparent;
+            width: 100%;
+            padding: 8px 5px 4px 5px;
+            font-size: 15px;
+            color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        .input-container input:focus, .input-container select:focus {
+            outline: none;
+            border-bottom: 2px solid var(--neon-cyan);
+        }
+
+        .input-container label {
+            position: absolute;
+            top: -12px;
+            right: 5px;
+            font-size: 13px;
+            color: #a0aec0;
+            pointer-events: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        html[dir="ltr"] .input-container label {
+            left: 5px;
+            right: auto;
+        }
+
+        .btn-neon-action {
+            background: #2d3748;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: 0.3s;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-neon-action:hover {
+            background: var(--clr);
+            box-shadow: 0 0 12px var(--clr);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .table-responsive-custom {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-top: 25px;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        .table-custom {
+            background-color: rgba(0, 0, 0, 0.15) !important;
+            color: white !important;
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        .table-custom th {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            color: var(--neon-cyan) !important;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            border-color: rgba(255, 255, 255, 0.04) !important;
+        }
+
+        .lang-selector {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--neon-cyan);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .api-toast {
+            position: fixed;
+            top: 30px;
+            right: 20px;
+            z-index: 2000;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+        }
+        html[dir="ltr"] .api-toast { right: auto; left: 20px; }
+        .cursor-pointer { cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="apiToast" class="api-toast"></div>
+
+<div class="products-container">
+    <div class="products-header">
+        <div class="products-title">
+            <i class="fas fa-boxes-stacked bx-flashing"></i>
+            <span data-i18n="prod-main-title">إدارة المخزن والأصناف المطورة</span>
         </div>
-        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
-            <span style="flex: 1; font-weight: bold; color: #0077b6;">اسم المنتج</span>
-            <input type="text" id="itemName" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;" placeholder="أدخل اسم المنتج">
-        </div>
-        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
-            <span style="flex: 1; font-weight: bold; color: #0077b6;">السعر شامل الضريبة (SAR)</span>
-            <input type="number" id="itemPrice" step="0.01" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;" placeholder="0.00">
-        </div>
-        <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
-            <span style="flex: 1; font-weight: bold; color: #0077b6;">الكمية الحالية بالمخزن</span>
-            <input type="number" id="itemQty" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;" placeholder="0" value="0">
-        </div>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-            <span style="flex: 1; font-weight: bold; color: #0077b6;">الحالة الضريبية</span>
-            <select id="itemVatType" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center; background: #fff;">
-                <option value="15">خاضع للضريبة الأساسية (15%)</option>
-                <option value="0">خاضع لنسبة الصفر (0%)</option>
-                <option value="exempt">معفى من الضريبة</option>
+        <div>
+            <select class="lang-selector" onchange="changeLanguage(this.value)" id="langSelect">
+                <option value="ar">العربية (AR)</option>
+                <option value="en">English (EN)</option>
             </select>
         </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <button id="btnItemAdd" style="grid-column: span 2; background: #0077b6; color: white; padding: 15px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer;">
-            <i class="fas fa-plus-circle"></i> تسجيل / تحديث صنف
-        </button>
-        <button id="btnItemSearch" style="background: #6c757d; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer;">
-            <i class="fas fa-search"></i> بحث بالكود
-        </button>
-        <button id="btnItemDelete" style="background: #d32f2f; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer;">
-            <i class="fas fa-trash-can"></i> حذف صنف
-        </button>
+    <form id="productForm" onsubmit="handleProductSubmit(event)">
+        <div class="section-subtitle">
+            <i class="fas fa-box-open"></i> <span data-i18n="sub-prod-info">بيانات الصنف والامتثال الضريبي</span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-container">
+                    <input id="itemCode" type="text" required placeholder=" ">
+                    <label data-i18n="lbl-prod-code">كود الصنف (Barcode)</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-container">
+                    <input id="itemName" type="text" required placeholder=" ">
+                    <label data-i18n="lbl-prod-name">اسم المنتج / الصنف</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 col-md-4">
+                <div class="input-container">
+                    <input id="itemPrice" type="number" step="0.01" required placeholder=" ">
+                    <label data-i18n="lbl-prod-price">السعر شامل الضريبة (SAR)</label>
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="input-container">
+                    <input id="itemQty" type="number" required placeholder=" " value="0">
+                    <label data-i18n="lbl-prod-qty">الكمية الحالية بالمخزن</label>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="input-container">
+                    <select id="itemVatType" required>
+                        <option value="15">خاضع للضريبة الأساسية (15%)</option>
+                        <option value="0">خاضع لنسبة الصفر (0%)</option>
+                        <option value="exempt">معفى من الضريبة</option>
+                    </select>
+                    <label data-i18n="lbl-prod-vat">الحالة الضريبية</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 justify-content-between mt-2">
+            <div class="d-flex gap-2 w-100 justify-content-between justify-content-md-start">
+                <button type="submit" id="btnSubmitAction" class="btn-neon-action" style="--clr:var(--light-green)">
+                    <i class="fas fa-plus-circle"></i> <span id="lblSubmitBtn" data-i18n="btn-save-prod">تسجيل / تحديث صنف</span>
+                </button>
+                <button type="button" onclick="searchProductByCode()" class="btn-neon-action" style="--clr:var(--neon-cyan)">
+                    <i class="fas fa-search"></i> <span data-i18n="btn-search-prod">بحث بالكود</span>
+                </button>
+                <button type="button" onclick="clearProductForm()" class="btn-neon-action" style="--clr:var(--warning-orange)">
+                    <i class="fas fa-redo"></i> <span data-i18n="btn-clear-prod">تصفية</span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="section-subtitle mt-4">
+        <i class="fas fa-warehouse"></i> <span data-i18n="sub-prod-table">جدول جرد المخزن الموحد الفوري</span>
+    </div>
+
+    <div class="table-responsive-custom">
+        <table class="table table-dark table-striped table-custom text-center">
+            <thead>
+                <tr>
+                    <th data-i18n="th-p-code">الباركود</th>
+                    <th data-i18n="th-p-name">اسم الصنف</th>
+                    <th data-i18n="th-p-price">السعر (شامل)</th>
+                    <th data-i18n="th-p-qty">المخزون الحالي</th>
+                    <th data-i18n="th-p-vat">الضريبة</th>
+                    <th data-i18n="th-p-actions">العمليات</th>
+                </tr>
+            </thead>
+            <tbody id="productsTableBody">
+                </tbody>
+        </table>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    let editModeProductCode = null;
+
+    // مصفوفة المصطلحات اللغوية لتاجر برو
+    const translations = {
+        ar: {
+            "prod-main-title": "إدارة المخزن والأصناف المطورة", "sub-prod-info": "بيانات الصنف والامتثال الضريبي",
+            "lbl-prod-code": "كود الصنف (Barcode)", "lbl-prod-name": "اسم المنتج / الصنف",
+            "lbl-prod-price": "السعر شامل الضريبة (SAR)", "lbl-prod-qty": "الكمية الحالية بالمخزن",
+            "lbl-prod-vat": "الحالة الضريبية", "btn-save-prod": "تسجيل / تحديث صنف",
+            "btn-search-prod": "بحث بالكود", "btn-clear-prod": "تصفية",
+            "sub-prod-table": "جدول جرد المخزن الموحد الفوري",
+            "th-p-code": "الباركود", "th-p-name": "اسم الصنف", "th-p-price": "السعر (شامل)",
+            "th-p-qty": "المخزون الحالي", "th-p-vat": "الضريبة", "th-p-actions": "العمليات",
+            "btn-update-prod": "تحديث بيانات الصنف"
+        },
+        en: {
+            "prod-main-title": "Advanced Inventory & Items Management", "sub-prod-info": "Item Details & Tax Compliance",
+            "lbl-prod-code": "Item Barcode", "lbl-prod-name": "Product / Item Name",
+            "lbl-prod-price": "Price Incl. VAT (SAR)", "lbl-prod-qty": "Current Stock Qty",
+            "lbl-prod-vat": "Tax Status", "btn-save-prod": "Register / Save Item",
+            "btn-search-prod": "Search Code", "btn-clear-prod": "Clear",
+            "sub-prod-table": "Real-time Unified Inventory Audit Table",
+            "th-p-code": "Barcode", "th-p-name": "Item Name", "th-p-price": "Price (Incl.)",
+            "th-p-qty": "Current Stock", "th-p-vat": "VAT", "th-p-actions": "Actions",
+            "btn-update-prod": "Update Item Data"
+        }
+    };
+
+    // مزامنة قالب فصول السنة الأربعة المتغيرة لحماية العين
+    function applySavedTheme() {
+        const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
+        document.documentElement.setAttribute('data-theme', activeTheme);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        applySavedTheme();
+        renderProductsTable();
+        initAutoBarcode();
+
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        document.getElementById('langSelect').value = currentLang;
+        changeLanguage(currentLang);
+    });
+
+    // محرك سحب وتوليد الباركود تلقائياً بناءً على إعدادات المصنع
+    function initAutoBarcode() {
+        if (editModeProductCode) return; // قفل التوليد أثناء وضع التعديل
+
+        const autoEnabled = localStorage.getItem('altajer_auto_barcode_enabled') === 'true';
+        if (autoEnabled) {
+            const prefix = localStorage.getItem('altajer_barcode_prefix') || 'PRD-';
+            const nextSerial = localStorage.getItem('altajer_next_barcode') || '1001';
+            
+            document.getElementById('itemCode').value = prefix + nextSerial;
+        } else {
+            document.getElementById('itemCode').value = '';
+        }
+    }
+
+    function changeLanguage(lang) {
+        localStorage.setItem('altajer_lang', lang);
+        document.documentElement.lang = lang; 
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        
+        $('[data-i18n]').each(function() { 
+            const key = $(this).data('i18n'); 
+            if (translations[lang] && translations[lang][key]) { 
+                $(this).text(translations[lang][key]); 
+            } 
+        });
+    }
+
+    function showToast(message, isSuccess = true) {
+        const toast = document.getElementById('apiToast'); 
+        toast.innerText = message;
+        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
+        toast.style.display = 'block'; 
+        setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    function getProductsList() {
+        return JSON.parse(localStorage.getItem('altajer_products_list')) || [];
+    }
+
+    // عرض وجرد المخزن الموحد الفوري لتغذية شاشة المبيعات
+    function renderProductsTable() {
+        const products = getProductsList();
+        const tbody = document.getElementById('productsTableBody');
+        tbody.innerHTML = '';
+
+        if (products.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-muted text-center p-3">المخزن فارغ تماماً، لا يوجد أصناف مسجلة حالياً</td></tr>`;
+            return;
+        }
+
+        products.forEach(prod => {
+            let vatText = prod.vat_type === 'exempt' ? 'معفى' : prod.vat_type + '%';
+            tbody.innerHTML += `
+                <tr>
+                    <td class="text-warning fw-bold">${prod.code || prod.id}</td>
+                    <td class="fw-bold text-info">${prod.name}</td>
+                    <td>${parseFloat(prod.price).toFixed(2)} SAR</td>
+                    <td class="text-white fw-bold">${prod.qty || 0}</td>
+                    <td><span class="badge bg-secondary">${vatText}</span></td>
+                    <td>
+                        <i class="fas fa-edit action-icon icon-edit cursor-pointer me-2" onclick="loadProductToEdit('${prod.code || prod.id}')"></i>
+                        <i class="fas fa-trash-alt action-icon icon-delete cursor-pointer" onclick="deleteProductRow('${prod.code || prod.id}')"></i>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // حفظ واعتماد المنتجات بالتغذية الموحدة والتصاعدية
+    function handleProductSubmit(e) {
+        e.preventDefault();
+
+        const codeValue = document.getElementById('itemCode').value.trim();
+        const nameValue = document.getElementById('itemName').value.trim();
+        const priceValue = parseFloat(document.getElementById('itemPrice').value) || 0;
+        const qtyValue = parseInt(document.getElementById('itemQty').value) || 0;
+        const vatTypeValue = document.getElementById('itemVatType').value;
+
+        let products = getProductsList();
+
+        if (editModeProductCode) {
+            // تحديث الصنف تعديلياً دون المساس بباقي العناصر
+            products = products.map(p => (p.code === editModeProductCode || p.id === editModeProductCode) ? {
+                ...p, id: codeValue, code: codeValue, name: nameValue, price: priceValue, qty: qtyValue, vat_type: vatTypeValue
+            } : p);
+            showToast("تم تحديث بيانات الصنف والمخزون بنجاح");
+        } else {
+            // منع التكرار لضمان دقة جرد المبيعات والمستودع
+            if (products.some(p => p.code === codeValue || p.id === codeValue)) {
+                showToast("خطأ: كود الصنف أو الباركود هذا مسجل مسبقاً بالمخزن!", false);
+                return;
+            }
+
+            // حقن الكيان بالهيكل المتكامل المتوافق مع شاشات البيع والشراء والمستودع
+            const newProduct = {
+                id: codeValue,
+                code: codeValue,
+                name: nameValue,
+                price: priceValue,
+                qty: qtyValue,
+                vat_type: vatTypeValue,
+                createdAt: new Date().toISOString()
+            };
+
+            products.push(newProduct);
+            showToast("تم تسجيل الصنف الجديد وتغذية قاعدة بيانات المخزن");
+
+            // ترحيل ورفع العداد التلقائي للباركود في الإعدادات إذا كان مفعلاً
+            const autoEnabled = localStorage.getItem('altajer_auto_barcode_enabled') === 'true';
+            if (autoEnabled) {
+                let nextSerial = parseInt(localStorage.getItem('altajer_next_barcode') || '1001');
+                nextSerial++;
+                localStorage.setItem('altajer_next_barcode', nextSerial.toString());
+            }
+        }
+
+        localStorage.setItem('altajer_products_list', JSON.stringify(products));
+        clearProductForm();
+        renderProductsTable();
+    }
+
+    // دالة البحث الذكي بالكود لمعاينة كميات الصنف
+    function searchProductByCode() {
+        const codeValue = document.getElementById('itemCode').value.trim();
+        if (!codeValue) {
+            showToast("يرجى إدخال أو مسح الباركود للبحث عن المنتج!", false);
+            return;
+        }
+
+        const products = getProductsList();
+        const prod = products.find(p => p.code === codeValue || p.id === codeValue);
+
+        if (prod) {
+            loadProductToEdit(codeValue);
+            showToast("تم العثور على المنتج وعرض بياناته");
+        } else {
+            showToast("عذراً، هذا الكود غير مدرج في سجلات المخزن حالياً!", false);
+        }
+    }
+
+    function loadProductToEdit(code) {
+        const products = getProductsList();
+        const prod = products.find(p => p.code === code || p.id === code);
+        if (!prod) return;
+
+        editModeProductCode = code;
+        document.getElementById('itemCode').value = prod.code || prod.id;
+        document.getElementById('itemCode').disabled = true; // قفل الكود لحماية السجلات التراكمية من التداخل
+        document.getElementById('itemName').value = prod.name;
+        document.getElementById('itemPrice').value = prod.price;
+        document.getElementById('itemQty').value = prod.qty || 0;
+        document.getElementById('itemVatType').value = prod.vat_type;
+
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        const btnLabel = document.getElementById('lblSubmitBtn');
+        if (btnLabel) { 
+            btnLabel.setAttribute('data-i18n', 'btn-update-prod'); 
+            btnLabel.innerText = translations[currentLang]['btn-update-prod']; 
+        }
+        document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--warning-orange)');
+    }
+
+    function deleteProductRow(code) {
+        if (confirm("هل أنت متأكد من رغبتك في حذف هذا الصنف وإلغاء مخزونه نهائياً من النظام؟")) {
+            let products = getProductsList();
+            products = products.filter(p => p.code !== code && p.id !== code);
+            localStorage.setItem('altajer_products_list', JSON.stringify(products));
+            
+            showToast("تم إقصاء الصنف وتحديث جرد المستودع فوراً", false);
+            renderProductsTable();
+            if (editModeProductCode === code) clearProductForm();
+        }
+    }
+
+    function clearProductForm() {
+        editModeProductCode = null;
+        document.getElementById('productForm').reset();
+        document.getElementById('itemCode').disabled = false;
+        
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        const btnLabel = document.getElementById('lblSubmitBtn');
+        if (btnLabel) { 
+            btnLabel.setAttribute('data-i18n', 'btn-save-prod'); 
+            btnLabel.innerText = translations[currentLang]['btn-save-prod']; 
+        }
+        document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--light-green)');
+        initAutoBarcode();
+        document.getElementById('itemName').focus();
+    }
+</script>
+</body>
+</html>

@@ -16,8 +16,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* التاجر الاحترافي المطوّر: دمج الألوان البحرية الرستيك مع التأثيرات النيون المتوهجة لحماية أجهزة الجوال والشاشات */
-        :root {
+        /* التاجر الاحترافي المطوّر: دمج الألوان البحرية مع التأثيرات النيون الخفيفة الهادئة لحماية أجهزة الجوال وعين المستخدم */
+        :root, [data-theme="winter"] {
             --dark-bg: #0d1b2a;
             --card-bg: #1b263b;
             --sea-blue: #0077b6;
@@ -27,6 +27,50 @@
             --text-white: #ffffff;
             --danger-red: #e63946;
             --warning-orange: #ffb703;
+            --neon-glow-soft: 0 0 6px rgba(0, 180, 216, 0.35);
+            --neon-glow-btn: 0 0 10px var(--clr);
+        }
+
+        /* قالب الربيع (Spring Theme): درجات الأخضر العشبي والرمادي الزيتوني المنعش */
+        [data-theme="spring"] {
+            --dark-bg: #1a2f16;
+            --card-bg: #243e1e;
+            --sea-blue: #52b788;
+            --light-green: #74c69d;
+            --neon-cyan: #95d5b2;
+            --neon-pink: #ff70a6;
+            --text-white: #f4f9f4;
+            --danger-red: #ff4d6d;
+            --warning-orange: #ff9f1c;
+            --neon-glow-soft: 0 0 6px rgba(149, 213, 178, 0.35);
+        }
+
+        /* قالب الصيف (Summer Theme): الفيروزي الساحلي والرمال الناعمة الهادئة */
+        [data-theme="summer"] {
+            --dark-bg: #0f2a35;
+            --card-bg: #173f5f;
+            --sea-blue: #20639b;
+            --light-green: #3caea3;
+            --neon-cyan: #2a9d8f;
+            --neon-pink: #f4a261;
+            --text-white: #f8f9fa;
+            --danger-red: #e76f51;
+            --warning-orange: #f4a261;
+            --neon-glow-soft: 0 0 6px rgba(42, 157, 143, 0.35);
+        }
+
+        /* قالب الخريف (Autumn Theme): درجات الألوان الخشبية والبني الرستيك المتناسق */
+        [data-theme="autumn"] {
+            --dark-bg: #2b1810;
+            --card-bg: #3e261d;
+            --sea-blue: #b07d62;
+            --light-green: #9e2a2b;
+            --neon-cyan: #e36414;
+            --neon-pink: #ffb703;
+            --text-white: #fff8f5;
+            --danger-red: #6f1d1b;
+            --warning-orange: #ff9f1c;
+            --neon-glow-soft: 0 0 6px rgba(227, 100, 20, 0.35);
         }
 
         * {
@@ -40,6 +84,7 @@
             margin: 0;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         /* شريط التنقل العلوي الذكي المتطور */
@@ -64,6 +109,11 @@
             border-bottom: 2px solid var(--sea-blue);
         }
 
+        /* قالب الخريف يحتاج لهيدر متناسق */
+        [data-theme="autumn"] .navBar { background: #26140e; }
+        [data-theme="spring"] .navBar { background: #142411; }
+        [data-theme="summer"] .navBar { background: #0b1d26; }
+
         .logo {
             font-size: 24px;
             color: var(--neon-cyan);
@@ -71,7 +121,7 @@
             align-items: center;
             gap: 10px;
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+            text-shadow: var(--neon-glow-soft);
         }
 
         .nav-items {
@@ -97,28 +147,35 @@
         }
 
         .nav-btn:hover, .nav-btn.active-nav {
-            background: rgba(0, 180, 216, 0.15);
+            background: rgba(0, 180, 216, 0.12);
             color: var(--neon-cyan);
-            border: 1px solid rgba(0, 180, 216, 0.3);
-            text-shadow: 0 0 8px rgba(0, 180, 216, 0.4);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            text-shadow: var(--neon-glow-soft);
         }
 
-        /* محرك اختيار اللغات العالمي الديناميكي */
-        .lang-selector {
+        /* محرك اختيار اللغات واختيار القوالب العالمي الديناميكي */
+        .controls-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lang-selector, .theme-selector {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--neon-cyan);
             color: white;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
             outline: none;
             transition: all 0.3s;
+            font-size: 13px;
         }
-        .lang-selector:focus {
-            box-shadow: 0 0 10px var(--neon-cyan);
+        .lang-selector:focus, .theme-selector:focus {
+            box-shadow: var(--neon-glow-soft);
         }
-        .lang-selector option {
+        .lang-selector option, .theme-selector option {
             background: var(--dark-bg);
             color: white;
         }
@@ -142,7 +199,7 @@
             display: block !important;
         }
 
-        /* القائمة الرئيسية المطورّة (الـ 12 قسماً الأصليين بتأثيرات نيون ثلاثية الأبعاد) */
+        /* القائمة الرئيسية المطورّة (الـ 12 قسماً الأصليين بتأثيرات نيون هادئة ثلاثية الأبعاد) */
         .main-menu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -178,17 +235,17 @@
 
         .menu-item-link:hover {
             transform: translateY(-5px);
-            background-color: #22333b;
+            background-color: rgba(255, 255, 255, 0.02);
             border-color: var(--neon-cyan);
-            box-shadow: 0 8px 15px rgba(0, 180, 216, 0.3);
+            box-shadow: var(--neon-glow-soft);
             color: var(--neon-cyan);
         }
 
         .menu-item-link:hover i {
-            transform: scale(1.15);
+            transform: scale(1.1);
         }
 
-        /* كروت الإحصائيات المتوهجة العميقة */
+        /* كروت الإحصائيات المتوهجة العميقة الخفيفة */
         .stat-card {
             position: relative;
             background-color: var(--card-bg);
@@ -217,7 +274,7 @@
             font-size: 28px;
             font-weight: 700;
             color: var(--neon-cyan);
-            text-shadow: 0 0 10px rgba(0, 180, 216, 0.3);
+            text-shadow: var(--neon-glow-soft);
         }
 
         /* تأثير حقول الإدخال الذكية (Float Labels) */
@@ -258,7 +315,7 @@
             right: auto;
         }
 
-        /* الأزرار الاحترافية بنظام النيون المتغير */
+        /* الأزرار الاحترافية بنظام النيون الخفيف المتغير */
         .btn-neon {
             position: relative;
             background: #2d3748;
@@ -278,7 +335,7 @@
 
         .btn-neon:hover {
             background: var(--clr);
-            box-shadow: 0 0 15px var(--clr);
+            box-shadow: var(--neon-glow-btn);
             color: #fff;
         }
 
@@ -379,7 +436,7 @@
         }
 
         .table-dark-custom th {
-            background-color: #0c3f65 !important;
+            background-color: rgba(0, 0, 0, 0.2) !important;
             color: var(--neon-cyan) !important;
             position: sticky;
             top: 0;
@@ -422,7 +479,14 @@
             <div class="nav-btn" onclick="switchView(3)"><i class='bx bxs-cart'></i><span data-i18n="nav-pos">الكاشير</span></div>
         </nav>
 
-        <div>
+        <div class="controls-wrapper">
+            <select id="themeSelector" class="theme-selector" onchange="changeTheme(this.value)">
+                <option value="winter">❄️ الشتاء</option>
+                <option value="spring">🌱 الربيع</option>
+                <option value="summer">☀️ الصيف</option>
+                <option value="autumn">🍁 الخريف</option>
+            </select>
+
             <select class="lang-selector" onchange="changeLanguage(this.value)">
                 <option value="ar">العربية (AR)</option>
                 <option value="en">English (EN)</option>
@@ -524,7 +588,7 @@
                             </tr>
                         </thead>
                         <tbody id="customerTableBody">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -573,7 +637,7 @@
                             </tr>
                         </thead>
                         <tbody id="itemTableBody">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -688,27 +752,26 @@
                             </tr>
                         </thead>
                         <tbody id="tblPlaceOrder">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
     /* -------------------------------------------------------------
-       قاعدة البيانات الافتراضية والمحلية (لحماية النظام وضمان التشغيل المستمر للجوال)
+       قاعدة البيانات الافتراضية والمحلية لضمان التشغيل المستمر للجوال
        ------------------------------------------------------------- */
     let globalCustomers = JSON.parse(localStorage.getItem('altajer_customers')) || [];
     let globalItems = JSON.parse(localStorage.getItem('altajer_items')) || [];
     let currentCart = [];
 
-    // نقاط اتصال الـ API الخلفية (PHP) على سيرفر الاستضافة الخاص بك
+    // نقاط اتصال الـ API الخلفية (PHP) على سيرفر الاستضافة
     const API_ENDPOINTS = {
         saveCustomer: 'api/add_customer.php',
         getCustomers: 'api/get_customers.php',
@@ -716,6 +779,19 @@
         getItems: 'api/get_items.php',
         saveInvoice: 'api/save_invoice.php'
     };
+
+    /* -------------------------------------------------------------
+       محرك إدارة الفصول الأربعة الذكي (حفظ واسترجاع القوالب)
+       ------------------------------------------------------------- */
+    function changeTheme(themeName) {
+        document.documentElement.setAttribute('data-theme', themeName);
+        localStorage.setItem('altajer_preferred_theme', themeName);
+        document.getElementById('themeSelector').value = themeName;
+    }
+
+    // تطبيق القالب المحفوظ فور تحميل الصفحة لحماية عين المستخدم
+    const savedTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
+    changeTheme(savedTheme);
 
     /* -------------------------------------------------------------
        محرك اللغات العالمي والترجمة الصارمة والاتجاهات (i18n Translations)
@@ -727,7 +803,7 @@
             "m-purchases": "المشتريات", "m-returns": "المرتجعات", "m-profits": "الأرباح", "m-vat": "الإقرار الضريبي", "m-inventory": "الجرد الدوري",
             "m-expenses": "المصاريف", "m-vouchers": "السندات", "m-settings": "الإعدادات", "m-employees": "الموظفين", "m-support": "الدعم الفني",
             "lbl-cust-id": "معرّف العميل (ID)", "lbl-cust-name": "اسم العميل", "lbl-cust-vat": "الرقم الضريبي (VAT)", "lbl-cust-address": "العنوان الجغرافي",
-            "lbl-cust-phone": "رقم الجوال", "btn-add": "إضافة وحفظ لحسابك", "btn-refresh": "تحديث السحب", "btn-refresh": "تحديث الجلب",
+            "lbl-cust-phone": "رقم الجوال", "btn-add": "إضافة وحفظ لحسابك", "btn-refresh": "تحديث السحب",
             "th-id": "المعرّف", "th-name": "الاسم", "th-vat": "الرقم الضريبي", "th-phone": "الجوال", "th-address": "العنوان",
             "lbl-item-code": "باركود / كود الصنف", "lbl-item-name": "اسم المنتج / الصنف", "lbl-item-price": "سعر البيع (شامل الضريبة)", "lbl-item-qty": "الكمية المتاحة بالمخزن",
             "th-item-code": "الكود", "th-item-name": "اسم الصنف", "th-item-price": "السعر شامل الضريبة", "th-item-qty": "الكمية بالمخزن",
@@ -804,12 +880,10 @@
             phone: document.getElementById('custContact').value
         };
 
-        // التخزين المحلي كطبقة حماية فورية لأمور الجوال والـ Offline
         globalCustomers.push(customerData);
         localStorage.setItem('altajer_customers', JSON.stringify(globalCustomers));
         renderCustomersTable();
 
-        // إرسال حقيقي فوري لملف الـ PHP والـ MySQL عن طريق كتل JSON المنظمة
         fetch(API_ENDPOINTS.saveCustomer, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -866,7 +940,6 @@
         localStorage.setItem('altajer_items', JSON.stringify(globalItems));
         renderItemsTable();
 
-        // ربط ترحيل الصنف ديناميكياً مع السيرفر الخلفي
         fetch(API_ENDPOINTS.saveItem, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -954,13 +1027,11 @@
         const item = globalItems.find(i => i.code == code);
         if(!item) return;
 
-        // بند حماية المستودع: منع تجاوز الكميات المتاحة في قاعدة البيانات لمنع أخطاء الجرد
         if(qtyRequested > item.qty) {
             showToast(`فشل الإضافة! الكمية المطلوبة تزيد عن المتاح في المستودع حالياً (${item.qty})`, false);
             return;
         }
 
-        // حساب السعر قبل الضريبة لخدمة الإقرار الضريبى (السعر بالكرت شامل ضريبة الـ 15%، فنقوم بفصلها برمجياً)
         const priceInclTax = parseFloat(item.price);
         const priceExclTax = priceInclTax / 1.15;
 
@@ -1042,7 +1113,6 @@
 
         const customer = globalCustomers.find(c => c.id == customerId);
 
-        // بناء كائن البيانات الموحد والمتكامل لإرساله إلى ملف PHP وقاعدة بيانات MySQL
         const invoicePayload = {
             invoice_date: new Date().toISOString(),
             customer_id: customer.id,
@@ -1056,14 +1126,12 @@
             items: currentCart
         };
 
-        // تحديث كميات المستودع محلياً فوراً لحماية الجرد
         currentCart.forEach(c => {
             const stockItem = globalItems.find(i => i.code === c.code);
             if(stockItem) stockItem.qty -= c.qty;
         });
         localStorage.setItem('altajer_items', JSON.stringify(globalItems));
 
-        // كود ترحيل الفاتورة الفوري عبر الـ API الخاص بـ InfinityFree / السيرفر
         fetch(API_ENDPOINTS.saveInvoice, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1071,18 +1139,15 @@
         })
         .then(res => res.json())
         .then(data => {
-            // عند نجاح الحفظ في قاعدة البيانات، نقوم فوراً بتوجيه المستخدم إلى صفحة الفاتورة ومعه المعرّف
             const invId = data.invoice_id || Math.floor(Math.random() * 90000) + 10000;
             showToast("تم ترحيل الفاتورة وحفظها بنجاح في قاعدة بيانات MySQL وجاري الانتقال للطباعة...");
             
             setTimeout(() => {
-                // حفظ بيانات الفاتورة الحالية في الذاكرة لتستقبلها صفحة invoice.html لعرض المورد يمين والعميل يسار مع الـ QR
                 localStorage.setItem('last_processed_invoice', JSON.stringify(invoicePayload));
                 window.location.href = `invoice.html?id=${invId}`;
             }, 1500);
         })
         .catch(() => {
-            // وضع الطوارئ في حال عدم استجابة الـ API على الجوال: تفتح الفاتورة فوراً من البيانات المحلية المحمية
             const fallbackId = Math.floor(Math.random() * 90000) + 10000;
             localStorage.setItem('last_processed_invoice', JSON.stringify(invoicePayload));
             showToast("تم تأمين الفاتورة محلياً، جاري الانتقال للبناء البصري والطباعة الفورية...");

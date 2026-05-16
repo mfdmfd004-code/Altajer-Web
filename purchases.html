@@ -134,6 +134,30 @@
             right: auto;
         }
 
+        /* تنسيق مفتاح التبديل لشامل وغير شامل الضريبة */
+        .tax-toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 180, 216, 0.15);
+        }
+
+        .form-switch .form-check-input {
+            width: 2.5em;
+            height: 1.25em;
+            background-color: #4a5568;
+            border-color: transparent;
+            cursor: pointer;
+        }
+        .form-switch .form-check-input:checked {
+            background-color: var(--light-green);
+            border-color: var(--light-green);
+        }
+
         .btn-neon {
             background: #2d3748;
             color: #fff;
@@ -217,6 +241,7 @@
             display: none;
         }
         html[dir="ltr"] .api-toast { right: auto; left: 20px; }
+        .cursor-pointer { cursor: pointer; }
     </style>
 </head>
 <body>
@@ -244,12 +269,12 @@
     <div class="row">
         <div class="col-md-5">
             <div class="input-container">
-                <select id="purSupplierSelect" required>
-                    <option value="" disabled selected data-i18n="opt-select-sup">اختر المورد المستهدف...</option>
-                    <option value="شركة المشتريات العامة">شركة المشتريات العامة والمستودعات</option>
-                    <option value="مصنع التجهيزات الغذائية">مصنع التجهيزات الغذائية والكرتون</option>
-                </select>
-                <label data-i18n="lbl-pur-sup">المورد / البائع</label>
+                <input id="purSupplierSelect" type="text" list="suppliersList" required placeholder=" ">
+                <datalist id="suppliersList">
+                    <option value="شركة المشتريات العامة والمستودعات"></option>
+                    <option value="مصنع التجهيزات الغذائية والكرتون"></option>
+                </datalist>
+                <label data-i18n="lbl-pur-sup">المورد / الشركة البائعة</label>
             </div>
         </div>
         <div class="col-md-4">
@@ -260,7 +285,7 @@
         </div>
         <div class="col-md-3">
             <div class="input-container">
-                <input id="purDate" type="date" required value="2026-05-15">
+                <input id="purDate" type="date" required>
                 <label data-i18n="lbl-pur-date">تاريخ الشراء</label>
             </div>
         </div>
@@ -274,7 +299,7 @@
         <div class="row align-items-end">
             <div class="col-md-3 col-sm-6">
                 <div class="input-container">
-                    <input id="itemCode" type="text" required placeholder=" ">
+                    <input id="itemCode" type="text" required placeholder=" " autofocus>
                     <label data-i18n="lbl-i-code">كود الصنف / باركود</label>
                 </div>
             </div>
@@ -286,8 +311,8 @@
             </div>
             <div class="col-md-2 col-6">
                 <div class="input-container">
-                    <input id="itemPriceExcl" type="number" step="0.01" required placeholder=" ">
-                    <label data-i18n="lbl-i-price">سعر الشراء (قبل ضريبة)</label>
+                    <input id="itemPriceInput" type="number" step="0.01" required placeholder=" ">
+                    <label id="lblItemPrice" data-i18n="lbl-i-price">سعر الشراء</label>
                 </div>
             </div>
             <div class="col-md-2 col-6">
@@ -296,9 +321,19 @@
                     <label data-i18n="lbl-i-qty">الكمية المشتراة</label>
                 </div>
             </div>
-            <div class="col-md-2 col-12 text-end text-md-center mb-4">
+            
+            <div class="col-md-2 col-12 mb-4">
+                <div class="tax-toggle-wrapper">
+                    <div class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2">
+                        <input class="form-check-input m-0" type="checkbox" id="itemTaxMethodToggle">
+                        <label class="form-check-label small text-white-50 cursor-pointer" for="itemTaxMethodToggle" id="lblTaxToggleText">غير شامل</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 text-end text-md-center mb-4">
                 <button type="submit" class="btn-neon w-100 justify-content-center" style="--clr:var(--neon-cyan)">
-                    <i class="fas fa-plus-circle"></i> <span data-i18n="btn-add-row">إضافة الصنف</span>
+                    <i class="fas fa-plus-circle"></i> <span data-i18n="btn-add-row">إضافة الصنف للجدول</span>
                 </button>
             </div>
         </div>
@@ -308,17 +343,18 @@
         <table class="table table-dark table-striped table-custom text-center">
             <thead>
                 <tr>
-                    <th data-i18n="th-p-code">الكود</th>
-                    <th data-i18n="th-p-desc">البيان</th>
-                    <th data-i18n="th-p-price">السعر (قبل الضريبة)</th>
+                    <th data-i18n="th-p-code">كود الصنف</th>
+                    <th data-i18n="th-p-desc">اسم المنتج / البيان</th>
+                    <th data-i18n="th-p-price">سعر الوحدة (قبل الضريبة)</th>
                     <th data-i18n="th-p-qty">الكمية</th>
-                    <th data-i18n="th-p-tax">الضريبة (15%)</th>
+                    <th data-i18n="th-p-tax-rate">نسبة الضريبة</th>
+                    <th data-i18n="th-p-tax">قيمة الضريبة</th>
                     <th data-i18n="th-p-total">المجموع شامل الضريبة</th>
                     <th data-i18n="th-p-action">حذف</th>
                 </tr>
             </thead>
             <tbody id="purchaseItemsTableBody">
-                </tbody>
+            </tbody>
         </table>
     </div>
 
@@ -343,8 +379,8 @@
             <button onclick="commitPurchaseInvoice()" class="btn-neon" style="--clr:var(--light-green); padding: 12px 25px;">
                 <i class="fas fa-database"></i> <span data-i18n="btn-commit-stock">اعتماد الشراء وتحديث المخزن</span>
             </button>
-            <button onclick="window.location.href='index.html'" class="btn-neon" style="--clr:var(--danger-red); padding: 12px 25px;">
-                <i class="fas fa-times"></i> <span data-i18n="btn-cancel">إلغاء</span>
+            <button onclick="clearCurrentInvoice()" class="btn-neon" style="--clr:var(--danger-red); padding: 12px 25px;">
+                <i class="fas fa-trash-restore"></i> <span data-i18n="btn-clear-all">تفريغ وإلغاء الفاتورة</span>
             </button>
         </div>
     </div>
@@ -359,36 +395,91 @@
     const translations = {
         ar: {
             "pur-main-title": "تسجيل فاتورة مشتريات وتحديث المخزن", "sub-invoice-meta": "البيانات التعريفية للمورد والفاتورة",
-            "opt-select-sup": "اختر المورد المستهدف...", "lbl-pur-sup": "المورد / البائع",
+            "opt-select-sup": "اختر المورد المستهدف...", "lbl-pur-sup": "المورد / الشركة البائعة",
             "lbl-pur-no": "رقم فاتورة المورد الأصلية", "lbl-pur-date": "تاريخ الشراء",
             "sub-product-entry": "تغذية السلع والأصناف المخزنية", "lbl-i-code": "كود الصنف / باركود",
-            "lbl-i-name": "اسم المنتج / البيان", "lbl-i-price": "سعر الشراء (قبل ضريبة)", "lbl-i-qty": "الكمية المشتراة",
-            "btn-add-row": "إضافة الصنف", "th-p-code": "الكود", "th-p-desc": "البيان",
-            "th-p-price": "السعر (قبل الضريبة)", "th-p-qty": "الكمية", "th-p-tax": "الضريبة (15%)",
+            "lbl-i-name": "اسم المنتج / البيان", "lbl-i-price": "سعر الشراء", "lbl-i-qty": "الكمية المشتراة",
+            "btn-add-row": "إضافة الصنف للجدول", "th-p-code": "كود الصنف", "th-p-desc": "اسم المنتج / البيان",
+            "th-p-price": "سعر الوحدة (قبل الضريبة)", "th-p-qty": "الكمية", "th-p-tax-rate": "نسبة الضريبة", "th-p-tax": "قيمة الضريبة",
             "th-p-total": "المجموع شامل الضريبة", "th-p-action": "حذف", "sum-p-sub": "الإجمالي الخاضع للضريبة:",
             "sum-p-tax": "مجموع ضريبة المدخلات (15%):", "sum-p-net": "الصافي النهائي المعتمد للفاتورة:",
-            "btn-commit-stock": "اعتماد الشراء وتحديث المخزن", "btn-cancel": "إلغاء"
+            "btn-commit-stock": "اعتماد الشراء وتحديث المخزن", "btn-clear-all": "تفريغ وإلغاء الفاتورة"
         },
         en: {
             "pur-main-title": "Purchase Invoice Entry & Inventory Inflow", "sub-invoice-meta": "Supplier & Invoice Meta Identifiers",
-            "opt-select-sup": "Select target supplier...", "lbl-pur-sup": "Supplier / Seller",
+            "opt-select-sup": "Select target supplier...", "lbl-pur-sup": "Supplier / Selling Company",
             "lbl-pur-no": "Original Supplier Invoice No", "lbl-pur-date": "Purchase Date",
             "sub-product-entry": "Inventory Inflow & Sku Feeding", "lbl-i-code": "Item Code / Barcode",
-            "lbl-i-name": "Product Name / Sku Desc", "lbl-i-price": "Purchase Price (Excl. VAT)", "lbl-i-qty": "Inflow Quantity",
-            "btn-add-row": "Feed Item", "th-p-code": "Code", "th-p-desc": "Description",
-            "th-p-price": "Price (Excl. VAT)", "th-p-qty": "Qty", "th-p-tax": "VAT (15%)",
+            "lbl-i-name": "Product Name / Sku Desc", "lbl-i-price": "Purchase Price", "lbl-i-qty": "Inflow Quantity",
+            "btn-add-row": "Add Item to Table", "th-p-code": "Item Code", "th-p-desc": "Product Description",
+            "th-p-price": "Unit Price (Excl. VAT)", "th-p-qty": "Qty", "th-p-tax-rate": "VAT Rate", "th-p-tax": "VAT Amount",
             "th-p-total": "Total (Incl. VAT)", "th-p-action": "Del", "sum-p-sub": "Taxable Subtotal:",
             "sum-p-tax": "Input VAT Total (15%):", "sum-p-net": "Final Net Invoice Amount:",
-            "btn-commit-stock": "Commit Purchase & Sync Stock", "btn-cancel": "Cancel"
+            "btn-commit-stock": "Commit Purchase & Sync Stock", "btn-clear-all": "Clear & Reset Invoice"
         }
     };
 
     document.addEventListener("DOMContentLoaded", function() {
+        // 1. تحديث وضبط حقل تاريخ الشراء تلقائياً لتوقيت اليوم الحالي للجوال
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('purDate').value = today;
+
+        // 2. تفعيل محرك البحث التلقائي الفوري والمطوّر لقراءة ومسح الباركود أوتوماتيكياً دون تدخل يدوي
+        setupAutomaticBarcodeReader();
+
+        // 3. مراقبة حركة زر التبديل (شامل / غير شامل للضريبة) وتعديل النصوص التوضيحية لعين التاجر
+        document.getElementById('itemTaxMethodToggle').addEventListener('change', function() {
+            const toggleText = document.getElementById('lblTaxToggleText');
+            if(this.checked) {
+                toggleText.innerText = "شامل الضريبة";
+                toggleText.style.color = "var(--light-green)";
+            } else {
+                toggleText.innerText = "غير شامل";
+                toggleText.style.color = "var(--text-white)";
+            }
+        });
+
+        // 4. تحميل الموردين المحفوظين سابقاً بالذاكرة لتسهيل الاختيار السريع
+        loadSavedSuppliersList();
+
         renderInvoiceItems();
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         document.getElementById('langSelect').value = currentLang;
         changeLanguage(currentLang);
     });
+
+    // دالة محرك الباركود التلقائي: تبحث في المخزن الحالي بمجرد الكتابة أو القراءة من الماسح الذكي للسرعة
+    function setupAutomaticBarcodeReader() {
+        const codeInput = document.getElementById('itemCode');
+        codeInput.addEventListener('input', function() {
+            const scannedCode = this.value.trim();
+            if (scannedCode.length >= 3) { 
+                // محاولة البحث عن الصنف المسجل في الذاكرة المحلية لتاجر برو لملء البيانات أوتوماتيكياً
+                const registeredProducts = JSON.parse(localStorage.getItem('altajer_products')) || [];
+                const matchedProduct = registeredProducts.find(p => p.code === scannedCode || p.barcode === scannedCode);
+                
+                if (matchedProduct) {
+                    document.getElementById('itemName').value = matchedProduct.name || '';
+                    document.getElementById('itemPriceInput').value = matchedProduct.purchase_price || matchedProduct.price || '';
+                    showToast("تم قراءة وتعبئة بيانات الصنف تلقائياً بنجاح");
+                    document.getElementById('itemQty').focus(); // نقل المؤشر فوراً لحقل الكمية لراحة يد التاجر
+                }
+            }
+        });
+    }
+
+    // دالة استدعاء وتحميل قائمة الشركات الموردة المسجلة بالذاكرة
+    function loadSavedSuppliersList() {
+        const savedSups = JSON.parse(localStorage.getItem('altajer_saved_suppliers')) || [];
+        const datalist = document.getElementById('suppliersList');
+        savedSups.forEach(sup => {
+            if (!Array.from(datalist.options).any(opt => opt.value === sup)) {
+                const opt = document.createElement('option');
+                opt.value = sup;
+                datalist.appendChild(opt);
+            }
+        });
+    }
 
     function changeLanguage(lang) {
         localStorage.setItem('altajer_lang', lang);
@@ -414,10 +505,24 @@
     function addItemToInvoice(e) {
         e.preventDefault();
         
-        const priceExcl = parseFloat(document.getElementById('itemPriceExcl').value);
+        const rawPrice = parseFloat(document.getElementById('itemPriceInput').value);
         const qty = parseInt(document.getElementById('itemQty').value);
-        const taxVal = (priceExcl * qty) * 0.15;
-        const totalIncl = (priceExcl * qty) + taxVal;
+        const isPriceInclusive = document.getElementById('itemTaxMethodToggle').checked;
+
+        let priceExcl = 0;
+        let taxVal = 0;
+        let totalIncl = 0;
+
+        // تنفيذ الحسبة المحاسبية الهندسية لمعالجة خياري (شامل وغير شامل الضريبة) قبل الترحيل للجدول
+        if (isPriceInclusive) {
+            priceExcl = rawPrice / 1.15;
+            taxVal = (priceExcl * qty) * 0.15;
+            totalIncl = rawPrice * qty;
+        } else {
+            priceExcl = rawPrice;
+            taxVal = (priceExcl * qty) * 0.15;
+            totalIncl = (priceExcl * qty) + taxVal;
+        }
 
         const itemPayload = {
             code: document.getElementById('itemCode').value,
@@ -429,14 +534,35 @@
         };
 
         invoiceItemsList.push(itemPayload);
+        
+        // إعادة تهيئة النموذج وإرجاع التركيز (Autofocus) لحقل الباركود للاستعداد للصنف التالي فوراً
         document.getElementById('purchaseItemForm').reset();
+        document.getElementById('itemTaxMethodToggle').checked = false;
+        document.getElementById('lblTaxToggleText').innerText = "غير شامل";
+        document.getElementById('lblTaxToggleText').style.color = "var(--text-white)";
+        
         renderInvoiceItems();
-        showToast("تم إدراج الصنف في الفاتورة المؤقتة");
+        showToast("تم إدراج الصنف ومطابقة احتساب الضريبة بالجدول");
+        document.getElementById('itemCode').focus();
     }
 
+    // تفعيل زر حذف السطر الفردي لمعالجة الأخطاء السريعة
     function deleteItemRow(index) {
         invoiceItemsList.splice(index, 1);
         renderInvoiceItems();
+        showToast("تم حذف الصنف وإعادة احتساب الإجماليات فوراً", false);
+    }
+
+    // تفعيل دالة إلغاء وتفريغ الفاتورة بأكملها وإعادة تصفير الجداول
+    function clearCurrentInvoice() {
+        if(confirm("هل أنت متأكد من رغبتك في تفريغ وإلغاء الفاتورة الحالية بالكامل؟")) {
+            invoiceItemsList = [];
+            document.getElementById('purchaseItemForm').reset();
+            document.getElementById('purInvoiceNo').value = '';
+            document.getElementById('purSupplierSelect').value = '';
+            renderInvoiceItems();
+            showToast("تم تصفير وإلغاء الفاتورة بالكامل", false);
+        }
     }
 
     function renderInvoiceItems() {
@@ -444,7 +570,7 @@
         tbody.innerHTML = '';
 
         if(invoiceItemsList.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-muted p-3">لا توجد أصناف مدرجة بالفاتورة حالياً</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" class="text-muted p-3">لا توجد أصناف مدرجة بالفاتورة حالياً</td></tr>`;
             calculateInvoiceTotals();
             return;
         }
@@ -456,6 +582,7 @@
                     <td class="fw-bold text-info">${item.name}</td>
                     <td>${item.priceExclTax.toFixed(2)} ر.س</td>
                     <td>${item.qty}</td>
+                    <td>15%</td>
                     <td>${item.taxAmount.toFixed(2)} ر.س</td>
                     <td class="fw-bold text-success">${item.totalInclTax.toFixed(2)} ر.س</td>
                     <td><i class="fas fa-trash-alt text-danger cursor-pointer" onclick="deleteItemRow(${index})"></i></td>
@@ -483,12 +610,19 @@
     }
 
     function commitPurchaseInvoice() {
-        const sup = document.getElementById('purSupplierSelect').value;
-        const invNo = document.getElementById('purInvoiceNo').value;
+        const sup = document.getElementById('purSupplierSelect').value.trim();
+        const invNo = document.getElementById('purInvoiceNo').value.trim();
 
         if(!sup || !invNo || invoiceItemsList.length === 0) {
-            showToast("يرجى اختيار المورد وتعبئة رقم الفاتورة وإضافة صنف واحد على الأقل!", false);
+            showToast("يرجى إدخال اسم المورد، رقم الفاتورة، وإضافة صنف واحد على الأقل!", false);
             return;
+        }
+
+        // حفظ اسم المورد الجديد تراكمياً في الذاكرة المحلية إذا لم يكن موجوداً من قبل لتسهيل استدعائه لاحقاً
+        let savedSups = JSON.parse(localStorage.getItem('altajer_saved_suppliers')) || [];
+        if(!savedSups.includes(sup)) {
+            savedSups.push(sup);
+            localStorage.setItem('altajer_saved_suppliers', JSON.stringify(savedSups));
         }
 
         const finalPayload = {
@@ -501,7 +635,7 @@
             items: invoiceItemsList
         };
 
-        // اعتماد التخزين والمزامنة الفورية مع السيرفر لزيادة وتحديث كميات المخزن تلقائياً
+        // ترحيل البيانات الفورية ومزامنة المخزن سحابياً ومحلياً لحفظ كميات السلع التراكمية
         fetch(API_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -513,13 +647,32 @@
                 showToast("تم اعتماد فاتورة المشتريات وزيادة كميات المخزن بنجاح");
                 setTimeout(() => { window.location.href='index.html'; }, 2000);
             } else {
-                // ترحيل احتياطي محلي في حال انشغال السيرفر
-                showToast("تم الحفظ محلياً وجاري مزامنة كميات المستودع تلقائياً", true);
+                saveBackupLocally(finalPayload);
             }
         })
         .catch(() => {
-            showToast("تم تأمين الفاتورة محلياً (وضع العمل دون اتصال بالجوال)", true);
+            saveBackupLocally(finalPayload);
         });
+    }
+
+    // دالة التأمين والتخزين الاحتياطي التراكمي دون اتصال لزيادة المخزن محلياً فوراً
+    function saveBackupLocally(payload) {
+        let localPurchases = JSON.parse(localStorage.getItem('altajer_local_purchases')) || [];
+        localPurchases.push(payload);
+        localStorage.setItem('altajer_local_purchases', JSON.stringify(localPurchases));
+        
+        // تحديث كميات المنتجات المسجلة في localStorage فوراً ليعمل الكاشير بالكميات الجديدة مباشرة
+        let registeredProducts = JSON.parse(localStorage.getItem('altajer_products')) || [];
+        payload.items.forEach(purchasedItem => {
+            let product = registeredProducts.find(p => p.code === purchasedItem.code);
+            if(product) {
+                product.quantity = (parseInt(product.quantity) || 0) + parseInt(purchasedItem.qty);
+            }
+        });
+        localStorage.setItem('altajer_products', JSON.stringify(registeredProducts));
+
+        showToast("تم تأمين الفاتورة وتحديث كميات المخزن محلياً بنجاح (وضع العمل بدون اتصال)", true);
+        setTimeout(() => { window.location.href='index.html'; }, 2200);
     }
 </script>
 </body>

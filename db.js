@@ -46,13 +46,23 @@ export async function getAllItems() {
 // دالة حفظ الفاتورة وتحديث المخزن التراكمي المباشر
 export async function saveInvoice(invoiceData) {
     try {
-        const invoiceId = "INV-" + Date.now();
-        // حفظ الفاتورة في كولكشن orders الموحد لضمان قراءة الجداول والكاونترات حياً
+        const invoiceId = invoiceData.invoiceId || "INV-" + Date.now();
+        
+        // حفظ الفاتورة سحابياً في كولكشن orders الموحد لضمان قراءة العدادات حياً
         await setDoc(doc(db, "orders", invoiceId), {
             ...invoiceData,
             timestamp: new Date()
         });
-        console.log("تم حفظ الفاتورة بنجاح برقم: " + invoiceId);
+
+        // مزامنة البيانات محلياً أيضاً لتغذية كروت الداش بورد دون انقطاع
+        const localInvoices = JSON.parse(localStorage.getItem('altajer_invoices')) || [];
+        // فحص لمنع تكرار نفس الفاتورة محلياً
+        if (!localInvoices.find(inv => inv.invoiceId === invoiceId)) {
+            localInvoices.push({ invoiceId, ...invoiceData });
+            localStorage.setItem('altajer_invoices', JSON.stringify(localInvoices));
+        }
+
+        console.log("تم حفظ الفاتورة بنجاح في السحاب والمحلي برقم: " + invoiceId);
         return invoiceId;
     } catch (e) {
         console.error("خطأ أثناء حفظ الفاتورة مركزياً: ", e);
@@ -113,8 +123,17 @@ const MainApp = {
             const contact = document.getElementById('custContact').value.trim();
             if (!id || !name) return alert("يرجى إدخال معرّف واسم العميل.");
             try {
-                await setDoc(doc(db, "customers", id), { id, name, vat, address, contact, timestamp: new Date() });
-                alert("تم حفظ بيانات العميل بنجاح."); this.clearForm();
+                const customerData = { id, name, vat, address, contact, timestamp: new Date() };
+                await setDoc(doc(db, "customers", id), customerData);
+                
+                // مزامنة الذاكرة المحلية للعملاء فوراً لتحديث كروت الداش بورد تلقائياً
+                const localCust = JSON.parse(localStorage.getItem('altajer_customers')) || [];
+                const index = localCust.findIndex(c => c.id === id);
+                if (index > -1) localCust[index] = customerData; else localCust.push(customerData);
+                localStorage.setItem('altajer_customers', JSON.stringify(localCust));
+
+                alert("تم حفظ بيانات العميل بنجاح والمزامنة حية."); 
+                this.clearForm();
             } catch (e) { alert("خطأ: " + e.message); }
         },
         search: async function() {
@@ -136,7 +155,15 @@ const MainApp = {
             if (!id) return alert("يرجى إدخال معرّف العميل للحذف.");
             if (!confirm("هل أنت متأكد من الحذف؟")) return;
             try {
-                await deleteDoc(doc(db, "customers", id)); alert("تم الحذف بنجاح."); this.clearForm();
+                await deleteDoc(doc(db, "customers", id)); 
+                
+                // الحذف من الذاكرة المحلية لمطابقة لوحة التحكم
+                let localCust = JSON.parse(localStorage.getItem('altajer_customers')) || [];
+                localCust = localCust.filter(c => c.id !== id);
+                localStorage.setItem('altajer_customers', JSON.stringify(localCust));
+
+                alert("تم الحذف بنجاح."); 
+                this.clearForm();
             } catch (e) { alert("خطأ: " + e.message); }
         },
         clearForm: function() {
@@ -238,13 +265,15 @@ const MainApp = {
                 const netTotal = parseFloat(document.getElementById('totalVal').innerText) || 0;
                 const customerId = document.getElementById('poCustId').value || "نقدي";
                 
+                // تصحيح فوري: استخدام حقل total_net لمطابقة محرك حسابات الداش بورد تماماً
                 const invoiceData = {
+                    invoiceId: orderId,
                     customerId: customerId,
                     items: cart,
-                    netTotal: netTotal
+                    total_net: netTotal 
                 };
 
-                // استدعاء دالة الحفظ المركزية لتوحيد ترحيل البيانات السحابية
+                // استدعاء دالة الحفظ المركزية المحدثة
                 await saveInvoice(invoiceData);
                 
                 // تحديث وإدارة جرد المخزن التراكمي بخصم الكميات المشتراة حياً
@@ -257,7 +286,7 @@ const MainApp = {
                     }
                 }
                 
-                // ميزة إضافية: توليد الـ QR للفاتورة الإلكترونية المبسطة إن وجدت دالتها بالواجهة
+                // ميزة توليد الـ QR للفاتورة الإلكترونية
                 if(typeof window.generateInvoiceQR === "function") {
                     window.generateInvoiceQR(orderId, netTotal);
                 }
@@ -266,6 +295,116 @@ const MainApp = {
                 cart = []; 
                 this.updateCartTable();
             } catch (e) { alert("خطأ في معالجة الفاتورة: " + e.message); }
+        }
+    },
+
+    // 5. محرك إدارة مرتجعات المبيعات السحابية - (تم البناء والتأمين للتطوير التراكمي خطوة بخطوة)
+    processReturn: async function() {
+        const returnRefInput = document.getElementById('return-ref');
+        const detailsContainer = document.getElementById('return-details');
+        if (!returnRefInput || !returnRefInput.value.trim()) return alert("يرجى إدخال رقم الفاتورة الأصلية أولاً.");
+        
+        const invoiceId = returnRefInput.value.trim();
+        detailsContainer.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري جلب ومراجعة الفاتورة سحابياً...`;
+
+        try {
+            const docSnap = await getDoc(doc(db, "orders", invoiceId));
+            if (!docSnap.exists()) {
+                detailsContainer.innerHTML = `<span style="color:#e74c3c;"><i class="fas fa-times-circle"></i> الفاتورة غير موجودة بالنظام المحاسبي، يرجى التحقق من الرقم المرجعي.</span>`;
+                return;
+            }
+
+            const invData = docSnap.data();
+            let itemsHtml = `
+                <div style="background: rgba(224,208,213,0.05); padding:12px; border-radius:8px; text-align:right; margin-bottom:15px; border:1px solid #3d1522;">
+                    <p style="margin:4px 0;"><b>معرّف العميل:</b> ${invData.customerId}</p>
+                    <p style="margin:4px 0;"><b>صافي الفاتورة:</b> ${parseFloat(invData.total_net || 0).toFixed(2)} ريال</p>
+                </div>
+                <table style="width:100%; border-collapse:collapse; color:#e0d0d5; font-size:0.9rem; text-align:center;">
+                    <thead>
+                        <tr style="border-bottom:1px solid #3d1522; color:#a09095;">
+                            <th style="padding:8px;">الصنف</th>
+                            <th style="padding:8px;">الكمية المباعة</th>
+                            <th style="padding:8px;">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            invData.items.forEach((item, index) => {
+                itemsHtml += `
+                    <tr style="border-bottom:1px solid rgba(61,21,34,0.5);">
+                        <td style="padding:8px;">${item.name}</td>
+                        <td style="padding:8px;">${item.qty}</td>
+                        <td style="padding:8px;">
+                            <button class="btn-main" style="background:#e74c3c; padding:6px 10px; font-size:0.8rem; border-radius:4px; width:auto; display:inline-block;" 
+                                onclick="window.App.executeItemReturn('${invoiceId}', '${item.code}', ${item.qty}, ${item.price}, ${index})">
+                                <i class="fas fa-exchange-alt"></i> إرجاع بالكامل
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            itemsHtml += `</tbody></table>`;
+            detailsContainer.innerHTML = itemsHtml;
+
+        } catch (e) {
+            detailsContainer.innerHTML = `<span style="color:#e74c3c;">خطأ في جلب البيانات: ${e.message}</span>`;
+        }
+    },
+
+    // دالة تنفيذ الإرجاع الفعلي وإعادة السلع إلى المخزن وتعديل الفاتورة
+    executeItemReturn: async function(invoiceId, itemCode, qty, price, itemIndex) {
+        if (!confirm("هل أنت متأكد من معالجة إرجاع هذا الصنف وإعادة تدويره في المخزن؟")) return;
+        
+        try {
+            // 1. إعادة الكمية المرتجعة إلى المخزون (products)
+            const itemRef = doc(db, "products", itemCode);
+            const itemSnap = await getDoc(itemRef);
+            if (itemSnap.exists()) {
+                const currentQty = parseFloat(itemSnap.data().quantity) || 0;
+                await setDoc(itemRef, { quantity: currentQty + qty }, { merge: true });
+            }
+
+            // 2. تعديل أو حذف الفاتورة من كولكشن orders
+            const orderRef = doc(db, "orders", invoiceId);
+            const orderSnap = await getDoc(orderRef);
+            
+            if (orderSnap.exists()) {
+                let invData = orderSnap.data();
+                // إزالة الصنف المرتجع من مصفوفة الأصناف
+                invData.items.splice(itemIndex, 1);
+                // خصم قيمة المرتجع من الصافي الخاضع للضريبة
+                invData.total_net = parseFloat(invData.total_net || 0) - (qty * price);
+
+                if (invData.items.length === 0) {
+                    // إذا أصبحت الفاتورة فارغة تماماً يتم حذفها نهائياً
+                    await deleteDoc(orderRef);
+                    // مزامنة الحذف محلياً للداش بورد
+                    let localInvoices = JSON.parse(localStorage.getItem('altajer_invoices')) || [];
+                    localInvoices = localInvoices.filter(inv => inv.invoiceId !== invoiceId);
+                    localStorage.setItem('altajer_invoices', JSON.stringify(localInvoices));
+                    
+                    alert("تم إرجاع كافة عناصر الفاتورة بالكامل، وحُذفت الفاتورة فارغة السجلات بنجاح.");
+                } else {
+                    // تحديث الفاتورة بالقيم الجديدة
+                    await setDoc(orderRef, invData);
+                    // مزامنة التحديث محلياً للداش بورد
+                    let localInvoices = JSON.parse(localStorage.getItem('altajer_invoices')) || [];
+                    const locIdx = localInvoices.findIndex(inv => inv.invoiceId === invoiceId);
+                    if (locIdx > -1) {
+                        localInvoices[locIdx].items = invData.items;
+                        localInvoices[locIdx].total_net = invData.total_net;
+                        localStorage.setItem('altajer_invoices', JSON.stringify(localInvoices));
+                    }
+                    alert("تمت معالجة المرتجع، وتحديث المخازن وحسابات الفاتورة بنجاح.");
+                }
+            }
+            // إعادة تحديث الواجهة لعرض الحالة الجديدة
+            this.processReturn();
+        } catch (e) {
+            alert("خطأ أثناء معالجة المرتجع: " + e.message);
         }
     }
 };
@@ -284,11 +423,15 @@ $(document).ready(function() {
         if(tbody) tbody.innerHTML = '';
         if(cbCustomer) cbCustomer.innerHTML = '<option value="" selected>اختر العميل</option>';
         
+        // جلب البيانات ومزامنتها محلياً للتحديث الفوري لكروت لوحة التحكم
+        const currentCustData = [];
         snapshot.forEach((doc) => {
             const data = doc.data();
+            currentCustData.push(data);
             if(tbody) tbody.innerHTML += `<tr><td>${data.id}</td><td>${data.name}</td><td>${data.vat || '--'}</td><td>${data.contact}</td><td>${data.address}</td></tr>`;
             if(cbCustomer) cbCustomer.innerHTML += `<option value="${data.id}">${data.name}</option>`;
         });
+        localStorage.setItem('altajer_customers', JSON.stringify(currentCustData));
         if(document.getElementById('customerCount')) document.getElementById('customerCount').innerText = snapshot.size;
     });
 
@@ -305,8 +448,13 @@ $(document).ready(function() {
         });
     });
 
-    // مراقبة الفواتير الموحدة لعرض الكاونتر الرئيسي في الـ Dashboard
+    // مراقبة الفواتير الموحدة سحابياً ومزامنتها وتحديث كاونتر الـ Dashboard حياً
     onSnapshot(collection(db, "orders"), (snapshot) => {
+        const currentInvoicesData = [];
+        snapshot.forEach((doc) => {
+            currentInvoicesData.push({ invoiceId: doc.id, ...doc.data() });
+        });
+        localStorage.setItem('altajer_invoices', JSON.stringify(currentInvoicesData));
         if(document.getElementById('orderCount')) document.getElementById('orderCount').innerText = snapshot.size;
     });
 

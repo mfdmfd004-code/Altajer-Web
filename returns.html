@@ -2,23 +2,155 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مرتجعات المبيعات - التاجر برو</title>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#14080a">
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root { 
+            --bg-dark: #0a0305;      /* الخلفية العميقة للنظام */
+            --panel-dark: #14080a;   /* خلفية كارت الإدخال */
+            --border-dark: #3d1522;  /* ألوان الحدود */
+            --accent-red: #e74c3c;   /* الأحمر المخصص للمرتجعات */
+            --text-light: #e0d0d5;   /* النصوص الفاتحة */
+            --text-dim: #a09095;     /* النصوص الفرعية */
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-dark); 
+            margin: 0; 
+            padding: 14px; 
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        /* كارت الحاوية ممتد ومتناسق مع الجوال */
+        .card { 
+            background: var(--panel-dark); 
+            padding: 22px 16px; 
+            border-radius: 14px; 
+            border: 1px solid var(--border-dark);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4); 
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        h2 { 
+            color: var(--text-light); 
+            margin-top: 0; 
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-dark);
+            padding-bottom: 12px;
+        }
+        
+        h2 i {
+            color: var(--accent-red);
+        }
+
+        /* تنسيق مجموعات الإدخال */
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        /* حقل الإدخال ممتد وداكن ومريح للكتابة واللمس */
+        .form-control {
+            width: 100%;
+            background-color: rgba(10, 3, 5, 0.6);
+            border: 1px solid var(--border-dark);
+            border-radius: 8px;
+            padding: 14px;
+            color: var(--text-light);
+            font-size: 1.05rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            text-align: center; /* ليكون الرقم المرجعي في المنتصف */
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 8px rgba(231, 76, 60, 0.2);
+        }
+
+        /* الزر ممتد بكامل العرض وسهل الضغط بالإبهام */
+        .btn-main {
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-main:active {
+            transform: scale(0.98);
+            background-color: #c0392b !important;
+        }
+
+        /* حاوية تفاصيل المرتجع */
+        #return-details {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-dark);
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+
     <div class="card">
         <h2><i class="fas fa-undo"></i> إدارة المرتجعات</h2>
-        <div class="form-group">
-            <label>رقم الفاتورة الأصلية</label>
-            <input type="text" id="return-ref" class="form-control" placeholder="أدخل رقم المرجع">
-        </div>
-        <button class="btn-main" style="background: #e74c3c;" onclick="App.processReturn()">بحث ومعالجة المرتجع</button>
         
-        <div id="return-details" style="margin-top:20px;">
-            <!-- تظهر تفاصيل الفاتورة هنا ليتم اختيار الأصناف المرتجعة -->
+        <div class="form-group">
+            <label for="return-ref">رقم الفاتورة الأصلية</label>
+            <input type="text" id="return-ref" class="form-control" placeholder="أدخل رقم المرجع المطبوع على الفاتورة">
+        </div>
+        
+        <button class="btn-main" style="background: var(--accent-red);" onclick="App.processReturn()">
+            <i class="fas fa-search"></i> بحث ومعالجة المرتجع
+        </button>
+        
+        <div id="return-details">
+            <small><i class="fas fa-info-circle"></i> أدخل الرقم المرجعي للفاتورة لعرض محتوياتها وتحديد المرتجع.</small>
         </div>
     </div>
+
     <script type="module" src="app.js"></script>
 </body>
 </html>

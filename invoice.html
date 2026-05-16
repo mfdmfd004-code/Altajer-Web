@@ -14,7 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root {
+        /* التاجر الاحترافي المطوّر: دعم قوالب فصول السنة الأربعة وتخفيف توهج النيون لحماية أعين المستخدمين من الجوال */
+        :root, [data-theme="winter"] {
             --dark-bg: #0d1b2a;
             --card-bg: #1b263b;
             --sea-blue: #0077b6;
@@ -24,6 +25,49 @@
             --text-white: #ffffff;
             --danger-red: #e63946;
             --warning-orange: #ffb703;
+            --neon-glow-soft: 0 0 6px rgba(0, 180, 216, 0.35);
+        }
+
+        /* قالب الربيع (Spring Theme): درجات الأخضر العشبي والرمادي الزيتوني المنعش */
+        [data-theme="spring"] {
+            --dark-bg: #1a2f16;
+            --card-bg: #243e1e;
+            --sea-blue: #52b788;
+            --light-green: #74c69d;
+            --neon-cyan: #95d5b2;
+            --neon-pink: #ff70a6;
+            --text-white: #f4f9f4;
+            --danger-red: #ff4d6d;
+            --warning-orange: #ff9f1c;
+            --neon-glow-soft: 0 0 6px rgba(149, 213, 178, 0.35);
+        }
+
+        /* قالب الصيف (Summer Theme): الفيروزي الساحلي والرمال الناعمة الهادئة */
+        [data-theme="summer"] {
+            --dark-bg: #0f2a35;
+            --card-bg: #173f5f;
+            --sea-blue: #20639b;
+            --light-green: #3caea3;
+            --neon-cyan: #2a9d8f;
+            --neon-pink: #f4a261;
+            --text-white: #f8f9fa;
+            --danger-red: #e76f51;
+            --warning-orange: #f4a261;
+            --neon-glow-soft: 0 0 6px rgba(42, 157, 143, 0.35);
+        }
+
+        /* قالب الخريف (Autumn Theme): درجات الألوان الخشبية والبني الرستيك المتناسق */
+        [data-theme="autumn"] {
+            --dark-bg: #2b1810;
+            --card-bg: #3e261d;
+            --sea-blue: #b07d62;
+            --light-green: #9e2a2b;
+            --neon-cyan: #e36414;
+            --neon-pink: #ffb703;
+            --text-white: #fff8f5;
+            --danger-red: #6f1d1b;
+            --warning-orange: #ff9f1c;
+            --neon-glow-soft: 0 0 6px rgba(227, 100, 20, 0.35);
         }
 
         * {
@@ -37,6 +81,7 @@
             margin: 0;
             padding: 20px 10px;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         .invoice-container {
@@ -44,11 +89,12 @@
             border: 2px solid var(--sea-blue);
             border-radius: 16px;
             padding: 30px;
-            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.2);
+            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.15);
             max-width: 900px;
             margin: 0 auto;
             position: relative;
             overflow: hidden;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
 
         .invoice-container::before {
@@ -60,7 +106,7 @@
         }
 
         .invoice-header {
-            border-bottom: 2px dashed rgba(0, 180, 216, 0.3);
+            border-bottom: 2px dashed rgba(0, 180, 216, 0.25);
             padding-bottom: 20px;
             margin-bottom: 25px;
         }
@@ -69,12 +115,12 @@
             font-size: 28px;
             font-weight: bold;
             color: var(--neon-cyan);
-            text-shadow: 0 0 12px rgba(0, 180, 216, 0.4);
+            text-shadow: var(--neon-glow-soft);
         }
 
         .meta-tag {
-            background: rgba(0, 180, 216, 0.1);
-            border: 1px solid rgba(0, 180, 216, 0.3);
+            background: rgba(0, 180, 216, 0.08);
+            border: 1px solid rgba(0, 180, 216, 0.25);
             padding: 6px 14px;
             border-radius: 8px;
             font-size: 14px;
@@ -83,8 +129,8 @@
         }
 
         .party-box {
-            background: rgba(13, 27, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 12px;
             padding: 18px;
             height: 100%;
@@ -92,7 +138,7 @@
 
         .party-box h5 {
             color: var(--neon-cyan);
-            border-bottom: 1px solid rgba(0, 180, 216, 0.2);
+            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
             padding-bottom: 8px;
             margin-bottom: 12px;
             font-weight: bold;
@@ -116,20 +162,20 @@
         }
 
         .table-invoice {
-            background-color: #0d1b2a !important;
+            background-color: rgba(0, 0, 0, 0.15) !important;
             color: white !important;
             margin-bottom: 0;
         }
 
         .table-invoice th {
-            background-color: #0c3f65 !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
             color: var(--neon-cyan) !important;
             font-weight: 600;
         }
 
         .table-invoice td {
             vertical-align: middle;
-            border-color: rgba(255, 255, 255, 0.05) !important;
+            border-color: rgba(255, 255, 255, 0.04) !important;
         }
 
         .summary-box {
@@ -172,7 +218,7 @@
             background: white;
             padding: 12px;
             border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 180, 216, 0.4);
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.25);
             border: 3px solid var(--neon-cyan);
             display: inline-block;
         }
@@ -185,10 +231,10 @@
             border-radius: 16px !important;
         }
         .altajer-modal-header {
-            border-bottom: 1px dashed rgba(0, 180, 216, 0.3) !important;
+            border-bottom: 1px dashed rgba(0, 180, 216, 0.25) !important;
         }
         .altajer-modal-footer {
-            border-top: 1px dashed rgba(0, 180, 216, 0.3) !important;
+            border-top: 1px dashed rgba(0, 180, 216, 0.25) !important;
         }
         .hub-btn {
             width: 100%;
@@ -229,7 +275,7 @@
 
         .btn-neon-action:hover {
             background: var(--clr);
-            box-shadow: 0 0 15px var(--clr);
+            box-shadow: 0 0 12px var(--clr);
             transform: translateY(-2px);
         }
 
@@ -301,7 +347,7 @@
                 padding: 5px !important;
             }
             .qr-container img {
-                filter: brightness(0) contrast(100%) !important; /* تثبيت قراءة اللون الأسود للـ QR */
+                filter: brightness(0) contrast(100%) !important;
             }
             .btn-action-group, .invoice-container::before, .modal, .modal-backdrop, .small.text-white-50 { 
                 display: none !important; 
@@ -322,7 +368,7 @@
                 <div class="meta-tag fw-bold mb-2">
                     <span data-i18n="inv-number-label">رقم الفاتورة:</span> #<span id="lblInvoiceId">00000</span>
                 </div>
-                <div class="small text-white-50" id="lblInvoiceDate">2026-05-15 00:00:00</div>
+                <div class="small text-white-50" id="lblInvoiceDate">2026-05-16 00:00:00</div>
             </div>
         </div>
     </div>
@@ -435,8 +481,8 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
 <script>
+    // كتل الترجمة المتكاملة للفاتورة (عربي / إنجليزي) لضمان عدم فقدان اللغات
     const translations = {
         ar: {
             "brand-name": "تاجر برو المحاسبي", "invoice-subtitle": "نظام الفاتورة الضريبية المبسطة المتكامل",
@@ -468,7 +514,16 @@
     let globalInvoiceId = "";
     let globalNetTotal = "0.00";
 
+    // محرك الفصول الأربعة التلقائي المرتبط بـ index.html
+    function applySavedTheme() {
+        const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
+        document.documentElement.setAttribute('data-theme', activeTheme);
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
+        // تطبيق الثيم المحفوظ فوراً لتوحيد الرؤية البصرية وحماية العين
+        applySavedTheme();
+
         const enterpriseSettings = JSON.parse(localStorage.getItem('altajer_enterprise_settings'));
         
         if (enterpriseSettings) {
@@ -538,15 +593,12 @@
         applyInvoiceLanguage(currentLang);
     });
 
-    // دالة استدعاء لوحة الخيارات المجمعة (الـ Hub)
     function openPrintShareHub() {
         const myModal = new bootstrap.Modal(document.getElementById('printShareHubModal'));
         myModal.show();
     }
 
-    // خيار 1: تنفيذ أمر الطباعة المباشر مع التنسيق المصلح
     function triggerHardwarePrint() {
-        // إغلاق المودال برمجياً أولاً لمنع ظهوره في المعاينة
         const modalEl = document.getElementById('printShareHubModal');
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
@@ -556,7 +608,6 @@
         }, 300);
     }
 
-    // خيار 2: مشاركة الفاتورة عبر النظام ومحرك الجوال الذكي
     function triggerSystemShare() {
         const company = document.getElementById('supNameField').innerText;
         const invId = globalInvoiceId;
@@ -574,7 +625,6 @@
                 .then(() => console.log('تمت المشاركة بنجاح'))
                 .catch((error) => console.log('خطأ في المشاركة:', error));
         } else {
-            // كود بديل للحواسب أو المتصفحات التي لا تدعم الهواتف مباشرة
             const whatsappText = encodeURIComponent(`${shareData.text}\n${shareData.url}`);
             window.open(`https://api.whatsapp.com/send?text=${whatsappText}`, '_blank');
         }

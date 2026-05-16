@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>تاجر برو المحاسبي - شاشة المبيعات ونقطة البيع POS</title>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0c3f65">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --dark-bg: #0d1b2a;
+            --card-bg: #1b263b;
+            --sea-blue: #0077b6;
+            --light-green: #38b000;
+            --neon-cyan: #00b4d8;
+            --neon-pink: #e81cff;
+            --text-white: #ffffff;
+            --danger-red: #e63946;
+            --warning-orange: #ffb703;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            margin: 0;
+            padding: 20px 10px;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sales-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border: 2px solid var(--sea-blue);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.2);
+            position: relative;
+        }
+
+        .sales-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--sea-blue), var(--light-green));
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+        }
+
+        .sales-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dashed rgba(0, 180, 216, 0.3);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .sales-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.4);
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--neon-cyan);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-container input, .input-container select {
+            border: 0;
+            border-bottom: 2px solid #4a5568;
+            background: transparent;
+            width: 100%;
+            padding: 8px 5px 4px 5px;
+            font-size: 15px;
+            color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        .input-container input:focus, .input-container select:focus {
+            outline: none;
+            border-bottom: 2px solid var(--neon-cyan);
+        }
+
+        .input-container select option {
+            background-color: var(--dark-bg);
+            color: white;
+        }
+
+        .input-container label {
+            position: absolute;
+            top: -12px;
+            right: 5px;
+            font-size: 13px;
+            color: #a0aec0;
+            pointer-events: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        html[dir="ltr"] .input-container label {
+            left: 5px;
+            right: auto;
+        }
+
+        .tax-toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 180, 216, 0.15);
+        }
+
+        .form-switch .form-check-input {
+            width: 2.5em;
+            height: 1.25em;
+            background-color: #4a5568;
+            border-color: transparent;
+            cursor: pointer;
+        }
+        .form-switch .form-check-input:checked {
+            background-color: var(--light-green);
+            border-color: var(--light-green);
+        }
+
+        .btn-neon {
+            background: #2d3748;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-neon:hover {
+            background: var(--clr);
+            box-shadow: 0 0 15px var(--clr);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .table-responsive-custom {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin: 20px 0;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        .table-custom {
+            background-color: #0d1b2a !important;
+            color: white !important;
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        .table-custom th {
+            background-color: #0c3f65 !important;
+            color: var(--neon-cyan) !important;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            border-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .summary-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            border-right: 4px solid var(--light-green);
+        }
+        html[dir="ltr"] .summary-box { border-right: none; border-left: 4px solid var(--light-green); }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .summary-row.final-net {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--light-green);
+        }
+
+        .api-toast {
+            position: fixed;
+            top: 30px;
+            right: 20px;
+            z-index: 2000;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+        }
+        html[dir="ltr"] .api-toast { right: auto; left: 20px; }
+        .cursor-pointer { cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="apiToast" class="api-toast"></div>
+
+<div class="sales-container">
+    <div class="sales-header">
+        <div class="sales-title">
+            <i class='bx bx-calculator bx-flashing'></i>
+            <span data-i18n="sale-main-title">شاشة كاشير المبيعات وإنشاء الفاتورة</span>
+        </div>
+        <div>
+            <select class="lang-selector bg-dark text-white border-info rounded p-1" onchange="changeLanguage(this.value)" id="langSelect">
+                <option value="ar">العربية (AR)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="section-subtitle">
+        <i class="fas fa-user"></i> <span data-i18n="sub-customer-meta">بيانات العميل المستهدف والفاتورة</span>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="input-container">
+                <input id="saleCustomerName" type="text" list="customersList" required placeholder=" " value="عميل نقدي">
+                <datalist id="customersList">
+                    <option value="عميل نقدي"></option>
+                </datalist>
+                <label data-i18n="lbl-sale-cust">اسم العميل</label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="input-container">
+                <input id="saleCustomerVat" type="text" placeholder=" ">
+                <label data-i18n="lbl-sale-cust-vat">الرقم الضريبي للعميل</label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="input-container">
+                <input id="saleCustomerAddress" type="text" placeholder=" ">
+                <label data-i18n="lbl-sale-cust-addr">عنوان العميل</label>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="input-container">
+                <input id="saleDiscount" type="number" step="0.01" value="0.00" oninput="calculateInvoiceTotals()" placeholder=" ">
+                <label data-i18n="lbl-sale-discount">خصم الفاتورة</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-subtitle">
+        <i class="fas fa-barcode"></i> <span data-i18n="sub-product-pull">سحب الأصناف من المنتجات والمخزن</span>
+    </div>
+
+    <form id="salesItemForm" onsubmit="addItemToInvoice(event)">
+        <div class="row align-items-end">
+            <div class="col-md-3 col-sm-6">
+                <div class="input-container">
+                    <input id="itemCode" type="text" required placeholder=" " autofocus>
+                    <label data-i18n="lbl-i-code">كود الصنف / باركود</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="input-container">
+                    <input id="itemName" type="text" required placeholder=" " readonly style="opacity: 0.8; color: var(--neon-cyan);">
+                    <label data-i18n="lbl-i-name">اسم المنتج (سحب تلقائي)</label>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="input-container">
+                    <input id="itemPriceInput" type="number" step="0.01" required placeholder=" ">
+                    <label id="lblItemPrice" data-i18n="lbl-i-price">سعر البيع</label>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="input-container">
+                    <input id="itemQty" type="number" value="1" required placeholder=" ">
+                    <label data-i18n="lbl-i-qty">الكمية المباعة</label>
+                </div>
+            </div>
+            
+            <div class="col-md-2 col-12 mb-4">
+                <div class="tax-toggle-wrapper">
+                    <div class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2">
+                        <input class="form-check-input m-0" type="checkbox" id="itemTaxMethodToggle" checked>
+                        <label class="form-check-label small text-white-50 cursor-pointer" for="itemTaxMethodToggle" id="lblTaxToggleText" style="color: var(--light-green)">شامل الضريبة</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 text-end text-md-center mb-4">
+                <button type="submit" class="btn-neon w-100 justify-content-center" style="--clr:var(--sea-blue)">
+                    <i class="fas fa-shopping-cart"></i> <span data-i18n="btn-add-row">إدراج الفاتورة الحالية</span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-responsive-custom">
+        <table class="table table-dark table-striped table-custom text-center">
+            <thead>
+                <tr>
+                    <th data-i18n="th-p-code">كود الصنف</th>
+                    <th data-i18n="th-p-desc">اسم المنتج / البيان</th>
+                    <th data-i18n="th-p-price">سعر الوحدة (قبل الضريبة)</th>
+                    <th data-i18n="th-p-qty">الكمية</th>
+                    <th data-i18n="th-p-tax-rate">نسبة الضريبة</th>
+                    <th data-i18n="th-p-tax">قيمة الضريبة</th>
+                    <th data-i18n="th-p-total">المجموع شامل الضريبة</th>
+                    <th data-i18n="th-p-action">حذف</th>
+                </tr>
+            </thead>
+            <tbody id="salesItemsTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row g-4 align-items-center mt-3">
+        <div class="col-md-6">
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span data-i18n="sum-p-sub">الإجمالي الخاضع للضريبة:</span>
+                    <span><span id="lblSubTotal">0.00</span> ر.س</span>
+                </div>
+                <div class="summary-row">
+                    <span data-i18n="sum-p-tax">مجموع ضريبة المخرجات (15%):</span>
+                    <span class="text-warning"><span id="lblTaxTotal">0.00</span> ر.س</span>
+                </div>
+                <div class="summary-row">
+                    <span data-i18n="sum-p-discount">إجمالي الخصم الممنوح:</span>
+                    <span class="text-danger"><span id="lblDiscountTotal">0.00</span> ر.س</span>
+                </div>
+                <div class="summary-row final-net">
+                    <span data-i18n="sum-p-net">الصافي النهائي المطلوب سداده:</span>
+                    <span><span id="lblNetTotal">0.00</span> ر.س</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 text-end d-flex flex-wrap gap-2 justify-content-md-end justify-content-between">
+            <button onclick="commitSalesInvoice()" class="btn-neon" style="--clr:var(--light-green); padding: 12px 25px;">
+                <i class="fas fa-print"></i> <span data-i18n="btn-commit-sale">اعتماد وإنشاء الفاتورة للطباعة</span>
+            </button>
+            <button onclick="clearCurrentInvoice()" class="btn-neon" style="--clr:var(--danger-red); padding: 12px 25px;">
+                <i class="fas fa-trash-restore"></i> <span data-i18n="btn-clear-all">تفريغ السلة بالكامل</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    let salesItemsList = [];
+
+    const translations = {
+        ar: {
+            "sale-main-title": "شاشة كاشير المبيعات وإنشاء الفاتورة", "sub-customer-meta": "بيانات العميل المستهدف والفاتورة",
+            "lbl-sale-cust": "اسم العميل", "lbl-sale-cust-vat": "الرقم الضريبي للعميل", "lbl-sale-cust-addr": "عنوان العميل",
+            "lbl-sale-discount": "خصم الفاتورة", "sub-product-pull": "سحب الأصناف من المنتجات والمخزن",
+            "lbl-i-code": "كود الصنف / باركود", "lbl-i-name": "اسم المنتج (سحب تلقائي)", "lbl-i-price": "سعر البيع",
+            "lbl-i-qty": "الكمية المباعة", "btn-add-row": "إدراج الفاتورة الحالية", "th-p-code": "كود الصنف",
+            "th-p-desc": "اسم المنتج / البيان", "th-p-price": "سعر الوحدة (قبل الضريبة)", "th-p-qty": "الكمية",
+            "th-p-tax-rate": "نسبة الضريبة", "th-p-tax": "قيمة الضريبة", "th-p-total": "المجموع شامل الضريبة",
+            "th-p-action": "حذف", "sum-p-sub": "الإجمالي الخاضع للضريبة:", "sum-p-tax": "مجموع ضريبة المخرجات (15%):",
+            "sum-p-discount": "إجمالي الخصم الممنوح:", "sum-p-net": "الصافي النهائي المطلوب سداده:",
+            "btn-commit-sale": "اعتماد وإنشاء الفاتورة للطباعة", "btn-clear-all": "تفريغ السلة بالكامل"
+        },
+        en: {
+            "sale-main-title": "Sales Cashier Screen & Invoice Creation", "sub-customer-meta": "Target Customer & Invoice Meta Identifiers",
+            "lbl-sale-cust": "Customer Name", "lbl-sale-cust-vat": "Customer VAT No", "lbl-sale-cust-addr": "Customer Address",
+            "lbl-sale-discount": "Invoice Discount", "sub-product-pull": "Pull Items From Central Products & Stock",
+            "lbl-i-code": "Item Code / Barcode", "lbl-i-name": "Product Name (Auto Pull)", "lbl-i-price": "Sales Price",
+            "lbl-i-qty": "Sold Quantity", "btn-add-row": "Insert to Current Bill", "th-p-code": "Item Code",
+            "th-p-desc": "Product Description", "th-p-price": "Unit Price (Excl. VAT)", "th-p-qty": "Qty",
+            "th-p-tax-rate": "VAT Rate", "th-p-tax": "VAT Amount", "th-p-total": "Total (Incl. VAT)",
+            "th-p-action": "Del", "sum-p-sub": "Taxable Subtotal:", "sum-p-tax": "Output VAT Total (15%):",
+            "sum-p-discount": "Total Discount Granted:", "sum-p-net": "Final Net Due Amount:",
+            "btn-commit-sale": "Commit & Generate Invoice for Print", "btn-clear-all": "Clear Basket Completely"
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+        setupAutomaticBarcodePuller();
+
+        document.getElementById('itemTaxMethodToggle').addEventListener('change', function() {
+            const toggleText = document.getElementById('lblTaxToggleText');
+            if(this.checked) {
+                toggleText.innerText = "شامل الضريبة";
+                toggleText.style.color = "var(--light-green)";
+            } else {
+                toggleText.innerText = "غير شامل";
+                toggleText.style.color = "var(--text-white)";
+            }
+        });
+
+        renderInvoiceItems();
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        document.getElementById('langSelect').value = currentLang;
+        changeLanguage(currentLang);
+    });
+
+    // المحرك الذكي: يسحب بيانات السلعة من سجل السلع المركزي فور قراءة الكود
+    function setupAutomaticBarcodePuller() {
+        const codeInput = document.getElementById('itemCode');
+        codeInput.addEventListener('input', function() {
+            const scannedCode = this.value.trim();
+            if (scannedCode.length >= 3) { 
+                const registeredProducts = JSON.parse(localStorage.getItem('altajer_products')) || [];
+                const matchedProduct = registeredProducts.find(p => p.code === scannedCode || p.barcode === scannedCode);
+                
+                if (matchedProduct) {
+                    document.getElementById('itemName').value = matchedProduct.name || '';
+                    // سحب سعر البيع المسجل في كرت الصنف بالمنتجات
+                    document.getElementById('itemPriceInput').value = matchedProduct.price || matchedProduct.sale_price || '';
+                    showToast("تم سحب الصنف وبياناته من المخزن المركزي بنجاح");
+                    document.getElementById('itemQty').focus();
+                    document.getElementById('itemQty').select();
+                }
+            }
+        });
+    }
+
+    function changeLanguage(lang) {
+        localStorage.setItem('altajer_lang', lang);
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        
+        $('[data-i18n]').each(function() {
+            const key = $(this).data('i18n');
+            if (translations[lang] && translations[lang][key]) {
+                $(this).text(translations[lang][key]);
+            }
+        });
+    }
+
+    function showToast(message, isSuccess = true) {
+        const toast = document.getElementById('apiToast');
+        toast.innerText = message;
+        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    function addItemToInvoice(e) {
+        e.preventDefault();
+        
+        const code = document.getElementById('itemCode').value.trim();
+        const name = document.getElementById('itemName').value.trim();
+        const rawPrice = parseFloat(document.getElementById('itemPriceInput').value);
+        const qty = parseInt(document.getElementById('itemQty').value);
+        const isPriceInclusive = document.getElementById('itemTaxMethodToggle').checked;
+
+        if(!name) {
+            showToast("الرجاء إدخال كود صنف صحيح مسجل في صفحة المنتجات أولاً ليتم سحبه!", false);
+            return;
+        }
+
+        let priceExcl = 0;
+        let taxVal = 0;
+        let totalIncl = 0;
+
+        if (isPriceInclusive) {
+            priceExcl = rawPrice / 1.15;
+            taxVal = (priceExcl * qty) * 0.15;
+            totalIncl = rawPrice * qty;
+        } else {
+            priceExcl = rawPrice;
+            taxVal = (priceExcl * qty) * 0.15;
+            totalIncl = (priceExcl * qty) + taxVal;
+        }
+
+        const itemPayload = {
+            code: code,
+            name: name,
+            priceExclTax: priceExcl,
+            priceInclTax: isPriceInclusive ? rawPrice : rawPrice * 1.15,
+            qty: qty,
+            taxAmount: taxVal,
+            totalInclTax: totalIncl
+        };
+
+        salesItemsList.push(itemPayload);
+        
+        // إعادة تهيئة حقول الإدخال مع تثبيت خيار "شامل الضريبة" للكاشير للسرعة
+        document.getElementById('itemCode').value = '';
+        document.getElementById('itemName').value = '';
+        document.getElementById('itemPriceInput').value = '';
+        document.getElementById('itemQty').value = '1';
+        
+        renderInvoiceItems();
+        showToast("تم إدراج الصنف ومطابقة احتساب الضريبة بالسلة");
+        document.getElementById('itemCode').focus();
+    }
+
+    function deleteItemRow(index) {
+        salesItemsList.splice(index, 1);
+        renderInvoiceItems();
+        showToast("تم حذف الصنف وإعادة احتساب الإجماليات فوراً", false);
+    }
+
+    function clearCurrentInvoice() {
+        if(confirm("هل أنت متأكد من رغبتك في تفريغ سلة المبيعات الحالية؟")) {
+            salesItemsList = [];
+            document.getElementById('salesItemForm').reset();
+            document.getElementById('itemQty').value = '1';
+            renderInvoiceItems();
+            showToast("تم تصفير سلة المبيعات بالكامل", false);
+        }
+    }
+
+    function renderInvoiceItems() {
+        const tbody = document.getElementById('salesItemsTableBody');
+        tbody.innerHTML = '';
+
+        if(salesItemsList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-muted p-3">السلة فارغة، امسح الباركود لإضافة الأصناف تلقائياً</td></tr>`;
+            calculateInvoiceTotals();
+            return;
+        }
+
+        salesItemsList.forEach((item, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${item.code}</td>
+                    <td class="fw-bold text-info">${item.name}</td>
+                    <td>${item.priceExclTax.toFixed(2)} ر.س</td>
+                    <td>${item.qty}</td>
+                    <td>15%</td>
+                    <td>${item.taxAmount.toFixed(2)} ر.س</td>
+                    <td class="fw-bold text-success">${item.totalInclTax.toFixed(2)} ر.س</td>
+                    <td><i class="fas fa-trash-alt text-danger cursor-pointer" onclick="deleteItemRow(${index})"></i></td>
+                </tr>
+            `;
+        });
+
+        calculateInvoiceTotals();
+    }
+
+    function calculateInvoiceTotals() {
+        let subtotal = 0;
+        let tax = 0;
+        let discount = parseFloat(document.getElementById('saleDiscount').value) || 0;
+
+        salesItemsList.forEach(item => {
+            subtotal += (item.priceExclTax * item.qty);
+            tax += item.taxAmount;
+        });
+
+        let grossTotal = subtotal + tax;
+        let netTotal = grossTotal - discount;
+        if(netTotal < 0) netTotal = 0;
+
+        document.getElementById('lblSubTotal').innerText = subtotal.toFixed(2);
+        document.getElementById('lblTaxTotal').innerText = tax.toFixed(2);
+        document.getElementById('lblDiscountTotal').innerText = discount.toFixed(2);
+        document.getElementById('lblNetTotal').innerText = netTotal.toFixed(2);
+    }
+
+    function commitSalesInvoice() {
+        const custName = document.getElementById('saleCustomerName').value.trim();
+        const custVat = document.getElementById('saleCustomerVat').value.trim();
+        const custAddr = document.getElementById('saleCustomerAddress').value.trim();
+        const discount = parseFloat(document.getElementById('saleDiscount').value) || 0;
+
+        if(salesItemsList.length === 0) {
+            showToast("لا يمكنك اعتماد فاتورة فارغة! يرجى سحب وإضافة أصناف أولاً.", false);
+            return;
+        }
+
+        // 1. توليد كائن الفاتورة المحدثة بنفس البنية الدقيقة التي تطلبها شاشة invoice.html
+        const invoicePayload = {
+            invoice_id: Math.floor(Math.random() * 90000) + 10000,
+            invoice_date: new Date().toISOString(),
+            customer_id: "CUST-" + (Math.floor(Math.random() * 900) + 100),
+            customer_name: custName,
+            customer_vat: custVat || "---",
+            customer_address: custAddr || "---",
+            subtotal: document.getElementById('lblSubTotal').innerText,
+            tax: document.getElementById('lblTaxTotal').innerText,
+            discount: discount.toFixed(2),
+            total_net: document.getElementById('lblNetTotal').innerText,
+            items: salesItemsList
+        };
+
+        // 2. تحديث وخصم كميات السلع من الذاكرة المحلية (المخزن) فوراً حتى ينعكس النقص الفعلي
+        let registeredProducts = JSON.parse(localStorage.getItem('altajer_products')) || [];
+        salesItemsList.forEach(soldItem => {
+            let product = registeredProducts.find(p => p.code === soldItem.code);
+            if(product) {
+                product.quantity = (parseInt(product.quantity) || 0) - parseInt(soldItem.qty);
+                if(product.quantity < 0) product.quantity = 0; // حماية لعدم نزول المخزن تحت الصفر عشوائياً
+            }
+        });
+        localStorage.setItem('altajer_products', JSON.stringify(registeredProducts));
+
+        // 3. حقن الفاتورة في المصب المحدث لاستعراضها وطباعتها
+        localStorage.setItem('last_processed_invoice', JSON.stringify(invoicePayload));
+
+        showToast("تم اعتماد المبيعات وتحديث كميات المخزن.. جاري توجيهك للطباعة");
+        
+        // 4. الانتقال التلقائي الفوري لشاشة الفاتورة لإنشاء الـ QR كود والطباعة من الجوال
+        setTimeout(() => { 
+            window.location.href = `invoice.html?id=${invoicePayload.invoice_id}`; 
+        }, 1800);
+    }
+</script>
+</body>
+</html>

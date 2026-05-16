@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* التاجر الاحترافي المطوّر: دمج الألوان البحرية مع التأثيرات النيون الخفيفة الهادئة لحماية أجهزة الجوال وعين المستخدم */
+        /* التاجر الاحترافي المطوّر: الحفاظ على ألوان الشتاء الأصلية العميقة */
         :root, [data-theme="winter"] {
             --dark-bg: #0d1b2a;
             --card-bg: #1b263b;
@@ -31,49 +31,47 @@
             --neon-glow-btn: 0 0 10px var(--clr);
         }
 
-        /* قالب الربيع (Spring Theme): درجات الأخضر العشبي والرمادي الزيتوني المنعش */
+        /* قالب الربيع الريفي المطور: ألوان زهر هادئة وتأثيرات نيون باستيل ناعمة */
         [data-theme="spring"] {
-            --dark-bg: #1a2f16;
-            --card-bg: #243e1e;
-            --sea-blue: #52b788;
-            --light-green: #74c69d;
-            --neon-cyan: #95d5b2;
-            --neon-pink: #ff70a6;
-            --text-white: #f4f9f4;
+            --dark-bg: #fff0f5;
+            --card-bg: #ffe4e1;
+            --sea-blue: #ffb7b2;
+            --light-green: #b5e2fa;
+            --neon-cyan: #ff70a6;
+            --neon-pink: #ff9aa2;
+            --text-white: #4a2828;
             --danger-red: #ff4d6d;
-            --warning-orange: #ff9f1c;
-            --neon-glow-soft: 0 0 6px rgba(149, 213, 178, 0.35);
+            --warning-orange: #ffb703;
+            --neon-glow-soft: 0 0 6px rgba(255, 112, 166, 0.25);
         }
 
-        /* قالب الصيف (Summer Theme): الفيروزي الساحلي والرمال الناعمة الهادئة */
+        /* قالب الصيف الريفي المطور: لون تفاحي منعش وخلفيات هادئة غير قاتمة */
         [data-theme="summer"] {
-            --dark-bg: #0f2a35;
-            --card-bg: #173f5f;
-            --sea-blue: #20639b;
-            --light-green: #3caea3;
-            --neon-cyan: #2a9d8f;
-            --neon-pink: #f4a261;
-            --text-white: #f8f9fa;
-            --danger-red: #e76f51;
-            --warning-orange: #f4a261;
-            --neon-glow-soft: 0 0 6px rgba(42, 157, 143, 0.35);
-        }
-
-        /* قالب الخريف (Autumn Theme): درجات الألوان الخشبية والبني الرستيك المتناسق */
-        [data-theme="autumn"] {
-            --dark-bg: #2b1810;
-            --card-bg: #3e261d;
-            --sea-blue: #b07d62;
-            --light-green: #9e2a2b;
-            --neon-cyan: #e36414;
+            --dark-bg: #f4f9f4;
+            --card-bg: #e8f5e9;
+            --sea-blue: #4caf50;
+            --light-green: #81c784;
+            --neon-cyan: #2e7d32;
             --neon-pink: #ffb703;
-            --text-white: #fff8f5;
-            --danger-red: #6f1d1b;
+            --text-white: #1b5e20;
+            --danger-red: #e76f51;
             --warning-orange: #ff9f1c;
-            --neon-glow-soft: 0 0 6px rgba(227, 100, 20, 0.35);
+            --neon-glow-soft: 0 0 6px rgba(76, 175, 80, 0.25);
         }
 
-        * {
+        /* قالب الخريف الريفي المطور: خلفية بيج غامق دافئة وألوان خشبية متناسقة وحماية فائقة للعين */
+        [data-theme="autumn"] {
+            --dark-bg: #eed9c4;
+            --card-bg: #dfc4ab;
+            --sea-blue: #b07d62;
+            --light-green: #8c6239;
+            --neon-cyan: #a0522d;
+            --neon-pink: #d2691e;
+            --text-white: #3e2723;
+            --danger-red: #9e2a2b;
+            --warning-orange: #e36414;
+            --neon-glow-soft: 0 0 6px rgba(160, 82, 45, 0.25);
+        }        * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -87,7 +85,7 @@
             transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        /* شريط التنقل العلوي الذكي المتطور */
+        /* شريط التنقل العلوي الذكي المتطور المتجاوب */
         header {
             position: relative;
             width: 100%;
@@ -107,12 +105,19 @@
             padding: 0 20px;
             box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px;
             border-bottom: 2px solid var(--sea-blue);
+            transition: background 0.4s ease;
         }
 
-        /* قالب الخريف يحتاج لهيدر متناسق */
-        [data-theme="autumn"] .navBar { background: #26140e; }
-        [data-theme="spring"] .navBar { background: #142411; }
-        [data-theme="summer"] .navBar { background: #0b1d26; }
+        /* مواءمة خلفيات الهيدر مع الألوان الريفية الهادئة المحدثة */
+        [data-theme="autumn"] .navBar { background: #dfc4ab; border-bottom: 2px solid var(--neon-cyan); }
+        [data-theme="spring"] .navBar { background: #ffe4e1; border-bottom: 2px solid var(--neon-cyan); }
+        [data-theme="summer"] .navBar { background: #e8f5e9; border-bottom: 2px solid var(--neon-cyan); }
+        [data-theme="winter"] .navBar { background: #0c3f65; border-bottom: 2px solid var(--sea-blue); }
+
+        /* تغيير ألوان النصوص داخل الهيدر ديناميكياً لتناسب الخلفيات الفاتحة */
+        [data-theme="autumn"] .navBar, [data-theme="spring"] .navBar, [data-theme="summer"] .navBar {
+            color: var(--text-white) !important;
+        }
 
         .logo {
             font-size: 24px;
@@ -122,6 +127,9 @@
             gap: 10px;
             font-weight: bold;
             text-shadow: var(--neon-glow-soft);
+        }
+        [data-theme="autumn"] .logo, [data-theme="spring"] .logo, [data-theme="summer"] .logo {
+            color: var(--neon-cyan);
         }
 
         .nav-items {
@@ -141,6 +149,10 @@
             color: #a0aec0;
             font-weight: 600;
         }
+        [data-theme="autumn"] .nav-btn, [data-theme="spring"] .nav-btn, [data-theme="summer"] .nav-btn {
+            color: var(--text-white);
+            opacity: 0.7;
+        }
 
         .nav-btn i {
             font-size: 20px;
@@ -151,9 +163,33 @@
             color: var(--neon-cyan);
             border: 1px solid rgba(0, 180, 216, 0.25);
             text-shadow: var(--neon-glow-soft);
+            opacity: 1;
         }
 
-        /* محرك اختيار اللغات واختيار القوالب العالمي الديناميكي */
+        /* زر الفاتورة السريعة المصغر بالهيدر لتوجيه المستخدم مباشرة للسلة */
+        .fast-invoice-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-green);
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .fast-invoice-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--neon-glow-soft);
+            filter: brightness(1.1);
+        }
+
+        /* محرك اختيار اللغات واختيار القوالب العالمي */
         .controls-wrapper {
             display: flex;
             align-items: center;
@@ -163,7 +199,7 @@
         .lang-selector, .theme-selector {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--neon-cyan);
-            color: white;
+            color: var(--text-white);
             padding: 6px 10px;
             border-radius: 6px;
             cursor: pointer;
@@ -172,12 +208,24 @@
             transition: all 0.3s;
             font-size: 13px;
         }
+        [data-theme="winter"] .lang-selector, [data-theme="winter"] .theme-selector {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+        }
+        [data-theme="autumn"] .lang-selector, [data-theme="autumn"] .theme-selector,
+        [data-theme="spring"] .lang-selector, [data-theme="spring"] .theme-selector,
+        [data-theme="summer"] .lang-selector, [data-theme="summer"] .theme-selector {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-white);
+            border: 1px solid var(--neon-cyan);
+        }
+        
         .lang-selector:focus, .theme-selector:focus {
             box-shadow: var(--neon-glow-soft);
         }
         .lang-selector option, .theme-selector option {
-            background: var(--dark-bg);
-            color: white;
+            background: var(--card-bg);
+            color: var(--text-white);
         }
 
         /* حاويات العرض أحادية الصفحة (SPA ViewPorts) */
@@ -197,9 +245,7 @@
 
         .view-section.show {
             display: block !important;
-        }
-
-        /* القائمة الرئيسية المطورّة (الـ 12 قسماً الأصليين بتأثيرات نيون هادئة ثلاثية الأبعاد) */
+        }        /* القائمة الرئيسية المطورّة (الـ 12 قسماً الأصليين بتأثيرات نيون هادئة متوافقة مع القوالب) */
         .main-menu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -219,12 +265,12 @@
             gap: 12px;
             border-radius: 12px;
             cursor: pointer;
-            color: white;
+            color: var(--text-white);
             text-decoration: none;
             text-align: center;
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
         }
 
         .menu-item-link i {
@@ -235,7 +281,7 @@
 
         .menu-item-link:hover {
             transform: translateY(-5px);
-            background-color: rgba(255, 255, 255, 0.02);
+            background-color: rgba(255, 255, 255, 0.05);
             border-color: var(--neon-cyan);
             box-shadow: var(--neon-glow-soft);
             color: var(--neon-cyan);
@@ -256,9 +302,9 @@
             padding: 20px;
             border-radius: 12px;
             cursor: pointer;
-            color: white;
+            color: var(--text-white);
             border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             height: 140px;
             text-align: center;
         }
@@ -266,7 +312,8 @@
         .stat-card h5 {
             font-size: 14px;
             letter-spacing: 1px;
-            color: #a0aec0;
+            color: var(--text-white);
+            opacity: 0.8;
             margin-bottom: 10px;
         }
 
@@ -277,7 +324,7 @@
             text-shadow: var(--neon-glow-soft);
         }
 
-        /* تأثير حقول الإدخال الذكية (Float Labels) */
+        /* تأثير حقول الإدخال الذكية (Float Labels) المتوافقة مع الخلفيات */
         .input-container {
             position: relative;
             margin-bottom: 25px;
@@ -290,8 +337,31 @@
             width: 100%;
             padding: 10px 5px 5px 5px;
             font-size: 16px;
-            color: #fff;
+            color: var(--text-white);
             transition: border-color 0.3s;
+        }
+
+        /* إضافة نمط خاص لزر التوليد التلقائي للباركود بجانب حقل الكود */
+        .barcode-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-auto-gen {
+            background: var(--sea-blue);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .btn-auto-gen:hover {
+            background: var(--neon-cyan);
+            box-shadow: var(--neon-glow-soft);
         }
 
         .input-container input:focus, .input-container select:focus {
@@ -305,7 +375,8 @@
             top: -12px;
             right: 5px;
             font-size: 12px;
-            color: #a0aec0;
+            color: var(--text-white);
+            opacity: 0.7;
             pointer-events: none;
             transition: all 0.3s ease-in-out;
         }
@@ -313,9 +384,7 @@
         html[dir="ltr"] .input-container label {
             left: 5px;
             right: auto;
-        }
-
-        /* الأزرار الاحترافية بنظام النيون الخفيف المتغير */
+        }        /* الأزرار الاحترافية بنظام النيون الخفيف المتغير بحسب القالب */
         .btn-neon {
             position: relative;
             background: #2d3748;
@@ -431,7 +500,7 @@
 
         .table-dark-custom {
             background-color: var(--card-bg) !important;
-            color: white !important;
+            color: var(--text-white) !important;
             margin-bottom: 0;
         }
 
@@ -443,7 +512,7 @@
             z-index: 10;
         }
 
-        /* التجاوب الشامل مع الجوال والتابلت */
+        /* التجاوب الشامل مع الجوال والتابلت لإبقاء واجهة الهاتف منسقة */
         @media all and (max-width: 991px) {
             .nav-btn span { display: none; }
             .navBar { padding: 0 10px; }
@@ -458,6 +527,7 @@
         @media all and (max-width: 480px) {
             .main-menu-grid { grid-template-columns: repeat(2, 1fr); }
             .view-section { padding: 10px; }
+            .fast-invoice-btn span { display: none; } /* إخفاء النص الصغير في الشاشات الضيقة جداً */
         }
     </style>
 </head>
@@ -480,6 +550,10 @@
         </nav>
 
         <div class="controls-wrapper">
+            <button class="fast-invoice-btn" onclick="switchView(3)" title="إنشاء فاتورة سريعة">
+                <i class="fas fa-file-invoice"></i> <span data-i18n="fast-inv-btn">فاتورة جديدة</span>
+            </button>
+
             <select id="themeSelector" class="theme-selector" onchange="changeTheme(this.value)">
                 <option value="winter">❄️ الشتاء</option>
                 <option value="spring">🌱 الربيع</option>
@@ -494,8 +568,7 @@
         </div>
     </div>
 </header>
-
-<div id="dashboard" class="view-section show">
+    <div id="dashboard" class="view-section show">
     <div class="container-fluid">
         <div class="row g-4">
             <div class="col-xl-8 col-lg-7">
@@ -504,13 +577,13 @@
                         <canvas id="clock" style="max-width: 160px; max-height: 160px;"></canvas>
                     </div>
                     <div class="col-md-4 col-sm-6">
-                        <div class="stat-card">
+                        <div class="stat-card" onclick="switchView(3)">
                             <h5 data-i18n="stat-orders">إجمالي طلبات الشهر</h5>
                             <h2 id="orderCount">0</h2>
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-6">
-                        <div class="stat-card">
+                    <div class="col٦-md-4 col-sm-6">
+                        <div class="stat-card" onclick="switchView(1)">
                             <h5 data-i18n="stat-customers">العملاء المسجلين</h5>
                             <h2 id="customerCount">0</h2>
                         </div>
@@ -534,15 +607,14 @@
             </div>
 
             <div class="col-xl-4 col-lg-5 d-flex align-items-center justify-content-center">
-                <div class="w-100 p-3 rounded" style="background: var(--card-bg);">
+                <div class="w-100 p-3 rounded" style="background: var(--card-bg); box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
                     <canvas id="myChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<div id="manageCustomer" class="view-section">
+    <div id="manageCustomer" class="view-section">
     <div class="container-fluid">
         <div class="row g-4">
             <div class="col-lg-5">
@@ -602,7 +674,12 @@
             <div class="col-lg-5">
                 <form id="itemForm" onsubmit="handleItemSubmit(event)" class="p-4 rounded" style="background: var(--card-bg);">
                     <div class="input-container">
-                        <input type="text" id="itemCode" required placeholder=" ">
+                        <div class="barcode-wrapper">
+                            <input type="text" id="itemCode" required placeholder=" ">
+                            <button type="button" class="btn-auto-gen" onclick="generateAutomatedBarcode()">
+                                <i class="fas fa-magic"></i> توليد كود
+                            </button>
+                        </div>
                         <label data-i18n="lbl-item-code">باركود / كود الصنف</label>
                     </div>
                     <div class="input-container">
@@ -644,12 +721,11 @@
         </div>
     </div>
 </div>
-
 <div id="placeOrder" class="view-section">
     <div class="container-fluid">
         <div class="row g-3">
             <div class="col-md-4">
-                <div class="p-3 rounded h-100" style="background: var(--card-bg);">
+                <div class="p-3 rounded h-100" style="background: var(--card-bg); box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                     <h6 class="mb-3 border-bottom pb-2 text-info" data-i18n="pos-cust-sec">بيانات العميل المستهدف</h6>
                     <div class="mb-3">
                         <select id="cbCustomer" class="form-select bg-transparent text-white" onchange="onPosCustomerChange()">
@@ -668,7 +744,7 @@
             </div>
 
             <div class="col-md-4">
-                <div class="p-3 rounded h-100" style="background: var(--card-bg);">
+                <div class="p-3 rounded h-100" style="background: var(--card-bg); box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                     <h6 class="mb-3 border-bottom pb-2 text-info" data-i18n="pos-item-sec">الأصناف المتوفرة</h6>
                     <div class="mb-3">
                         <select id="cbItem" class="form-select bg-transparent text-white" onchange="onPosItemChange()">
@@ -707,7 +783,7 @@
             </div>
 
             <div class="col-md-4">
-                <div class="p-3 rounded h-100 d-flex flex-column justify-content-between" style="background: var(--card-bg); border-right: 3px solid var(--neon-cyan);">
+                <div class="p-3 rounded h-100 d-flex flex-column justify-content-between" style="background: var(--card-bg); border-right: 3px solid var(--neon-cyan); box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                     <div>
                         <h6 class="mb-3 border-bottom pb-2 text-success" data-i18n="pos-summary">ملخص الفاتورة الضريبية (ر.س)</h6>
                         <div class="d-flex justify-content-between my-2">
@@ -720,7 +796,7 @@
                         </div>
                         <div class="d-flex justify-content-between my-2">
                             <span data-i18n="pos-discount">الخصم الممنوح:</span>
-                            <input type="number" id="poDiscount" value="0" min="0" step="0.01" style="width: 80px; text-align: center; background: transparent; border: 1px solid var(--neon-cyan); color: white; border-radius: 4px;" oninput="recalculateCartTotals()">
+                            <input type="number" id="poDiscount" value="0" min="0" step="0.01" style="width: 80px; text-align: center; background: transparent; border: 1px solid var(--neon-cyan); color: var(--text-white); border-radius: 4px;" oninput="recalculateCartTotals()">
                         </div>
                     </div>
                     <div class="pt-3 border-top">
@@ -759,11 +835,11 @@
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-<script>
+ <script>
     /* -------------------------------------------------------------
        قاعدة البيانات الافتراضية والمحلية لضمان التشغيل المستمر للجوال
        ------------------------------------------------------------- */
@@ -771,7 +847,7 @@
     let globalItems = JSON.parse(localStorage.getItem('altajer_items')) || [];
     let currentCart = [];
 
-    // نقاط اتصال الـ API الخلفية (PHP) على سيرفر الاستضافة
+    // نقاط اتصال الـ API الخلفية (PHP) على سيرفر الاستضافة الخاص بك
     const API_ENDPOINTS = {
         saveCustomer: 'api/add_customer.php',
         getCustomers: 'api/get_customers.php',
@@ -781,7 +857,20 @@
     };
 
     /* -------------------------------------------------------------
-       محرك إدارة الفصول الأربعة الذكي (حفظ واسترجاع القوالب)
+       دالة توليد باركود تلقائي للأصناف والمستودع عشوائياً (كود الأرقام)
+       ------------------------------------------------------------- */
+    function generateAutomatedBarcode() {
+        // توليد رقم تسلسلي فريد يبدأ بـ 628 (ترميز مخصص للمنتجات) متبوعاً بأرقام عشوائية
+        const randomDigits = Math.floor(100000 + Math.random() * 900000);
+        const generatedCode = "628" + randomDigits;
+        
+        // تعيين الكود داخل حقل الإدخال فوراً
+        document.getElementById('itemCode').value = generatedCode;
+        showToast("تم توليد باركود رقمي تلقائي بنجاح: " + generatedCode, true);
+    }
+
+    /* -------------------------------------------------------------
+       محرك إدارة الفصول الأربعة الذكي (حفظ واسترجاع القوالب الريفية الدافئة)
        ------------------------------------------------------------- */
     function changeTheme(themeName) {
         document.documentElement.setAttribute('data-theme', themeName);
@@ -789,7 +878,7 @@
         document.getElementById('themeSelector').value = themeName;
     }
 
-    // تطبيق القالب المحفوظ فور تحميل الصفحة لحماية عين المستخدم
+    // تطبيق القالب المحفوظ فور تحميل الصفحة لحماية عين المستخدم على الجوال
     const savedTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
     changeTheme(savedTheme);
 
@@ -799,9 +888,9 @@
     const translations = {
         ar: {
             "app-title": "تاجر برو المحاسبي", "nav-dashboard": "الرئيسية", "nav-customers": "العملاء", "nav-items": "المخزن", "nav-pos": "الكاشير",
-            "stat-orders": "إجمالي طلبات الشهر", "stat-customers": "العملاء المسجلين", "m-invoice": "فاتورة مبيعات", "m-products": "المستودع (الأصناف)",
-            "m-purchases": "المشتريات", "m-returns": "المرتجعات", "m-profits": "الأرباح", "m-vat": "الإقرار الضريبي", "m-inventory": "الجرد الدوري",
-            "m-expenses": "المصاريف", "m-vouchers": "السندات", "m-settings": "الإعدادات", "m-employees": "الموظفين", "m-support": "الدعم الفني",
+            "fast-inv-btn": "فاتورة جديدة", "stat-orders": "إجمالي طلبات الشهر", "stat-customers": "العملاء المسجلين", "m-invoice": "فاتورة مبيعات", 
+            "m-products": "المستودع (الأصناف)", "m-purchases": "المشتريات", "m-returns": "المرتجعات", "m-profits": "الأرباح", "m-vat": "الإقرار الضريبي", 
+            "m-inventory": "الجرد الدوري", "m-expenses": "المصاريف", "m-vouchers": "السندات", "m-settings": "الإعدادات", "m-employees": "الموظفين", "m-support": "الدعم الفني",
             "lbl-cust-id": "معرّف العميل (ID)", "lbl-cust-name": "اسم العميل", "lbl-cust-vat": "الرقم الضريبي (VAT)", "lbl-cust-address": "العنوان الجغرافي",
             "lbl-cust-phone": "رقم الجوال", "btn-add": "إضافة وحفظ لحسابك", "btn-refresh": "تحديث السحب",
             "th-id": "المعرّف", "th-name": "الاسم", "th-vat": "الرقم الضريبي", "th-phone": "الجوال", "th-address": "العنوان",
@@ -814,9 +903,9 @@
         },
         en: {
             "app-title": "Altajer Pro Accounting", "nav-dashboard": "Dashboard", "nav-customers": "Customers", "nav-items": "Inventory", "nav-pos": "POS",
-            "stat-orders": "Monthly Orders", "stat-customers": "Registered Customers", "m-invoice": "Sales Invoice", "m-products": "Warehouse (Items)",
-            "m-purchases": "Purchases", "m-returns": "Returns", "m-profits": "Profits", "m-vat": "VAT Filing", "m-inventory": "Inventory Count",
-            "m-expenses": "Expenses", "m-vouchers": "Vouchers", "m-settings": "Settings", "m-employees": "Employees", "m-support": "Technical Support",
+            "fast-inv-btn": "New Invoice", "stat-orders": "Monthly Orders", "stat-customers": "Registered Customers", "m-invoice": "Sales Invoice", 
+            "m-products": "Warehouse (Items)", "m-purchases": "Purchases", "m-returns": "Returns", "m-profits": "Profits", "m-vat": "VAT Filing", 
+            "m-inventory": "Inventory Count", "m-expenses": "Expenses", "m-vouchers": "Vouchers", "m-settings": "Settings", "m-employees": "Employees", "m-support": "Technical Support",
             "lbl-cust-id": "Customer ID", "lbl-cust-name": "Customer Name", "lbl-cust-vat": "VAT Number", "lbl-cust-address": "Address",
             "lbl-cust-phone": "Mobile Number", "btn-add": "Add & Save", "btn-refresh": "Refresh Load",
             "th-id": "ID", "th-name": "Name", "th-vat": "VAT No", "th-phone": "Phone", "th-address": "Address",
@@ -843,7 +932,7 @@
     }
 
     /* -------------------------------------------------------------
-       محرك الـ SPA الفوري للتبديل بين شاشات العرض بدون إبطاء الجهاز
+       محرك الـ SPA الفوري للتبديل بين شاشات العرض وحماية الأجهزة
        ------------------------------------------------------------- */
     function switchView(index) {
         $('.nav-btn').removeClass('active-nav');
@@ -868,7 +957,7 @@
     }
 
     /* -------------------------------------------------------------
-       عمليات إدارة العملاء وإرسال/سحب البيانات عبر الـ API وقاعدة البيانات
+       عمليات إدارة العملاء وإرسال/سحب البيانات عبر الـ API
        ------------------------------------------------------------- */
     function handleCustomerSubmit(e) {
         e.preventDefault();
@@ -1171,7 +1260,7 @@
                 borderWidth: 0
             }]
         },
-        options: { responsive: true, plugins: { legend: { labels: { color: 'white', font: { size: 13 } } } } }
+        options: { responsive: true, plugins: { legend: { labels: { color: 'var(--text-white)', font: { size: 13 } } } } }
     });
 
     /* -------------------------------------------------------------
@@ -1187,18 +1276,18 @@
     setInterval(() => {
         ctxClock.clearRect(-radius, -radius, canvas.width, canvas.height);
         ctxClock.beginPath(); ctxClock.arc(0, 0, radius, 0, 2 * Math.PI);
-        ctxClock.fillStyle = '#1b263b'; ctxClock.fill();
-        ctxClock.strokeStyle = '#00b4d8'; ctxClock.lineWidth = radius * 0.05; ctxClock.stroke();
+        ctxClock.fillStyle = 'var(--card-bg)'; ctxClock.fill();
+        ctxClock.strokeStyle = 'var(--neon-cyan)'; ctxClock.lineWidth = radius * 0.05; ctxClock.stroke();
         ctxClock.beginPath(); ctxClock.arc(0, 0, radius * 0.08, 0, 2 * Math.PI);
-        ctxClock.fillStyle = '#ffffff'; ctxClock.fill();
+        ctxClock.fillStyle = 'var(--text-white)'; ctxClock.fill();
         
         const now = new Date(); let hour = now.getHours() % 12; let min = now.getMinutes(); let sec = now.getSeconds();
         hour = (hour * Math.PI / 6) + (min * Math.PI / (6 * 60)) + (sec * Math.PI / (360 * 60));
         min = (min * Math.PI / 30) + (sec * Math.PI / (30 * 60)); sec = (sec * Math.PI / 30);
         
-        drawHand(ctxClock, hour, radius * 0.5, radius * 0.07, '#ffffff');
-        drawHand(ctxClock, min, radius * 0.75, radius * 0.05, '#00b4d8');
-        drawHand(ctxClock, sec, radius * 0.85, radius * 0.02, '#e81cff');
+        drawHand(ctxClock, hour, radius * 0.5, radius * 0.07, 'var(--text-white)');
+        drawHand(ctxClock, min, radius * 0.75, radius * 0.05, 'var(--neon-cyan)');
+        drawHand(ctxClock, sec, radius * 0.85, radius * 0.02, 'var(--neon-pink)');
     }, 1000);
 
     function drawHand(ctx, pos, length, width, color) {
@@ -1212,3 +1301,4 @@
 </script>
 </body>
 </html>
+       

@@ -29,7 +29,6 @@
             --glow-soft: 0 0 6px rgba(0, 180, 216, 0.35);
         }
 
-        /* قالب الربيع (Spring Theme): مظهر هادئ مريح للعين */
         [data-theme="spring"] {
             --dark-bg: #1a2f16;
             --card-bg: #243e1e;
@@ -43,7 +42,6 @@
             --glow-soft: 0 0 6px rgba(149, 213, 178, 0.35);
         }
 
-        /* قالب الصيف (Summer Theme): ألوان ساحلية فيروزية مريحة */
         [data-theme="summer"] {
             --dark-bg: #0f2a35;
             --card-bg: #173f5f;
@@ -57,7 +55,6 @@
             --glow-soft: 0 0 6px rgba(42, 157, 143, 0.35);
         }
 
-        /* قالب الخريف (Autumn Theme): درجات خشبية دافئة وعميقة */
         [data-theme="autumn"] {
             --dark-bg: #2b1810;
             --card-bg: #3e261d;
@@ -300,7 +297,7 @@
             <span data-i18n="pur-main-title">تسجيل فاتورة مشتريات وتحديث المخزن</span>
         </div>
         <div>
-            <select class="lang-selector bg-dark text-white border-info rounded p-1" onchange="changeLanguage(this.value)" id="langSelect">
+            <select class="lang-selector bg-dark text-white border-info rounded p-1" onchange="applySystemLanguage(this.value)" id="langSelect">
                 <option value="ar">العربية (AR)</option>
                 <option value="en">English (EN)</option>
             </select>
@@ -344,40 +341,39 @@
         <div class="row align-items-end g-2">
             <div class="col-md-2 col-sm-6">
                 <div class="input-container">
-                    <input id="itemCode" type="text" required placeholder=" " autofocus>
+                    <input id="itemCode" type="text" required data-i18n-holder="placeholder-barcode" placeholder=" " autofocus>
                     <label data-i18n="lbl-i-code">كود الصنف / باركود</label>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
                 <div class="input-container">
-                    <input id="itemName" type="text" required placeholder=" ">
+                    <input id="itemName" type="text" required data-i18n-holder="placeholder-pname" placeholder=" ">
                     <label data-i18n="lbl-i-name">اسم المنتج / البيان</label>
                 </div>
             </div>
             <div class="col-md-2 col-sm-6">
                 <div class="input-container">
                     <select id="itemUnit" required>
-                        <option value="حبة">حبة</option>
-                        <option value="قطعة">قطعة</option>
-                        <option value="علبة">علبة</option>
-                        <option value="كرتون">كرتون</option>
-                        <option value="شد">شد</option>
-                        <option value="مطربان">مطربان</option>
-                        <option value="كيس">كيس</option>
-                        <option value="ربطة">ربطة</option>
-                        <option value="بالة">بالة</option>
-                        <option value="طبلية">طبلية</option>
-                        <option value="حاوية">حاوية</option>
-                        <option value="كيلو">كيلو</option>
-                        <option value="غرام">غرام</option>
-                        <option value="طن">طن</option>
+                        <option value="حبة" data-i18n-unit="حبة">حبة</option>
+                        <option value="قطعة" data-i18n-unit="قطعة">قطعة</option>
+                        <option value="علبة" data-i18n-unit="علبة">علبة</option>
+                        <option value="كرتون" data-i18n-unit="كرتون">كرتون</option>
+                        <option value="شد" data-i18n-unit="شد">شد</option>
+                        <option value="مطربان" data-i18n-unit="مطربان">مطربان</option>
+                        <option value="كيس" data-i18n-unit="كيس">كيس</option>
+                        <option value="ربطة" data-i18n-unit="ربطة">ربطة</option>
+                        <option value="بالة" data-i18n-unit="بالة">بالة</option>
+                        <option value="طبلية" data-i18n-unit="طبلية">طبلية</option>
+                        <option value="كيلو" data-i18n-unit="كيلو">كيلو</option>
+                        <option value="غرام" data-i18n-unit="غرام">غرام</option>
+                        <option value="طن" data-i18n-unit="طن">طن</option>
                     </select>
                     <label data-i18n="lbl-i-unit">النوع / الوحدة</label>
                 </div>
             </div>
             <div class="col-md-2 col-6">
                 <div class="input-container">
-                    <input id="itemPriceInput" type="number" step="0.01" required placeholder=" ">
+                    <input id="itemPriceInput" type="number" step="0.01" required data-i18n-holder="placeholder-price" placeholder=" ">
                     <label id="lblItemPrice" data-i18n="lbl-i-price">سعر الشراء</label>
                 </div>
             </div>
@@ -392,7 +388,7 @@
                 <div class="tax-toggle-wrapper">
                     <div class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2">
                         <input class="form-check-input m-0" type="checkbox" id="itemTaxMethodToggle">
-                        <label class="form-check-label small text-white-50 cursor-pointer" for="itemTaxMethodToggle" id="lblTaxToggleText">غير شامل</label>
+                        <label class="form-check-label small text-white-50 cursor-pointer" for="itemTaxMethodToggle" id="lblTaxToggleText" data-i18n="tax-method-excl">غير شامل الضريبة</label>
                     </div>
                 </div>
             </div>
@@ -404,7 +400,6 @@
             </div>
         </div>
     </form>
-
     <div class="table-responsive-custom">
         <table class="table table-dark table-striped table-custom text-center">
             <thead>
@@ -452,41 +447,14 @@
         </div>
     </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script src="i18n.js"></script>
 
 <script>
     const API_ENDPOINT = 'api/save_purchase_invoice.php';
     let invoiceItemsList = [];
-
-    // كتل الترجمة المتكاملة مع إضافة مفاتيح "الوحدة" لضمان عدم فقدان اللغات
-    const translations = {
-        ar: {
-            "pur-main-title": "تسجيل فاتورة مشتريات وتحديث المخزن", "sub-invoice-meta": "البيانات التعريفية للمورد والفاتورة",
-            "opt-select-sup": "اختر المورد المستهدف...", "lbl-pur-sup": "المورد / الشركة البائعة",
-            "lbl-pur-no": "رقم فاتورة المورد الأصلية", "lbl-pur-date": "تاريخ الشراء",
-            "sub-product-entry": "تغذية السلع والأصناف المخزنية", "lbl-i-code": "كود الصنف / باركود",
-            "lbl-i-name": "اسم المنتج / البيان", "lbl-i-price": "سعر الشراء", "lbl-i-qty": "الكمية المشتراة",
-            "lbl-i-unit": "النوع / الوحدة", "btn-add-row": "إضافة الصنف للجدول", "th-p-code": "كود الصنف", 
-            "th-p-desc": "اسم المنتج / البيان", "th-p-unit": "النوع", "th-p-price": "سعر الوحدة (قبل الضريبة)", 
-            "th-p-qty": "الكمية", "th-p-tax-rate": "نسبة الضريبة", "th-p-tax": "قيمة الضريبة",
-            "th-p-total": "المجموع شامل الضريبة", "th-p-action": "حذف", "sum-p-sub": "الإجمالي الخاضع للضريبة:",
-            "sum-p-tax": "مجموع ضريبة المدخلات (15%):", "sum-p-net": "الصافي النهائي المعتمد للفاتورة:",
-            "btn-commit-stock": "اعتماد الشراء وتحديث المخزن", "btn-clear-all": "تفريغ وإلغاء الفاتورة"
-        },
-        en: {
-            "pur-main-title": "Purchase Invoice Entry & Inventory Inflow", "sub-invoice-meta": "Supplier & Invoice Meta Identifiers",
-            "opt-select-sup": "Select target supplier...", "lbl-pur-sup": "Supplier / Selling Company",
-            "lbl-pur-no": "Original Supplier Invoice No", "lbl-pur-date": "Purchase Date",
-            "sub-product-entry": "Inventory Inflow & Sku Feeding", "lbl-i-code": "Item Code / Barcode",
-            "lbl-i-name": "Product Name / Sku Desc", "lbl-i-price": "Purchase Price", "lbl-i-qty": "Inflow Quantity",
-            "lbl-i-unit": "Type / Unit", "btn-add-row": "Add Item to Table", "th-p-code": "Item Code", 
-            "th-p-desc": "Product Description", "th-p-unit": "Type", "th-p-price": "Unit Price (Excl. VAT)", 
-            "th-p-qty": "Qty", "th-p-tax-rate": "VAT Rate", "th-p-tax": "VAT Amount",
-            "th-p-total": "Total (Incl. VAT)", "th-p-action": "Del", "sum-p-sub": "Taxable Subtotal:",
-            "sum-p-tax": "Input VAT Total (15%):", "sum-p-net": "Final Net Invoice Amount:",
-            "btn-commit-stock": "Commit Purchase & Sync Stock", "btn-clear-all": "Clear & Reset Invoice"
-        }
-    };
 
     // محرك الفصول الأربعة التلقائي المتزامن مع لوحة التحكم الفورية
     function applySavedTheme() {
@@ -505,14 +473,15 @@
         // 2. تفعيل محرك البحث التلقائي الفوري والمطوّر لقراءة ومسح الباركود أوتوماتيكياً دون تدخل يدوي
         setupAutomaticBarcodeReader();
 
-        // 3. مراقبة حركة زر التبديل (شامل / غير شامل للضريبة) وتعديل النصوص التوضيحية لعين التاجر
+        // 3. مراقبة حركة زر التبديل (شامل / غير شامل للضريبة) وتعديل النصوص التوضيحية لعين التاجر بمفاتيح i18n
         document.getElementById('itemTaxMethodToggle').addEventListener('change', function() {
             const toggleText = document.getElementById('lblTaxToggleText');
+            const currentLang = localStorage.getItem('altajer_lang') || 'ar';
             if(this.checked) {
-                toggleText.innerText = "شامل الضريبة";
+                toggleText.textContent = globalTranslations[currentLang]["tax-method-incl"];
                 toggleText.style.color = "var(--light-green)";
             } else {
-                toggleText.innerText = "غير شامل";
+                toggleText.textContent = globalTranslations[currentLang]["tax-method-excl"];
                 toggleText.style.color = "var(--text-white)";
             }
         });
@@ -521,9 +490,10 @@
         loadSavedSuppliersList();
 
         renderInvoiceItems();
+        
+        // مزامنة اختيار لغة المنسدلة مع المحرك المركزي تلقائياً عند تحميل الصفحة
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         document.getElementById('langSelect').value = currentLang;
-        changeLanguage(currentLang);
     });
 
     // دالة محرك الباركود التلقائي: تبحث في المخزن الحالي بمجرد الكتابة أو القراءة من الماسح الذكي للسرعة
@@ -540,8 +510,11 @@
                     document.getElementById('itemPriceInput').value = matchedProduct.purchase_price || matchedProduct.price || '';
                     if (matchedProduct.unit) {
                         document.getElementById('itemUnit').value = matchedProduct.unit;
+                        // تحديث واجهة القائمة المنسدلة للوحدات بناءً على اللغة المفعلة
+                        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+                        applySystemLanguage(currentLang);
                     }
-                    showToast("تم قراءة وتعبئة بيانات الصنف تلقائياً بنجاح");
+                    showToast(currentLang === 'ar' ? "تم قراءة وتعبئة بيانات الصنف تلقائياً بنجاح" : "Item data decoded and populated successfully");
                     document.getElementById('itemQty').focus(); // نقل المؤشر فوراً لحقل الكمية لراحة يد التاجر
                 }
             }
@@ -557,19 +530,6 @@
                 const opt = document.createElement('option');
                 opt.value = sup;
                 datalist.appendChild(opt);
-            }
-        });
-    }
-
-    function changeLanguage(lang) {
-        localStorage.setItem('altajer_lang', lang);
-        document.documentElement.lang = lang;
-        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-        
-        $('[data-i18n]').each(function() {
-            const key = $(this).data('i18n');
-            if (translations[lang] && translations[lang][key]) {
-                $(this).text(translations[lang][key]);
             }
         });
     }
@@ -620,50 +580,63 @@
         // إعادة تهيئة النموذج وإرجاع التركيز (Autofocus) لحقل الباركود للاستعداد للصنف التالي فوراً
         document.getElementById('purchaseItemForm').reset();
         document.getElementById('itemTaxMethodToggle').checked = false;
-        document.getElementById('lblTaxToggleText').innerText = "غير شامل";
-        document.getElementById('lblTaxToggleText').style.color = "var(--text-white)";
+        
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        const toggleText = document.getElementById('lblTaxToggleText');
+        toggleText.textContent = globalTranslations[currentLang]["tax-method-excl"];
+        toggleText.style.color = "var(--text-white)";
         document.getElementById('itemUnit').value = "حبة"; // إعادة التعيين الافتراضي للوحدة
         
         renderInvoiceItems();
-        showToast("تم إدراج الصنف ومطابقة احتساب الضريبة بالجدول");
+        showToast(currentLang === 'ar' ? "تم إدراج الصنف ومطابقة احتساب الضريبة بالجدول" : "Item injected and VAT configurations matched");
         document.getElementById('itemCode').focus();
     }
 
     // تفعيل زر حذف السطر الفردي لمعالجة الأخطاء السريعة
     function deleteItemRow(index) {
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         invoiceItemsList.splice(index, 1);
         renderInvoiceItems();
-        showToast("تم حذف الصنف وإعادة احتساب الإجماليات فوراً", false);
+        showToast(currentLang === 'ar' ? "تم حذف الصنف وإعادة احتساب الإجماليات فوراً" : "Row discarded and recalculations compiled", false);
     }
 
     // تفعيل دالة إلغاء وتفريغ الفاتورة بأكملها وإعادة تصفير الجداول
     function clearCurrentInvoice() {
-        if(confirm("هل أنت متأكد من رغبتك في تفريغ وإلغاء الفاتورة الحالية بالكامل؟")) {
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        const confirmMsg = currentLang === 'ar' ? "هل أنت متأكد من رغبتك في تفريغ وإلغاء الفاتورة الحالية بالكامل؟" : "Are you sure you want to clear and reset the active invoice?";
+        
+        if(confirm(confirmMsg)) {
             invoiceItemsList = [];
             document.getElementById('purchaseItemForm').reset();
             document.getElementById('purInvoiceNo').value = '';
             document.getElementById('purSupplierSelect').value = '';
             renderInvoiceItems();
-            showToast("تم تصفير وإلغاء الفاتورة بالكامل", false);
+            showToast(currentLang === 'ar' ? "تم تصفير وإلغاء الفاتورة بالكامل" : "Current invoice completely flushed", false);
         }
     }
 
     function renderInvoiceItems() {
         const tbody = document.getElementById('purchaseItemsTableBody');
         tbody.innerHTML = '';
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
 
         if(invoiceItemsList.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9" class="text-muted p-3">لا توجد أصناف مدرجة بالفاتورة حالياً</td></tr>`;
+            const noItemsText = globalTranslations[currentLang]["no-items"] || "لا توجد أصناف مدرجة بالفاتورة حالياً";
+            tbody.innerHTML = `<tr><td colspan="9" class="text-muted p-3">${noItemsText}</td></tr>`;
             calculateInvoiceTotals();
             return;
         }
 
         invoiceItemsList.forEach((item, index) => {
+            // جلب ترجمة اسم الوحدة الحالية ديناميكياً من القاموس الموحد للمحرك المركزي
+            const unitKey = 'unit-' + item.unit;
+            const translatedUnit = (globalTranslations[currentLang] && globalTranslations[currentLang][unitKey]) ? globalTranslations[currentLang][unitKey] : item.unit;
+
             tbody.innerHTML += `
                 <tr>
                     <td>${item.code}</td>
                     <td class="fw-bold text-info">${item.name}</td>
-                    <td class="text-warning small">${item.unit || 'حبة'}</td>
+                    <td class="text-warning small">${translatedUnit}</td>
                     <td>${item.priceExclTax.toFixed(2)} ر.س</td>
                     <td>${item.qty}</td>
                     <td>15%</td>
@@ -696,9 +669,11 @@
     function commitPurchaseInvoice() {
         const sup = document.getElementById('purSupplierSelect').value.trim();
         const invNo = document.getElementById('purInvoiceNo').value.trim();
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
 
         if(!sup || !invNo || invoiceItemsList.length === 0) {
-            showToast("يرجى إدخال اسم المورد، رقم الفاتورة، وإضافة صنف واحد على الأقل!", false);
+            const errorMsg = currentLang === 'ar' ? "يرجى إدخال اسم المورد، رقم الفاتورة، وإضافة صنف واحد على الأقل!" : "Please provide supplier name, invoice number, and add at least one row!";
+            showToast(errorMsg, false);
             return;
         }
 
@@ -727,9 +702,9 @@
         .then(res => res.json())
         .then(data => {
             if(data.success) {
-                // مزامنة تحديث المخزن المحلي فوراً بعد النجاح السحابي للتأكيد
                 updateLocalStockQuantities(finalPayload);
-                showToast("تم اعتماد فاتورة المشتريات وزيادة كميات المخزن بنجاح");
+                const successMsg = currentLang === 'ar' ? "تم اعتماد فاتورة المشتريات وزيادة كميات المخزن بنجاح" : "Purchase invoice posted & inventory synchronized successfully";
+                showToast(successMsg);
                 setTimeout(() => { window.location.href='index.html'; }, 2000);
             } else {
                 saveBackupLocally(finalPayload);
@@ -747,8 +722,10 @@
         localStorage.setItem('altajer_local_purchases', JSON.stringify(localPurchases));
         
         updateLocalStockQuantities(payload);
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
 
-        showToast("تم تأمين الفاتورة وتحديث كميات المخزن محلياً بنجاح (وضع العمل بدون اتصال)", true);
+        const fallbackMsg = currentLang === 'ar' ? "تم تأمين الفاتورة وتحديث كميات المخزن محلياً بنجاح (وضع العمل بدون اتصال)" : "Invoice backed up & inventory updated locally (Offline Mode)";
+        showToast(fallbackMsg, true);
         setTimeout(() => { window.location.href='index.html'; }, 2200);
     }
 
@@ -761,7 +738,6 @@
                 product.quantity = (parseInt(product.quantity) || 0) + parseInt(purchasedItem.qty);
                 product.unit = purchasedItem.unit; // حفظ وتحديث الوحدة الحالية للمنتج محاسبياً
             } else {
-                // إذا كان الصنف مغذى لأول مرة يتم إنشاؤه تراكمياً في المخزن
                 registeredProducts.push({
                     code: purchasedItem.code,
                     barcode: purchasedItem.code,

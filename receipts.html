@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة السندات المالية سحابياً - التاجر برو</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* إعدادات المتغيرات والألوان المتوافقة مع وضع الشتاء والسمات المطورة للتاجر برو */
+        :root {
+            --neon-cyan: #00b4d8;
+            --sea-blue: #0077b6;
+            --neon-pink: #ff007f;
+            --light-green: #2ec4b6;
+            --warning-orange: #ff9f1c;
+            --danger-red: #e63946;
+            --bg-dark-core: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --glow-soft: 0 0 10px rgba(0, 180, 216, 0.3);
+        }
+
+        body {
+            background-color: var(--bg-dark-core);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .receipt-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 0 auto max(40px);
+            max-width: max(1100px);
+            position: relative;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .receipt-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--warning-orange));
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        .receipt-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dashed rgba(0, 180, 216, 0.2);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .receipt-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: var(--glow-soft);
+        }
+
+        .btn-neon {
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border-radius: max(8px);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-neon:hover {
+            background: var(--clr);
+            box-shadow: 0 0 15px var(--clr);
+            color: #fff;
+            transform: translateY(-2px);
+            border-color: transparent;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--neon-cyan);
+            margin-top: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
+            padding-bottom: max(6px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-container input, .input-container select, .input-container textarea {
+            border: 0;
+            border-bottom: 2px solid #475569;
+            background: transparent;
+            width: 100%;
+            padding: 8px max(5px) 4px 5px;
+            font-size: 15px;
+            color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        .input-container select option {
+            background-color: #1e293b;
+            color: #fff;
+        }
+
+        .input-container input:focus, .input-container select:focus, .input-container textarea:focus {
+            outline: none;
+            border-bottom: 2px solid var(--neon-cyan);
+        }
+
+        .input-container label {
+            position: absolute;
+            top: max(8px);
+            right: max(5px);
+            font-size: 14px;
+            color: #94a3b8;
+            pointer-events: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .input-container input:focus ~ label,
+        .input-container input:not(:placeholder-shown) ~ label,
+        .input-container select:focus ~ label,
+        .input-container select:valid ~ label,
+        .input-container textarea:focus ~ label,
+        .input-container textarea:not(:placeholder-shown) ~ label {
+            top: -14px;
+            font-size: 12px;
+            color: var(--neon-cyan);
+        }
+        .type-badge {
+            padding: max(4px) max(10px);
+            border-radius: max(6px);
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-capture { background: rgba(46, 196, 182, 0.2); color: #2ec4b6; border: 1px solid #2ec4b6; }
+        .badge-payment { background: rgba(230, 57, 70, 0.2); color: #e63946; border: 1px solid #e63946; }
+
+        .table-responsive-custom {
+            border-radius: max(12px);
+            overflow: hidden;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: max(0) max(4px) max(20px) rgba(0,0,0,0.4);
+        }
+
+        .table-custom {
+            background-color: transparent !important;
+            color: #f1f5f9 !important;
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        .table-custom th {
+            background-color: rgba(15, 23, 42, 0.6) !important;
+            color: var(--neon-cyan) !important;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(0, 180, 216, 0.3) !important;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            border-color: rgba(255, 255, 255, 0.04) !important;
+            background-color: rgba(30, 41, 59, 0.2) !important;
+        }
+
+        .action-icon {
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform max(0.2s);
+            margin: 0 max(5px);
+        }
+        .action-icon:hover { transform: scale(1.2); }
+        .icon-delete { color: var(--danger-red); }
+
+        .api-toast {
+            position: fixed;
+            top: max(30px);
+            left: max(20px);
+            z-index: max(2000);
+            padding: max(12px) max(25px);
+            border-radius: max(8px);
+            color: white;
+            font-weight: max(600);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="apiToast" class="api-toast"></div>
+
+<div class="receipt-container">
+    <div class="receipt-header">
+        <div class="receipt-title">
+            <i class='bx bx-credit-card-front bx-flashing'></i>
+            <span>منظومة السندات المالية السحابية (التدفقات والخزينة)</span>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="index.html" class="btn-neon" style="--clr:var(--sea-blue)">
+                <i class="fas fa-home"></i> <span>الرئيسية</span>
+            </a>
+        </div>
+    </div>
+
+    <form id="receiptForm">
+        <div class="section-subtitle">
+            <i class="fas fa-file-invoice-dollar"></i> <span>تفاصيل السند والجهة المستفيدة</span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="input-container">
+                    <input id="recId" type="text" required placeholder=" " autofocus>
+                    <label>رقم السند المرجعي</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-container">
+                    <select id="recType" required>
+                        <option value="" disabled selected hidden></option>
+                        <option value="قبض">سند قبض (دخل للخزينة)</option>
+                        <option value="صرف">سند صرف (خارج من الخزينة)</option>
+                    </select>
+                    <label>نوع السند المالي</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-container">
+                    <input id="recDate" type="date" required placeholder=" ">
+                    <label>تاريخ المعاملة</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-container">
+                    <select id="recMethod" required>
+                        <option value="" disabled selected hidden></option>
+                        <option value="نقدي">نقدي (كاش)</option>
+                        <option value="مدى / شبكة">مدى / شبكة</option>
+                        <option value="تحويل بنكي">تحويل بنكي سحابي</option>
+                    </select>
+                    <label>طريقة السداد / الدفع</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="input-container">
+                    <input id="recTargetName" type="text" required placeholder=" ">
+                    <label>يصرف لـ / قُبض من (اسم العميل أو المورد)</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-container">
+                    <input id="recAmount" type="number" step="0.01" required placeholder=" ">
+                    <label>المبلغ الإجمالي (ريال سعودي)</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-container">
+                    <input id="recDescription" type="text" required placeholder=" ">
+                    <label>البيان / سبب صرف أو قبض المبلغ بالتفصيل</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex mt-2">
+            <button type="submit" id="btnSubmitReceipt" class="btn-neon" style="--clr:var(--light-green)">
+                <i class="fas fa-check-double"></i> <span>اعتماد السند وترحيله سحابياً</span>
+            </button>
+        </div>
+    </form>
+
+    <div class="table-responsive-custom">
+        <table class="table table-custom text-center">
+            <thead>
+                <tr>
+                    <th>رقم السند</th>
+                    <th>النوع</th>
+                    <th>التاريخ</th>
+                    <th>الجهة / المعني</th>
+                    <th>طريقة الدفع</th>
+                    <th>المبلغ المالي</th>
+                    <th>البيان والغرض</th>
+                    <th>التحكم</th>
+                </tr>
+            </thead>
+            <tbody id="receiptsTableBody">
+                <tr>
+                    <td colspan="8" class="text-muted p-3">جاري جلب البيانات السحابية الحية ومزامنة الخزينة...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // إعدادات مشروع الـ Firebase الحقيقية والمطابقة تماماً لـ Altajer Pro
+    const firebaseConfig = {
+        apiKey: "AIzaSyAdH8KorayFEiM3_N_I6v-m3A09uXqY4Q8", 
+        authDomain: "altajer-pro-accountant.firebaseapp.com",
+        databaseURL: "https://altajer-pro-accountant-default-rtdb.firebaseio.com",
+        projectId: "altajer-pro-accountant",
+        storageBucket: "altajer-pro-accountant.appspot.com",
+        messagingSenderId: "982176278219", 
+        appId: "1:982176278219:web:5fede7cef02cce60a35d4e" 
+    };
+
+    // تهيئة الاتصال بالسيرفر السحابي
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // تشغيل العمليات فور تحميل الصفحة وتعيين تاريخ اليوم تلقائياً لتسهيل العمل من الجوال
+    document.addEventListener("DOMContentLoaded", function() {
+        const dateInput = document.getElementById('recDate');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+        syncReceiptsFromFirebase();
+    });
+
+    // إشعارات نظام التاجر المخصصة
+    function showToast(message, isSuccess = true) {
+        const toast = document.getElementById('apiToast');
+        if (!toast) return;
+        toast.innerText = message;
+        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    // دالة المزامنة لجلب السندات حياً وتحديث حركة الخزينة
+    function syncReceiptsFromFirebase() {
+        const receiptsRef = ref(db, 'altajer_receipts');
+        onValue(receiptsRef, (snapshot) => {
+            const data = snapshot.val();
+            const receiptsList = [];
+            
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    receiptsList.push(data[key]);
+                });
+            }
+            // ترتيب السندات من الأحدث للأقدم
+            receiptsList.sort((a, b) => new Date(b.date) - new Date(a.date));
+            renderReceiptsTable(receiptsList);
+        }, (error) => {
+            showToast("فشل جلب البيانات السحابية: " + error.message, false);
+        });
+    }
+
+    // بناء وعرض جدول السندات المالية بشكل منظم ونبض نيوني
+    function renderReceiptsTable(receipts) {
+        const tbody = document.getElementById('receiptsTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (receipts.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-muted text-center p-3">لا توجد حركات مالية مسجلة في الخزينة السحابية حالياً.</td></tr>`;
+            return;
+        }
+
+        receipts.forEach(rec => {
+            const badgeClass = rec.type === 'قبض' ? 'badge-capture' : 'badge-payment';
+            const tr = document.createElement('tr');
+            
+            tr.innerHTML = `
+                <td class="fw-bold text-info">${rec.id}</td>
+                <td><span class="type-badge ${badgeClass}">سند ${rec.type}</span></td>
+                <td>${rec.date}</td>
+                <td class="text-white fw-bold">${rec.target}</td>
+                <td class="text-warning">${rec.method}</td>
+                <td class="fw-bold text-success">${parseFloat(rec.amount).toFixed(2)} ر.س</td>
+                <td class="small text-white-50 text-end">${rec.description}</td>
+                <td>
+                    <i class="fas fa-trash-alt action-icon icon-delete" title="حذف وإلغاء السند"></i>
+                </td>
+            `;
+
+            // ربط حدث الحذف الآمن لحماية الحسابات
+            tr.querySelector('.icon-delete').addEventListener('click', () => deleteReceipt(rec.id));
+            tbody.appendChild(tr);
+        });
+    }
+
+    // معالجة وإرسال السند المالي إلى Firebase وقفل البيانات
+    document.getElementById('receiptForm').onsubmit = function(e) {
+        e.preventDefault();
+
+        const idField = document.getElementById('recId');
+        const typeField = document.getElementById('recType');
+        const dateField = document.getElementById('recDate');
+        const methodField = document.getElementById('recMethod');
+        const targetField = document.getElementById('recTargetName');
+        const amountField = document.getElementById('recAmount');
+        const descField = document.getElementById('recDescription');
+
+        const payload = {
+            id: idField.value.trim(),
+            type: typeField.value,
+            date: dateField.value,
+            method: methodField.value,
+            target: targetField.value.trim(),
+            amount: parseFloat(amountField.value),
+            description: descField.value.trim(),
+            created_at: new Date().toISOString()
+        };
+
+        // حفظ وتأمين السند في فرع الحسابات الرئيسي بالسحابة
+        set(ref(db, `altajer_receipts/${payload.id}`), payload)
+        .then(() => {
+            showToast(`تم ترحيل سند الـ ${payload.type} بنجاح إلى قاعدة البيانات السحابية.`);
+            document.getElementById('receiptForm').reset();
+            // إعادة تعيين تاريخ اليوم تلقائياً بعد تفريغ النموذج
+            dateField.value = new Date().toISOString().split('T')[0];
+            idField.focus();
+        })
+        .catch((err) => showToast("فشل الحفظ السحابي: " + err.message, false));
+    };
+
+    // حذف وإلغاء ترحيل السند المالي من السحابة
+    function deleteReceipt(id) {
+        if (confirm("تحذير محاسبي: هل أنت متأكد من رغبتك في حذف هذا السند نهائياً؟ سيؤثر هذا على إجمالي تقارير الخزينة.")) {
+            remove(ref(db, `altajer_receipts/${id}`))
+            .then(() => {
+                showToast("تم إلغاء السند وتحديث الخزينة سحابياً.", false);
+            })
+            .catch((err) => showToast("حدث خطأ أثناء إلغاء السند: " + err.message, false));
+        }
+    }
+</script>
+</body>
+</html>

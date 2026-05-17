@@ -160,19 +160,26 @@
 
         .input-container label {
             position: absolute;
-            top: -12px;
+            top: 8px;
             right: 5px;
-            font-size: 13px;
+            font-size: 14px;
             color: #a0aec0;
             pointer-events: none;
-            transition: all 0.3s ease-in-out;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .input-container input:focus ~ label,
+        .input-container input:not(:placeholder-shown) ~ label {
+            top: -14px;
+            font-size: 12px;
+            color: var(--neon-cyan);
         }
 
         .national-address-box {
             background: rgba(0, 0, 0, 0.15);
             border: 1px dashed rgba(0, 180, 216, 0.2);
             border-radius: 12px;
-            padding: 20px 15px 5px 15px;
+            padding: 25px 15px 5px 15px;
             margin-bottom: 20px;
         }
 
@@ -265,7 +272,7 @@
         </div>
     </div>
 
-    <form id="customerForm" onsubmit="handleCustomerSubmit(event)">
+    <form id="customerForm">
         
         <div class="section-subtitle">
             <i class="fas fa-id-card"></i> <span>المعرفات الهيكلية للعميل</span>
@@ -280,7 +287,7 @@
             </div>
             <div class="col-md-8">
                 <div class="input-container">
-                    <input id="custVatNumber" type="text" maxlength="15" placeholder=" ">
+                    <input id="custVatNumber" type="text" maxlength="15" inputmode="numeric" placeholder=" ">
                     <label>الرقم الضريبي للمنشأة (15 خانة لامتثال الشركات B2B)</label>
                 </div>
             </div>
@@ -327,19 +334,19 @@
                 </div>
                 <div class="col-4 col-md-4">
                     <div class="input-container">
-                        <input id="custBuildingNo" type="text" required placeholder=" ">
+                        <input id="custBuildingNo" type="text" maxlength="4" inputmode="numeric" required placeholder=" ">
                         <label>رقم المبنى</label>
                     </div>
                 </div>
                 <div class="col-4 col-md-4">
                     <div class="input-container">
-                        <input id="custPostalCode" type="number" required placeholder=" ">
+                        <input id="custPostalCode" type="text" maxlength="5" inputmode="numeric" required placeholder=" ">
                         <label>الرمز البريدي</label>
                     </div>
                 </div>
                 <div class="col-4 col-md-4">
                     <div class="input-container">
-                        <input id="custAdditionalNo" type="number" required placeholder=" ">
+                        <input id="custAdditionalNo" type="text" maxlength="4" inputmode="numeric" required placeholder=" ">
                         <label>الرقم الإضافي (4 أرقام)</label>
                     </div>
                 </div>
@@ -377,21 +384,40 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-<script>
-    const API_ENDPOINT = 'api/save_customer.php';
+    // إعدادات مشروع الـ Firebase الخاص بك (Altajer Pro)
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "altajer-pro-accountant.firebaseapp.com",
+        databaseURL: "https://altajer-pro-accountant-default-rtdb.firebaseio.com",
+        projectId: "altajer-pro-accountant",
+        storageBucket: "altajer-pro-accountant.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    // تهيئة السيرفر وقاعدة البيانات سحابياً
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
     let editModeCustomerId = null;
 
+    // تطبيق السمات المفضلة المخزنة في النظام التراكمي
     function applySavedTheme() {
         const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
         document.documentElement.setAttribute('data-theme', activeTheme);
     }
 
+    // تشغيل العمليات فور تحميل مستندات الصفحة
     document.addEventListener("DOMContentLoaded", function() {
         applySavedTheme();
-        renderCustomersTable();
+        syncFromFirebase(); 
     });
 
+    // إشعارات النظام المخصصة (Toast)
     function showToast(message, isSuccess = true) {
         const toast = document.getElementById('apiToast'); 
         if (!toast) return;
@@ -401,45 +427,66 @@
         setTimeout(() => { toast.style.display = 'none'; }, 3500);
     }
 
-    function getCustomersList() {
-        try {
-            // توحيد اسم المفتاح ليتطابق بالكامل مع شاشة المبيعات التراكمية
-            return JSON.parse(localStorage.getItem('altajer_customers')) || [];
-        } catch (e) {
-            return [];
-        }
+    // دالة المزامنة وجلب البيانات حياً من Firebase وتحديث الـ LocalStorage الموحد
+    function syncFromFirebase() {
+        const customersRef = ref(db, 'altajer_customers');
+        onValue(customersRef, (snapshot) => {
+            const data = snapshot.val();
+            const customersList = [];
+            
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    customersList.push(data[key]);
+                });
+            }
+            
+            // مزامنة الذاكرة المحلية بالتوازي مع السحابة لتغذية الفواتير والمبيعات
+            localStorage.setItem('altajer_customers', JSON.stringify(customersList));
+            renderCustomersTable(customersList);
+        }, (error) => {
+            console.warn("جاري العمل في وضع التخزين المحلي الاحتياطي:", error);
+            const localData = JSON.parse(localStorage.getItem('altajer_customers')) || [];
+            renderCustomersTable(localData);
+        });
     }
 
-    function renderCustomersTable() {
-        const customers = getCustomersList();
+    // بناء وعرض جدول سجل المنشآت والعملاء
+    function renderCustomersTable(customers) {
         const tbody = document.getElementById('customersTableBody');
         if (!tbody) return;
         tbody.innerHTML = '';
 
         if (customers.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-muted text-center p-3">لا توجد سجلات مطابقة في الذاكرة المحلية حالياً.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="text-muted text-center p-3">لا توجد سجلات مطابقة في الذاكرة السحابية أو المحلية حالياً.</td></tr>`;
             return;
         }
 
         customers.forEach(cust => {
-            const fullAddr = `مبنى ${cust.building_no || '---'}، شارع ${cust.street_name || cust.street || '---'}، حي ${cust.district || '---'}، ${cust.city || '---'} (${cust.postal_code || '---'}) | إضافي: ${cust.additional_no || '---'}`;
-            tbody.innerHTML += `
-                <tr>
-                    <td>${cust.id}</td>
-                    <td class="fw-bold text-info">${cust.name}</td>
-                    <td class="text-warning">${cust.vat_number || '---'}</td>
-                    <td>${cust.phone}</td>
-                    <td class="small text-white-50">${fullAddr}</td>
-                    <td>
-                        <i class="fas fa-edit action-icon icon-edit" onclick="loadCustomerToEdit('${cust.id}')" title="تعديل"></i>
-                        <i class="fas fa-trash-alt action-icon icon-delete" onclick="deleteCustomer('${cust.id}')" title="حذف"></i>
-                    </td>
-                </tr>
+            const fullAddr = `مبنى ${cust.building_no || '---'}، شارع ${cust.street_name || '---'}، حي ${cust.district || '---'}، ${cust.city || '---'} (${cust.postal_code || '---'}) | إضافي: ${cust.additional_no || '---'}`;
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${cust.id}</td>
+                <td class="fw-bold text-info">${cust.name}</td>
+                <td class="text-warning">${cust.vat_number || '---'}</td>
+                <td>${cust.phone}</td>
+                <td class="small text-white-50">${fullAddr}</td>
+                <td>
+                    <i class="fas fa-edit action-icon icon-edit" title="تعديل"></i>
+                    <i class="fas fa-trash-alt action-icon icon-delete" title="حذف"></i>
+                </td>
             `;
+
+            // الأحداث الآمنة للأيقونات تفادياً لمشاكل نطاقات الـ Modules
+            tr.querySelector('.icon-edit').addEventListener('click', () => loadCustomerToEdit(cust.id));
+            tr.querySelector('.icon-delete').addEventListener('click', () => deleteCustomer(cust.id));
+
+            tbody.appendChild(tr);
         });
     }
 
-    function handleCustomerSubmit(e) {
+    // معالجة حفظ وتأمين الملف الضريبي في قاعدة البيانات السحابية
+    window.handleCustomerSubmit = function(e) {
         e.preventDefault();
 
         const idField = document.getElementById('custInvoiceId');
@@ -456,6 +503,7 @@
 
         const vatNumberValue = vatField.value.trim();
 
+        // مطابقة قيود ومعايير هيئة الزكاة والضريبة والجمارك لـ B2B
         if (vatNumberValue !== "") {
             if (vatNumberValue.length !== 15 || isNaN(vatNumberValue)) {
                 showToast("خطأ تدقيق ZATCA: الرقم الضريبي يجب أن يكون 15 خانة رقمية تماماً!", false);
@@ -479,49 +527,40 @@
             phone: phoneField.value.trim(),
             city: cityField.value.trim(),
             district: districtField.value.trim(),
-            street_name: streetField.value.trim(), // الحقل الموحد لزاتكا والمبيعات
+            street_name: streetField.value.trim(), 
             building_no: buildingField.value.trim(),
             postal_code: postalField.value.trim(),
-            additional_no: additionalField.value.trim()
+            additional_no: additionalField.value.trim(),
+            updated_at: new Date().toISOString()
         };
 
-        let customers = getCustomersList();
-
         if (editModeCustomerId) {
-            customers = customers.map(c => c.id === editModeCustomerId ? payload : c);
-            showToast("تم تحديث الملف الضريبي للعميل بنجاح.");
+            update(ref(db, `altajer_customers/${editModeCustomerId}`), payload)
+            .then(() => {
+                showToast("تم تحديث الملف الضريبي في السحابة بنجاح.");
+                clearCustomerForm();
+            })
+            .catch((err) => showToast("فشل التحديث السحابي: " + err.message, false));
         } else {
-            if (customers.some(c => c.id === payload.id)) {
+            const localCusts = JSON.parse(localStorage.getItem('altajer_customers')) || [];
+            if (localCusts.some(c => c.id === payload.id)) {
                 showToast("خطأ تدقيق: كود العميل هذا مسجل مسبقاً في الدليل!", false);
                 return;
             }
-            customers.push(payload);
-            showToast("تم تسجيل العميل بنجاح مع مطابقة بيانات ZATCA.");
+
+            set(ref(db, `altajer_customers/${payload.id}`), payload)
+            .then(() => {
+                showToast("تم تسجيل العميل بنجاح وتأمينه في الـ Firebase.");
+                clearCustomerForm();
+            })
+            .catch((err) => showToast("فشل الحفظ السحابي: " + err.message, false));
         }
+    };
 
-        localStorage.setItem('altajer_customers', JSON.stringify(customers));
-        clearCustomerForm();
-        renderCustomersTable();
-
-        fetch(API_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data && data.status === 'success') {
-                console.log("Cloud server data synchronized successfully.");
-            }
-        })
-        .catch(() => {
-            console.warn("Operating in local database fallback mode.");
-        });
-    }
-
+    // تحميل بيانات العميل إلى حقول الإدخال لتعديلها
     function loadCustomerToEdit(id) {
-        const customers = getCustomersList();
-        const cust = customers.find(c => c.id === id);
+        const localCusts = JSON.parse(localStorage.getItem('altajer_customers')) || [];
+        const cust = localCusts.find(c => c.id === id);
         if (!cust) return;
 
         editModeCustomerId = cust.id;
@@ -536,28 +575,30 @@
         
         document.getElementById('custCity').value = cust.city || '';
         document.getElementById('custDistrict').value = cust.district || '';
-        document.getElementById('custStreet').value = cust.street_name || cust.street || '';
+        document.getElementById('custStreet').value = cust.street_name || '';
         document.getElementById('custBuildingNo').value = cust.building_no || '';
         document.getElementById('custPostalCode').value = cust.postal_code || '';
         document.getElementById('custAdditionalNo').value = cust.additional_no || '';
 
-        document.getElementById('lblSubmitBtn').innerText = "تعديل الملف المعتمد";
+        document.getElementById('lblSubmitBtn').innerText = "تعديل الملف المعتمد سحابياً";
         document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--warning-orange)');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // حذف المنشأة من قاعدة البيانات السحابية نهائياً
     function deleteCustomer(id) {
-        if (confirm("هل أنت متأكد من رغبتك في حذف هذه المنشأة نهائياً من السجلات؟")) {
-            let customers = getCustomersList();
-            customers = customers.filter(c => c.id !== id);
-            localStorage.setItem('altajer_customers', JSON.stringify(customers));
-            showToast("تمت إزالة العميل من السجلات الحالية.", false);
-            renderCustomersTable();
-            if (editModeCustomerId === id) clearCustomerForm();
+        if (confirm("هل أنت متأكد من رغبتك في حذف هذه المنشأة نهائياً من قاعدة البيانات السحابية؟")) {
+            remove(ref(db, `altajer_customers/${id}`))
+            .then(() => {
+                showToast("تمت إزالة العميل من السجلات السحابية والمحلية.", false);
+                if (editModeCustomerId === id) clearCustomerForm();
+            })
+            .catch((err) => showToast("حدث خطأ أثناء الحذف: " + err.message, false));
         }
     }
 
-    function clearCustomerForm() {
+    // إعادة تهيئة النموذج وتفريغ حقول المدخلات
+    window.clearCustomerForm = function() {
         editModeCustomerId = null;
         const form = document.getElementById('customerForm');
         if (form) form.reset();
@@ -570,7 +611,10 @@
         
         document.getElementById('lblSubmitBtn').innerText = "حفظ وتأمين الملف الضريبي";
         document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--light-green)');
-    }
+    };
+
+    // ربط الحدث بالنموذج
+    document.getElementById('customerForm').onsubmit = window.handleCustomerSubmit;
 </script>
 </body>
 </html>

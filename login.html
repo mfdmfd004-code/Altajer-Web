@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>التاجر برو - تسجيل الدخول</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    body {
+      background-color: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .login-container {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 420px;
+      padding: 30px 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    /* مكان مخصص للأنميشن العلوي */
+    .avatar-section {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 20px auto;
+      background-color: #eef2f6;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .avatar-section i {
+      font-size: 40px;
+      color: #3b82f6;
+    }
+
+    h2 {
+      color: #1e293b;
+      font-size: 22px;
+      margin-bottom: 25px;
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+      position: relative;
+      text-align: right;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i.input-icon {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 16px;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 12px 42px 12px 42px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 15px;
+      color: #334155;
+      background-color: #f8fafc;
+      transition: all 0.3s ease;
+      text-align: right;
+    }
+
+    .input-wrapper input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* أيقونة العين لإظهار كلمة المرور */
+    .toggle-password {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    /* زر الإجراء الرئيسي الأزرق/الأخضر */
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+
+    /* خط الفاصل بين الدخول العادي وجوجل */
+    .divider {
+      margin: 22px 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .divider::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background-color: #e2e8f0;
+      z-index: 1;
+    }
+
+    .divider span {
+      background-color: #ffffff;
+      padding: 0 15px;
+      color: #94a3b8;
+      font-size: 13px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* زر الدخول بواسطة جوجل الاحترافي */
+    .btn-google {
+      width: 100%;
+      padding: 12px;
+      background-color: #ffffff;
+      color: #475569;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+
+    .btn-google:hover {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .btn-google img {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* روابط التبديل السفلي بين الشاشات */
+    .switch-text {
+      margin-top: 25px;
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .switch-text a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .switch-text a:hover {
+      text-decoration: underline;
+    }
+
+    /* إخفاء حقول تسجيل الحساب الجديد برمجياً في البداية */
+    .signup-only {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="avatar-section">
+      <i class="fas fa-user-shield" id="avatarIcon"></i>
+    </div>
+
+    <h2 id="formTitle">تسجيل الدخول إلى التاجر برو</h2>
+
+    <form id="authForm" onsubmit="handleFormSubmit(event)">
+      
+      <div class="form-group signup-only">
+        <label>الاسم الكامل للمؤسسة / العميل</label>
+        <div class="input-wrapper">
+          <i class="fas fa-id-card input-icon"></i>
+          <input type="text" id="regName" placeholder="أدخل الاسم الكامل">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label id="emailLabel">اسم المستخدم أو البريد الإلكتروني</label>
+        <div class="input-wrapper">
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" id="authEmail" placeholder="name@example.com" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <div class="input-wrapper">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="authPassword" placeholder="••••••••" required>
+          <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility()"></i>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" id="mainSubmitBtn">دخول</button>
+    </form>
+
+    <div class="divider">
+      <span>أو عبر الشبكات الآمنة</span>
+    </div>
+
+    <button type="button" class="btn-google" onclick="loginWithGoogle()">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+      <span>الدخول بواسطة Google</span>
+    </button>
+
+    <div class="switch-text" id="switchContainer">
+      ليس لديك حساب؟ <a onclick="toggleAuthMode('signup')">إنشاء حساب جديد</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // إعدادات ومفاتيح الربط البرمجية التابعة لك 100% كما هي في المنصة
+    const firebaseConfig = {
+      apiKey: "AIzaSyADh8KorayFEiM1JIETYr8LDubkJpja_yU",
+      authDomain: "altajer-pro-accountant.firebaseapp.com",
+      projectId: "altajer-pro-accountant",
+      storageBucket: "altajer-pro-accountant.firebasestorage.app",
+      messagingSenderId: "982176278219",
+      appId: "1:982176278219:web:5fede7cef02cce60a35d4e",
+      measurementId: "G-WM6KN5NKTC"
+    };
+
+    // تهيئة فايربيس
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // جعل الدالة متاحة عالمياً للزر
+    window.loginWithGoogle = function() {
+      signInWithPopup(auth, googleProvider)
+        .then((result) => {
+          const user = result.user;
+          
+          // 👑 هنا إيميلك يا أبا فهد لفتح الصلاحيات الكاملة للآدمن تلقائياً
+          if (user.email === "mfdmfd004@gmail.com") {
+            alert("أهلاً بك يا أبا فهد! تم التعرف على حساب المالك بنجاح.");
+            window.location.href = "dashboard.html"; // توجيهك للوحة تحكم الآدمن
+          } else {
+            alert("تم تسجيل دخولك بنجاح كعميل لـ التاجر برو.");
+            window.location.href = "client-panel.html"; // توجيه العميل لصفحته المحدودة
+          }
+        })
+        .catch((error) => {
+          console.error("خطأ في تسجيل دخول جوجل:", error);
+          alert("فشلت عملية الدخول عبر جوجل، يرجى المحاولة مرة أخرى.");
+        });
+    };
+
+    // دالة التعامل مع النموذج التقليدي (إيميل وباسورد)
+    window.handleFormSubmit = function(event) {
+      event.preventDefault();
+      const email = document.getElementById("authEmail").value;
+      const password = document.getElementById("authPassword").value;
+      const isSignup = document.getElementById("regName").parentElement.parentElement.style.display === "block";
+
+      if (isSignup) {
+        // إجراء إنشاء حساب تقليدي جديد
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            alert("تم إنشاء حسابك الجديد بنجاح!");
+            window.location.href = "client-panel.html";
+          })
+          .catch((error) => {
+            alert("خطأ في الإنشاء: " + error.message);
+          });
+      } else {
+        // إجراء تسجيل دخول تقليدي عادي
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            // التحقق من حساب الآدمن عند الدخول التقليدي أيضاً
+            if (email === "mfdmfd004@gmail.com") {
+              window.location.href = "dashboard.html";
+            } else {
+              window.location.href = "client-panel.html";
+            }
+          })
+          .catch((error) => {
+            alert("خطأ في الدخول: تأكد من الإيميل وباسورد الحساب.");
+          });
+      }
+    };
+  </script>
+
+  <script>
+    // التبديل بين شاشتي (الدخول) و (إنشاء الحساب) بدون تحميل أو ملفات خارجية
+    function toggleAuthMode(mode) {
+      const signupFields = document.querySelectorAll('.signup-only');
+      const formTitle = document.getElementById('formTitle');
+      const mainSubmitBtn = document.getElementById('mainSubmitBtn');
+      const switchContainer = document.getElementById('switchContainer');
+      const avatarIcon = document.getElementById('avatarIcon');
+      const emailLabel = document.getElementById('emailLabel');
+
+      if (mode === 'signup') {
+        signupFields.forEach(el => el.style.display = 'block');
+        formTitle.innerText = "إنشاء حساب جديد في التاجر برو";
+        mainSubmitBtn.innerText = "تأكيد التسجيل الجديد";
+        emailLabel.innerText = "البريد الإلكتروني للعميل";
+        avatarIcon.className = "fas fa-user-plus";
+        avatarIcon.style.color = "#10b981";
+        switchContainer.innerHTML = 'لديك حساب بالفعل؟ <a onclick="toggleAuthMode(\'login\')">تسجيل الدخول</a>';
+      } else {
+        signupFields.forEach(el => el.style.display = 'none');
+        formTitle.innerText = "تسجيل الدخول إلى التاجر برو";
+        mainSubmitBtn.innerText = "دخول";
+        emailLabel.innerText = "اسم المستخدم أو البريد الإلكتروني";
+        avatarIcon.className = "fas fa-user-shield";
+        avatarIcon.style.color = "#2563eb";
+        switchContainer.innerHTML = 'ليس لديك حساب؟ <a onclick="toggleAuthMode(\'signup\')">إنشاء حساب جديد</a>';
+      }
+    }
+
+    // إظهار وإخفاء الباسورد عند لمس أيقونة العين بالجوال
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('authPassword');
+      const eyeIcon = event.target;
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -22,6 +22,8 @@
             --accent-blue: #0077b6;  
             --text-light: #e0d0d5;   
             --text-dim: #a09095;     
+            --accent-green: #2ec4b6;
+            --accent-red: #e63946;
         }
         
         * {
@@ -37,12 +39,17 @@
             color: var(--text-light);
         }
         
-        /* شبكة الإحصائيات المتجاوبة مع الجوال */
+        /* شبكة الإحصائيات المتجاوبة مع الجوال - تم تعديلها لتستوعب الأزرار الجديدة بسلاسة */
         .stats-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
             gap: 12px; 
             margin-bottom: 20px; 
+        }
+
+        /* زر الموظفين الممتد لملء العرض الكامل على الجوال بشكل متناسق */
+        .full-width-link {
+            grid-column: span 2;
         }
         
         /* تحويل الكروت إلى روابط تفاعلية منظمة قابلة للضغط للربط التام */
@@ -58,7 +65,7 @@
             border-radius: 12px; 
             text-align: center; 
             border: 1px solid var(--border-dark);
-            border-bottom: 4px solid var(--accent-blue); 
+            border-bottom: 4px solid var(--border-clr, var(--accent-blue)); 
             box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
             transition: transform 0.2s, background-color 0.2s;
             cursor: pointer;
@@ -71,7 +78,7 @@
 
         .stat-card i { 
             font-size: 1.8rem; 
-            color: var(--accent-blue); 
+            color: var(--icon-clr, var(--accent-blue)); 
             margin-bottom: 8px;
         }
         
@@ -138,6 +145,30 @@
                 <i class="fas fa-users"></i>
                 <h3 data-i18n="dash-customers-title">العملاء المسجلين</h3>
                 <p id="customerCount">0</p>
+            </div>
+        </a>
+
+        <a href="receipts.html" class="stat-card-link">
+            <div class="stat-card" style="--border-clr: var(--accent-blue); --icon-clr: var(--accent-blue);">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>السندات المالية</span>
+                <p style="font-size: 1.1rem; margin-top: max(8px); color: var(--text-dim);">قبض وصرف</p>
+            </div>
+        </a>
+
+        <a href="expenses.html" class="stat-card-link">
+            <div class="stat-card" style="--border-clr: var(--accent-red); --icon-clr: var(--accent-red);">
+                <i class="fas fa-calculator"></i>
+                <span>المصاريف والتكاليف</span>
+                <p style="font-size: 1.1rem; margin-top: max(8px); color: var(--text-dim);">تقييد وتحليل</p>
+            </div>
+        </a>
+
+        <a href="employees.html" class="stat-card-link full-width-link">
+            <div class="stat-card" style="--border-clr: var(--accent-green); --icon-clr: var(--accent-green);">
+                <i class="fas fa-id-card"></i>
+                <span>شؤون الموظفين والرواتب</span>
+                <p style="font-size: 1.1rem; margin-top: max(8px); color: var(--text-dim);">إدارة السجلات والرواتب</p>
             </div>
         </a>
     </div>

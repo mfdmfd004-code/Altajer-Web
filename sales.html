@@ -254,7 +254,7 @@
             <span data-i18n="sale-main-title">شاشة كاشير المبيعات وإنشاء الفاتورة</span>
         </div>
         <div>
-            <select class="lang-selector bg-dark text-white border-info rounded p-1" onchange="changeLanguage(this.value)" id="langSelect">
+            <select class="lang-selector bg-dark text-white border-info rounded p-1" onchange="applySystemLanguage(this.value)" id="langSelect">
                 <option value="ar">العربية (AR)</option>
                 <option value="en">English (EN)</option>
             </select>
@@ -330,7 +330,7 @@
                 <div class="tax-toggle-wrapper">
                     <div class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2">
                         <input class="form-check-input m-0" type="checkbox" id="itemTaxMethodToggle" checked>
-                        <label class="form-check-label small text-white-50 cursor-pointer" for="itemTaxMethodToggle" id="lblTaxToggleText" style="color: var(--light-green)">شامل الضريبة</label>
+                        <label class="form-check-label small text-white-50 cursor-pointer" for="itemTaxMethodToggle" id="lblTaxToggleText" style="color: var(--light-green)" data-i18n="tax-method-incl">شامل الضريبة</label>
                     </div>
                 </div>
             </div>
@@ -342,8 +342,7 @@
             </div>
         </div>
     </form>
-
-    <div class="table-responsive-custom">
+        <div class="table-responsive-custom">
         <table class="table table-dark table-striped table-custom text-center">
             <thead>
                 <tr>
@@ -396,57 +395,48 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+<script src="i18n.js"></script>
+
 <script>
     let salesItemsList = [];
 
-    const translations = {
-        ar: {
-            "sale-main-title": "شاشة كاشير المبيعات وإنشاء الفاتورة", "sub-customer-meta": "بيانات العميل المستهدف والفاتورة",
-            "lbl-sale-cust": "اسم العميل", "lbl-sale-cust-vat": "الرقم الضريبي للعميل", "lbl-sale-cust-addr": "عنوان العميل",
-            "lbl-sale-discount": "خصم الفاتورة", "sub-product-pull": "سحب الأصناف من المنتجات والمخزن",
-            "lbl-i-code": "كود الصنف / باركود", "lbl-i-name": "اسم المنتج (سحب تلقائي)", "lbl-i-price": "سعر البيع",
-            "lbl-i-qty": "الكمية المباعة", "btn-add-row": "إدراج الفاتورة الحالية", "th-p-code": "كود الصنف",
-            "th-p-desc": "اسم المنتج / البيان", "th-p-price": "سعر الوحدة (قبل الضريبة)", "th-p-qty": "الكمية",
-            "th-p-tax-rate": "نسبة الضريبة", "th-p-tax": "قيمة الضريبة", "th-p-total": "المجموع شامل الضريبة",
-            "th-p-action": "حذف", "sum-p-sub": "الإجمالي الخاضع للضريبة:", "sum-p-tax": "مجموع ضريبة المخرجات (15%):",
-            "sum-p-discount": "إجمالي الخصم الممنوح:", "sum-p-net": "الصافي النهائي المطلوب سداده:",
-            "btn-commit-sale": "اعتماد وإنشاء الفاتورة للطباعة", "btn-clear-all": "تفريغ السلة بالكامل"
-        },
-        en: {
-            "sale-main-title": "Sales Cashier Screen & Invoice Creation", "sub-customer-meta": "Target Customer & Invoice Meta Identifiers",
-            "lbl-sale-cust": "Customer Name", "lbl-sale-cust-vat": "Customer VAT No", "lbl-sale-cust-addr": "Customer Address",
-            "lbl-sale-discount": "Invoice Discount", "sub-product-pull": "Pull Items From Central Products & Stock",
-            "lbl-i-code": "Item Code / Barcode", "lbl-i-name": "Product Name (Auto Pull)", "lbl-i-price": "Sales Price",
-            "lbl-i-qty": "Sold Quantity", "btn-add-row": "Insert to Current Bill", "th-p-code": "Item Code",
-            "th-p-desc": "Product Description", "th-p-price": "Unit Price (Excl. VAT)", "th-p-qty": "Qty",
-            "th-p-tax-rate": "VAT Rate", "th-p-tax": "VAT Amount", "th-p-total": "Total (Incl. VAT)",
-            "th-p-action": "Del", "sum-p-sub": "Taxable Subtotal:", "sum-p-tax": "Output VAT Total (15%):",
-            "sum-p-discount": "Total Discount Granted:", "sum-p-net": "Final Net Due Amount:",
-            "btn-commit-sale": "Commit & Generate Invoice for Print", "btn-clear-all": "Clear Basket Completely"
-        }
-    };
+    // محرك فصول السنة التلقائي المتزامن مع الإعدادات المركزية لحماية عين التاجر
+    function applySavedTheme() {
+        const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
+        document.documentElement.setAttribute('data-theme', activeTheme);
+    }
 
     document.addEventListener("DOMContentLoaded", function() {
+        // تطبيق ثيم فصول السنة فوراً لتوحيد الهوية البصرية للجوال
+        applySavedTheme();
+
+        // تفعيل قارئ ومستشعر الباركود التلقائي
         setupAutomaticBarcodePuller();
 
+        // مراقبة زر التبديل الضريبي لتحديث النصوص والترجمة فوراً من القاموس المركزي
         document.getElementById('itemTaxMethodToggle').addEventListener('change', function() {
             const toggleText = document.getElementById('lblTaxToggleText');
+            const currentLang = localStorage.getItem('altajer_lang') || 'ar';
             if(this.checked) {
-                toggleText.innerText = "شامل الضريبة";
+                toggleText.textContent = globalTranslations[currentLang]["tax-method-incl"];
                 toggleText.style.color = "var(--light-green)";
             } else {
-                toggleText.innerText = "غير شامل";
+                toggleText.textContent = globalTranslations[currentLang]["tax-method-excl"];
                 toggleText.style.color = "var(--text-white)";
             }
         });
 
+        // تحميل قائمة العملاء المسجلة بالذاكرة لتسهيل الاختيار السريع للكاشير
+        loadSavedCustomersList();
+
         renderInvoiceItems();
+        
+        // مزانمة القائمة المنسدلة للغات مع المحرك المركزي تلقائياً عند التشغيل
         const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         document.getElementById('langSelect').value = currentLang;
-        changeLanguage(currentLang);
     });
 
-    // المحرك الذكي: يسحب بيانات السلعة من سجل السلع المركزي فور قراءة الكود
+    // المحرك الذكي: يسحب بيانات السلعة من سجل السلع المركزي فور قراءة الكود أو كتابته بالجوال
     function setupAutomaticBarcodePuller() {
         const codeInput = document.getElementById('itemCode');
         codeInput.addEventListener('input', function() {
@@ -457,9 +447,11 @@
                 
                 if (matchedProduct) {
                     document.getElementById('itemName').value = matchedProduct.name || '';
-                    // سحب سعر البيع المسجل في كرت الصنف بالمنتجات
                     document.getElementById('itemPriceInput').value = matchedProduct.price || matchedProduct.sale_price || '';
-                    showToast("تم سحب الصنف وبياناته من المخزن المركزي بنجاح");
+                    
+                    const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+                    showToast(currentLang === 'ar' ? "تم سحب بيانات الصنف من المخزن بنجاح" : "Item retrieved from centralized stock successfully");
+                    
                     document.getElementById('itemQty').focus();
                     document.getElementById('itemQty').select();
                 }
@@ -467,15 +459,15 @@
         });
     }
 
-    function changeLanguage(lang) {
-        localStorage.setItem('altajer_lang', lang);
-        document.documentElement.lang = lang;
-        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-        
-        $('[data-i18n]').each(function() {
-            const key = $(this).data('i18n');
-            if (translations[lang] && translations[lang][key]) {
-                $(this).text(translations[lang][key]);
+    // استدعاء وتحميل قائمة العملاء المخزنة
+    function loadSavedCustomersList() {
+        const savedCusts = JSON.parse(localStorage.getItem('altajer_saved_customers')) || ["عميل نقدي"];
+        const datalist = document.getElementById('customersList');
+        savedCusts.forEach(cust => {
+            if (!Array.from(datalist.options).some(opt => opt.value === cust)) {
+                const opt = document.createElement('option');
+                opt.value = cust;
+                datalist.appendChild(opt);
             }
         });
     }
@@ -496,9 +488,11 @@
         const rawPrice = parseFloat(document.getElementById('itemPriceInput').value);
         const qty = parseInt(document.getElementById('itemQty').value);
         const isPriceInclusive = document.getElementById('itemTaxMethodToggle').checked;
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
 
         if(!name) {
-            showToast("الرجاء إدخال كود صنف صحيح مسجل في صفحة المنتجات أولاً ليتم سحبه!", false);
+            const invalidMsg = currentLang === 'ar' ? "الرجاء إدخال كود صنف صحيح مسجل في صفحة المنتجات ليتم سحبه!" : "Please scan or enter a registered valid item code first!";
+            showToast(invalidMsg, false);
             return;
         }
 
@@ -506,6 +500,7 @@
         let taxVal = 0;
         let totalIncl = 0;
 
+        // تنفيذ الحسبة المحاسبية لمطابقة وضع الضرائب بدقة متناهية
         if (isPriceInclusive) {
             priceExcl = rawPrice / 1.15;
             taxVal = (priceExcl * qty) * 0.15;
@@ -528,39 +523,45 @@
 
         salesItemsList.push(itemPayload);
         
-        // إعادة تهيئة حقول الإدخال مع تثبيت خيار "شامل الضريبة" للكاشير للسرعة
+        // إعادة تهيئة حقول الإدخال للسرعة مع الإبقاء على خيار "شامل الضريبة" مفعل للكاشير
         document.getElementById('itemCode').value = '';
         document.getElementById('itemName').value = '';
         document.getElementById('itemPriceInput').value = '';
         document.getElementById('itemQty').value = '1';
         
         renderInvoiceItems();
-        showToast("تم إدراج الصنف ومطابقة احتساب الضريبة بالسلة");
+        showToast(currentLang === 'ar' ? "تم إدراج الصنف ومطابقة احتساب الضريبة بالسلة" : "Item integrated and tax vectors calculated");
         document.getElementById('itemCode').focus();
     }
 
     function deleteItemRow(index) {
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
         salesItemsList.splice(index, 1);
         renderInvoiceItems();
-        showToast("تم حذف الصنف وإعادة احتساب الإجماليات فوراً", false);
+        showToast(currentLang === 'ar' ? "تم حذف الصنف وإعادة احتساب الإجماليات فوراً" : "Item removed and totals recalculated instantly", false);
     }
 
     function clearCurrentInvoice() {
-        if(confirm("هل أنت متأكد من رغبتك في تفريغ سلة المبيعات الحالية؟")) {
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        const confirmMsg = currentLang === 'ar' ? "هل أنت متأكد من رغبتك في تفريغ سلة المبيعات الحالية؟" : "Are you sure you want to flush the active sales basket?";
+        
+        if(confirm(confirmMsg)) {
             salesItemsList = [];
             document.getElementById('salesItemForm').reset();
             document.getElementById('itemQty').value = '1';
             renderInvoiceItems();
-            showToast("تم تصفير سلة المبيعات بالكامل", false);
+            showToast(currentLang === 'ar' ? "تم تصفير سلة المبيعات بالكامل" : "Sales basket cleared completely", false);
         }
     }
 
     function renderInvoiceItems() {
         const tbody = document.getElementById('salesItemsTableBody');
         tbody.innerHTML = '';
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
 
         if(salesItemsList.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-muted p-3">السلة فارغة، امسح الباركود لإضافة الأصناف تلقائياً</td></tr>`;
+            const basketEmptyText = currentLang === 'ar' ? "السلة فارغة، امسح الباركود لإضافة الأصناف تلقائياً" : "The basket is empty, scan barcode to trigger auto-fill";
+            tbody.innerHTML = `<tr><td colspan="8" class="text-muted p-3">${basketEmptyText}</td></tr>`;
             calculateInvoiceTotals();
             return;
         }
@@ -575,7 +576,7 @@
                     <td>15%</td>
                     <td>${item.taxAmount.toFixed(2)} ر.س</td>
                     <td class="fw-bold text-success">${item.totalInclTax.toFixed(2)} ر.س</td>
-                    <td><i class="fas fa-trash-alt text-danger cursor-pointer" onclick="deleteItemRow(${index})"></i></td>
+                    <td><i class="fas fa-trash-alt text-danger cursor-pointer" onclick="deleteItemRow(${index}) border:none;"></i></td>
                 </tr>
             `;
         });
@@ -608,18 +609,29 @@
         const custVat = document.getElementById('saleCustomerVat').value.trim();
         const custAddr = document.getElementById('saleCustomerAddress').value.trim();
         const discount = parseFloat(document.getElementById('saleDiscount').value) || 0;
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
 
         if(salesItemsList.length === 0) {
-            showToast("لا يمكنك اعتماد فاتورة فارغة! يرجى سحب وإضافة أصناف أولاً.", false);
+            const emptyErr = currentLang === 'ar' ? "لا يمكنك اعتماد فاتورة فارغة! يرجى سحب وإضافة أصناف أولاً." : "Cannot commit an empty invoice! Please pull items first.";
+            showToast(emptyErr, false);
             return;
         }
 
-        // 1. توليد كائن الفاتورة المحدثة بنفس البنية الدقيقة التي تطلبها شاشة invoice.html
+        // حفظ وتحديث كشاف العميل في القائمة إذا كان جديداً لتسهيل العمليات المستقبلية
+        if(custName) {
+            let savedCusts = JSON.parse(localStorage.getItem('altajer_saved_customers')) || ["عميل نقدي"];
+            if(!savedCusts.includes(custName)) {
+                savedCusts.push(custName);
+                localStorage.setItem('altajer_saved_customers', JSON.stringify(savedCusts));
+            }
+        }
+
+        // 1. توليد كائن الفاتورة المحدثة بنفس البنية الدقيقة لطباعة التقرير والـ QR كود
         const invoicePayload = {
             invoice_id: Math.floor(Math.random() * 90000) + 10000,
             invoice_date: new Date().toISOString(),
             customer_id: "CUST-" + (Math.floor(Math.random() * 900) + 100),
-            customer_name: custName,
+            customer_name: custName || (currentLang === 'ar' ? "عميل نقدي" : "Cash Customer"),
             customer_vat: custVat || "---",
             customer_address: custAddr || "---",
             subtotal: document.getElementById('lblSubTotal').innerText,
@@ -629,23 +641,24 @@
             items: salesItemsList
         };
 
-        // 2. تحديث وخصم كميات السلع من الذاكرة المحلية (المخزن) فوراً حتى ينعكس النقص الفعلي
+        // 2. تحديث وخصم كميات السلع من المخزن التراكمي في الذاكرة المحلية (localStorage)
         let registeredProducts = JSON.parse(localStorage.getItem('altajer_products')) || [];
         salesItemsList.forEach(soldItem => {
             let product = registeredProducts.find(p => p.code === soldItem.code);
             if(product) {
                 product.quantity = (parseInt(product.quantity) || 0) - parseInt(soldItem.qty);
-                if(product.quantity < 0) product.quantity = 0; // حماية لعدم نزول المخزن تحت الصفر عشوائياً
+                if(product.quantity < 0) product.quantity = 0; // صمام أمان لعدم هبوط المخزن التراكمي تحت الصفر عشوائياً
             }
         });
         localStorage.setItem('altajer_products', JSON.stringify(registeredProducts));
 
-        // 3. حقن الفاتورة في المصب المحدث لاستعراضها وطباعتها
+        // 3. حقن الفاتورة في ذاكرة المصب النهائي لاستعراضها فوراُ بشاشة الـ invoice
         localStorage.setItem('last_processed_invoice', JSON.stringify(invoicePayload));
 
-        showToast("تم اعتماد المبيعات وتحديث كميات المخزن.. جاري توجيهك للطباعة");
+        const redirectionMsg = currentLang === 'ar' ? "تم اعتماد المبيعات وتحديث كميات المخزن.. جاري توجيهك للطباعة" : "Sales authorized & stock inventory updated.. redirecting to billing console";
+        showToast(redirectionMsg);
         
-        // 4. الانتقال التلقائي الفوري لشاشة الفاتورة لإنشاء الـ QR كود والطباعة من الجوال
+        // 4. الانتقال التلقائي الفوري لشاشة الفاتورة والـ QR المتوافقة مع هيئة الزكاة والضريبة
         setTimeout(() => { 
             window.location.href = `invoice.html?id=${invoicePayload.invoice_id}`; 
         }, 1800);

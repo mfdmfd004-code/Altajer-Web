@@ -116,28 +116,40 @@
     <div class="stats-grid">
         <div class="stat-card">
             <i class="fas fa-shopping-basket"></i>
-            <h3>الطلبات (الفواتير)</h3>
+            <h3 data-i18n="dash-orders-title">الطلبات (الفواتير)</h3>
             <p id="orderCount">0</p>
         </div>
         <div class="stat-card">
             <i class="fas fa-users"></i>
-            <h3>العملاء المسجلين</h3>
+            <h3 data-i18n="dash-customers-title">العملاء المسجلين</h3>
             <p id="customerCount">0</p>
         </div>
     </div>
 
     <div class="chart-container">
-        <h4><i class="fas fa-chart-pie"></i> تحليل الدخل الشهري</h4>
+        <h4><i class="fas fa-chart-pie"></i> <span data-i18n="dash-chart-income">تحليل الدخل الشهري</span></h4>
         <canvas id="myChart"></canvas>
     </div>
 
     <div class="chart-container">
-        <h4><i class="fas fa-chart-line"></i> نمو حجم المبيعات</h4>
+        <h4><i class="fas fa-chart-line"></i> <span data-i18n="dash-chart-growth">نمو حجم المبيعات</span></h4>
         <canvas id="chart2"></canvas>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="i18n.js"></script>
+
     <script type="module">
-        window.onload = function() {
+        // دالة محرك فصول السنة التلقائي المتزامن مع الإعدادات الفورية لحماية العين
+        function applySavedTheme() {
+            const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
+            document.documentElement.setAttribute('data-theme', activeTheme);
+        }
+
+        window.addEventListener("DOMContentLoaded", function() {
+            // تطبيق الثيم المعتمد فورا عند التشغيل
+            applySavedTheme();
+
             // 1. جلب البيانات الفعلية التراكمية من الذاكرة المحلية
             const globalCustomers = JSON.parse(localStorage.getItem('altajer_customers')) || [];
             const globalInvoices = JSON.parse(localStorage.getItem('altajer_invoices')) || [];
@@ -146,8 +158,12 @@
             document.getElementById('orderCount').innerText = globalInvoices.length;
             document.getElementById('customerCount').innerText = globalCustomers.length;
 
-            // 2. محرك قراءة وتحليل الفواتير لبناء رسوم بيانية حقيقية وديناميكية
-            let months = ['يناير', 'فبراير', 'مارس'];
+            // 2. محرك قراءة وتحليل الفواتير لبناء رسوم بيانية حقيقية وديناميكية متوافقة مع اللغتين
+            const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+            
+            // تهيئة أسماء الشهور بناء على اللغة النشطة بالمحرك
+            let months = currentLang === 'ar' ? ['يناير', 'فبراير', 'مارس'] : ['January', 'February', 'March'];
+            
             let incomeData = [0, 0, 0]; 
             let salesQtyData = [0, 0, 0]; 
 
@@ -187,7 +203,7 @@
                             position: 'bottom', 
                             labels: { 
                                 boxWidth: 12, 
-                                color: textLightColor, // تحويل نصوص التوضيح للأبيض
+                                color: textLightColor, // تحويل نصوص التوضيح للأبيض واضح
                                 font: { size: 12, family: 'Segoe UI' } 
                             } 
                         }
@@ -196,12 +212,13 @@
             });
 
             // 4. بناء رسم المخطط الخطي (نمو المبيعات)
+            const datasetLabel = currentLang === 'ar' ? 'عدد العمليات المسجلة' : 'Registered Operations';
             new Chart(document.getElementById('chart2'), {
                 type: 'line',
                 data: {
                     labels: months,
                     datasets: [{
-                        label: 'عدد العمليات المسجلة',
+                        label: datasetLabel,
                         data: salesQtyData,
                         borderColor: '#0077b6',
                         borderWidth: 3,
@@ -228,7 +245,7 @@
                     }
                 }
             });
-        };
+        });
     </script>
 </body>
 </html>

@@ -93,7 +93,6 @@
             position: relative;
             transition: background-color 0.4s ease, border-color 0.4s ease;
         }
-
         .customer-container::before {
             content: '';
             position: absolute;
@@ -346,7 +345,7 @@
                 </div>
                 <div class="col-4 col-md-4">
                     <div class="input-container">
-                        <input id="custAdditionalNo" type="text" maxlength="4" inputmode="numeric" required placeholder=" ">
+                        <input id="additional_no" type="text" maxlength="4" inputmode="numeric" required placeholder=" ">
                         <label>الرقم الإضافي (4 أرقام)</label>
                     </div>
                 </div>
@@ -388,15 +387,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // إعدادات مشروع الـ Firebase الخاص بك (Altajer Pro)
+    // إعدادات مشروع الـ Firebase الحقيقية الخاصة بك (Altajer Pro)
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
+        apiKey: "AIzaSyAdH8KorayFEiM3_N_I6v-m3A09uXqY4Q8", 
         authDomain: "altajer-pro-accountant.firebaseapp.com",
         databaseURL: "https://altajer-pro-accountant-default-rtdb.firebaseio.com",
         projectId: "altajer-pro-accountant",
         storageBucket: "altajer-pro-accountant.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        messagingSenderId: "982176278219", 
+        appId: "1:982176278219:web:5fede7cef02cce60a35d4e" 
     };
 
     // تهيئة السيرفر وقاعدة البيانات سحابياً
@@ -499,7 +498,7 @@
         const streetField = document.getElementById('custStreet');
         const buildingField = document.getElementById('custBuildingNo');
         const postalField = document.getElementById('custPostalCode');
-        const additionalField = document.getElementById('custAdditionalNo');
+        const additionalField = document.getElementById('additional_no'); 
 
         const vatNumberValue = vatField.value.trim();
 
@@ -515,11 +514,6 @@
             }
         }
 
-        if (additionalField.value.trim().length !== 4 || isNaN(additionalField.value.trim())) {
-            showToast("خطأ في العنوان: الرقم الإضافي للعنوان الوطني يجب أن يتكون من 4 أرقام!", false);
-            return;
-        }
-
         const payload = {
             id: idField.value.trim(),
             vat_number: vatNumberValue,
@@ -530,7 +524,7 @@
             street_name: streetField.value.trim(), 
             building_no: buildingField.value.trim(),
             postal_code: postalField.value.trim(),
-            additional_no: additionalField.value.trim(),
+            additional_no: additionalField ? additionalField.value.trim() : '',
             updated_at: new Date().toISOString()
         };
 
@@ -578,7 +572,9 @@
         document.getElementById('custStreet').value = cust.street_name || '';
         document.getElementById('custBuildingNo').value = cust.building_no || '';
         document.getElementById('custPostalCode').value = cust.postal_code || '';
-        document.getElementById('custAdditionalNo').value = cust.additional_no || '';
+        
+        const additionalField = document.getElementById('additional_no');
+        if(additionalField) additionalField.value = cust.additional_no || '';
 
         document.getElementById('lblSubmitBtn').innerText = "تعديل الملف المعتمد سحابياً";
         document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--warning-orange)');

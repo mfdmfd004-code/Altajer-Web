@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Altajer Pro - Customer Registry & ZATCA Tax Compliance</title>
+    <title>تاجر برو - سجل العملاء والامتثال الضريبي ZATCA</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* نظام التاجر الاحترافي الكامل: دعم فصول السنة الأربعة وحماية أعين المستخدمين من التوهج */
         :root, [data-theme="winter"] {
             --dark-bg: #0d1b2a;
             --card-bg: #1b263b;
@@ -162,7 +161,7 @@
         .input-container label {
             position: absolute;
             top: -12px;
-            left: 5px;
+            right: 5px;
             font-size: 13px;
             color: #a0aec0;
             pointer-events: none;
@@ -238,7 +237,7 @@
         .api-toast {
             position: fixed;
             top: 30px;
-            left: 20px;
+            right: 20px;
             z-index: 2000;
             padding: 12px 25px;
             border-radius: 8px;
@@ -246,21 +245,6 @@
             font-weight: 600;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             display: none;
-        }
-
-        /* تنسيق مخصص لحاوية زر ترجمة جوجل لتبدو مدمجة مع الهيدر */
-        #google_translate_element {
-            min-width: 160px;
-        }
-        .goog-te-gadget-simple {
-            background-color: rgba(0, 0, 0, 0.3) !important;
-            border: 1px solid var(--sea-blue) !important;
-            padding: 4px 8px !important;
-            border-radius: 6px !important;
-        }
-        .goog-te-gadget-simple .goog-te-menu-value span {
-            color: var(--neon-cyan) !important;
-            font-weight: 600 !important;
         }
     </style>
 </head>
@@ -272,28 +256,32 @@
     <div class="customer-header">
         <div class="customer-title">
             <i class='bx bx-user-pin bx-flashing'></i>
-            <span>Customer Registry & ZATCA Compliance</span>
+            <span>سجل العملاء وإدارة الامتثال لـ ZATCA</span>
         </div>
-        <div id="google_translate_element"></div>
+        <div>
+            <a href="index.html" class="btn-neon" style="--clr:var(--sea-blue)">
+                <i class="fas fa-home"></i> <span>الرئيسية</span>
+            </a>
+        </div>
     </div>
 
     <form id="customerForm" onsubmit="handleCustomerSubmit(event)">
         
         <div class="section-subtitle">
-            <i class="fas fa-id-card"></i> <span>Customer Structural Identifiers</span>
+            <i class="fas fa-id-card"></i> <span>المعرفات الهيكلية للعميل</span>
         </div>
 
         <div class="row">
             <div class="col-md-4">
                 <div class="input-container">
                     <input id="custInvoiceId" type="text" required placeholder=" " autofocus>
-                    <label>Customer ID / Record Code</label>
+                    <label>كود العميل / الرقم المرجعي</label>
                 </div>
             </div>
             <div class="col-md-8">
                 <div class="input-container">
                     <input id="custVatNumber" type="text" maxlength="15" placeholder=" ">
-                    <label>Enterprise VAT Number (15 Digits for B2B Compliance)</label>
+                    <label>الرقم الضريبي للمنشأة (15 خانة لامتثال الشركات B2B)</label>
                 </div>
             </div>
         </div>
@@ -302,19 +290,19 @@
             <div class="col-md-7">
                 <div class="input-container">
                     <input id="custName" type="text" required placeholder=" ">
-                    <label>Certified Customer Name / Registered Enterprise</label>
+                    <label>اسم العميل المعتمد / المنشأة</label>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="input-container">
                     <input id="custPhone" type="tel" required placeholder=" ">
-                    <label>Mobile / Contact Number</label>
+                    <label>رقم الجوال / التواصل</label>
                 </div>
             </div>
         </div>
 
         <div class="section-subtitle">
-            <i class="fas fa-map-marker-alt"></i> <span>National Address Details (ZATCA Mandatory B2B Standard)</span>
+            <i class="fas fa-map-marker-alt"></i> <span>تفاصيل العنوان الوطني (معيار إلزامي لـ ZATCA في فواتير B2B)</span>
         </div>
 
         <div class="national-address-box">
@@ -322,37 +310,37 @@
                 <div class="col-6 col-md-4">
                     <div class="input-container">
                         <input id="custCity" type="text" required placeholder=" ">
-                        <label>City</label>
+                        <label>المدينة</label>
                     </div>
                 </div>
                 <div class="col-6 col-md-4">
                     <div class="input-container">
                         <input id="custDistrict" type="text" required placeholder=" ">
-                        <label>District</label>
+                        <label>الحي</label>
                     </div>
                 </div>
                 <div class="col-12 col-md-4">
                     <div class="input-container">
                         <input id="custStreet" type="text" required placeholder=" ">
-                        <label>Street Name</label>
+                        <label>اسم الشارع</label>
                     </div>
                 </div>
                 <div class="col-4 col-md-4">
                     <div class="input-container">
                         <input id="custBuildingNo" type="text" required placeholder=" ">
-                        <label>Building No</label>
+                        <label>رقم المبنى</label>
                     </div>
                 </div>
                 <div class="col-4 col-md-4">
                     <div class="input-container">
                         <input id="custPostalCode" type="number" required placeholder=" ">
-                        <label>Postal Code</label>
+                        <label>الرمز البريدي</label>
                     </div>
                 </div>
                 <div class="col-4 col-md-4">
                     <div class="input-container">
                         <input id="custAdditionalNo" type="number" required placeholder=" ">
-                        <label>Additional No (4 Digits)</label>
+                        <label>الرقم الإضافي (4 أرقام)</label>
                     </div>
                 </div>
             </div>
@@ -361,10 +349,10 @@
         <div class="d-flex flex-wrap gap-2 justify-content-between mt-3">
             <div class="d-flex gap-2 w-100 justify-content-between justify-content-md-start">
                 <button type="submit" id="btnSubmitAction" class="btn-neon" style="--clr:var(--light-green)">
-                    <i class="fas fa-user-plus"></i> <span id="lblSubmitBtn">Add & Secure Profile</span>
+                    <i class="fas fa-user-plus"></i> <span id="lblSubmitBtn">حفظ وتأمين الملف الضريبي</span>
                 </button>
                 <button type="button" onclick="clearCustomerForm()" class="btn-neon" style="--clr:var(--warning-orange)">
-                    <i class="fas fa-redo"></i> <span>Reset Form</span>
+                    <i class="fas fa-redo"></i> <span>تفريغ الحقول</span>
                 </button>
             </div>
         </div>
@@ -374,12 +362,12 @@
         <table class="table table-dark table-striped table-custom text-center">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Enterprise Name</th>
-                    <th>VAT Number</th>
-                    <th>Mobile</th>
-                    <th>Certified National Address</th>
-                    <th>Actions</th>
+                    <th>الكود المرجعي</th>
+                    <th>اسم المنشأة</th>
+                    <th>الرقم الضريبي</th>
+                    <th>رقم الجوال</th>
+                    <th>العنوان الوطني المعتمد</th>
+                    <th>العمليات</th>
                 </tr>
             </thead>
             <tbody id="customersTableBody">
@@ -389,18 +377,6 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-<script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'ar,en,ur,hi',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-            autoDisplay: true
-        }, 'google_translate_element');
-    }
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 <script>
     const API_ENDPOINT = 'api/save_customer.php';
@@ -427,7 +403,8 @@
 
     function getCustomersList() {
         try {
-            return JSON.parse(localStorage.getItem('altajer_customers_list')) || [];
+            // توحيد اسم المفتاح ليتطابق بالكامل مع شاشة المبيعات التراكمية
+            return JSON.parse(localStorage.getItem('altajer_customers')) || [];
         } catch (e) {
             return [];
         }
@@ -440,13 +417,12 @@
         tbody.innerHTML = '';
 
         if (customers.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-muted text-center p-3">No compliant records found in local registry.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="text-muted text-center p-3">لا توجد سجلات مطابقة في الذاكرة المحلية حالياً.</td></tr>`;
             return;
         }
 
         customers.forEach(cust => {
-            // صياغة العنوان الوطني الكامل الممتثل لهيئة الزكاة والدخل بما يشمل الرقم الإضافي
-            const fullAddr = `Bldg ${cust.building_no || '---'}, St ${cust.street || '---'}, Dist ${cust.district || '---'}, ${cust.city || '---'} (${cust.postal_code || '---'}) | AddNo: ${cust.additional_no || '---'}`;
+            const fullAddr = `مبنى ${cust.building_no || '---'}، شارع ${cust.street_name || cust.street || '---'}، حي ${cust.district || '---'}، ${cust.city || '---'} (${cust.postal_code || '---'}) | إضافي: ${cust.additional_no || '---'}`;
             tbody.innerHTML += `
                 <tr>
                     <td>${cust.id}</td>
@@ -455,8 +431,8 @@
                     <td>${cust.phone}</td>
                     <td class="small text-white-50">${fullAddr}</td>
                     <td>
-                        <i class="fas fa-edit action-icon icon-edit" onclick="loadCustomerToEdit('${cust.id}')" title="Edit"></i>
-                        <i class="fas fa-trash-alt action-icon icon-delete" onclick="deleteCustomer('${cust.id}')" title="Delete"></i>
+                        <i class="fas fa-edit action-icon icon-edit" onclick="loadCustomerToEdit('${cust.id}')" title="تعديل"></i>
+                        <i class="fas fa-trash-alt action-icon icon-delete" onclick="deleteCustomer('${cust.id}')" title="حذف"></i>
                     </td>
                 </tr>
             `;
@@ -480,23 +456,19 @@
 
         const vatNumberValue = vatField.value.trim();
 
-        // 🛡️ فحص الامتثال المحاسبي التام لشروط هيئة الزكاة والضريبة والجمارك (ZATCA) للـ B2B
         if (vatNumberValue !== "") {
-            // الشرط الأول: طول الرقم يجب أن يكون 15 خانة رقمية
             if (vatNumberValue.length !== 15 || isNaN(vatNumberValue)) {
-                showToast("ZATCA Audit Error: Tax Number must be exactly 15 numeric digits!", false);
+                showToast("خطأ تدقيق ZATCA: الرقم الضريبي يجب أن يكون 15 خانة رقمية تماماً!", false);
                 return;
             }
-            // الشرط الثاني للهيئة: الرقم الضريبي في المملكة يجب أن يبدأ وينتهي بالرقم 3
             if (!vatNumberValue.startsWith('3') || !vatNumberValue.endsWith('3')) {
-                showToast("ZATCA Audit Error: KSA Tax Numbers must start and end with the digit '3'!", false);
+                showToast("خطأ تدقيق ZATCA: الأرقام الضريبية بالمملكة يجب أن تبدأ وتنتهي بالرقم 3!", false);
                 return;
             }
         }
 
-        // فحص الرمز الإضافي (يجب أن يكون 4 أرقام لتطابق بريد واصل والامتثال المعتمد)
         if (additionalField.value.trim().length !== 4 || isNaN(additionalField.value.trim())) {
-            showToast("Address Error: Additional Number must be exactly 4 numeric digits!", false);
+            showToast("خطأ في العنوان: الرقم الإضافي للعنوان الوطني يجب أن يتكون من 4 أرقام!", false);
             return;
         }
 
@@ -507,7 +479,7 @@
             phone: phoneField.value.trim(),
             city: cityField.value.trim(),
             district: districtField.value.trim(),
-            street: streetField.value.trim(),
+            street_name: streetField.value.trim(), // الحقل الموحد لزاتكا والمبيعات
             building_no: buildingField.value.trim(),
             postal_code: postalField.value.trim(),
             additional_no: additionalField.value.trim()
@@ -517,37 +489,33 @@
 
         if (editModeCustomerId) {
             customers = customers.map(c => c.id === editModeCustomerId ? payload : c);
-            showToast("Customer tax profile updated successfully.");
+            showToast("تم تحديث الملف الضريبي للعميل بنجاح.");
         } else {
             if (customers.some(c => c.id === payload.id)) {
-                showToast("Audit Error: This Customer ID already exists in records!", false);
+                showToast("خطأ تدقيق: كود العميل هذا مسجل مسبقاً في الدليل!", false);
                 return;
             }
             customers.push(payload);
-            showToast("New customer registered with full ZATCA data compliance.");
+            showToast("تم تسجيل العميل بنجاح مع مطابقة بيانات ZATCA.");
         }
 
-        localStorage.setItem('altajer_customers_list', JSON.stringify(customers));
+        localStorage.setItem('altajer_customers', JSON.stringify(customers));
         clearCustomerForm();
         renderCustomersTable();
 
-        // ترحيل ومزامنة فورية مع قاعدة البيانات الخلفية بالخادم
         fetch(API_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-        .then(response => {
-            if (!response.ok) throw new Error();
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             if(data && data.status === 'success') {
                 console.log("Cloud server data synchronized successfully.");
             }
         })
         .catch(() => {
-            console.warn("Operating in local database fallback mode. Sync pending network stability.");
+            console.warn("Operating in local database fallback mode.");
         });
     }
 
@@ -568,22 +536,22 @@
         
         document.getElementById('custCity').value = cust.city || '';
         document.getElementById('custDistrict').value = cust.district || '';
-        document.getElementById('custStreet').value = cust.street || '';
+        document.getElementById('custStreet').value = cust.street_name || cust.street || '';
         document.getElementById('custBuildingNo').value = cust.building_no || '';
         document.getElementById('custPostalCode').value = cust.postal_code || '';
         document.getElementById('custAdditionalNo').value = cust.additional_no || '';
 
-        document.getElementById('lblSubmitBtn').innerText = "Update Certified Info";
+        document.getElementById('lblSubmitBtn').innerText = "تعديل الملف المعتمد";
         document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--warning-orange)');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function deleteCustomer(id) {
-        if (confirm("Are you sure you want to permanently purge this enterprise from ledger directories?")) {
+        if (confirm("هل أنت متأكد من رغبتك في حذف هذه المنشأة نهائياً من السجلات؟")) {
             let customers = getCustomersList();
             customers = customers.filter(c => c.id !== id);
-            localStorage.setItem('altajer_customers_list', JSON.stringify(customers));
-            showToast("Profile removed from active logs successfully.", false);
+            localStorage.setItem('altajer_customers', JSON.stringify(customers));
+            showToast("تمت إزالة العميل من السجلات الحالية.", false);
             renderCustomersTable();
             if (editModeCustomerId === id) clearCustomerForm();
         }
@@ -600,7 +568,7 @@
             idInput.focus();
         }
         
-        document.getElementById('lblSubmitBtn').innerText = "Add & Secure Profile";
+        document.getElementById('lblSubmitBtn').innerText = "حفظ وتأمين الملف الضريبي";
         document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--light-green)');
     }
 </script>

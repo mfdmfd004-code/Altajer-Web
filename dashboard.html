@@ -9,17 +9,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#14080a">
 
+    <meta name="google" content="notranslate">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root { 
-            --bg-dark: #0a0305;      /* الخلفية العميقة للنظام */
-            --panel-dark: #14080a;   /* خلفية الكروت والحاويات */
-            --border-dark: #3d1522;  /* ألوان الحدود المتناسقة */
-            --accent-blue: #0077b6;  /* الأزرق المميز للتاجر برو */
-            --text-light: #e0d0d5;   /* النصوص الفاتحة الواضحة */
-            --text-dim: #a09095;     /* النصوص الفرعية المخففة */
+            --bg-dark: #0a0305;      
+            --panel-dark: #14080a;   
+            --border-dark: #3d1522;  
+            --accent-blue: #0077b6;  
+            --text-light: #e0d0d5;   
+            --text-dim: #a09095;     
         }
         
         * {
@@ -43,6 +45,13 @@
             margin-bottom: 20px; 
         }
         
+        /* تحويل الكروت إلى روابط تفاعلية منظمة قابلة للضغط للربط التام */
+        .stat-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
         .stat-card { 
             background: var(--panel-dark); 
             padding: 18px 10px; 
@@ -51,11 +60,13 @@
             border: 1px solid var(--border-dark);
             border-bottom: 4px solid var(--accent-blue); 
             box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-            transition: transform 0.2s;
+            transition: transform 0.2s, background-color 0.2s;
+            cursor: pointer;
         }
         
         .stat-card:active {
-            transform: scale(0.98);
+            transform: scale(0.95);
+            background-color: #1a0b0e;
         }
 
         .stat-card i { 
@@ -114,16 +125,21 @@
 <body>
 
     <div class="stats-grid">
-        <div class="stat-card">
-            <i class="fas fa-shopping-basket"></i>
-            <h3 data-i18n="dash-orders-title">الطلبات (الفواتير)</h3>
-            <p id="orderCount">0</p>
-        </div>
-        <div class="stat-card">
-            <i class="fas fa-users"></i>
-            <h3 data-i18n="dash-customers-title">العملاء المسجلين</h3>
-            <p id="customerCount">0</p>
-        </div>
+        <a href="sales.html" class="stat-card-link">
+            <div class="stat-card">
+                <i class="fas fa-shopping-basket"></i>
+                <h3 data-i18n="dash-orders-title">الطلبات (الفواتير)</h3>
+                <p id="orderCount">0</p>
+            </div>
+        </a>
+
+        <a href="customers.html" class="stat-card-link">
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3 data-i18n="dash-customers-title">العملاء المسجلين</h3>
+                <p id="customerCount">0</p>
+            </div>
+        </a>
     </div>
 
     <div class="chart-container">
@@ -140,28 +156,23 @@
     <script src="i18n.js"></script>
 
     <script type="module">
-        // دالة محرك فصول السنة التلقائي المتزامن مع الإعدادات الفورية لحماية العين
         function applySavedTheme() {
             const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
             document.documentElement.setAttribute('data-theme', activeTheme);
         }
 
         window.addEventListener("DOMContentLoaded", function() {
-            // تطبيق الثيم المعتمد فورا عند التشغيل
             applySavedTheme();
 
-            // 1. جلب البيانات الفعلية التراكمية من الذاكرة المحلية
+            // جلب البيانات الفعلية من الذاكرة المحلية للجوال
             const globalCustomers = JSON.parse(localStorage.getItem('altajer_customers')) || [];
             const globalInvoices = JSON.parse(localStorage.getItem('altajer_invoices')) || [];
 
-            // تحديث أرقام الكروت فوراً بناءً على المخزون الفعلي والعمليات
+            // تحديث الأرقام ديناميكياً
             document.getElementById('orderCount').innerText = globalInvoices.length;
             document.getElementById('customerCount').innerText = globalCustomers.length;
 
-            // 2. محرك قراءة وتحليل الفواتير لبناء رسوم بيانية حقيقية وديناميكية متوافقة مع اللغتين
             const currentLang = localStorage.getItem('altajer_lang') || 'ar';
-            
-            // تهيئة أسماء الشهور بناء على اللغة النشطة بالمحرك
             let months = currentLang === 'ar' ? ['يناير', 'فبراير', 'مارس'] : ['January', 'February', 'March'];
             
             let incomeData = [0, 0, 0]; 
@@ -172,7 +183,6 @@
                 globalInvoices.forEach(inv => {
                     totalNetInvoices += parseFloat(inv.total_net || 0);
                 });
-                
                 incomeData = [totalNetInvoices * 0.3, totalNetInvoices * 0.4, totalNetInvoices * 0.3];
                 salesQtyData = [globalInvoices.length * 0.3, globalInvoices.length * 0.5, globalInvoices.length * 0.2];
             } else {
@@ -180,11 +190,10 @@
                 salesQtyData = [30, 45, 35];
             }
 
-            // ألوان المخططات المضيئة المتناسقة مع الخلفية الداكنة
             const chartColors = ['#0077b6', '#90be6d', '#ffca3a'];
             const textLightColor = '#e0d0d5';
 
-            // 3. بناء رسم المخطط الدائري (تحليل الدخل)
+            // بناء المخطط الدائري
             new Chart(document.getElementById('myChart'), {
                 type: 'pie',
                 data: {
@@ -193,7 +202,7 @@
                         data: incomeData, 
                         backgroundColor: chartColors,
                         borderWidth: 2,
-                        borderColor: '#14080a' // لفصل الشرائح بلون الكارت الداكن
+                        borderColor: '#14080a' 
                     }]
                 },
                 options: {
@@ -203,7 +212,7 @@
                             position: 'bottom', 
                             labels: { 
                                 boxWidth: 12, 
-                                color: textLightColor, // تحويل نصوص التوضيح للأبيض واضح
+                                color: textLightColor, 
                                 font: { size: 12, family: 'Segoe UI' } 
                             } 
                         }
@@ -211,7 +220,7 @@
                 }
             });
 
-            // 4. بناء رسم المخطط الخطي (نمو المبيعات)
+            // بناء المخطط الخطي
             const datasetLabel = currentLang === 'ar' ? 'عدد العمليات المسجلة' : 'Registered Operations';
             new Chart(document.getElementById('chart2'), {
                 type: 'line',
@@ -232,12 +241,12 @@
                     scales: {
                         y: { 
                             beginAtZero: true, 
-                            grid: { color: 'rgba(224, 208, 213, 0.05)' }, // شبكة خفيفة جداً
-                            ticks: { color: textLightColor } // أرقام المحور Y بالفاتح
+                            grid: { color: 'rgba(224, 208, 213, 0.05)' }, 
+                            ticks: { color: textLightColor } 
                         },
                         x: { 
                             grid: { display: false },
-                            ticks: { color: textLightColor } // أسماء الشهور بالفاتح
+                            ticks: { color: textLightColor } 
                         }
                     },
                     plugins: {

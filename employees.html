@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الموظفين وشؤون العمل - التاجر برو</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root {
+            --neon-cyan: #00b4d8;
+            --sea-blue: #0077b6;
+            --neon-pink: #ff007f;
+            --light-green: #2ec4b6;
+            --warning-orange: #ff9f1c;
+            --danger-red: #e63946;
+            --bg-dark-core: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --glow-soft: 0 0 10px rgba(0, 180, 216, 0.3);
+        }
+
+        body {
+            background-color: var(--bg-dark-core);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .employee-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 0 auto 40px;
+            max-width: 1100px;
+            position: relative;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .employee-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--light-green), var(--warning-orange));
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        .employee-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dashed rgba(0, 180, 216, 0.2);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .employee-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: var(--glow-soft);
+        }
+
+        .btn-neon {
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-neon:hover {
+            background: var(--clr);
+            box-shadow: 0 0 15px var(--clr);
+            color: #fff;
+            transform: translateY(-2px);
+            border-color: transparent;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--neon-cyan);
+            margin-top: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
+            padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-container input, .input-container select {
+            border: 0;
+            border-bottom: 2px solid #475569;
+            background: transparent;
+            width: 100%;
+            padding: 8px 5px 4px 5px;
+            font-size: 15px;
+            color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        .input-container select option {
+            background-color: #1e293b;
+            color: #fff;
+        }
+
+        .input-container input:focus, .input-container select:focus {
+            outline: none;
+            border-bottom: 2px solid var(--neon-cyan);
+        }
+
+        .input-container label {
+            position: absolute;
+            top: 8px;
+            right: 5px;
+            font-size: 14px;
+            color: #94a3b8;
+            pointer-events: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .input-container input:focus ~ label,
+        .input-container input:not(:placeholder-shown) ~ label,
+        .input-container select:focus ~ label,
+        .input-container select:valid ~ label {
+            top: -14px;
+            font-size: 12px;
+            color: var(--neon-cyan);
+        }
+        .table-responsive-custom {
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .table-custom {
+            background-color: transparent !important;
+            color: #f1f5f9 !important;
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        .table-custom th {
+            background-color: rgba(15, 23, 42, 0.6) !important;
+            color: var(--neon-cyan) !important;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(0, 180, 216, 0.3) !important;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            border-color: rgba(255, 255, 255, 0.04) !important;
+            background-color: rgba(30, 41, 59, 0.2) !important;
+        }
+
+        .action-icon {
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+            margin: 0 5px;
+        }
+        .action-icon:hover { transform: scale(1.2); }
+        .icon-delete { color: var(--danger-red); }
+
+        .api-toast {
+            position: fixed;
+            top: 30px;
+            left: 20px;
+            z-index: 2000;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="apiToast" class="api-toast"></div>
+
+<div class="employee-container">
+    <div class="employee-header">
+        <div class="employee-title">
+            <i class='bx bx-id-card bx-flashing'></i>
+            <span>منظومة إدارة شؤون الموظفين والرواتب</span>
+        </div>
+        <div>
+            <a href="index.html" class="btn-neon" style="--clr:var(--sea-blue)">
+                <i class="fas fa-home"></i> <span>الرئيسية</span>
+            </a>
+        </div>
+    </div>
+
+    <form id="employeeForm">
+        <div class="section-subtitle">
+            <i class="fas fa-user-plus"></i> <span>بيانات ملف الموظف الجديد</span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="input-container">
+                    <input id="empId" type="text" required placeholder=" " autofocus>
+                    <label>الرقم الوظيفي / الكود</label>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="input-container">
+                    <input id="empName" type="text" required placeholder=" ">
+                    <label>اسم الموظف الثلاثي الكامل</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-container">
+                    <input id="empPhone" type="tel" required placeholder=" ">
+                    <label>رقم الجوال للتواصل</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="input-container">
+                    <select id="empRole" required>
+                        <option value="" disabled selected hidden></option>
+                        <option value="إدارة وتشغيل">إدارة وتشغيل</option>
+                        <option value="محاسب كاشير">محاسب / كاشير</option>
+                        <option value="معلم معجنات / حلويات">معلم معجنات / حلويات</option>
+                        <option value="عامل إنتاج">عامل إنتاج / تعبئة</option>
+                        <option value="مندوب توصيل">مندوب توصيل / سلاسل إمداد</option>
+                    </select>
+                    <label>المسمى الوظيفي / القسم</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-container">
+                    <input id="empSalary" type="number" step="0.01" required placeholder=" ">
+                    <label>الراتب الأساسي (ريال سعودي)</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-container">
+                    <input id="empHireDate" type="date" required placeholder=" ">
+                    <label>تاريخ مباشرة العمل</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex mt-2">
+            <button type="submit" id="btnSubmitEmployee" class="btn-neon" style="--clr:var(--light-green)">
+                <i class="fas fa-user-check"></i> <span>حفظ وتثبيت ملف الموظف سحابياً</span>
+            </button>
+        </div>
+    </form>
+
+    <div class="table-responsive-custom">
+        <table class="table table-custom text-center">
+            <thead>
+                <tr>
+                    <th>الرقم الوظيفي</th>
+                    <th>اسم الموظف</th>
+                    <th>رقم الجوال</th>
+                    <th>المسمى الوظيفي</th>
+                    <th>الراتب الأساسي</th>
+                    <th>تاريخ المباشرة</th>
+                    <th>التحكم</th>
+                </tr>
+            </thead>
+            <tbody id="employeesTableBody">
+                <tr>
+                    <td colspan="7" class="text-muted p-3">جاري جلب ملفات شؤون الموظفين من السيرفر السحابي...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // إعدادات مشروع الـ Firebase الحقيقية والمطابقة تماماً لـ Altajer Pro
+    const firebaseConfig = {
+        apiKey: "AIzaSyAdH8KorayFEiM3_N_I6v-m3A09uXqY4Q8", 
+        authDomain: "altajer-pro-accountant.firebaseapp.com",
+        databaseURL: "https://altajer-pro-accountant-default-rtdb.firebaseio.com",
+        projectId: "altajer-pro-accountant",
+        storageBucket: "altajer-pro-accountant.appspot.com",
+        messagingSenderId: "982176278219", 
+        appId: "1:982176278219:web:5fede7cef02cce60a35d4e" 
+    };
+
+    // تهيئة الاتصال بالسيرفر السحابي
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // تشغيل المزامنة وتعيين تاريخ اليوم تلقائياً عند تحميل الصفحة
+    document.addEventListener("DOMContentLoaded", function() {
+        const dateInput = document.getElementById('empHireDate');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+        syncEmployeesFromFirebase();
+    });
+
+    // إشعارات نظام التاجر المخصصة
+    function showToast(message, isSuccess = true) {
+        const toast = document.getElementById('apiToast');
+        if (!toast) return;
+        toast.innerText = message;
+        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    // جلب ملفات الموظفين بشكل حي ومستمر من قاعدة البيانات
+    function syncEmployeesFromFirebase() {
+        const employeesRef = ref(db, 'altajer_employees');
+        onValue(employeesRef, (snapshot) => {
+            const data = snapshot.val();
+            const employeesList = [];
+            
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    employeesList.push(data[key]);
+                });
+            }
+            renderEmployeesTable(employeesList);
+        }, (error) => {
+            showToast("فشل جلب سجل الموظفين: " + error.message, false);
+        });
+    }
+
+    // بناء وعرض جدول الموظفين
+    function renderEmployeesTable(employees) {
+        const tbody = document.getElementById('employeesTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (employees.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-muted text-center p-3">لا توجد ملفات موظفين مسجلة سحابياً حالياً.</td></tr>`;
+            return;
+        }
+
+        employees.forEach(emp => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="fw-bold text-info">${emp.id}</td>
+                <td class="text-white fw-bold">${emp.name}</td>
+                <td>${emp.phone}</td>
+                <td class="text-warning">${emp.role}</td>
+                <td class="fw-bold text-success">${parseFloat(emp.salary).toFixed(2)} ر.س</td>
+                <td>${emp.hireDate}</td>
+                <td>
+                    <i class="fas fa-trash-alt action-icon icon-delete" title="حذف السجل الوظيفي"></i>
+                </td>
+            `;
+
+            // ربط حذف الموظف لحماية السجلات
+            tr.querySelector('.icon-delete').addEventListener('click', () => deleteEmployee(emp.id));
+            tbody.appendChild(tr);
+        });
+    }
+
+    // تسجيل الموظف في Firebase وقفل البيانات
+    document.getElementById('employeeForm').onsubmit = function(e) {
+        e.preventDefault();
+
+        const idField = document.getElementById('empId');
+        const nameField = document.getElementById('empName');
+        const phoneField = document.getElementById('empPhone');
+        const roleField = document.getElementById('empRole');
+        const salaryField = document.getElementById('empSalary');
+        const dateField = document.getElementById('empHireDate');
+
+        const payload = {
+            id: idField.value.trim(),
+            name: nameField.value.trim(),
+            phone: phoneField.value.trim(),
+            role: roleField.value,
+            salary: parseFloat(salaryField.value),
+            hireDate: dateField.value,
+            created_at: new Date().toISOString()
+        };
+
+        set(ref(db, `altajer_employees/${payload.id}`), payload)
+        .then(() => {
+            showToast("تم حفظ ملف الموظف وتأمينه في قاعدة البيانات السحابية.");
+            document.getElementById('employeeForm').reset();
+            dateField.value = new Date().toISOString().split('T')[0];
+            idField.focus();
+        })
+        .catch((err) => showToast("فشل الحفظ السحابي: " + err.message, false));
+    };
+
+    // حذف ملف موظف من السحابة
+    function deleteEmployee(id) {
+        if (confirm("تحذير الإدارة: هل أنت متأكد من رغبتك في حذف ملف هذا الموظف نهائياً من النظام؟")) {
+            remove(ref(db, `altajer_employees/${id}`))
+            .then(() => {
+                showToast("تمت إزالة ملف الموظف سحابياً بنجاح.", false);
+            })
+            .catch((err) => showToast("حدث خطأ أثناء الحذف: " + err.message, false));
+        }
+    }
+</script>
+</body>
+</html>

@@ -250,7 +250,7 @@
       <span>أو عبر الشبكات الآمنة</span>
     </div>
 
-    <button type="button" class="btn-google" onclick="loginWithGoogle()">
+    <button type="button" class="btn-google" onclick="window.loginWithGoogle()">
       <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
       <span>الدخول بواسطة Google</span>
     </button>
@@ -260,26 +260,25 @@
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  <script type="module" src="firebase-config.js"></script>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyADh8KorayFEiM1JIETYr8LDubkJpja_yU",
-      authDomain: "altajer-pro-accountant.firebaseapp.com",
-      projectId: "altajer-pro-accountant",
-      storageBucket: "altajer-pro-accountant.firebasestorage.app",
-      messagingSenderId: "982176278219",
-      appId: "1:982176278219:web:f16baa6502f657fca35d4e",
-      measurementId: "G-2SKNNZF03R"
-    };
+  <script>
+    // التأكد من جاهزية الفايربيز المركزي قبل تنفيذ العمليات
+    function getAuthService() {
+      if (!window.auth) {
+        alert("جاري تهيئة خط الاتصال بالسيرفر.. يرجى المحاولة بعد ثوانٍ قليلة.");
+        return null;
+      }
+      return window.auth;
+    }
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const googleProvider = new GoogleAuthProvider();
-
-    window.loginWithGoogle = function() {
-      signInWithPopup(auth, googleProvider)
+    // دالة الدخول عبر جوجل المستندة للملف المركزي
+    function loginWithGoogle() {
+      if (!window.auth || !window.provider || !window.signInWithPopup) {
+        alert("خط الاتصال غير جاهز بعد، يرجى تحديث الصفحة.");
+        return;
+      }
+      window.signInWithPopup(window.auth, window.provider)
         .then((result) => {
           const user = result.user;
           if (user.email === "mfdmfd004@gmail.com") {
@@ -291,21 +290,32 @@
           }
         })
         .catch((error) => {
-          console.error("خطأ في تسجيل دخول جوجل:", error);
-          alert("فشلت عملية الدخول عبر جوجل، يرجى المحاولة مرة أخرى.");
+          console.error("خطأ جوجل:", error);
+          alert("فشلت عملية الدخول عبر جوجل، يرجى إعادة المحاولة.");
         });
-    };
+    }
+    window.loginWithGoogle = loginWithGoogle;
 
-    window.handleFormSubmit = function(event) {
+    // دالة الدخول والإنشاء التقليدي المستندة للملف المركزي
+    function handleFormSubmit(event) {
       event.preventDefault();
+      
+      if (!window.auth) {
+        alert("السيرفر لا يستجيب حالياً، يرجى التحقق من الشبكة.");
+        return;
+      }
+
       const email = document.getElementById("authEmail").value;
       const password = document.getElementById("authPassword").value;
-      
       const nameGroup = document.getElementById("nameGroup");
       const isSignup = nameGroup && nameGroup.style.display === "block";
 
       if (isSignup) {
-        createUserWithEmailAndPassword(auth, email, password)
+        // إنشاء حساب جديد مستقر
+        const { createUserWithEmailAndPassword } = window;
+        if (!createUserWithEmailAndPassword) return;
+        
+        createUserWithEmailAndPassword(window.auth, email, password)
           .then((userCredential) => {
             alert("تم إنشاء حسابك الجديد بنجاح في التاجر برو!");
             window.location.href = "client-panel.html";
@@ -315,7 +325,11 @@
             alert("خطأ في الإنشاء: " + error.message);
           });
       } else {
-        signInWithEmailAndPassword(auth, email, password)
+        // تسجيل دخول تقليدي مستقر
+        const { signInWithEmailAndPassword } = window;
+        if (!signInWithEmailAndPassword) return;
+
+        signInWithEmailAndPassword(window.auth, email, password)
           .then((userCredential) => {
             if (email === "mfdmfd004@gmail.com") {
               alert("أهلاً بك يا أبا فهد! تم الدخول بصلاحيات المالك.");
@@ -330,10 +344,10 @@
             alert("خطأ في الدخول: تأكد من صحة البريد الإلكتروني وكلمة المرور.");
           });
       }
-    };
-  </script>
+    }
+    window.handleFormSubmit = handleFormSubmit;
 
-  <script>
+    // التبديل بين شاشتي الدخول والإنشاء
     function toggleAuthMode(mode) {
       const signupFields = document.querySelectorAll('.signup-only');
       const formTitle = document.getElementById('formTitle');
@@ -361,6 +375,7 @@
       }
     }
 
+    // إظهار وإخفاء الباسورد
     function togglePasswordVisibility(event) {
       const passwordInput = document.getElementById('authPassword');
       const eyeIcon = event.target;

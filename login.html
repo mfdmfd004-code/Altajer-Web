@@ -271,18 +271,18 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // إعدادات ومفاتيح الربط البرمجية التابعة لك 100% كما هي في المنصة
+    // ⚡ تحديث المفاتيح وإعدادات الربط البرمجية لتتطابق تماماً مع مشروعك النهائي الحالي
     const firebaseConfig = {
       apiKey: "AIzaSyADh8KorayFEiM1JIETYr8LDubkJpja_yU",
       authDomain: "altajer-pro-accountant.firebaseapp.com",
       projectId: "altajer-pro-accountant",
       storageBucket: "altajer-pro-accountant.firebasestorage.app",
       messagingSenderId: "982176278219",
-      appId: "1:982176278219:web:5fede7cef02cce60a35d4e",
-      measurementId: "G-WM6KN5NKTC"
+      appId: "1:982176278219:web:f16baa6502f657fca35d4e",
+      measurementId: "G-2SKNNZF03R"
     };
 
-    // تهيئة فايربيس
+    // تهيئة فايربيز بالمفاتيح المحدثة
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const googleProvider = new GoogleAuthProvider();
@@ -293,10 +293,10 @@
         .then((result) => {
           const user = result.user;
           
-          // 👑 هنا إيميلك يا أبا فهد لفتح الصلاحيات الكاملة للآدمن تلقائياً
+          // 👑 التعرف التلقائي على حسابك الشخصي لفتح الصلاحيات المطلقة
           if (user.email === "mfdmfd004@gmail.com") {
             alert("أهلاً بك يا أبا فهد! تم التعرف على حساب المالك بنجاح.");
-            window.location.href = "dashboard.html"; // توجيهك للوحة تحكم الآدمن
+            window.location.href = "dashboard.html"; // توجيهك مباشرة للوحة التحكم
           } else {
             alert("تم تسجيل دخولك بنجاح كعميل لـ التاجر برو.");
             window.location.href = "client-panel.html"; // توجيه العميل لصفحته المحدودة
@@ -329,7 +329,7 @@
         // إجراء تسجيل دخول تقليدي عادي
         signInWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
-            // التحقق من حساب الآدمن عند الدخول التقليدي أيضاً
+            // التحقق من حساب المالك عند الدخول التقليدي أيضاً
             if (email === "mfdmfd004@gmail.com") {
               window.location.href = "dashboard.html";
             } else {

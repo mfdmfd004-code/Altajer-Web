@@ -35,7 +35,6 @@
       text-align: center;
     }
 
-    /* مكان مخصص للأنميشن العلوي */
     .avatar-section {
       width: 90px;
       height: 90px;
@@ -105,7 +104,6 @@
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
-    /* أيقونة العين لإظهار كلمة المرور */
     .toggle-password {
       position: absolute;
       left: 14px;
@@ -116,7 +114,6 @@
       padding: 5px;
     }
 
-    /* زر الإجراء الرئيسي الأزرق/الأخضر */
     .btn-primary {
       width: 100%;
       padding: 13px;
@@ -135,7 +132,6 @@
       background-color: #1d4ed8;
     }
 
-    /* خط الفاصل بين الدخول العادي وجوجل */
     .divider {
       margin: 22px 0;
       position: relative;
@@ -162,7 +158,6 @@
       z-index: 2;
     }
 
-    /* زر الدخول بواسطة جوجل الاحترافي */
     .btn-google {
       width: 100%;
       padding: 12px;
@@ -190,7 +185,6 @@
       height: 20px;
     }
 
-    /* روابط التبديل السفلي بين الشاشات */
     .switch-text {
       margin-top: 25px;
       font-size: 14px;
@@ -208,7 +202,6 @@
       text-decoration: underline;
     }
 
-    /* إخفاء حقول تسجيل الحساب الجديد برمجياً في البداية */
     .signup-only {
       display: none;
     }
@@ -225,7 +218,7 @@
 
     <form id="authForm" onsubmit="handleFormSubmit(event)">
       
-      <div class="form-group signup-only">
+      <div class="form-group signup-only" id="nameGroup">
         <label>الاسم الكامل للمؤسسة / العميل</label>
         <div class="input-wrapper">
           <i class="fas fa-id-card input-icon"></i>
@@ -246,7 +239,7 @@
         <div class="input-wrapper">
           <i class="fas fa-lock input-icon"></i>
           <input type="password" id="authPassword" placeholder="••••••••" required>
-          <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility()"></i>
+          <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility(event)"></i>
         </div>
       </div>
 
@@ -271,7 +264,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // ⚡ تحديث المفاتيح وإعدادات الربط البرمجية لتتطابق تماماً مع مشروعك النهائي الحالي
     const firebaseConfig = {
       apiKey: "AIzaSyADh8KorayFEiM1JIETYr8LDubkJpja_yU",
       authDomain: "altajer-pro-accountant.firebaseapp.com",
@@ -282,24 +274,20 @@
       measurementId: "G-2SKNNZF03R"
     };
 
-    // تهيئة فايربيز بالمفاتيح المحدثة
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const googleProvider = new GoogleAuthProvider();
 
-    // جعل الدالة متاحة عالمياً للزر
     window.loginWithGoogle = function() {
       signInWithPopup(auth, googleProvider)
         .then((result) => {
           const user = result.user;
-          
-          // 👑 التعرف التلقائي على حسابك الشخصي لفتح الصلاحيات المطلقة
           if (user.email === "mfdmfd004@gmail.com") {
             alert("أهلاً بك يا أبا فهد! تم التعرف على حساب المالك بنجاح.");
-            window.location.href = "dashboard.html"; // توجيهك مباشرة للوحة التحكم
+            window.location.href = "dashboard.html";
           } else {
             alert("تم تسجيل دخولك بنجاح كعميل لـ التاجر برو.");
-            window.location.href = "client-panel.html"; // توجيه العميل لصفحته المحدودة
+            window.location.href = "client-panel.html";
           }
         })
         .catch((error) => {
@@ -308,43 +296,44 @@
         });
     };
 
-    // دالة التعامل مع النموذج التقليدي (إيميل وباسورد)
     window.handleFormSubmit = function(event) {
       event.preventDefault();
       const email = document.getElementById("authEmail").value;
       const password = document.getElementById("authPassword").value;
-      const isSignup = document.getElementById("regName").parentElement.parentElement.style.display === "block";
+      
+      const nameGroup = document.getElementById("nameGroup");
+      const isSignup = nameGroup && nameGroup.style.display === "block";
 
       if (isSignup) {
-        // إجراء إنشاء حساب تقليدي جديد
         createUserWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
-            alert("تم إنشاء حسابك الجديد بنجاح!");
+            alert("تم إنشاء حسابك الجديد بنجاح في التاجر برو!");
             window.location.href = "client-panel.html";
           })
           .catch((error) => {
+            console.error("خطأ إنشاء الحساب:", error);
             alert("خطأ في الإنشاء: " + error.message);
           });
       } else {
-        // إجراء تسجيل دخول تقليدي عادي
         signInWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
-            // التحقق من حساب المالك عند الدخول التقليدي أيضاً
             if (email === "mfdmfd004@gmail.com") {
+              alert("أهلاً بك يا أبا فهد! تم الدخول بصلاحيات المالك.");
               window.location.href = "dashboard.html";
             } else {
+              alert("تم تسجيل الدخول بنجاح.");
               window.location.href = "client-panel.html";
             }
           })
           .catch((error) => {
-            alert("خطأ في الدخول: تأكد من الإيميل وباسورد الحساب.");
+            console.error("خطأ تسجيل الدخول:", error);
+            alert("خطأ في الدخول: تأكد من صحة البريد الإلكتروني وكلمة المرور.");
           });
       }
     };
   </script>
 
   <script>
-    // التبديل بين شاشتي (الدخول) و (إنشاء الحساب) بدون تحميل أو ملفات خارجية
     function toggleAuthMode(mode) {
       const signupFields = document.querySelectorAll('.signup-only');
       const formTitle = document.getElementById('formTitle');
@@ -372,8 +361,7 @@
       }
     }
 
-    // إظهار وإخفاء الباسورد عند لمس أيقونة العين بالجوال
-    function togglePasswordVisibility() {
+    function togglePasswordVisibility(event) {
       const passwordInput = document.getElementById('authPassword');
       const eyeIcon = event.target;
       if (passwordInput.type === 'password') {

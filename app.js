@@ -60,7 +60,7 @@ const MainApp = {
         link.click();
     },
 
-    // 2. إدارة ملفات العملاء
+    // 2. إدارة ملفات العملاء (محدث بنظام التحقق المتوافق مع هيئة الزكاة والضريبة والجمارك ZATCA)
     customer: {
         addOrUpdate: async function() {
             const id = document.getElementById('custId').value.trim();
@@ -68,7 +68,17 @@ const MainApp = {
             const vat = document.getElementById('custVat').value.trim();
             const address = document.getElementById('custAddress').value.trim();
             const contact = document.getElementById('custContact').value.trim();
+            
             if (!id || !name) return alert("يرجى إدخال معرّف واسم العميل.");
+            
+            // 🇸🇦 نظام التحقق الذكي لمنع إدخال أرقام ضريبية عشوائية أو غير نظامية للمنشآت
+            if (vat !== "") {
+                const vatRegex = /^3[0-9]{13}3$/;
+                if (!vatRegex.test(vat)) {
+                    return alert("⚠️ خطأ في الرقم الضريبي للعميل!\nالرقم الضريبي السعودي يجب أن يتكون من 15 خانة، ويبدأ بالرقم 3 وينتهي بالرقم 3.");
+                }
+            }
+
             try {
                 await setDoc(doc(db, "customers", id), { id, name, vat, address, contact, timestamp: new Date() });
                 alert("تم حفظ بيانات العميل بنجاح."); 
@@ -108,14 +118,14 @@ const MainApp = {
         }
     },
 
-    // 3. التحكم المنفرد في عناصر المخزن (تم تطويرها تراكمياً لدعم حقول الواجهة الجديدة)
+    // 3. التحكم المنفرد في عناصر المخزن
     item: {
         addOrUpdate: async function() {
             const code = document.getElementById('itemCode').value.trim();
             const name = document.getElementById('itemName').value.trim();
             const price = parseFloat(document.getElementById('itemPrice').value) || 0;
             const qty = parseFloat(document.getElementById('itemQty').value) || 0;
-            const vatRate = document.getElementById('itemVatType').value; // الحقل الجديد للضريبة
+            const vatRate = document.getElementById('itemVatType').value; 
             
             if (!code || !name) return alert("يرجى إدخال كود واسم الصنف.");
             try {

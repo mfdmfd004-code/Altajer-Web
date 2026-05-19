@@ -1,15 +1,16 @@
 // التاجر برو المحاسبي - المحرك الرئيسي الشامل المستقر (تطوير تراكمي سحابي)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// إعدادات الربط بـ Firebase (تمت إعادتها للعمل حياً فوراً على السيرفر)
+// إعدادات الربط الصحيحة والمطابقة لمشروعك النشط الحالي
 const firebaseConfig = {
-    apiKey: "mfdmfd004@gmail.com",
-    authDomain: "altajer-web.firebaseapp.com",
-    projectId: "altajer-web",
-    storageBucket: "altajer-web.appspot.com",
-    messagingSenderId: "3222675",
-    appId: "1:3222675:web:altajer"
+  apiKey: "AIzaSyADh8KorayFEiM1JIETYr8LDubkJpja_yU",
+  authDomain: "altajer-pro-accountant.firebaseapp.com",
+  projectId: "altajer-pro-accountant",
+  storageBucket: "altajer-pro-accountant.firebasestorage.app",
+  messagingSenderId: "982176278219",
+  appId: "1:982176278219:web:f16baa6502f657fca35d4e",
+  measurementId: "G-2SKNNZF03R"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -71,7 +72,7 @@ const MainApp = {
             
             if (!id || !name) return alert("يرجى إدخال معرّف واسم العميل.");
             
-            // 🇸🇦 نظام التحقق الذكي لمنع إدخال أرقام ضريبية عشوائية أو غير نظامية للمنشآت
+            // 🇸🇦 نظام التحقق الذكي لمنع إدخال أرقام ضريبية عشوائية للمنشآت
             if (vat !== "") {
                 const vatRegex = /^3[0-9]{13}3$/;
                 if (!vatRegex.test(vat)) {

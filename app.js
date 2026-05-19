@@ -2,14 +2,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// إعدادات الربط بـ Firebase (ضع بيانات مشروعك السحابي هنا ليعمل الاتصال حياً فوراً)
+// إعدادات الربط بـ Firebase (تمت إعادتها للعمل حياً فوراً على السيرفر)
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "mfdmfd004@gmail.com",
+    authDomain: "altajer-web.firebaseapp.com",
+    projectId: "altajer-web",
+    storageBucket: "altajer-web.appspot.com",
+    messagingSenderId: "3222675",
+    appId: "1:3222675:web:altajer"
 };
 
 const app = initializeApp(firebaseConfig);

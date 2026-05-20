@@ -273,8 +273,15 @@ const MainApp = {
                     total_net: netTotal 
                 };
 
-                // استدعاء دالة الحفظ المركزية المحدثة
+                // استدعاء دالة الحفظ المركزية المحدثة سحابياً ومحلياً
                 await saveInvoice(invoiceData);
+                
+                // 🚀 [الربط الصامت والمدمج مع وافق]: إرسال البيانات الموحدة فوراً دون التأثير على الكاشير
+                if (typeof window.syncInvoiceWithWafeq === "function") {
+                    window.syncInvoiceWithWafeq(invoiceData);
+                } else {
+                    console.warn("⚠️ وحدة وافق المحاسبية غير مستدعاة في صفحة الـ HTML بعد.");
+                }
                 
                 // تحديث وإدارة جرد المخزن التراكمي بخصم الكميات المشتراة حياً
                 for (const item of cart) {

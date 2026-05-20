@@ -7,9 +7,8 @@
 // رابط واجهة برمجيات وافق لإصدار الفواتير
 const WAFEQ_API_URL = 'https://api.wafeq.com/v1/invoices/';
 
-// مفتاح الأمان السري (API Key) الخاص بحسابك في وافق
-// ملاحظة لأبي فهد: استبدل النص أدناه بمفتاحك الفعلي من إعدادات وافق عند الجاهزية
-const WAFEQ_API_KEY = 'YOUR_WAFEQ_API_KEY_HERE'; 
+// مفتاح الأمان السري (API Key) الفعلي لحساب أبي فهد
+const WAFEQ_API_KEY = '3Z4oNsHN.QVPQJnmb4dM7efQ057eAEgfnxJpUjVZF'; 
 
 /**
  * دالة رئيسية مدمجة لاستقبال بيانات الفاتورة من الكاشير وإرسالها فوراً إلى وافق
@@ -28,9 +27,9 @@ async function syncInvoiceWithWafeq(currentInvoice) {
                 "name": item.name || "منتج عام",
                 "quantity": parseFloat(item.quantity) || 1,
                 "unit_price": parseFloat(item.price) || 0,
-                "tax_rate": 0.15 // فرض ضريبة القيمة المضافة 15% تلقائياً حسب النظام السعودي
+                "tax_rate": "0.15" // فرض ضريبة القيمة المضافة 15% تلقائياً حسب النظام السعودي
             })),
-            "status": "draft" // تُرسل كمسودة لحسابك لتراجعها، أو "sent" للاعتماد الفوري
+            "status": "draft" // تُرسل كمسودة لحسابك لتراجعها وتعتمدها رسمياً بضغط زر
         };
 
         console.log("🔄 جاري إرسال الفاتورة المدمجة إلى نظام وافق صامتاً...", wafeqInvoicePayload);
@@ -69,3 +68,6 @@ async function syncInvoiceWithWafeq(currentInvoice) {
         };
     }
 }
+
+// تصدير الدالة لتكون متاحة للنظام بأكمله
+window.syncInvoiceWithWafeq = syncInvoiceWithWafeq;

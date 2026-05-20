@@ -2,14 +2,15 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, setDoc, getDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// إعدادات Firebase الخاصة بك (تأكد من وضع بيانات مشروعك الحية هنا لتفعيل الاتصال السحابي فوراً)
+// إعدادات Firebase الحية والخاصة بمشروع أبي فهد الفعلي
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyADh8KorayFEiM1JIETYr8LDubkJpja_yU",
+  authDomain: "altajer-pro-accountant.firebaseapp.com",
+  projectId: "altajer-pro-accountant",
+  storageBucket: "altajer-pro-accountant.firebasestorage.app",
+  messagingSenderId: "982176278219",
+  appId: "1:982176278219:web:5fede7cef02cce60a35d4e",
+  measurementId: "G-WM6KN5NKTC"
 };
 
 const app = initializeApp(firebaseConfig);

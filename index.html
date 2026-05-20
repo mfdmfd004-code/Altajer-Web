@@ -406,7 +406,6 @@
                     
                     <div class="d-flex flex-wrap gap-2 mt-4">
                         <button type="submit" class="btn-neon" style="--clr:var(--light-green)"><span data-i18n="btn-add">إضافة وحفظ لحسابك</span></button>
-                        <button type="button" onclick="loadCustomersFromAPI()" class="btn-neon" style="--clr:var(--neon-cyan)"><span data-i18n="btn-refresh">تحديث السحب</span></button>
                     </div>
                 </form>
             </div>
@@ -461,7 +460,6 @@
 
                     <div class="d-flex flex-wrap gap-2 mt-4">
                         <button type="submit" class="btn-neon" style="--clr:var(--light-green)"><span data-i18n="btn-add">إضافة للمستودع</span></button>
-                        <button type="button" onclick="loadItemsFromAPI()" class="btn-neon" style="--clr:var(--neon-cyan)"><span data-i18n="btn-refresh">تحديث الجلب</span></button>
                     </div>
                 </form>
             </div>
@@ -561,7 +559,7 @@
                         </div>
                         <div class="d-flex justify-content-between my-2">
                             <span data-i18n="pos-discount">الخصم الممنوح:</span>
-                            <input type="number" id="poDiscount" value="0" min="0" step="0.01" style="width: 80px; text-align: center; background: transparent; border: 1px solid var(--neon-cyan); color: var(--text-white); border-radius: 4px;" oninput="recalculateCartTotals()">
+                            <input type="number" id="poDiscount" value="0" min="0" step="0.01" style="width: 80px; text-align: center; background: transparent; border: 1px solid var(--neon-cyan); color: var(--text-white); border-radius: 4px;" oninput="if(window.App && window.App.pos) window.App.pos.recalculate()">
                         </div>
                     </div>
                     <div class="pt-3 border-top">
@@ -605,23 +603,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    /* -------------------------------------------------------------
-       قاعدة البيانات الافتراضية والمحلية لضمان التشغيل المستمر للجوال
-       ------------------------------------------------------------- */
-    let globalCustomers = JSON.parse(localStorage.getItem('altajer_customers')) || [];
-    let globalItems = JSON.parse(localStorage.getItem('altajer_items')) || [];
-    let currentCart = [];
-
-    // نقاط اتصال الـ API الخلفية (PHP) المربوطة بالسيرفر الخارجي من GitHub
-    // ملاحظة: استبدل النطاق التجريبي أدناه برابط سيرفر الـ PHP الفعلي الخاص بك لتفعيل المزامنة الحية الحقيقية
-    const API_ENDPOINTS = {
-        saveCustomer: 'https://altajer-api.com/api/add_customer.php',
-        getCustomers: 'https://altajer-api.com/api/get_customers.php',
-        saveItem:     'https://altajer-api.com/api/add_item.php',
-        getItems:     'https://altajer-api.com/api/get_items.php',
-        saveInvoice:  'https://altajer-api.com/api/save_invoice.php'
-    };
-
     function showUnderDevelopment(featureName) {
         showToast(`ميزة (${featureName}) قيد التطوير والتحديث حالياً للربط الضريبي.`, false);
     }
@@ -649,7 +630,7 @@
             "m-products": "المستودع (الأصناف)", "m-purchases": "المشتريات", "m-returns": "المرتجعات", "m-profits": "الأرباح", "m-vat": "الإقرار الضريبي", 
             "m-inventory": "الجرد الدوري", "m-expenses": "المصاريف", "m-vouchers": "السندات", "m-settings": "الإعدادات", "m-employees": "الموظفين", "m-support": "الدعم الفني",
             "lbl-cust-id": "معرّف العميل (ID)", "lbl-cust-name": "اسم العميل", "lbl-cust-vat": "الرقم الضريبي (VAT)", "lbl-cust-address": "العنوان الجغرافي",
-            "lbl-cust-phone": "رقم الجوال", "btn-add": "إضافة وحفظ لحسابك", "btn-refresh": "تحديث السحب",
+            "lbl-cust-phone": "رقم الجوال", "btn-add": "إضافة وحفظ لحسابك", 
             "th-id": "المعرّف", "th-name": "الاسم", "th-vat": "الرقم الضريبي", "th-phone": "الجوال", "th-address": "العنوان",
             "lbl-item-code": "باركود / كود الصنف", "lbl-item-name": "اسم المنتج / الصنف", "lbl-item-price": "سعر البيع (شامل الضريبة)", "lbl-item-qty": "الكمية المتاحة بالمخزن",
             "th-item-code": "الكود", "th-item-name": "اسم الصنف", "th-item-price": "السعر شامل الضريبة", "th-item-qty": "الكمية بالمخزن",
@@ -664,7 +645,7 @@
             "m-products": "Warehouse (Items)", "m-purchases": "Purchases", "m-returns": "Returns", "m-profits": "Profits", "m-vat": "VAT Filing", 
             "m-inventory": "Inventory Count", "m-expenses": "Expenses", "m-vouchers": "Vouchers", "m-settings": "Settings", "m-employees": "Employees", "m-support": "Technical Support",
             "lbl-cust-id": "Customer ID", "lbl-cust-name": "Customer Name", "lbl-cust-vat": "VAT Number", "lbl-cust-address": "Address",
-            "lbl-cust-phone": "Mobile Number", "btn-add": "Add & Save", "btn-refresh": "Refresh Load",
+            "lbl-cust-phone": "Mobile Number", "btn-add": "Add & Save",
             "th-id": "ID", "th-name": "Name", "th-vat": "VAT No", "th-phone": "Phone", "th-address": "Address",
             "lbl-item-code": "Item Code / Barcode", "lbl-item-name": "Item Name", "lbl-item-price": "Price (Inc. VAT)", "lbl-item-qty": "Available Qty",
             "th-item-code": "Code", "th-item-name": "Item Name", "th-item-price": "Price (Inc VAT)", "th-item-qty": "Stock Qty",
@@ -694,9 +675,11 @@
         $('body > .view-section').removeClass('show');
         $('body > .view-section').eq(index).addClass('show');
         
-        if (index === 1) renderCustomersTable();
-        if (index === 2) renderItemsTable();
-        if (index === 3) populatePosDropdowns();
+        if (window.App) {
+            if (index === 1 && window.App.customer) window.App.customer.renderTable();
+            if (index === 2 && window.App.item) window.App.item.renderTable();
+            if (index === 3 && window.App.pos) window.App.pos.populateDropdowns();
+        }
     }
 
     function showToast(message, isSuccess = true) {
@@ -707,287 +690,8 @@
         setTimeout(() => { toast.style.display = 'none'; }, 4000);
     }
 
-    function handleCustomerSubmit(e) {
-        e.preventDefault();
-        const customerData = {
-            id: document.getElementById('custId').value,
-            name: document.getElementById('custName').value,
-            vat: document.getElementById('custVat').value,
-            address: document.getElementById('custAddress').value,
-            phone: document.getElementById('custContact').value
-        };
-
-        globalCustomers.push(customerData);
-        localStorage.setItem('altajer_customers', JSON.stringify(globalCustomers));
-        renderCustomersTable();
-
-        fetch(API_ENDPOINTS.saveCustomer, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(customerData)
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) showToast("تم ترحيل وحفظ بيانات العميل بنجاح في قاعدة البيانات عبر GitHub");
-            else showToast("تم الحفظ محلياً التراكمي على الجوال بنجاح", true);
-        })
-        .catch(err => {
-            showToast("تم الحفظ محلياً التراكمي وجاري ترحيله للسيرفر تلقائياً عند الاتصال", true);
-        });
-
-        document.getElementById('customerForm').reset();
-    }
-
-    function loadCustomersFromAPI() {
-        fetch(API_ENDPOINTS.getCustomers)
-        .then(res => res.json())
-        .then(data => {
-            if(Array.isArray(data)) {
-                globalCustomers = data;
-                localStorage.setItem('altajer_customers', JSON.stringify(globalCustomers));
-                renderCustomersTable();
-                showToast("تم مزامنة وجلب بيانات العملاء الحية من الـ Database لـ GitHub Pages");
-            }
-        })
-        .catch(() => showToast("تعذر جلب البيانات الحية، تم تحميل النسخة المحلية المحمية على الجوال", false));
-    }
-
-    // تفعيل العمل الفوري والمحلي لتخطي مشاكل الشبكة أثناء تشغيل الجوال
-    function renderCustomersTable() {
-        const tbody = document.getElementById('customerTableBody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        globalCustomers.forEach(c => {
-            tbody.innerHTML += `<tr><td>${c.id}</td><td>${c.name}</td><td>${c.vat}</td><td>${c.phone}</td><td>${c.address}</td></tr>`;
-        });
-        const countEl = document.getElementById('customerCount');
-        if (countEl) countEl.innerText = globalCustomers.length;
-    }
-
-    function handleItemSubmit(e) {
-        e.preventDefault();
-        const itemData = {
-            code: document.getElementById('itemCode').value,
-            name: document.getElementById('itemName').value,
-            price: parseFloat(document.getElementById('itemPrice').value),
-            qty: parseInt(document.getElementById('itemQty').value)
-        };
-
-        globalItems.push(itemData);
-        localStorage.setItem('altajer_items', JSON.stringify(globalItems));
-        renderItemsTable();
-
-        fetch(API_ENDPOINTS.saveItem, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(itemData)
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) showToast("تم تسجيل الصنف وحفظ الكمية في مستودع قاعدة البيانات");
-        })
-        .catch(() => showToast("تم تأمين وحفظ الصنف محلياً داخل المستودع المحمي على الجوال", true));
-
-        document.getElementById('itemForm').reset();
-    }
-
-    function loadItemsFromAPI() {
-        fetch(API_ENDPOINTS.getItems)
-        .then(res => res.json())
-        .then(data => {
-            if(Array.isArray(data)) {
-                globalItems = data;
-                localStorage.setItem('altajer_items', JSON.stringify(globalItems));
-                renderItemsTable();
-                showToast("تم تحديث وجلب جرد الأصناف بالكامل من الـ DB");
-            }
-        })
-        .catch(() => showToast("يعمل المستودع الآن في وضع الحماية المحلي المستقر على متصفحك", true));
-    }
-
-    function renderItemsTable() {
-        const tbody = document.getElementById('itemTableBody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        globalItems.forEach(i => {
-            tbody.innerHTML += `<tr><td>${i.code}</td><td>${i.name}</td><td>${parseFloat(i.price).toFixed(2)} ر.س</td><td>${i.qty}</td></tr>`;
-        });
-    }
-
-    function populatePosDropdowns() {
-        const custSelect = document.getElementById('cbCustomer');
-        custSelect.innerHTML = '<option value="">اختر العميل</option>';
-        globalCustomers.forEach(c => {
-            custSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-        });
-
-        const itemSelect = document.getElementById('cbItem');
-        itemSelect.innerHTML = '<option value="">اختر الصنف</option>';
-        globalItems.forEach(i => {
-            itemSelect.innerHTML += `<option value="${i.code}">${i.name}</option>`;
-        });
-    }
-
-    function onPosCustomerChange() {
-        const id = document.getElementById('cbCustomer').value;
-        const customer = globalCustomers.find(c => c.id == id);
-        if(customer) {
-            document.getElementById('poCustId').value = customer.id;
-            document.getElementById('poCustVat').value = customer.vat;
-        } else {
-            document.getElementById('poCustId').value = '';
-            document.getElementById('poCustVat').value = '';
-        }
-    }
-
-    function onPosItemChange() {
-        const code = document.getElementById('cbItem').value;
-        const item = globalItems.find(i => i.code == code);
-        if(item) {
-            document.getElementById('poItemName').value = item.name;
-            document.getElementById('poQtyOnHand').value = item.qty;
-        } else {
-            document.getElementById('poItemName').value = '';
-            document.getElementById('poQtyOnHand').value = '';
-        }
-    }
-
-    function addItemToCart() {
-        const code = document.getElementById('cbItem').value;
-        const qtyRequested = parseInt(document.getElementById('poQtyBought').value);
-        
-        if(!code) { showToast("برجاء اختيار الصنف المراد بيعه أولاً", false); return; }
-        if(qtyRequested <= 0 || isNaN(qtyRequested)) { showToast("الكمية المطلوبة غير صالحة للفوترة", false); return; }
-
-        const item = globalItems.find(i => i.code == code);
-        if(!item) return;
-
-        if(qtyRequested > item.qty) {
-            showToast(`فشل الإضافة! الكمية المطلوبة تزيد عن المتاح في المستودع حالياً (${item.qty})`, false);
-            return;
-        }
-
-        const priceInclTax = parseFloat(item.price);
-        const priceExclTax = priceInclTax / 1.15;
-
-        const existIndex = currentCart.findIndex(c => c.code === code);
-        if(existIndex > -1) {
-            if((currentCart[existIndex].qty + qtyRequested) > item.qty) {
-                showToast("مجموع الكميات بالسلة يتجاوز الحد المتاح بالمستودع لهذا الصنف", false);
-                return;
-            }
-            currentCart[existIndex].qty += qtyRequested;
-        } else {
-            currentCart.push({
-                code: item.code,
-                name: item.name,
-                priceExclTax: priceExclTax,
-                priceInclTax: priceInclTax,
-                qty: qtyRequested
-            });
-        }
-
-        recalculateCartTotals();
-        renderCartTable();
-        showToast("تم إدراج الصنف بنجاح داخل سلة الفاتورة");
-    }
-
-    function removeCartItem(code) {
-        currentCart = currentCart.filter(c => c.code !== code);
-        recalculateCartTotals();
-        renderCartTable();
-    }
-
-    function recalculateCartTotals() {
-        let totalSubTotal = 0;
-        let totalTax = 0;
-
-        currentCart.forEach(c => {
-            const sub = c.priceExclTax * c.qty;
-            const tax = sub * 0.15;
-            totalSubTotal += sub;
-            totalTax += tax;
-        });
-
-        const discount = parseFloat(document.getElementById('poDiscount').value) || 0;
-        const finalNet = (totalSubTotal + totalTax) - discount;
-
-        document.getElementById('subTotalVal').innerText = totalSubTotal.toFixed(2);
-        document.getElementById('taxVal').innerText = totalTax.toFixed(2);
-        document.getElementById('totalVal').innerText = finalNet.toFixed(2);
-    }
-
-    function renderCartTable() {
-        const tbody = document.getElementById('tblPlaceOrder');
-        tbody.innerHTML = '';
-        currentCart.forEach(c => {
-            const rowTotal = c.priceInclTax * c.qty;
-            tbody.innerHTML += `
-                <tr>
-                    <td>${c.code}</td>
-                    <td>${c.name}</td>
-                    <td>${c.priceExclTax.toFixed(2)} ر.س</td>
-                    <td>${c.qty}</td>
-                    <td>${rowTotal.toFixed(2)} ر.س</td>
-                    <td>
-                        <button onclick="removeCartItem('${c.code}')" class="btn btn-sm btn-danger" style="background-color: var(--danger-red); border:none;">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </td>
-                </tr>`;
-        });
-    }
-
-    function commitInvoiceToAPI() {
-        const customerId = document.getElementById('poCustId').value;
-        if(!customerId) { showToast("برجاء اختيار عميل معتمد لربطه بالفاتورة الضريبية", false); return; }
-        if(currentCart.length === 0) { showToast("السلة فارغة تماماً! لا توجد أصناف للاعتماد والحفظ", false); return; }
-
-        const customer = globalCustomers.find(c => c.id == customerId);
-
-        const invoicePayload = {
-            invoice_date: new Date().toISOString(),
-            customer_id: customer.id,
-            customer_name: customer.name,
-            customer_vat: customer.vat,
-            customer_address: customer.address,
-            subtotal: parseFloat(document.getElementById('subTotalVal').innerText),
-            tax: parseFloat(document.getElementById('taxVal').innerText),
-            discount: parseFloat(document.getElementById('poDiscount').value) || 0,
-            total_net: parseFloat(document.getElementById('totalVal').innerText),
-            items: currentCart
-        };
-
-        currentCart.forEach(c => {
-            const stockItem = globalItems.find(i => i.code === c.code);
-            if(stockItem) stockItem.qty -= c.qty;
-        });
-        localStorage.setItem('altajer_items', JSON.stringify(globalItems));
-
-        fetch(API_ENDPOINTS.saveInvoice, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(invoicePayload)
-        })
-        .then(res => res.json())
-        .then(data => {
-            const invId = data.invoice_id || Math.floor(Math.random() * 90000) + 10000;
-            showToast("تم ترحيل الفاتورة وحفظها بنجاح وجاري ترحيل البناء البصري للطباعة...");
-            
-            setTimeout(() => {
-                localStorage.setItem('last_processed_invoice', JSON.stringify(invoicePayload));
-                window.location.href = `invoice.html?id=${invId}`;
-            }, 1500);
-        })
-        .catch(() => {
-            const fallbackId = Math.floor(Math.random() * 90000) + 10000;
-            localStorage.setItem('last_processed_invoice', JSON.stringify(invoicePayload));
-            showToast("تم تأمين الفاتورة محلياً، جاري الانتقال للبناء البصري والطباعة الفورية على الموبايل...");
-            setTimeout(() => {
-                window.location.href = `invoice.html?id=${fallbackId}`;
-            }, 1500);
-        });
-    }
+    function onPosCustomerChange() { if(window.App && window.App.pos) window.App.pos.onCustomerChange(); }
+    function onPosItemChange() { if(window.App && window.App.pos) window.App.pos.onItemChange(); }
 
     const ctxChart = document.getElementById('myChart').getContext('2d');
     new Chart(ctxChart, {
@@ -1010,25 +714,30 @@
         const seconds = String(now.getSeconds()).padStart(2, '0');
         
         const clockEl = document.getElementById('digitalClock');
-        if (clockEl) {
-            clockEl.innerText = `${hours}:${minutes}:${seconds}`;
-        }
+        if (clockEl) { clockEl.innerText = `${hours}:${minutes}:${seconds}`; }
         
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         
         const dateEl = document.getElementById('digitalDate');
-        if (dateEl) {
-            dateEl.innerText = `${year}/${month}/${day}`;
-        }
+        if (dateEl) { dateEl.innerText = `${year}/${month}/${day}`; }
     }
     
     setInterval(updateDigitalClock, 1000);
     updateDigitalClock();
 
-    renderCustomersTable();
-    renderItemsTable();
+    // ربط الأزرار لتمرير المهام بأمان إلى داخل كائن الحماية المركزي الموحد
+    window.addItemToCart = function() { if(window.App && window.App.pos) window.App.pos.addToCart(); };
+    window.removeCartItem = function(code) { if(window.App && window.App.pos) window.App.pos.removeItem(code); };
+    window.commitInvoiceToAPI = function() { if(window.App && window.App.pos) window.App.pos.placeOrder(); };
+    window.handleCustomerSubmit = function(e) { e.preventDefault(); if(window.App && window.App.customer) window.App.customer.addOrUpdate(); };
+    window.handleItemSubmit = function(e) { e.preventDefault(); if(window.App && window.App.item) window.App.item.addOrUpdate(); };
 </script>
+
+<script src="wafeq-service.js"></script>
+
+<script type="module" src="db.js"></script>
+
 </body>
 </html>

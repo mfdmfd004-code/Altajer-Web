@@ -460,3 +460,41 @@ window.calculateTotal = function(code) {
         document.getElementById(`p-total-${code}`).value = (price * qty).toFixed(2);
     }
 };
+// دالة تشفير حقول الزكاة والضريبة بصيغة TLV لـ ZATCA ثم Base64
+function encodeZatcaTLV(sellerName, vatNumber, timestamp, totalAmount, vatAmount) {
+    function toTLV(tag, value) {
+        let valueBytes = new TextEncoder().encode(value);
+        return String.fromCharCode(tag) + String.fromCharCode(valueBytes.length) + String.fromCharCode(...valueBytes);
+    }
+    let tlv = toTLV(1, sellerName) + toTLV(2, vatNumber) + toTLV(3, timestamp) + toTLV(4, Number(totalAmount).toFixed(2)) + toTLV(5, Number(vatAmount).toFixed(2));
+    return btoa(tlv);
+}
+
+// الدالة المركزية لتوليد الـ QR Code داخل حاوية الفاتورة
+window.generateInvoiceQR = function(invoiceData) {
+    const qrContainer = document.getElementById("invoice-qrcode");
+    if (!qrContainer) return console.error("لم يتم العثور على عنصر invoice-qrcode");
+    qrContainer.innerHTML = ""; 
+
+    try {
+        const sellerName = invoiceData.sellerName || "متجر التاجر برو";
+        const vatNumber = invoiceData.vatNumber || "300000000000003"; 
+        const timestamp = invoiceData.timestamp || new Date().toISOString();
+        const totalAmount = invoiceData.totalAmount || 0;
+        const vatAmount = invoiceData.vatAmount || (totalAmount * 0.15 / 1.15); 
+
+        const base64CodedValue = encodeZatcaTLV(sellerName, vatNumber, timestamp, totalAmount, vatAmount);
+
+        new QRCode(qrContainer, {
+            text: base64CodedValue,
+            width: 128,
+            height: 128,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+        });
+        console.log("تم توليد الـ QR بنجاح");
+    } catch (e) {
+        console.error("فشل في توليد الـ QR:", e);
+    }
+};

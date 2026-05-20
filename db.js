@@ -64,7 +64,6 @@ export async function saveInvoice(invoiceData) {
         throw e;
     }
 }
-
 // ==========================================
 // ثانياً: المحرك الرئيسي الشامل لإدارة العمليات والواجهات (الجزء 1)
 // ==========================================
@@ -200,7 +199,7 @@ const MainApp = {
             document.getElementById('itemPrice').value = ''; document.getElementById('itemQty').value = '';
         }
     },
-    // 4. نظام الكاشير المحاسبي والربط الصامت المزدوج مع وافق والفايربيز
+      // 4. نظام الكاشير المحاسبي والربط الصامت المزدوج مع وافق والفايربيز وتوليد الـ QR
     pos: {
         addToCart: function() {
             const itemSelect = document.getElementById('cbItem'); const code = itemSelect.value;
@@ -251,35 +250,54 @@ const MainApp = {
                 const orderId = "INV-" + Date.now();
                 const netTotal = parseFloat(document.getElementById('totalVal').innerText) || 0;
                 const discountVal = parseFloat(document.getElementById('poDiscount').value) || 0;
+                
+                // حسابات الضرائب المتوافقة مع هيئة الزكاة والجمارك (ZATCA) 15%
+                const totalAfterDiscount = netTotal - discountVal;
+                const vatAmount = (totalAfterDiscount * 0.15) / 1.15; 
+                const totalExclTax = totalAfterDiscount - vatAmount;
+
                 const customerSelect = document.getElementById('cbCustomer');
                 const customerName = customerSelect.selectedIndex > 0 ? customerSelect.options[customerSelect.selectedIndex].text : "نقدي";
+                const customerVat = document.getElementById('poCustVat') ? document.getElementById('poCustVat').value : "غير ضريبي";
                 
-                // تجهيز كائن الفاتورة الموحد المتوافق تماماً مع واجهة وافق المحاسبية
+                // معلومات المتجر للزكاة والربط
+                const sellerName = "متجر التاجر برو"; 
+                const storeVatNumber = "300000000000003"; 
+                const invoiceTimestamp = new Date().toISOString();
+
+                // تجهيز كائن الفاتورة الموحد والمتكامل تماماً
                 const invoiceData = {
                     invoiceNumber: orderId,
-                    date: new Date().toISOString().split('T')[0],
+                    date: invoiceTimestamp.split('T')[0],
+                    timestamp: invoiceTimestamp,
                     customer: customerName,
+                    customerVat: customerVat,
                     discount: discountVal,
                     items: cart.map(i => ({
                         code: i.code,
                         name: i.name,
                         quantity: i.qty,
-                        price: i.price
+                        price: i.price,
+                        total: i.subtotal
                     })),
-                    total_net: netTotal 
+                    totalAmount: totalAfterDiscount, 
+                    vatAmount: vatAmount,           
+                    totalExclTax: totalExclTax,     
+                    sellerName: sellerName,
+                    vatNumber: storeVatNumber
                 };
 
-                // 1. ترحيل الفاتورة وحفظها سحابياً ومحلياً في الفايربيز للتقارير والعدادات حياً
+                // 1. ترحيل الفاتورة وحفظها سحابياً ومحلياً في الفايربيز
                 await saveInvoice(invoiceData);
                 
-                // 2. 🚀 [الربط المحاسبي المزدوج والسريع مع نظام وافق]:
+                // 2. 🚀 [الربط المحاسبي المزدوج والسريع مع نظام وافق عبر الـ API]:
                 if (typeof window.syncInvoiceWithWafeq === "function") {
-                    window.syncInvoiceWithWafeq(invoiceData);
+                    await window.syncInvoiceWithWafeq(invoiceData);
                 } else {
                     console.warn("⚠️ وحدة وافق المحاسبية wafeq-service.js لم تُستدعى بشكل صحيح.");
                 }
                 
-                // 3. تحديث جرد المستودع التراكمي بخصم الكميات المباعة فوراً حياً
+                // 3. تحديث جرد المستودع التراكمي بخصم الكميات المباعة فوراً حياً دون تخريب
                 for (const item of cart) {
                     const itemRef = doc(db, "products", item.code); 
                     const itemSnap = await getDoc(itemRef);
@@ -288,8 +306,15 @@ const MainApp = {
                         await setDoc(itemRef, { quantity: currentQty - item.qty }, { merge: true });
                     }
                 }
+
+                // 4. 🎉 تشغيل محرك الـ QR التلقائي وعرضه فور اعتماد الفاتورة
+                if (typeof window.generateInvoiceQR === "function") {
+                    window.generateInvoiceQR(invoiceData);
+                } else {
+                    console.error("⚠️ محرك توليد الـ QR غير معرف في الواجهة المركزية.");
+                }
                 
-                alert(`تم اعتماد الفاتورة وترحيلها بنجاح برقم المرجع: ${orderId}`); 
+                alert(`تم اعتماد الفاتورة وتوليد الـ QR وترحيلها بنجاح برقم المرجع: ${orderId}`); 
                 cart = []; 
                 this.updateCartTable();
             } catch (e) { alert("خطأ في ترحيل الفاتورة: " + e.message); }
@@ -316,7 +341,7 @@ const MainApp = {
             let itemsHtml = `
                 <div style="background: rgba(224,208,213,0.05); padding:12px; border-radius:8px; text-align:right; margin-bottom:15px; border:1px solid #3d1522;">
                     <p style="margin:4px 0;"><b>العميل:</b> ${invData.customer || 'نقدي'}</p>
-                    <p style="margin:4px 0;"><b>صافي الفاتورة:</b> ${parseFloat(invData.total_net || 0).toFixed(2)} ريال</p>
+                    <p style="margin:4px 0;"><b>صافي الفاتورة:</b> ${parseFloat(invData.total_net || invData.totalAmount || 0).toFixed(2)} ريال</p>
                 </div>
                 <table style="width:100%; text-align:center; color:#e0d0d5; font-size:0.9rem;">
                     <thead>
@@ -365,7 +390,11 @@ const MainApp = {
             if (orderSnap.exists()) {
                 let invData = orderSnap.data();
                 invData.items.splice(itemIndex, 1);
-                invData.total_net = parseFloat(invData.total_net || 0) - (qty * price);
+                
+                const currentTotal = parseFloat(invData.totalAmount || invData.total_net || 0);
+                const newTotal = currentTotal - (qty * price);
+                invData.totalAmount = newTotal;
+                invData.total_net = newTotal;
 
                 if (invData.items.length === 0) {
                     await deleteDoc(orderRef);
@@ -379,7 +408,8 @@ const MainApp = {
                     const locIdx = localInvoices.findIndex(inv => inv.invoiceNumber === invoiceId);
                     if (locIdx > -1) {
                         localInvoices[locIdx].items = invData.items;
-                        localInvoices[locIdx].total_net = invData.total_net;
+                        localInvoices[locIdx].totalAmount = newTotal;
+                        localInvoices[locIdx].total_net = newTotal;
                         localStorage.setItem('altajer_invoices', JSON.stringify(localInvoices));
                     }
                     alert("تمت معالجة المرتجع وتحديث الحسابات بنجاح.");
@@ -460,6 +490,7 @@ window.calculateTotal = function(code) {
         document.getElementById(`p-total-${code}`).value = (price * qty).toFixed(2);
     }
 };
+
 // دالة تشفير حقول الزكاة والضريبة بصيغة TLV لـ ZATCA ثم Base64
 function encodeZatcaTLV(sellerName, vatNumber, timestamp, totalAmount, vatAmount) {
     function toTLV(tag, value) {

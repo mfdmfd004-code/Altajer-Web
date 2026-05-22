@@ -489,6 +489,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="i18n.js"></script>
 
+    <script type="module" src="AccountingEngine.js"></script>
+    
 <script>
     // كتل الترجمة المتكاملة للفاتورة (عربي / إنجليزي) لضمان عدم فقدان اللغات
     const translations = {
@@ -520,7 +522,20 @@
 
     let globalInvoiceId = "";
     let globalNetTotal = "0.00";
+import AccountingEngine from './AccountingEngine.js';
+const engine = new AccountingEngine('invoices', './');
 
+function validateAndSaveInvoice() {
+    const vatNumber = document.getElementById('invCustVat').innerText;
+    if (engine.isVatValid(vatNumber)) {
+        console.log("الرقم الضريبي مطابق لمعايير الزكاة.");
+        return true;
+    } else {
+        alert("خطأ: الرقم الضريبي غير صالح! يجب أن يبدأ بـ 3 وينتهي بـ 3 وطوله 15 رقماً.");
+        return false;
+    }
+    }
+    
     function applySavedTheme() {
         const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
         document.documentElement.setAttribute('data-theme', activeTheme);

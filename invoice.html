@@ -717,18 +717,33 @@ function validateAndSaveInvoice() {
     }
 
     function triggerSystemShare() {
-        const company = document.getElementById('supNameField').innerText;
-        const invId = globalInvoiceId;
-        const total = globalNetTotal;
-        const url = window.location.href;
+    // خطوة التحقق المضافة:
+    if (!validateAndSaveInvoice()) {
+        return; // يتوقف النظام هنا إذا كان الرقم الضريبي غير صالح
+    }
+    
+    // تكملة الكود الأصلي:
+    const company = document.getElementById('supNameField').innerText;
+    const invId = globalInvoiceId;
+    const total = globalNetTotal;
+    const url = window.location.href;
 
-        const shareData = {
-            title: `فاتورة ضريبية من ${company}`,
-            text: `مرحبا بك، تم إصدار فاتورتك الضريبية الإلكترونية رقم #${invId} من ${company} بمبلغ إجمالي قدره ${total} ر.س. يمكنك استعراض التفاصيل والمطابقة عبر الرابط التالي:`,
-            url: url
-        };
+    const shareData = {
+        title: 'فاتورة ضريبية من ' + company,
+        text: 'بمبلغ اجمالي قدره ' + total + ' من ' + company + ' رقم الفاتورة #' + invId + ' تم إصدار فاتورتك الإلكترونية',
+        url: url
+    };
 
-        if (navigator.share) {
+    if (navigator.share) {
+        navigator.share(shareData)
+            .then(() => console.log('Done'))
+            .catch((error) => console.log('Error:', error));
+    } else {
+        const whatsappText = encodeURIComponent(shareData.text + '\n' + shareData.url);
+        window.open('https://api.whatsapp.com/send?text=' + whatsappText, '_blank');
+    }
+}
+
             navigator.share(shareData)
                 .then(() => console.log('Done'))
                 .catch((error) => console.log('Error:', error));

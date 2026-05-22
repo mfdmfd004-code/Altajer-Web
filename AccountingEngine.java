@@ -1,20 +1,10 @@
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Scanner;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.HBox;
 
 public class AccountingEngine {
 
@@ -22,11 +12,11 @@ public class AccountingEngine {
     private String directory;
     private boolean debitAcct;
     private ComboBox<String> comboBox;
-    private Label lblAcct;
     private TextField tfDebit;
     private TextField tfCredit;
     private TextField tfNote;
-    private PreparedStatement entry;
+    private TextField tfCustomerName;
+    private TextField tfVatNumber;
     private Connection connection;
 
     public AccountingEngine(boolean debitAcct, String tableName, String directory, Connection connection) {
@@ -38,15 +28,40 @@ public class AccountingEngine {
         tfDebit = new TextField("0.00");
         tfCredit = new TextField("0.00");
         tfNote = new TextField();
-        setNodeProperties();
+        
+        // الخانات الجديدة
+        tfCustomerName = new TextField();
+        tfCustomerName.setPromptText("اسم العميل");
+        
+        tfVatNumber = new TextField();
+        tfVatNumber.setPromptText("الرقم الضريبي (15 رقم)");
+    }
+
+    // دالة التحقق من الرقم الضريبي حسب الشروط الصارمة
+    public boolean isVatValid() {
+        String vat = tfVatNumber.getText();
+        // شرط: 15 رقم، يبدأ بـ 3، ينتهي بـ 3
+        return vat.matches("3[0-9]{13}3");
     }
 
     public void recordTransaction(String date, HashMap<String, Integer> map) throws SQLException {
-        // سيتم إضافة منطق الضريبة هنا لاحقاً
-        System.out.println("Engine Ready for ZATCA integration.");
-    }
+        if (!isVatValid()) {
+            System.out.println("خطأ: الرقم الضريبي غير صالح! يجب أن يبدأ بـ 3 وينتهي بـ 3 وطوله 15 رقماً.");
+            return;
+        }
 
-    private void setNodeProperties() {
-        comboBox.setPrefWidth(320);
+        String query = "INSERT INTO " + tableName + " (dateOfTransaction, accountTitle, debit, credit, note, customerName, vatNumber) VALUES (?, ?, ?, ?, ?, ?, ?);";
+        PreparedStatement entry = connection.prepareStatement(query);
+
+        entry.setString(1, date);
+        entry.setString(2, comboBox.getValue());
+        entry.setDouble(3, Double.parseDouble(tfDebit.getText()));
+        entry.setDouble(4, Double.parseDouble(tfCredit.getText()));
+        entry.setString(5, tfNote.getText());
+        entry.setString(6, tfCustomerName.getText());
+        entry.setString(7, tfVatNumber.getText());
+
+        entry.executeUpdate();
+        System.out.println("تم الحفظ بنجاح مع مطابقة معايير الزكاة.");
     }
 }

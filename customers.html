@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>تاجر برو - سجل العملاء والامتثال الضريبي ZATCA</title>
-    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0c3f65">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         :root, [data-theme="winter"] {
             --dark-bg: #0d1b2a;
@@ -25,233 +22,151 @@
             --text-white: #ffffff;
             --danger-red: #e63946;
             --warning-orange: #ffb703;
-            --glow-soft: 0 0 6px rgba(0, 180, 216, 0.35);
+            --glow-soft: 0 0 6px rgba(0,180,216,0.35);
         }
-
         [data-theme="spring"] {
-            --dark-bg: #1a2f16;
-            --card-bg: #243e1e;
-            --sea-blue: #52b788;
-            --light-green: #74c69d;
-            --neon-cyan: #95d5b2;
-            --neon-pink: #ff70a6;
-            --text-white: #f4f9f4;
-            --danger-red: #ff4d6d;
-            --warning-orange: #ff9f1c;
-            --glow-soft: 0 0 6px rgba(149, 213, 178, 0.35);
+            --dark-bg: #1a2f16; --card-bg: #243e1e; --sea-blue: #52b788;
+            --light-green: #74c69d; --neon-cyan: #95d5b2; --neon-pink: #ff70a6;
+            --text-white: #f4f9f4; --danger-red: #ff4d6d; --warning-orange: #ff9f1c;
+            --glow-soft: 0 0 6px rgba(149,213,178,0.35);
         }
-
         [data-theme="summer"] {
-            --dark-bg: #0f2a35;
-            --card-bg: #173f5f;
-            --sea-blue: #20639b;
-            --light-green: #3caea3;
-            --neon-cyan: #2a9d8f;
-            --neon-pink: #f4a261;
-            --text-white: #f8f9fa;
-            --danger-red: #e76f51;
-            --warning-orange: #f4a261;
-            --glow-soft: 0 0 6px rgba(42, 157, 143, 0.35);
+            --dark-bg: #0f2a35; --card-bg: #173f5f; --sea-blue: #20639b;
+            --light-green: #3caea3; --neon-cyan: #2a9d8f; --neon-pink: #f4a261;
+            --text-white: #f8f9fa; --danger-red: #e76f51; --warning-orange: #f4a261;
+            --glow-soft: 0 0 6px rgba(42,157,143,0.35);
         }
-
         [data-theme="autumn"] {
-            --dark-bg: #2b1810;
-            --card-bg: #3e261d;
-            --sea-blue: #b07d62;
-            --light-green: #9e2a2b;
-            --neon-cyan: #e36414;
-            --neon-pink: #ffb703;
-            --text-white: #fff8f5;
-            --danger-red: #6f1d1b;
-            --warning-orange: #ff9f1c;
-            --glow-soft: 0 0 6px rgba(227, 100, 20, 0.35);
+            --dark-bg: #2b1810; --card-bg: #3e261d; --sea-blue: #b07d62;
+            --light-green: #9e2a2b; --neon-cyan: #e36414; --neon-pink: #ffb703;
+            --text-white: #fff8f5; --danger-red: #6f1d1b; --warning-orange: #ff9f1c;
+            --glow-soft: 0 0 6px rgba(227,100,20,0.35);
         }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body {
             background-color: var(--dark-bg);
             color: var(--text-white);
-            margin: 0;
-            padding: 20px 10px;
+            margin: 0; padding: 20px 10px;
             overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
             transition: background-color 0.4s ease, color 0.4s ease;
         }
-
         .customer-container {
-            max-width: 850px;
-            margin: 0 auto;
+            max-width: 900px; margin: 0 auto;
             background-color: var(--card-bg);
             border: 2px solid var(--sea-blue);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.15);
+            border-radius: 16px; padding: 25px;
+            box-shadow: 0 8px 30px rgba(0,180,216,0.15);
             position: relative;
-            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
         .customer-container::before {
             content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
+            position: absolute; top: 0; left: 0; right: 0; height: 4px;
             background: linear-gradient(90deg, var(--neon-cyan), var(--sea-blue), var(--neon-pink));
-            border-top-left-radius: 14px;
-            border-top-right-radius: 14px;
+            border-top-left-radius: 14px; border-top-right-radius: 14px;
         }
-
         .customer-header {
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
             justify-content: space-between;
-            border-bottom: 2px dashed rgba(0, 180, 216, 0.25);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
+            border-bottom: 2px dashed rgba(0,180,216,0.25);
+            padding-bottom: 15px; margin-bottom: 25px;
+            flex-wrap: wrap; gap: 15px;
         }
-
         .customer-title {
-            font-size: 20px;
-            font-weight: bold;
+            font-size: 20px; font-weight: bold;
             color: var(--neon-cyan);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-shadow: var(--glow-soft);
+            display: flex; align-items: center; gap: 10px;
         }
-
         .section-subtitle {
-            font-size: 15px;
-            color: var(--neon-cyan);
-            margin-top: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
+            font-size: 15px; color: var(--neon-cyan);
+            margin-top: 10px; margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0,180,216,0.15);
             padding-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            display: flex; align-items: center; gap: 8px;
         }
-
-        .input-container {
-            position: relative;
-            margin-bottom: 25px;
-        }
-
+        .input-container { position: relative; margin-bottom: 25px; }
         .input-container input {
-            border: 0;
-            border-bottom: 2px solid #4a5568;
-            background: transparent;
-            width: 100%;
+            border: 0; border-bottom: 2px solid #4a5568;
+            background: transparent; width: 100%;
             padding: 8px 5px 4px 5px;
-            font-size: 15px;
-            color: #fff;
+            font-size: 15px; color: #fff;
             transition: border-color 0.3s;
         }
-
-        .input-container input:focus {
-            outline: none;
-            border-bottom: 2px solid var(--neon-cyan);
-        }
-
+        .input-container input:focus { outline: none; border-bottom: 2px solid var(--neon-cyan); }
         .input-container label {
-            position: absolute;
-            top: 8px;
-            right: 5px;
-            font-size: 14px;
-            color: #a0aec0;
-            pointer-events: none;
-            transition: all 0.2s ease-in-out;
+            position: absolute; top: 8px; right: 5px;
+            font-size: 14px; color: #a0aec0;
+            pointer-events: none; transition: all 0.2s ease-in-out;
         }
-
         .input-container input:focus ~ label,
         .input-container input:not(:placeholder-shown) ~ label {
-            top: -14px;
-            font-size: 12px;
-            color: var(--neon-cyan);
+            top: -14px; font-size: 12px; color: var(--neon-cyan);
         }
-
         .national-address-box {
-            background: rgba(0, 0, 0, 0.15);
-            border: 1px dashed rgba(0, 180, 216, 0.2);
-            border-radius: 12px;
-            padding: 25px 15px 5px 15px;
-            margin-bottom: 20px;
+            background: rgba(0,0,0,0.15);
+            border: 1px dashed rgba(0,180,216,0.2);
+            border-radius: 12px; padding: 25px 15px 5px 15px; margin-bottom: 20px;
         }
-
+        .zatca-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(0,180,216,0.1);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 20px; padding: 4px 12px;
+            font-size: 12px; color: var(--neon-cyan);
+            margin-bottom: 15px;
+        }
+        .vat-hint {
+            font-size: 11px; color: #a0aec0;
+            margin-top: -18px; margin-bottom: 15px; padding-right: 5px;
+        }
         .btn-neon {
-            background: #2d3748;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: 0.3s;
-            border-radius: 8px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            background: #2d3748; color: #fff; border: none;
+            padding: 10px 20px; font-weight: 600; font-size: 14px;
+            transition: 0.3s; border-radius: 8px; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
         }
-
         .btn-neon:hover {
             background: var(--clr);
             box-shadow: 0 0 12px var(--clr);
-            color: #fff;
-            transform: translateY(-2px);
+            color: #fff; transform: translateY(-2px);
         }
-
         .table-responsive-custom {
-            border-radius: 12px;
-            overflow: hidden;
+            border-radius: 12px; overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             margin-top: 30px;
-            border: 1px solid rgba(0, 180, 216, 0.2);
+            border: 1px solid rgba(0,180,216,0.2);
         }
-
         .table-custom {
-            background-color: rgba(0, 0, 0, 0.15) !important;
-            color: white !important;
-            margin-bottom: 0;
-            font-size: 14px;
+            background-color: rgba(0,0,0,0.15) !important;
+            color: white !important; margin-bottom: 0; font-size: 13px;
         }
-
         .table-custom th {
-            background-color: rgba(0, 0, 0, 0.3) !important;
-            color: var(--neon-cyan) !important;
-            font-weight: 600;
+            background-color: rgba(0,0,0,0.3) !important;
+            color: var(--neon-cyan) !important; font-weight: 600;
         }
-
-        .table-custom td {
-            vertical-align: middle;
-            border-color: rgba(255, 255, 255, 0.04) !important;
-        }
-
-        .action-icon {
-            cursor: pointer;
-            font-size: 17px;
-            transition: transform 0.2s;
-            margin: 0 5px;
-        }
+        .table-custom td { vertical-align: middle; border-color: rgba(255,255,255,0.04) !important; }
+        .action-icon { cursor: pointer; font-size: 17px; transition: transform 0.2s; margin: 0 5px; }
         .action-icon:hover { transform: scale(1.2); }
         .icon-edit { color: var(--warning-orange); }
         .icon-delete { color: var(--danger-red); }
-
         .api-toast {
-            position: fixed;
-            top: 30px;
-            right: 20px;
-            z-index: 2000;
-            padding: 12px 25px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            display: none;
+            position: fixed; top: 30px; right: 20px; z-index: 2000;
+            padding: 12px 25px; border-radius: 8px; color: white;
+            font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: none;
         }
+        .customer-type-selector {
+            display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .type-btn {
+            flex: 1; min-width: 120px; padding: 10px;
+            border: 2px solid #4a5568; border-radius: 10px;
+            background: transparent; color: #a0aec0;
+            cursor: pointer; text-align: center; transition: 0.3s; font-size: 13px;
+        }
+        .type-btn.active {
+            border-color: var(--neon-cyan); color: var(--neon-cyan);
+            background: rgba(0,180,216,0.08);
+        }
+        .type-btn i { display: block; font-size: 20px; margin-bottom: 4px; }
     </style>
 </head>
 <body>
@@ -262,355 +177,362 @@
     <div class="customer-header">
         <div class="customer-title">
             <i class='bx bx-user-pin bx-flashing'></i>
-            <span>سجل العملاء وإدارة الامتثال لـ ZATCA</span>
+            <span>سجل العملاء — امتثال ZATCA الكامل</span>
         </div>
-        <div>
+        <div class="d-flex gap-2 align-items-center">
+            <span class="zatca-badge"><i class="fas fa-certificate"></i> ZATCA Ready</span>
             <a href="index.html" class="btn-neon" style="--clr:var(--sea-blue)">
-                <i class="fas fa-home"></i> <span>الرئيسية</span>
+                <i class="fas fa-home"></i> الرئيسية
             </a>
         </div>
     </div>
 
-    <form id="customerForm">
-        
-        <div class="section-subtitle">
-            <i class="fas fa-id-card"></i> <span>المعرفات الهيكلية للعميل</span>
-        </div>
+    <!-- نوع العميل -->
+    <div class="section-subtitle">
+        <i class="fas fa-users-cog"></i> <span>نوع العميل</span>
+    </div>
+    <div class="customer-type-selector">
+        <button type="button" class="type-btn active" id="typeB2C" onclick="setCustomerType('B2C')">
+            <i class="fas fa-user"></i> فرد (B2C)<br>
+            <small style="font-size:10px;">فاتورة مبسّطة</small>
+        </button>
+        <button type="button" class="type-btn" id="typeB2B" onclick="setCustomerType('B2B')">
+            <i class="fas fa-building"></i> منشأة (B2B)<br>
+            <small style="font-size:10px;">فاتورة ضريبية كاملة</small>
+        </button>
+        <button type="button" class="type-btn" id="typeGOV" onclick="setCustomerType('GOV')">
+            <i class="fas fa-landmark"></i> جهة حكومية<br>
+            <small style="font-size:10px;">فاتورة رسمية</small>
+        </button>
+    </div>
 
+    <form id="customerForm">
+        <input type="hidden" id="custType" value="B2C">
+
+        <!-- القسم ١: المعرفات -->
+        <div class="section-subtitle">
+            <i class="fas fa-id-card"></i> <span>المعرفات الأساسية</span>
+        </div>
         <div class="row">
             <div class="col-md-4">
                 <div class="input-container">
                     <input id="custInvoiceId" type="text" required placeholder=" " autofocus>
-                    <label>كود العميل / الرقم المرجعي</label>
+                    <label>كود العميل / الرقم المرجعي *</label>
                 </div>
             </div>
             <div class="col-md-8">
                 <div class="input-container">
-                    <input id="custVatNumber" type="text" maxlength="15" inputmode="numeric" placeholder=" ">
-                    <label>الرقم الضريبي للمنشأة (15 خانة لامتثال الشركات B2B)</label>
+                    <input id="custVatNumber" type="text" maxlength="15"
+                           inputmode="numeric" placeholder=" "
+                           oninput="validateVatLive(this)">
+                    <label>الرقم الضريبي للمنشأة (15 خانة — إلزامي B2B/GOV)</label>
+                </div>
+                <div class="vat-hint" id="vatHint">
+                    يبدأ وينتهي بـ 3 — مثال: 300000000000003
                 </div>
             </div>
         </div>
 
         <div class="row">
+            <div class="col-md-5">
+                <div class="input-container">
+                    <input id="custCRNumber" type="text" maxlength="10"
+                           inputmode="numeric" placeholder=" ">
+                    <label>رقم السجل التجاري (10 أرقام — اختياري للأفراد)</label>
+                </div>
+            </div>
             <div class="col-md-7">
                 <div class="input-container">
                     <input id="custName" type="text" required placeholder=" ">
-                    <label>اسم العميل المعتمد / المنشأة</label>
+                    <label>اسم العميل المعتمد / المنشأة *</label>
                 </div>
             </div>
-            <div class="col-md-5">
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
                 <div class="input-container">
-                    <input id="custPhone" type="tel" required placeholder=" ">
+                    <input id="custPhone" type="tel" placeholder=" ">
                     <label>رقم الجوال / التواصل</label>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="input-container">
+                    <input id="custEmail" type="email" placeholder=" ">
+                    <label>البريد الإلكتروني (اختياري)</label>
+                </div>
+            </div>
         </div>
 
-        <div class="section-subtitle">
-            <i class="fas fa-map-marker-alt"></i> <span>تفاصيل العنوان الوطني (معيار إلزامي لـ ZATCA في فواتير B2B)</span>
+        <!-- القسم ٢: العنوان الوطني -->
+        <div class="section-subtitle" id="addressSection">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>العنوان الوطني — إلزامي لـ ZATCA في فواتير B2B/GOV</span>
         </div>
-
         <div class="national-address-box">
             <div class="row">
                 <div class="col-6 col-md-4">
                     <div class="input-container">
-                        <input id="custCity" type="text" required placeholder=" ">
+                        <input id="custCity" type="text" placeholder=" ">
                         <label>المدينة</label>
                     </div>
                 </div>
                 <div class="col-6 col-md-4">
                     <div class="input-container">
-                        <input id="custDistrict" type="text" required placeholder=" ">
+                        <input id="custDistrict" type="text" placeholder=" ">
                         <label>الحي</label>
                     </div>
                 </div>
                 <div class="col-12 col-md-4">
                     <div class="input-container">
-                        <input id="custStreet" type="text" required placeholder=" ">
+                        <input id="custStreet" type="text" placeholder=" ">
                         <label>اسم الشارع</label>
                     </div>
                 </div>
-                <div class="col-4 col-md-4">
+                <div class="col-4">
                     <div class="input-container">
-                        <input id="custBuildingNo" type="text" maxlength="4" inputmode="numeric" required placeholder=" ">
+                        <input id="custBuildingNo" type="text" maxlength="4"
+                               inputmode="numeric" placeholder=" ">
                         <label>رقم المبنى</label>
                     </div>
                 </div>
-                <div class="col-4 col-md-4">
+                <div class="col-4">
                     <div class="input-container">
-                        <input id="custPostalCode" type="text" maxlength="5" inputmode="numeric" required placeholder=" ">
+                        <input id="custPostalCode" type="text" maxlength="5"
+                               inputmode="numeric" placeholder=" ">
                         <label>الرمز البريدي</label>
                     </div>
                 </div>
-                <div class="col-4 col-md-4">
+                <div class="col-4">
                     <div class="input-container">
-                        <input id="additional_no" type="text" maxlength="4" inputmode="numeric" required placeholder=" ">
-                        <label>الرقم الإضافي (4 أرقام)</label>
+                        <input id="custAdditionalNo" type="text" maxlength="4"
+                               inputmode="numeric" placeholder=" ">
+                        <label>الرقم الإضافي</label>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="d-flex flex-wrap gap-2 justify-content-between mt-3">
-            <div class="d-flex gap-2 w-100 justify-content-between justify-content-md-start">
-                <button type="submit" id="btnSubmitAction" class="btn-neon" style="--clr:var(--light-green)">
-                    <i class="fas fa-user-plus"></i> <span id="lblSubmitBtn">حفظ وتأمين الملف الضريبي</span>
-                </button>
-                <button type="button" onclick="clearCustomerForm()" class="btn-neon" style="--clr:var(--warning-orange)">
-                    <i class="fas fa-redo"></i> <span>تفريغ الحقول</span>
-                </button>
-            </div>
+        <!-- أزرار الإجراءات -->
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            <button type="submit" id="btnSubmitAction" class="btn-neon"
+                    style="--clr:var(--light-green)">
+                <i class="fas fa-user-plus"></i>
+                <span id="lblSubmitBtn">حفظ وتأمين الملف الضريبي</span>
+            </button>
+            <button type="button" onclick="clearCustomerForm()" class="btn-neon"
+                    style="--clr:var(--warning-orange)">
+                <i class="fas fa-redo"></i> تفريغ الحقول
+            </button>
         </div>
     </form>
 
+    <!-- جدول العملاء -->
     <div class="table-responsive-custom">
         <table class="table table-dark table-striped table-custom text-center">
             <thead>
                 <tr>
-                    <th>الكود المرجعي</th>
-                    <th>اسم المنشأة</th>
+                    <th>الكود</th>
+                    <th>النوع</th>
+                    <th>الاسم</th>
                     <th>الرقم الضريبي</th>
-                    <th>رقم الجوال</th>
-                    <th>العنوان الوطني المعتمد</th>
+                    <th>السجل التجاري</th>
+                    <th>الجوال</th>
+                    <th>المدينة</th>
                     <th>العمليات</th>
                 </tr>
             </thead>
-            <tbody id="customersTableBody">
-            </tbody>
+            <tbody id="customersTableBody"></tbody>
         </table>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { db } from "./firebase-config.js";
+    import {
+        collection, doc, setDoc, getDoc, deleteDoc, onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // إعدادات مشروع الـ Firebase الحقيقية الخاصة بك (Altajer Pro)
-    const firebaseConfig = {
-        apiKey: "AIzaSyAdH8KorayFEiM3_N_I6v-m3A09uXqY4Q8", 
-        authDomain: "altajer-pro-accountant.firebaseapp.com",
-        databaseURL: "https://altajer-pro-accountant-default-rtdb.firebaseio.com",
-        projectId: "altajer-pro-accountant",
-        storageBucket: "altajer-pro-accountant.appspot.com",
-        messagingSenderId: "982176278219", 
-        appId: "1:982176278219:web:5fede7cef02cce60a35d4e" 
+    // ===== تطبيق الثيم =====
+    const savedTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    let editModeId = null;
+
+    // ===== Toast =====
+    window.showToast = function(msg, isSuccess = true) {
+        const t = document.getElementById('apiToast');
+        t.innerText = msg;
+        t.style.backgroundColor = isSuccess ? '#38b000' : '#e63946';
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3500);
     };
 
-    // تهيئة السيرفر وقاعدة البيانات سحابياً
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let editModeCustomerId = null;
-
-    // تطبيق السمات المفضلة المخزنة في النظام التراكمي
-    function applySavedTheme() {
-        const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
-        document.documentElement.setAttribute('data-theme', activeTheme);
-    }
-
-    // تشغيل العمليات فور تحميل مستندات الصفحة
-    document.addEventListener("DOMContentLoaded", function() {
-        applySavedTheme();
-        syncFromFirebase(); 
-    });
-
-    // إشعارات النظام المخصصة (Toast)
-    function showToast(message, isSuccess = true) {
-        const toast = document.getElementById('apiToast'); 
-        if (!toast) return;
-        toast.innerText = message;
-        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
-        toast.style.display = 'block'; 
-        setTimeout(() => { toast.style.display = 'none'; }, 3500);
-    }
-
-    // دالة المزامنة وجلب البيانات حياً من Firebase وتحديث الـ LocalStorage الموحد
-    function syncFromFirebase() {
-        const customersRef = ref(db, 'altajer_customers');
-        onValue(customersRef, (snapshot) => {
-            const data = snapshot.val();
-            const customersList = [];
-            
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    customersList.push(data[key]);
-                });
-            }
-            
-            // مزامنة الذاكرة المحلية بالتوازي مع السحابة لتغذية الفواتير والمبيعات
-            localStorage.setItem('altajer_customers', JSON.stringify(customersList));
-            renderCustomersTable(customersList);
-        }, (error) => {
-            console.warn("جاري العمل في وضع التخزين المحلي الاحتياطي:", error);
-            const localData = JSON.parse(localStorage.getItem('altajer_customers')) || [];
-            renderCustomersTable(localData);
+    // ===== نوع العميل =====
+    window.setCustomerType = function(type) {
+        document.getElementById('custType').value = type;
+        ['B2C','B2B','GOV'].forEach(t => {
+            document.getElementById('type'+t).classList.toggle('active', t === type);
         });
-    }
+    };
 
-    // بناء وعرض جدول سجل المنشآت والعملاء
-    function renderCustomersTable(customers) {
-        const tbody = document.getElementById('customersTableBody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-
-        if (customers.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-muted text-center p-3">لا توجد سجلات مطابقة في الذاكرة السحابية أو المحلية حالياً.</td></tr>`;
+    // ===== التحقق الحي من الرقم الضريبي =====
+    window.validateVatLive = function(input) {
+        const val = input.value.trim();
+        const hint = document.getElementById('vatHint');
+        if (val.length === 0) {
+            hint.style.color = '#a0aec0';
+            hint.innerText = 'يبدأ وينتهي بـ 3 — مثال: 300000000000003';
             return;
         }
+        if (val.length === 15 && val.startsWith('3') && val.endsWith('3') && !isNaN(val)) {
+            hint.style.color = '#38b000';
+            hint.innerText = '✅ رقم ضريبي صحيح ومتوافق مع ZATCA';
+        } else {
+            hint.style.color = '#e63946';
+            hint.innerText = `❌ ${15 - val.length > 0 ? 'متبقي ' + (15 - val.length) + ' خانة' : 'يجب أن يبدأ وينتهي بـ 3'}`;
+        }
+    };
 
-        customers.forEach(cust => {
-            const fullAddr = `مبنى ${cust.building_no || '---'}، شارع ${cust.street_name || '---'}، حي ${cust.district || '---'}، ${cust.city || '---'} (${cust.postal_code || '---'}) | إضافي: ${cust.additional_no || '---'}`;
-            
+    // ===== الاستماع الحي من Firestore =====
+    onSnapshot(collection(db, "customers"), (snapshot) => {
+        const tbody = document.getElementById('customersTableBody');
+        tbody.innerHTML = '';
+        const list = [];
+        snapshot.forEach(d => {
+            const c = d.data();
+            list.push(c);
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${cust.id}</td>
-                <td class="fw-bold text-info">${cust.name}</td>
-                <td class="text-warning">${cust.vat_number || '---'}</td>
-                <td>${cust.phone}</td>
-                <td class="small text-white-50">${fullAddr}</td>
+                <td>${c.id}</td>
+                <td><span class="badge" style="background:${
+                    c.type==='B2B'?'#0077b6':c.type==='GOV'?'#38b000':'#6c757d'
+                }">${c.type||'B2C'}</span></td>
+                <td class="fw-bold text-info">${c.name}</td>
+                <td class="text-warning">${c.vat_number||'---'}</td>
+                <td>${c.cr_number||'---'}</td>
+                <td>${c.phone||'---'}</td>
+                <td>${c.city||'---'}</td>
                 <td>
                     <i class="fas fa-edit action-icon icon-edit" title="تعديل"></i>
                     <i class="fas fa-trash-alt action-icon icon-delete" title="حذف"></i>
                 </td>
             `;
-
-            // الأحداث الآمنة للأيقونات تفادياً لمشاكل نطاقات الـ Modules
-            tr.querySelector('.icon-edit').addEventListener('click', () => loadCustomerToEdit(cust.id));
-            tr.querySelector('.icon-delete').addEventListener('click', () => deleteCustomer(cust.id));
-
+            tr.querySelector('.icon-edit').addEventListener('click', () => loadEdit(c));
+            tr.querySelector('.icon-delete').addEventListener('click', () => deleteCustomer(c.id));
             tbody.appendChild(tr);
         });
-    }
+        // مزامنة محلية لاستخدامها في الفواتير
+        localStorage.setItem('altajer_customers', JSON.stringify(list));
+        // تحديث عداد الرئيسية إن وُجد
+        if(document.getElementById('customerCount'))
+            document.getElementById('customerCount').innerText = snapshot.size;
+    });
 
-    // معالجة حفظ وتأمين الملف الضريبي في قاعدة البيانات السحابية
-    window.handleCustomerSubmit = function(e) {
+    // ===== حفظ العميل =====
+    document.getElementById('customerForm').onsubmit = async function(e) {
         e.preventDefault();
 
-        const idField = document.getElementById('custInvoiceId');
-        const nameField = document.getElementById('custName');
-        const phoneField = document.getElementById('custPhone');
-        const vatField = document.getElementById('custVatNumber');
-        
-        const cityField = document.getElementById('custCity');
-        const districtField = document.getElementById('custDistrict');
-        const streetField = document.getElementById('custStreet');
-        const buildingField = document.getElementById('custBuildingNo');
-        const postalField = document.getElementById('custPostalCode');
-        const additionalField = document.getElementById('additional_no'); 
+        const id       = document.getElementById('custInvoiceId').value.trim();
+        const name     = document.getElementById('custName').value.trim();
+        const type     = document.getElementById('custType').value;
+        const vat      = document.getElementById('custVatNumber').value.trim();
+        const cr       = document.getElementById('custCRNumber').value.trim();
+        const phone    = document.getElementById('custPhone').value.trim();
+        const email    = document.getElementById('custEmail').value.trim();
+        const city     = document.getElementById('custCity').value.trim();
+        const district = document.getElementById('custDistrict').value.trim();
+        const street   = document.getElementById('custStreet').value.trim();
+        const building = document.getElementById('custBuildingNo').value.trim();
+        const postal   = document.getElementById('custPostalCode').value.trim();
+        const addNo    = document.getElementById('custAdditionalNo').value.trim();
 
-        const vatNumberValue = vatField.value.trim();
+        if (!id || !name) return showToast("يرجى إدخال الكود والاسم على الأقل.", false);
 
-        // مطابقة قيود ومعايير هيئة الزكاة والضريبة والجمارك لـ B2B
-        if (vatNumberValue !== "") {
-            if (vatNumberValue.length !== 15 || isNaN(vatNumberValue)) {
-                showToast("خطأ تدقيق ZATCA: الرقم الضريبي يجب أن يكون 15 خانة رقمية تماماً!", false);
-                return;
+        // تحقق ZATCA للرقم الضريبي
+        if (vat !== "") {
+            if (vat.length !== 15 || isNaN(vat)) {
+                return showToast("❌ الرقم الضريبي يجب أن يكون 15 خانة رقمية!", false);
             }
-            if (!vatNumberValue.startsWith('3') || !vatNumberValue.endsWith('3')) {
-                showToast("خطأ تدقيق ZATCA: الأرقام الضريبية بالمملكة يجب أن تبدأ وتنتهي بالرقم 3!", false);
-                return;
+            if (!vat.startsWith('3') || !vat.endsWith('3')) {
+                return showToast("❌ الرقم الضريبي يجب أن يبدأ وينتهي بـ 3!", false);
             }
+        }
+
+        // تحقق إضافي للـ B2B
+        if ((type === 'B2B' || type === 'GOV') && vat === '') {
+            return showToast("⚠️ الرقم الضريبي إلزامي لعملاء B2B والجهات الحكومية!", false);
         }
 
         const payload = {
-            id: idField.value.trim(),
-            vat_number: vatNumberValue,
-            name: nameField.value.trim(),
-            phone: phoneField.value.trim(),
-            city: cityField.value.trim(),
-            district: districtField.value.trim(),
-            street_name: streetField.value.trim(), 
-            building_no: buildingField.value.trim(),
-            postal_code: postalField.value.trim(),
-            additional_no: additionalField ? additionalField.value.trim() : '',
+            id, name, type,
+            vat_number: vat,
+            cr_number: cr,
+            phone, email,
+            city, district,
+            street_name: street,
+            building_no: building,
+            postal_code: postal,
+            additional_no: addNo,
             updated_at: new Date().toISOString()
         };
 
-        if (editModeCustomerId) {
-            update(ref(db, `altajer_customers/${editModeCustomerId}`), payload)
-            .then(() => {
-                showToast("تم تحديث الملف الضريبي في السحابة بنجاح.");
-                clearCustomerForm();
-            })
-            .catch((err) => showToast("فشل التحديث السحابي: " + err.message, false));
-        } else {
-            const localCusts = JSON.parse(localStorage.getItem('altajer_customers')) || [];
-            if (localCusts.some(c => c.id === payload.id)) {
-                showToast("خطأ تدقيق: كود العميل هذا مسجل مسبقاً في الدليل!", false);
-                return;
-            }
-
-            set(ref(db, `altajer_customers/${payload.id}`), payload)
-            .then(() => {
-                showToast("تم تسجيل العميل بنجاح وتأمينه في الـ Firebase.");
-                clearCustomerForm();
-            })
-            .catch((err) => showToast("فشل الحفظ السحابي: " + err.message, false));
+        try {
+            await setDoc(doc(db, "customers", id), payload, { merge: true });
+            showToast("✅ تم حفظ العميل بنجاح في Firebase.");
+            clearCustomerForm();
+        } catch(err) {
+            showToast("❌ خطأ في الحفظ: " + err.message, false);
         }
     };
 
-    // تحميل بيانات العميل إلى حقول الإدخال لتعديلها
-    function loadCustomerToEdit(id) {
-        const localCusts = JSON.parse(localStorage.getItem('altajer_customers')) || [];
-        const cust = localCusts.find(c => c.id === id);
-        if (!cust) return;
-
-        editModeCustomerId = cust.id;
-        
-        const idInput = document.getElementById('custInvoiceId');
-        idInput.value = cust.id;
-        idInput.disabled = true; 
-
-        document.getElementById('custVatNumber').value = cust.vat_number || '';
-        document.getElementById('custName').value = cust.name || '';
-        document.getElementById('custPhone').value = cust.phone || '';
-        
-        document.getElementById('custCity').value = cust.city || '';
-        document.getElementById('custDistrict').value = cust.district || '';
-        document.getElementById('custStreet').value = cust.street_name || '';
-        document.getElementById('custBuildingNo').value = cust.building_no || '';
-        document.getElementById('custPostalCode').value = cust.postal_code || '';
-        
-        const additionalField = document.getElementById('additional_no');
-        if(additionalField) additionalField.value = cust.additional_no || '';
-
-        document.getElementById('lblSubmitBtn').innerText = "تعديل الملف المعتمد سحابياً";
-        document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--warning-orange)');
+    // ===== تحميل للتعديل =====
+    function loadEdit(c) {
+        editModeId = c.id;
+        document.getElementById('custInvoiceId').value = c.id;
+        document.getElementById('custInvoiceId').disabled = true;
+        document.getElementById('custType').value = c.type || 'B2C';
+        window.setCustomerType(c.type || 'B2C');
+        document.getElementById('custVatNumber').value = c.vat_number || '';
+        document.getElementById('custCRNumber').value = c.cr_number || '';
+        document.getElementById('custName').value = c.name || '';
+        document.getElementById('custPhone').value = c.phone || '';
+        document.getElementById('custEmail').value = c.email || '';
+        document.getElementById('custCity').value = c.city || '';
+        document.getElementById('custDistrict').value = c.district || '';
+        document.getElementById('custStreet').value = c.street_name || '';
+        document.getElementById('custBuildingNo').value = c.building_no || '';
+        document.getElementById('custPostalCode').value = c.postal_code || '';
+        document.getElementById('custAdditionalNo').value = c.additional_no || '';
+        document.getElementById('lblSubmitBtn').innerText = "تعديل الملف المعتمد";
+        document.getElementById('btnSubmitAction').style.setProperty('--clr','var(--warning-orange)');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // حذف المنشأة من قاعدة البيانات السحابية نهائياً
-    function deleteCustomer(id) {
-        if (confirm("هل أنت متأكد من رغبتك في حذف هذه المنشأة نهائياً من قاعدة البيانات السحابية؟")) {
-            remove(ref(db, `altajer_customers/${id}`))
-            .then(() => {
-                showToast("تمت إزالة العميل من السجلات السحابية والمحلية.", false);
-                if (editModeCustomerId === id) clearCustomerForm();
-            })
-            .catch((err) => showToast("حدث خطأ أثناء الحذف: " + err.message, false));
+    // ===== حذف =====
+    async function deleteCustomer(id) {
+        if (!confirm("هل أنت متأكد من حذف هذا العميل نهائياً؟")) return;
+        try {
+            await deleteDoc(doc(db, "customers", id));
+            showToast("تم الحذف بنجاح.", false);
+            if (editModeId === id) clearCustomerForm();
+        } catch(err) {
+            showToast("خطأ في الحذف: " + err.message, false);
         }
     }
 
-    // إعادة تهيئة النموذج وتفريغ حقول المدخلات
+    // ===== تفريغ النموذج =====
     window.clearCustomerForm = function() {
-        editModeCustomerId = null;
-        const form = document.getElementById('customerForm');
-        if (form) form.reset();
-        
-        const idInput = document.getElementById('custInvoiceId');
-        if (idInput) {
-            idInput.disabled = false;
-            idInput.focus();
-        }
-        
+        editModeId = null;
+        document.getElementById('customerForm').reset();
+        document.getElementById('custInvoiceId').disabled = false;
+        document.getElementById('custInvoiceId').focus();
+        window.setCustomerType('B2C');
         document.getElementById('lblSubmitBtn').innerText = "حفظ وتأمين الملف الضريبي";
-        document.getElementById('btnSubmitAction').style.setProperty('--clr', 'var(--light-green)');
+        document.getElementById('btnSubmitAction').style.setProperty('--clr','var(--light-green)');
+        document.getElementById('vatHint').style.color = '#a0aec0';
+        document.getElementById('vatHint').innerText = 'يبدأ وينتهي بـ 3 — مثال: 300000000000003';
     };
-
-    // ربط الحدث بالنموذج
-    document.getElementById('customerForm').onsubmit = window.handleCustomerSubmit;
 </script>
 </body>
 </html>

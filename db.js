@@ -5,192 +5,124 @@ import { collection, getDocs, doc, setDoc, getDoc, deleteDoc, onSnapshot } from 
 let cart = [];
 
 // ==========================================
-// أولاً: دالات التصدير المركزية لقاعدة البيانات
+// أولاً: دالات التصدير المركزية
 // ==========================================
-
 export async function getAllCustomers() {
     try {
         const snap = await getDocs(collection(db, "customers"));
-        return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch (e) {
-        console.error("خطأ في جلب العملاء مركزياً: ", e);
-        return [];
-    }
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) { console.error("خطأ في جلب العملاء: ", e); return []; }
 }
 
 export async function getAllItems() {
     try {
         const snap = await getDocs(collection(db, "products"));
-        return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch (e) {
-        console.error("خطأ في جلب الأصناف مركزياً: ", e);
-        return [];
-    }
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) { console.error("خطأ في جلب الأصناف: ", e); return []; }
 }
 
 export async function saveInvoice(invoiceData) {
     try {
         const invoiceId = invoiceData.invoiceNumber || "INV-" + Date.now();
-        await setDoc(doc(db, "orders", invoiceId), {
-            ...invoiceData,
-            timestamp: new Date()
-        });
-        const localInvoices = JSON.parse(localStorage.getItem('altajer_invoices')) || [];
-        if (!localInvoices.find(inv => inv.invoiceNumber === invoiceId)) {
-            localInvoices.push({ invoiceNumber: invoiceId, ...invoiceData });
-            localStorage.setItem('altajer_invoices', JSON.stringify(localInvoices));
+        await setDoc(doc(db, "orders", invoiceId), { ...invoiceData, timestamp: new Date() });
+        const local = JSON.parse(localStorage.getItem('altajer_invoices')) || [];
+        if (!local.find(i => i.invoiceNumber === invoiceId)) {
+            local.push({ invoiceNumber: invoiceId, ...invoiceData });
+            localStorage.setItem('altajer_invoices', JSON.stringify(local));
         }
-        console.log("تم حفظ الفاتورة بنجاح برقم: " + invoiceId);
         return invoiceId;
-    } catch (e) {
-        console.error("خطأ أثناء حفظ الفاتورة: ", e);
-        throw e;
-    }
+    } catch (e) { console.error("خطأ حفظ الفاتورة: ", e); throw e; }
 }
 
 // ==========================================
-// ثانياً: المحرك الرئيسي الشامل
+// ثانياً: المحرك الرئيسي
 // ==========================================
 const MainApp = {
-    saveAllProducts: async function() {
-        const rows = document.querySelectorAll('#product-list tr');
-        let productsData = [];
-        rows.forEach(row => {
-            const id = row.id.replace('row-', '');
-            const name = document.getElementById(`p-name-${id}`).value;
-            if (name && name.trim() !== "") {
-                productsData.push({
-                    code: id,
-                    name: name,
-                    unit: document.getElementById(`p-unit-${id}`).value,
-                    size: document.getElementById(`p-size-${id}`).value,
-                    price: parseFloat(document.getElementById(`p-price-${id}`).value) || 0,
-                    qty: parseFloat(document.getElementById(`p-qty-${id}`).value) || 0,
-                    quantity: parseFloat(document.getElementById(`p-qty-${id}`).value) || 0,
-                    total: parseFloat(document.getElementById(`p-total-${id}`).value) || 0,
-                    notes: document.getElementById(`p-notes-${id}`).value,
-                    timestamp: new Date()
-                });
-            }
-        });
-        if (productsData.length === 0) return alert("الرجاء إدخال بيانات الأصناف أولاً.");
-        try {
-            for (const product of productsData) {
-                await setDoc(doc(db, "products", product.code), product);
-            }
-            alert("تم حفظ كافة البنود في التاجر برو بنجاح.");
-        } catch (e) { alert("خطأ في الاتصال: " + e.message); }
-    },
-
-    exportToExcel: function(tableId) {
-        const table = document.getElementById(tableId);
-        if (!table) return alert("الجدول غير موجود.");
-        let url = 'data:application/vnd.ms-excel,' + escape(table.outerHTML);
-        let link = document.createElement("a");
-        link.download = "مخزون_التاجر.xls";
-        link.href = url;
-        link.click();
-    },
 
     customer: {
         addOrUpdate: async function() {
-            const id = document.getElementById('custId').value.trim();
-            const name = document.getElementById('custName').value.trim();
-            const vat = document.getElementById('custVat').value.trim();
-            const address = document.getElementById('custAddress').value.trim();
-            const contact = document.getElementById('custContact').value.trim();
+            // ✅ قراءة الحقول المحدثة المتوافقة مع ZATCA
+            const id       = (document.getElementById('custId')?.value || '').trim();
+            const name     = (document.getElementById('custName')?.value || '').trim();
+            const type     = (document.getElementById('custType')?.value || 'B2C');
+            const vat      = (document.getElementById('custVat')?.value || '').trim();
+            const cr       = (document.getElementById('custCR')?.value || '').trim();
+            const contact  = (document.getElementById('custContact')?.value || '').trim();
+            const city     = (document.getElementById('custCity')?.value || '').trim();
+            const district = (document.getElementById('custDistrict')?.value || '').trim();
+            const street   = (document.getElementById('custStreet')?.value || '').trim();
+            const building = (document.getElementById('custBuilding')?.value || '').trim();
+            const postal   = (document.getElementById('custPostal')?.value || '').trim();
+            const addNo    = (document.getElementById('custAddNo')?.value || '').trim();
+
             if (!id || !name) return alert("يرجى إدخال معرّف واسم العميل.");
+
+            const customerData = {
+                id, name, type,
+                vat, cr, contact,
+                city, district,
+                street_name: street,
+                building_no: building,
+                postal_code: postal,
+                additional_no: addNo,
+                // للتوافق مع الكود القديم
+                address: `${city} - ${district} - ${street}`,
+                updated_at: new Date().toISOString(),
+                timestamp: new Date()
+            };
+
             try {
-                const customerData = { id, name, vat, address, contact, timestamp: new Date() };
-                await setDoc(doc(db, "customers", id), customerData);
-                const localCust = JSON.parse(localStorage.getItem('altajer_customers')) || [];
-                const index = localCust.findIndex(c => c.id === id);
-                if (index > -1) localCust[index] = customerData;
-                else localCust.push(customerData);
-                localStorage.setItem('altajer_customers', JSON.stringify(localCust));
-                alert("تم حفظ بيانات العميل بنجاح.");
-                this.clearForm();
+                await setDoc(doc(db, "customers", id), customerData, { merge: true });
+                const local = JSON.parse(localStorage.getItem('altajer_customers')) || [];
+                const idx = local.findIndex(c => c.id === id);
+                if (idx > -1) local[idx] = customerData; else local.push(customerData);
+                localStorage.setItem('altajer_customers', JSON.stringify(local));
+                alert("✅ تم حفظ بيانات العميل بنجاح.");
+                if(window.clearCustForm) window.clearCustForm();
             } catch (e) { alert("خطأ: " + e.message); }
         },
-        search: async function() {
-            const id = document.getElementById('custId').value.trim();
-            if (!id) return alert("يرجى إدخال معرّف العميل للبحث.");
-            try {
-                const docSnap = await getDoc(doc(db, "customers", id));
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById('custName').value = data.name || '';
-                    document.getElementById('custVat').value = data.vat || '';
-                    document.getElementById('custAddress').value = data.address || '';
-                    document.getElementById('custContact').value = data.contact || '';
-                } else { alert("العميل غير موجود."); }
-            } catch (e) { alert("خطأ: " + e.message); }
-        },
+
         delete: async function() {
-            const id = document.getElementById('custId').value.trim();
+            const id = (document.getElementById('custId')?.value || '').trim();
             if (!id) return alert("يرجى إدخال معرّف العميل للحذف.");
             if (!confirm("هل أنت متأكد من الحذف؟")) return;
             try {
                 await deleteDoc(doc(db, "customers", id));
-                let localCust = JSON.parse(localStorage.getItem('altajer_customers')) || [];
-                localCust = localCust.filter(c => c.id !== id);
-                localStorage.setItem('altajer_customers', JSON.stringify(localCust));
+                let local = JSON.parse(localStorage.getItem('altajer_customers')) || [];
+                local = local.filter(c => c.id !== id);
+                localStorage.setItem('altajer_customers', JSON.stringify(local));
                 alert("تم الحذف بنجاح.");
-                this.clearForm();
+                if(window.clearCustForm) window.clearCustForm();
             } catch (e) { alert("خطأ: " + e.message); }
-        },
-        clearForm: function() {
-            ['custId','custName','custVat','custAddress','custContact'].forEach(id => {
-                if(document.getElementById(id)) document.getElementById(id).value = '';
-            });
         }
     },
 
     item: {
         addOrUpdate: async function() {
-            const code = document.getElementById('itemCode').value.trim();
-            const name = document.getElementById('itemName').value.trim();
-            const price = parseFloat(document.getElementById('itemPrice').value) || 0;
-            const qty = parseFloat(document.getElementById('itemQty').value) || 0;
+            const code  = (document.getElementById('itemCode')?.value || '').trim();
+            const name  = (document.getElementById('itemName')?.value || '').trim();
+            const price = parseFloat(document.getElementById('itemPrice')?.value) || 0;
+            const qty   = parseFloat(document.getElementById('itemQty')?.value) || 0;
             if (!code || !name) return alert("يرجى إدخال كود واسم الصنف.");
             try {
                 await setDoc(doc(db, "products", code), {
-                    code, name, price,
-                    qty: qty,
-                    quantity: qty,
-                    timestamp: new Date()
+                    code, name, price, qty, quantity: qty, timestamp: new Date()
                 });
-                alert("تم حفظ الصنف بالمخزن.");
-                this.clearForm();
+                alert("✅ تم حفظ الصنف بالمخزن.");
+                ['itemCode','itemName','itemPrice','itemQty'].forEach(id => {
+                    if(document.getElementById(id)) document.getElementById(id).value = '';
+                });
             } catch (e) { alert("خطأ: " + e.message); }
         },
-        search: async function() {
-            const code = document.getElementById('itemCode').value.trim();
-            if (!code) return alert("يرجى إدخال كود الصنف للبحث.");
-            try {
-                const docSnap = await getDoc(doc(db, "products", code));
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById('itemName').value = data.name || '';
-                    document.getElementById('itemPrice').value = data.price || 0;
-                    document.getElementById('itemQty').value = data.qty || data.quantity || 0;
-                } else { alert("الصنف غير موجود."); }
-            } catch (e) { alert("خطأ: " + e.message); }
-        },
+
         delete: async function() {
-            const code = document.getElementById('itemCode').value.trim();
+            const code = (document.getElementById('itemCode')?.value || '').trim();
             if (!code) return alert("يرجى إدخال الكود للحذف.");
             if (!confirm("هل تريد الحذف نهائياً؟")) return;
             try {
                 await deleteDoc(doc(db, "products", code));
                 alert("تم الحذف بنجاح.");
-                this.clearForm();
             } catch (e) { alert("خطأ: " + e.message); }
-        },
-        clearForm: function() {
-            ['itemCode','itemName','itemPrice','itemQty'].forEach(id => {
-                if(document.getElementById(id)) document.getElementById(id).value = '';
-            });
         }
     },
 
@@ -216,34 +148,42 @@ const MainApp = {
             this.updateCartTable();
             document.getElementById('poQtyBought').value = '';
         },
+
         updateCartTable: function() {
             const tbody = document.getElementById('tblPlaceOrder');
             if (!tbody) return;
             tbody.innerHTML = '';
             let totalExclTax = 0, totalTax = 0, finalNet = 0;
             cart.forEach((item, index) => {
-                const itemPriceExcl = item.price / 1.15;
-                const itemSubtotalExcl = itemPriceExcl * item.qty;
-                totalExclTax += itemSubtotalExcl;
-                totalTax += (itemSubtotalExcl * 0.15);
+                const priceExcl = item.price / 1.15;
+                const subtotalExcl = priceExcl * item.qty;
+                totalExclTax += subtotalExcl;
+                totalTax += subtotalExcl * 0.15;
                 finalNet += item.subtotal;
                 tbody.innerHTML += `<tr>
                     <td>${item.code}</td>
                     <td>${item.name}</td>
-                    <td>${itemPriceExcl.toFixed(2)}</td>
+                    <td>${priceExcl.toFixed(2)}</td>
                     <td>${item.qty}</td>
                     <td>${item.subtotal.toFixed(2)}</td>
-                    <td><button class="btn btn-sm btn-danger" onclick="window.App.pos.removeItem(${index})"><i class="fas fa-trash"></i></button></td>
+                    <td><button class="btn btn-sm btn-danger"
+                        onclick="window.App.pos.removeItem(${index})">
+                        <i class="fas fa-trash"></i></button></td>
                 </tr>`;
             });
-            if(document.getElementById('subTotalVal')) document.getElementById('subTotalVal').innerText = totalExclTax.toFixed(2);
-            if(document.getElementById('taxVal')) document.getElementById('taxVal').innerText = totalTax.toFixed(2);
-            if(document.getElementById('totalVal')) document.getElementById('totalVal').innerText = finalNet.toFixed(2);
+            if(document.getElementById('subTotalVal'))
+                document.getElementById('subTotalVal').innerText = totalExclTax.toFixed(2);
+            if(document.getElementById('taxVal'))
+                document.getElementById('taxVal').innerText = totalTax.toFixed(2);
+            if(document.getElementById('totalVal'))
+                document.getElementById('totalVal').innerText = finalNet.toFixed(2);
         },
+
         removeItem: function(index) {
             cart.splice(index, 1);
             this.updateCartTable();
         },
+
         placeOrder: async function() {
             if (cart.length === 0) return alert("السلة فارغة!");
             try {
@@ -254,15 +194,20 @@ const MainApp = {
                 const vatAmount = (totalAfterDiscount * 0.15) / 1.15;
                 const totalExclTax = totalAfterDiscount - vatAmount;
                 const customerSelect = document.getElementById('cbCustomer');
-                const customerName = customerSelect.selectedIndex > 0 ? customerSelect.options[customerSelect.selectedIndex].text : "نقدي";
-                const customerVat = document.getElementById('poCustVat') ? document.getElementById('poCustVat').value : "غير ضريبي";
+                const customerName = customerSelect.selectedIndex > 0
+                    ? customerSelect.options[customerSelect.selectedIndex].text : "نقدي";
+                const customerVat = document.getElementById('poCustVat')?.value || "غير ضريبي";
+
                 const invoiceData = {
                     invoiceNumber: orderId,
                     customer: customerName,
                     customerVat: customerVat,
                     date: new Date().toISOString().split('T')[0],
                     discount: discountVal,
-                    items: cart.map(i => ({ code: i.code, name: i.name, qty: i.qty, price: i.price, total: i.subtotal })),
+                    items: cart.map(i => ({
+                        code: i.code, name: i.name,
+                        qty: i.qty, price: i.price, total: i.subtotal
+                    })),
                     total: totalAfterDiscount,
                     tax: vatAmount,
                     subtotal: totalExclTax,
@@ -270,22 +215,28 @@ const MainApp = {
                     sellerName: "متجر التاجر برو",
                     vatNumber: "300000000000003"
                 };
+
                 await setDoc(doc(db, "orders", orderId), invoiceData);
-                if (typeof window.syncInvoiceWithWafeq === "function") {
+
+                if (typeof window.syncInvoiceWithWafeq === "function")
                     await window.syncInvoiceWithWafeq(invoiceData);
-                }
+
                 for (const item of cart) {
                     const itemRef = doc(db, "products", item.code);
                     const itemSnap = await getDoc(itemRef);
                     if (itemSnap.exists()) {
-                        const currentQty = parseFloat(itemSnap.data().qty || itemSnap.data().quantity) || 0;
-                        await setDoc(itemRef, { quantity: currentQty - item.qty, qty: currentQty - item.qty }, { merge: true });
+                        const currentQty = parseFloat(
+                            itemSnap.data().qty ?? itemSnap.data().quantity) || 0;
+                        await setDoc(itemRef,
+                            { quantity: currentQty - item.qty, qty: currentQty - item.qty },
+                            { merge: true });
                     }
                 }
-                if (typeof window.generateInvoiceQR === "function") {
+
+                if (typeof window.generateInvoiceQR === "function")
                     window.generateInvoiceQR(invoiceData);
-                }
-                alert(`تم اعتماد الفاتورة بنجاح برقم: ${orderId}`);
+
+                alert(`✅ تم اعتماد الفاتورة برقم: ${orderId}`);
                 cart = [];
                 this.updateCartTable();
             } catch (e) { alert("خطأ في ترحيل الفاتورة: " + e.message); }
@@ -293,55 +244,55 @@ const MainApp = {
     },
 
     processReturn: async function() {
-        const returnRefInput = document.getElementById('return-ref');
-        const detailsContainer = document.getElementById('return-details');
-        if (!returnRefInput || !returnRefInput.value.trim()) return alert("يرجى إدخال رقم الفاتورة.");
-        const invoiceId = returnRefInput.value.trim();
-        detailsContainer.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري المراجعة...`;
+        const input = document.getElementById('return-ref');
+        const container = document.getElementById('return-details');
+        if (!input?.value.trim()) return alert("يرجى إدخال رقم الفاتورة.");
+        const invoiceId = input.value.trim();
+        container.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري المراجعة...`;
         try {
-            const docSnap = await getDoc(doc(db, "orders", invoiceId));
-            if (!docSnap.exists()) {
-                detailsContainer.innerHTML = `<span style="color:#e74c3c;">الفاتورة غير موجودة.</span>`;
+            const snap = await getDoc(doc(db, "orders", invoiceId));
+            if (!snap.exists()) {
+                container.innerHTML = `<span style="color:#e74c3c;">الفاتورة غير موجودة.</span>`;
                 return;
             }
-            const invData = docSnap.data();
-            let itemsHtml = `<p><b>العميل:</b> ${invData.customer || 'نقدي'}</p>
-                <p><b>صافي الفاتورة:</b> ${parseFloat(invData.total || 0).toFixed(2)} ريال</p>
+            const inv = snap.data();
+            let html = `<p><b>العميل:</b> ${inv.customer||'نقدي'}</p>
+                <p><b>الصافي:</b> ${parseFloat(inv.total||0).toFixed(2)} ريال</p>
                 <table style="width:100%;text-align:center;">
-                <thead><tr><th>الصنف</th><th>الكمية</th><th>الإجراء</th></tr></thead><tbody>`;
-            invData.items.forEach((item, index) => {
-                itemsHtml += `<tr>
+                <thead><tr><th>الصنف</th><th>الكمية</th><th>إرجاع</th></tr></thead><tbody>`;
+            inv.items.forEach((item, i) => {
+                html += `<tr>
                     <td>${item.name}</td>
-                    <td>${item.qty || item.quantity}</td>
-                    <td><button class="btn btn-sm btn-danger" onclick="window.App.executeItemReturn('${invoiceId}','${item.code}',${item.qty || item.quantity},${item.price},${index})">إرجاع</button></td>
+                    <td>${item.qty||item.quantity}</td>
+                    <td><button class="btn btn-sm btn-danger"
+                        onclick="window.App.executeItemReturn('${invoiceId}','${item.code}',
+                        ${item.qty||item.quantity},${item.price},${i})">إرجاع</button></td>
                 </tr>`;
             });
-            itemsHtml += `</tbody></table>`;
-            detailsContainer.innerHTML = itemsHtml;
-        } catch (e) { detailsContainer.innerHTML = `خطأ: ${e.message}`; }
+            container.innerHTML = html + `</tbody></table>`;
+        } catch (e) { container.innerHTML = `خطأ: ${e.message}`; }
     },
 
     executeItemReturn: async function(invoiceId, itemCode, qty, price, itemIndex) {
-        if (!confirm("هل تريد معالجة الإرجاع؟")) return;
+        if (!confirm("تأكيد معالجة الإرجاع؟")) return;
         try {
             const itemRef = doc(db, "products", itemCode);
             const itemSnap = await getDoc(itemRef);
             if (itemSnap.exists()) {
-                const currentQty = parseFloat(itemSnap.data().qty || itemSnap.data().quantity) || 0;
-                await setDoc(itemRef, { quantity: currentQty + qty, qty: currentQty + qty }, { merge: true });
+                const cur = parseFloat(itemSnap.data().qty ?? itemSnap.data().quantity) || 0;
+                await setDoc(itemRef, { quantity: cur+qty, qty: cur+qty }, { merge: true });
             }
             const orderRef = doc(db, "orders", invoiceId);
             const orderSnap = await getDoc(orderRef);
             if (orderSnap.exists()) {
-                let invData = orderSnap.data();
-                invData.items.splice(itemIndex, 1);
-                const newTotal = parseFloat(invData.total || 0) - (qty * price);
-                invData.total = newTotal;
-                if (invData.items.length === 0) {
+                let inv = orderSnap.data();
+                inv.items.splice(itemIndex, 1);
+                inv.total = parseFloat(inv.total||0) - (qty * price);
+                if (inv.items.length === 0) {
                     await deleteDoc(orderRef);
                     alert("حُذفت الفاتورة بنجاح.");
                 } else {
-                    await setDoc(orderRef, invData);
+                    await setDoc(orderRef, inv);
                     alert("تمت معالجة المرتجع بنجاح.");
                 }
             }
@@ -353,34 +304,39 @@ const MainApp = {
 window.App = MainApp;
 
 // ==========================================
-// ثالثاً: المستمعات الحية — بدون jQuery
+// ثالثاً: المستمعات الحية
 // ==========================================
 function initRealtimeListeners() {
 
+    // ✅ عملاء — جدول محدث يعرض حقول ZATCA
     onSnapshot(collection(db, "customers"), (snapshot) => {
         const tbody = document.getElementById('customerTableBody');
         const cbCustomer = document.getElementById('cbCustomer');
         if (tbody) tbody.innerHTML = '';
         if (cbCustomer) cbCustomer.innerHTML = '<option value="" selected>اختر العميل</option>';
-        const currentCustData = [];
+        const list = [];
         snapshot.forEach((d) => {
-            const data = d.data();
-            currentCustData.push(data);
+            const c = d.data();
+            list.push(c);
             if (tbody) tbody.innerHTML += `<tr>
-                <td>${data.id}</td>
-                <td>${data.name}</td>
-                <td>${data.vat || '--'}</td>
-                <td>${data.contact || '--'}</td>
-                <td>${data.address || '--'}</td>
+                <td>${c.id}</td>
+                <td><span class="badge" style="background:${
+                    c.type==='B2B'?'#0077b6':c.type==='GOV'?'#38b000':'#6c757d'
+                };font-size:10px;">${c.type||'B2C'}</span></td>
+                <td>${c.name}</td>
+                <td style="color:#ffb703;">${c.vat||'---'}</td>
+                <td>${c.contact||'---'}</td>
+                <td>${c.city||'---'}</td>
             </tr>`;
-            if (cbCustomer) cbCustomer.innerHTML += `<option value="${data.id}">${data.name}</option>`;
+            if (cbCustomer) cbCustomer.innerHTML +=
+                `<option value="${c.id}">${c.name}</option>`;
         });
-        localStorage.setItem('altajer_customers', JSON.stringify(currentCustData));
-        if (document.getElementById('customerCount')) {
-            document.getElementById('customerCount').innerText = snapshot.size;
-        }
+        localStorage.setItem('altajer_customers', JSON.stringify(list));
+        const cnt = document.getElementById('customerCount');
+        if (cnt) cnt.innerText = snapshot.size;
     });
 
+    // ✅ منتجات
     onSnapshot(collection(db, "products"), (snapshot) => {
         const tbody = document.getElementById('itemTableBody');
         const cbItem = document.getElementById('cbItem');
@@ -388,56 +344,61 @@ function initRealtimeListeners() {
         if (cbItem) cbItem.innerHTML = '<option value="" selected>اختر الصنف</option>';
         snapshot.forEach((d) => {
             const data = d.data();
-            const currentQty = data.qty !== undefined ? data.qty : (data.quantity || 0);
+            const qty = data.qty !== undefined ? data.qty : (data.quantity || 0);
             if (tbody) tbody.innerHTML += `<tr>
                 <td>${data.code}</td>
                 <td>${data.name}</td>
-                <td>${parseFloat(data.price || 0).toFixed(2)}</td>
-                <td>${currentQty}</td>
+                <td>${parseFloat(data.price||0).toFixed(2)}</td>
+                <td>${qty}</td>
             </tr>`;
-            if (cbItem) cbItem.innerHTML += `<option value="${data.code}" data-price="${data.price}" data-qty="${currentQty}">${data.name} - ${parseFloat(data.price || 0).toFixed(2)}</option>`;
+            if (cbItem) cbItem.innerHTML +=
+                `<option value="${data.code}" data-price="${data.price}"
+                 data-qty="${qty}">${data.name} - ${parseFloat(data.price||0).toFixed(2)}</option>`;
         });
     });
 
+    // ✅ طلبات
     onSnapshot(collection(db, "orders"), (snapshot) => {
-        const currentInvoicesData = [];
-        snapshot.forEach((d) => {
-            currentInvoicesData.push({ invoiceNumber: d.id, ...d.data() });
-        });
-        localStorage.setItem('altajer_invoices', JSON.stringify(currentInvoicesData));
-        if (document.getElementById('orderCount')) {
-            document.getElementById('orderCount').innerText = snapshot.size;
-        }
+        const list = [];
+        snapshot.forEach(d => list.push({ invoiceNumber: d.id, ...d.data() }));
+        localStorage.setItem('altajer_invoices', JSON.stringify(list));
+        const cnt = document.getElementById('orderCount');
+        if (cnt) cnt.innerText = snapshot.size;
     });
 
-    // أحداث التغيير — بدون jQuery
+    // ✅ تغيير العميل في الكاشير
     const cbCustomer = document.getElementById('cbCustomer');
     if (cbCustomer) {
         cbCustomer.addEventListener('change', async function() {
             const id = this.value;
             if (id) {
-                const docSnap = await getDoc(doc(db, "customers", id));
-                if (docSnap.exists()) {
-                    if(document.getElementById('poCustId')) document.getElementById('poCustId').value = docSnap.data().id;
-                    if(document.getElementById('poCustVat')) document.getElementById('poCustVat').value = docSnap.data().vat || 'غير ضريبي';
+                const snap = await getDoc(doc(db, "customers", id));
+                if (snap.exists()) {
+                    const d = snap.data();
+                    if(document.getElementById('poCustId'))
+                        document.getElementById('poCustId').value = d.id;
+                    if(document.getElementById('poCustVat'))
+                        document.getElementById('poCustVat').value = d.vat || 'غير ضريبي';
                 }
             }
         });
     }
 
+    // ✅ تغيير الصنف في الكاشير
     const cbItem = document.getElementById('cbItem');
     if (cbItem) {
         cbItem.addEventListener('change', function() {
-            const option = this.options[this.selectedIndex];
+            const opt = this.options[this.selectedIndex];
             if (this.value) {
-                if(document.getElementById('poItemName')) document.getElementById('poItemName').value = option.text.split(" - ")[0];
-                if(document.getElementById('poQtyOnHand')) document.getElementById('poQtyOnHand').value = option.dataset.qty;
+                if(document.getElementById('poItemName'))
+                    document.getElementById('poItemName').value = opt.text.split(" - ")[0];
+                if(document.getElementById('poQtyOnHand'))
+                    document.getElementById('poQtyOnHand').value = opt.dataset.qty;
             }
         });
     }
 }
 
-// تشغيل المستمعات بعد تحميل الصفحة
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initRealtimeListeners);
 } else {
@@ -448,41 +409,42 @@ if (document.readyState === 'loading') {
 // رابعاً: دوال مساعدة
 // ==========================================
 window.calculateTotal = function(code) {
-    const price = parseFloat(document.getElementById(`p-price-${code}`).value) || 0;
-    const qty = parseFloat(document.getElementById(`p-qty-${code}`).value) || 0;
-    if (document.getElementById(`p-total-${code}`)) {
-        document.getElementById(`p-total-${code}`).value = (price * qty).toFixed(2);
-    }
+    const price = parseFloat(document.getElementById(`p-price-${code}`)?.value) || 0;
+    const qty   = parseFloat(document.getElementById(`p-qty-${code}`)?.value) || 0;
+    const el = document.getElementById(`p-total-${code}`);
+    if (el) el.value = (price * qty).toFixed(2);
 };
 
-function encodeZatcaTLV(sellerName, vatNumber, timestamp, totalAmount, vatAmount) {
+function encodeZatcaTLV(seller, vat, ts, total, vatAmt) {
     function toTLV(tag, value) {
-        let valueBytes = new TextEncoder().encode(value);
-        return String.fromCharCode(tag) + String.fromCharCode(valueBytes.length) + String.fromCharCode(...valueBytes);
+        const bytes = new TextEncoder().encode(value);
+        return String.fromCharCode(tag) +
+               String.fromCharCode(bytes.length) +
+               String.fromCharCode(...bytes);
     }
-    let tlv = toTLV(1, sellerName) + toTLV(2, vatNumber) + toTLV(3, timestamp) + toTLV(4, Number(totalAmount).toFixed(2)) + toTLV(5, Number(vatAmount).toFixed(2));
-    return btoa(tlv);
+    return btoa(
+        toTLV(1,seller) + toTLV(2,vat) + toTLV(3,ts) +
+        toTLV(4,Number(total).toFixed(2)) +
+        toTLV(5,Number(vatAmt).toFixed(2))
+    );
 }
 
 window.generateInvoiceQR = function(invoiceData) {
-    const qrContainer = document.getElementById("invoice-qrcode");
-    if (!qrContainer) return;
-    qrContainer.innerHTML = "";
+    const container = document.getElementById("invoice-qrcode");
+    if (!container) return;
+    container.innerHTML = "";
     try {
-        const base64CodedValue = encodeZatcaTLV(
+        const qrText = encodeZatcaTLV(
             invoiceData.sellerName || "متجر التاجر برو",
-            invoiceData.vatNumber || "300000000000003",
-            invoiceData.timestamp || new Date().toISOString(),
+            invoiceData.vatNumber  || "300000000000003",
+            invoiceData.timestamp  || new Date().toISOString(),
             invoiceData.total || 0,
-            invoiceData.tax || ((invoiceData.total || 0) * 0.15 / 1.15)
+            invoiceData.tax   || ((invoiceData.total||0) * 0.15 / 1.15)
         );
-        new QRCode(qrContainer, {
-            text: base64CodedValue,
-            width: 128, height: 128,
+        new QRCode(container, {
+            text: qrText, width: 128, height: 128,
             colorDark: "#000000", colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.M
         });
-    } catch (e) {
-        console.error("فشل في توليد الـ QR:", e);
-    }
+    } catch (e) { console.error("فشل QR:", e); }
 };

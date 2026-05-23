@@ -149,6 +149,19 @@
             font-size: 12px; color: var(--neon-cyan); margin-bottom: 10px;
             display: flex; align-items: center; gap: 6px;
         }
+        .field-group {
+            margin-bottom: 15px;
+        }
+        .field-group label {
+            font-size: 11px; color: var(--neon-cyan);
+            display: block; margin-bottom: 5px;
+        }
+        .field-group input, .field-group select {
+            width: 100%; padding: 10px; background: transparent;
+            border: 1px solid var(--text-muted); border-radius: 8px;
+            color: var(--text-white); font-size: 13px; box-sizing: border-box;
+        }
+        .field-group select { background: var(--card-bg); }
     </style>
 </head>
 <body>
@@ -239,8 +252,140 @@
 <!-- ===== قسم العملاء ===== -->
 <div id="customersSection" class="view-section">
     <div class="container-fluid">
-        <div class="p-3 rounded" style="background:var(--card-bg);">
-            <p class="text-muted text-center">قسم العملاء — قيد التطوير</p>
+        <div class="row g-4">
+            <!-- نموذج العميل -->
+            <div class="col-lg-5">
+                <div class="p-3 rounded" style="background:var(--card-bg);">
+                    <div class="zatca-badge">
+                        <i class="fas fa-shield-alt"></i> متوافق مع ZATCA
+                    </div>
+                    <form id="customerForm" onsubmit="handleCustomerSubmit(event)">
+                        <!-- نوع العميل -->
+                        <div class="section-label mt-2">
+                            <i class="fas fa-user-tag"></i> نوع العميل
+                        </div>
+                        <input type="hidden" id="custType" value="B2C">
+                        <div class="customer-type-selector">
+                            <button type="button" id="typeB2C" class="type-btn active" onclick="setCustType('B2C')">
+                                <i class="fas fa-user"></i> أفراد B2C
+                            </button>
+                            <button type="button" id="typeB2B" class="type-btn" onclick="setCustType('B2B')">
+                                <i class="fas fa-building"></i> شركات B2B
+                            </button>
+                            <button type="button" id="typeGOV" class="type-btn" onclick="setCustType('GOV')">
+                                <i class="fas fa-landmark"></i> حكومي GOV
+                            </button>
+                        </div>
+                        <!-- معرّف العميل -->
+                        <div class="field-group">
+                            <label>معرّف العميل *</label>
+                            <input type="text" id="custId" required placeholder="مثال: CUST-001">
+                        </div>
+                        <!-- اسم العميل -->
+                        <div class="field-group">
+                            <label>اسم العميل *</label>
+                            <input type="text" id="custName" required placeholder="الاسم الكامل أو اسم الشركة">
+                        </div>
+                        <!-- الرقم الضريبي -->
+                        <div class="field-group">
+                            <label>الرقم الضريبي (VAT)</label>
+                            <input type="text" id="custVat" placeholder="300000000000003"
+                                   maxlength="15" oninput="validateVatInput(this)">
+                        </div>
+                        <div id="vatHintMain" class="vat-hint">
+                            يبدأ وينتهي بـ 3 — مثال: 300000000000003
+                        </div>
+                        <!-- السجل التجاري -->
+                        <div class="field-group">
+                            <label>السجل التجاري (CR)</label>
+                            <input type="text" id="custCR" placeholder="1010000000">
+                        </div>
+                        <!-- رقم التواصل -->
+                        <div class="field-group">
+                            <label>رقم التواصل</label>
+                            <input type="text" id="custContact" placeholder="05xxxxxxxx">
+                        </div>
+                        <!-- العنوان الوطني -->
+                        <div class="section-label mt-2">
+                            <i class="fas fa-map-marker-alt"></i> العنوان الوطني
+                        </div>
+                        <div class="national-address-box">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="field-group">
+                                        <label>المدينة</label>
+                                        <input type="text" id="custCity" placeholder="الرياض">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="field-group">
+                                        <label>الحي</label>
+                                        <input type="text" id="custDistrict" placeholder="العليا">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="field-group">
+                                        <label>اسم الشارع</label>
+                                        <input type="text" id="custStreet" placeholder="شارع الملك فهد">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="field-group">
+                                        <label>رقم المبنى</label>
+                                        <input type="text" id="custBuilding" placeholder="1234">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="field-group">
+                                        <label>الرمز البريدي</label>
+                                        <input type="text" id="custPostal" placeholder="12345">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="field-group">
+                                        <label>الرقم الإضافي</label>
+                                        <input type="text" id="custAddNo" placeholder="6789">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- أزرار -->
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+                            <button type="submit" class="btn-neon" style="--clr:var(--light-green);flex:1;">
+                                <i class="fas fa-save"></i>
+                                <span id="lblCustBtn">حفظ العميل</span>
+                            </button>
+                            <button type="button" class="btn-neon" style="--clr:var(--danger-red);"
+                                    onclick="deleteCurrentCustomer()">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button type="button" class="btn-neon" style="--clr:var(--text-muted);"
+                                    onclick="clearCustForm()">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- جدول العملاء -->
+            <div class="col-lg-7">
+                <div class="table-responsive-custom">
+                    <table class="table table-dark table-hover table-dark-custom text-center">
+                        <thead>
+                            <tr>
+                                <th>المعرّف</th>
+                                <th>النوع</th>
+                                <th>الاسم</th>
+                                <th>الرقم الضريبي</th>
+                                <th>التواصل</th>
+                                <th>المدينة</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -262,14 +407,13 @@
                             <input type="text" id="itemCode" required placeholder="باركود / كود الصنف"
                                    style="flex:1;padding:10px;background:transparent;border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;">
                         </div>
-                        <div style="margin-bottom:15px;">
-                            <label style="font-size:11px;color:var(--neon-cyan);display:block;margin-bottom:5px;">اسم المنتج / الصنف *</label>
-                            <input type="text" id="itemName" required placeholder="أدخل اسم الصنف"
-                                   style="width:100%;padding:10px;background:transparent;border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;box-sizing:border-box;">
+                        <div class="field-group">
+                            <label>اسم المنتج / الصنف *</label>
+                            <input type="text" id="itemName" required placeholder="أدخل اسم الصنف">
                         </div>
-                        <div style="margin-bottom:15px;">
-                            <label style="font-size:11px;color:var(--neon-cyan);display:block;margin-bottom:5px;">تصنيف الصنف</label>
-                            <select id="itemCategory" style="width:100%;padding:10px;background:var(--card-bg);border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;">
+                        <div class="field-group">
+                            <label>تصنيف الصنف</label>
+                            <select id="itemCategory">
                                 <option value="">-- اختر أو اكتب --</option>
                                 <option value="مواد غذائية">مواد غذائية</option>
                                 <option value="مشروبات">مشروبات</option>
@@ -281,9 +425,9 @@
                                 <option value="أخرى">أخرى</option>
                             </select>
                         </div>
-                        <div style="margin-bottom:15px;">
-                            <label style="font-size:11px;color:var(--neon-cyan);display:block;margin-bottom:5px;">وحدة القياس</label>
-                            <select id="itemUnit" style="width:100%;padding:10px;background:var(--card-bg);border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;">
+                        <div class="field-group">
+                            <label>وحدة القياس</label>
+                            <select id="itemUnit">
                                 <option value="قطعة">قطعة</option>
                                 <option value="كيلو">كيلو</option>
                                 <option value="لتر">لتر</option>
@@ -294,13 +438,12 @@
                                 <option value="أخرى">أخرى</option>
                             </select>
                         </div>
-                        <div style="margin-bottom:15px;">
-                            <label style="font-size:11px;color:var(--neon-cyan);display:block;margin-bottom:5px;">الكمية المتاحة بالمخزن *</label>
-                            <input type="number" id="itemQty" required min="0" placeholder="0"
-                                   style="width:100%;padding:10px;background:transparent;border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;box-sizing:border-box;">
+                        <div class="field-group">
+                            <label>الكمية المتاحة بالمخزن *</label>
+                            <input type="number" id="itemQty" required min="0" placeholder="0">
                         </div>
-                        <div style="margin-bottom:15px;">
-                            <label style="font-size:11px;color:var(--neon-cyan);display:block;margin-bottom:5px;">السعر (ريال سعودي) *</label>
+                        <div class="field-group">
+                            <label>السعر (ريال سعودي) *</label>
                             <div style="display:flex;gap:8px;">
                                 <input type="number" id="itemPrice" required step="0.01" min="0" placeholder="0.00"
                                        style="flex:1;padding:10px;background:transparent;border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;">
@@ -312,13 +455,12 @@
                                 </select>
                             </div>
                         </div>
-                        <div style="margin-bottom:15px;">
-                            <label style="font-size:11px;color:var(--neon-cyan);display:block;margin-bottom:5px;">حد التنبيه (أدنى كمية)</label>
-                            <input type="number" id="itemMinQty" min="0" placeholder="مثال: 5"
-                                   style="width:100%;padding:10px;background:transparent;border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;box-sizing:border-box;">
+                        <div class="field-group">
+                            <label>حد التنبيه (أدنى كمية)</label>
+                            <input type="number" id="itemMinQty" min="0" placeholder="مثال: 5">
                         </div>
-                        <div style="margin-bottom:15px;">
-                            <label style="font-size:11px;color:var(--neon-cyan);display:block;margin-bottom:5px;">ملاحظات</label>
+                        <div class="field-group">
+                            <label>ملاحظات</label>
                             <textarea id="itemNotes" rows="2" placeholder="أي ملاحظات إضافية..."
                                       style="width:100%;padding:10px;background:transparent;border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;resize:none;box-sizing:border-box;"></textarea>
                         </div>
@@ -327,7 +469,7 @@
                                 <i class="fas fa-save"></i> حفظ الصنف
                             </button>
                             <button type="button" class="btn-neon" style="--clr:var(--danger-red);" onclick="deleteCurrentItem()">
-                                <i class="fas fa-trash"></i> حذف
+                                <i class="fas fa-trash"></i>
                             </button>
                             <button type="button" class="btn-neon" style="--clr:var(--text-muted);" onclick="clearItemForm()">
                                 <i class="fas fa-redo"></i>
@@ -363,7 +505,7 @@
         <div class="row g-3">
             <div class="col-md-4">
                 <div class="p-3 rounded h-100" style="background:var(--card-bg);">
-                    <h6 class="mb-3 border-bottom pb-2 text-info" data-i18n="pos-cust-sec">بيانات العميل</h6>
+                    <h6 class="mb-3 border-bottom pb-2 text-info">بيانات العميل</h6>
                     <select id="cbCustomer" class="form-select bg-transparent text-white mb-3" onchange="onPosCustomerChange()">
                         <option value="" selected>اختر العميل</option>
                     </select>
@@ -379,7 +521,7 @@
             </div>
             <div class="col-md-4">
                 <div class="p-3 rounded h-100" style="background:var(--card-bg);">
-                    <h6 class="mb-3 border-bottom pb-2 text-info" data-i18n="pos-item-sec">الأصناف</h6>
+                    <h6 class="mb-3 border-bottom pb-2 text-info">الأصناف</h6>
                     <select id="cbItem" class="form-select bg-transparent text-white mb-3" onchange="onPosItemChange()">
                         <option value="" selected>اختر الصنف</option>
                     </select>
@@ -529,7 +671,7 @@
         });
     };
 
-    // ===== تحقق الرقم الضريبي =====
+    // ===== تحقق الرقم الضريبي حي =====
     window.validateVatInput = function(input) {
         const val = input.value.trim();
         const hint = document.getElementById('vatHintMain');
@@ -563,25 +705,13 @@
         }
     };
 
-    // ===== تفريغ نموذج الصنف =====
-    window.clearItemForm = function() {
-        const form = document.getElementById('itemForm');
-        if(form) form.reset();
-        showToast('تم تفريغ النموذج', true);
-    };
-
-    // ===== حذف الصنف الحالي =====
-    window.deleteCurrentItem = function() {
-        const code = document.getElementById('itemCode').value.trim();
-        if(!code) return showToast('اختر صنفاً أولاً', false);
-        if(window.App && window.App.item) window.App.item.delete(code);
-    };
-
     // ===== ربط أزرار النماذج =====
     window.handleCustomerSubmit = function(e) {
         e.preventDefault();
         const vat = document.getElementById('custVat').value.trim();
         const type = document.getElementById('custType').value;
+
+        // تحقق ZATCA
         if(vat !== '') {
             if(vat.length !== 15 || isNaN(vat)) {
                 return showToast('❌ الرقم الضريبي يجب أن يكون 15 خانة رقمية!', false);
@@ -593,6 +723,7 @@
         if((type === 'B2B' || type === 'GOV') && vat === '') {
             return showToast('⚠️ الرقم الضريبي إلزامي لعملاء B2B والجهات الحكومية!', false);
         }
+
         if(window.App && window.App.customer) {
             window.App.customer.addOrUpdate();
         }
@@ -614,12 +745,14 @@
         if(window.App && window.App.pos) window.App.pos.placeOrder();
     };
     window.onPosCustomerChange = function() {
-        if(window.App && window.App.pos && window.App.pos.onCustomerChange)
-            window.App.pos.onCustomerChange();
+        if(window.App && window.App.pos) window.App.pos.onCustomerChange
+            ? window.App.pos.onCustomerChange()
+            : null;
     };
     window.onPosItemChange = function() {
-        if(window.App && window.App.pos && window.App.pos.onItemChange)
-            window.App.pos.onItemChange();
+        if(window.App && window.App.pos) window.App.pos.onItemChange
+            ? window.App.pos.onItemChange()
+            : null;
     };
 
     // ===== الترجمة =====

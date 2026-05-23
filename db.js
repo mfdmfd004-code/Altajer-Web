@@ -1,11 +1,14 @@
-// التاجر برو المحاسبي - قاعدة البيانات المركزية (تطوير تراكمي سحابي موحد)
+// التاجر برو المحاسبي - قاعدة البيانات المركزية
 import { db } from "./firebase-config.js";
-import { collection, getDocs, doc, setDoc, getDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import {
+    collection, getDocs, doc, setDoc,
+    getDoc, deleteDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 let cart = [];
 
 // ==========================================
-// أولاً: دالات التصدير
+// أولاً: دوال التصدير
 // ==========================================
 export async function getAllCustomers() {
     try {
@@ -24,7 +27,9 @@ export async function getAllItems() {
 export async function saveInvoice(invoiceData) {
     try {
         const invoiceId = invoiceData.invoiceNumber || "INV-" + Date.now();
-        await setDoc(doc(db, "orders", invoiceId), { ...invoiceData, timestamp: new Date() });
+        await setDoc(doc(db, "orders", invoiceId), {
+            ...invoiceData, timestamp: new Date()
+        });
         const local = JSON.parse(localStorage.getItem('altajer_invoices')) || [];
         if (!local.find(i => i.invoiceNumber === invoiceId)) {
             local.push({ invoiceNumber: invoiceId, ...invoiceData });
@@ -33,7 +38,6 @@ export async function saveInvoice(invoiceData) {
         return invoiceId;
     } catch (e) { console.error("خطأ الفاتورة:", e); throw e; }
 }
-
 // ==========================================
 // ثانياً: المحرك الرئيسي
 // ==========================================
@@ -55,16 +59,24 @@ const MainApp = {
             const postal   = (document.getElementById('custPostal')?.value||'').trim();
             const addNo    = (document.getElementById('custAddNo')?.value||'').trim();
 
-            if (!id || !name) return alert("يرجى إدخال معرّف واسم العميل.");
-
-            if (vat !== '') {
-                if (vat.length !== 15 || isNaN(vat))
-                    return alert("❌ الرقم الضريبي يجب أن يكون 15 خانة رقمية!");
-                if (!vat.startsWith('3') || !vat.endsWith('3'))
-                    return alert("❌ الرقم الضريبي يجب أن يبدأ وينتهي بـ 3!");
+            if (!id || !name) {
+                if(typeof showToast==='function') showToast('يرجى إدخال معرّف واسم العميل.', false);
+                return;
             }
-            if ((type === 'B2B' || type === 'GOV') && vat === '')
-                return alert("⚠️ الرقم الضريبي إلزامي لعملاء B2B والجهات الحكومية!");
+            if (vat !== '') {
+                if (vat.length !== 15 || isNaN(vat)) {
+                    if(typeof showToast==='function') showToast('❌ الرقم الضريبي يجب أن يكون 15 خانة رقمية!', false);
+                    return;
+                }
+                if (!vat.startsWith('3') || !vat.endsWith('3')) {
+                    if(typeof showToast==='function') showToast('❌ الرقم الضريبي يجب أن يبدأ وينتهي بـ 3!', false);
+                    return;
+                }
+            }
+            if ((type === 'B2B' || type === 'GOV') && vat === '') {
+                if(typeof showToast==='function') showToast('⚠️ الرقم الضريبي إلزامي لعملاء B2B والجهات الحكومية!', false);
+                return;
+            }
 
             const customerData = {
                 id, name, type, vat, cr, contact,
@@ -85,23 +97,30 @@ const MainApp = {
                 if (idx > -1) local[idx] = customerData;
                 else local.push(customerData);
                 localStorage.setItem('altajer_customers', JSON.stringify(local));
-                alert("✅ تم حفظ بيانات العميل بنجاح.");
+                if(typeof showToast==='function') showToast('✅ تم حفظ بيانات العميل بنجاح.', true);
                 if (window.clearCustForm) window.clearCustForm();
-            } catch (e) { alert("خطأ: " + e.message); }
+            } catch (e) {
+                if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+            }
         },
 
-        delete: async function() {
-            const id = (document.getElementById('custId')?.value||'').trim();
-            if (!id) return alert("يرجى إدخال معرّف العميل للحذف.");
-            if (!confirm("هل أنت متأكد من الحذف؟")) return;
+        delete: async function(id) {
+            const custId = id || (document.getElementById('custId')?.value||'').trim();
+            if (!custId) {
+                if(typeof showToast==='function') showToast('يرجى إدخال معرّف العميل للحذف.', false);
+                return;
+            }
+            if (!confirm('هل أنت متأكد من الحذف؟')) return;
             try {
-                await deleteDoc(doc(db, "customers", id));
+                await deleteDoc(doc(db, "customers", custId));
                 let local = JSON.parse(localStorage.getItem('altajer_customers')) || [];
-                local = local.filter(c => c.id !== id);
+                local = local.filter(c => c.id !== custId);
                 localStorage.setItem('altajer_customers', JSON.stringify(local));
-                alert("تم الحذف بنجاح.");
+                if(typeof showToast==='function') showToast('✅ تم حذف العميل بنجاح.', true);
                 if (window.clearCustForm) window.clearCustForm();
-            } catch (e) { alert("خطأ: " + e.message); }
+            } catch (e) {
+                if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+            }
         }
     },
 
@@ -118,7 +137,14 @@ const MainApp = {
             const minQty    = parseFloat(document.getElementById('itemMinQty')?.value)||0;
             const notes     = document.getElementById('itemNotes')?.value||'';
 
-            if (!code || !name) return alert("يرجى إدخال الكود والاسم.");
+            if (!code || !name) {
+                if(typeof showToast==='function') showToast('يرجى إدخال الكود والاسم.', false);
+                return;
+            }
+            if (price <= 0) {
+                if(typeof showToast==='function') showToast('يرجى إدخال سعر صحيح.', false);
+                return;
+            }
 
             let priceInclTax, priceExclTax, vatRate;
             if (priceType === 'inclusive') {
@@ -138,27 +164,34 @@ const MainApp = {
             try {
                 await setDoc(doc(db, "products", code), {
                     code, name, category, unit,
-                    price: priceInclTax,
+                    price: parseFloat(priceInclTax.toFixed(2)),
                     priceExcl: parseFloat(priceExclTax.toFixed(2)),
                     priceType, vatRate,
                     qty, quantity: qty,
                     minQty, notes,
                     timestamp: new Date()
                 });
-                alert("✅ تم حفظ الصنف بالمخزن.");
+                if(typeof showToast==='function') showToast('✅ تم حفظ الصنف بالمخزن.', true);
                 if (window.clearItemForm) window.clearItemForm();
-            } catch (e) { alert("خطأ: " + e.message); }
+            } catch (e) {
+                if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+            }
         },
 
-        delete: async function() {
-            const code = (document.getElementById('itemCode')?.value||'').trim();
-            if (!code) return alert("يرجى إدخال الكود للحذف.");
-            if (!confirm("هل تريد الحذف نهائياً؟")) return;
+        delete: async function(code) {
+            const itemCode = code || (document.getElementById('itemCode')?.value||'').trim();
+            if (!itemCode) {
+                if(typeof showToast==='function') showToast('يرجى إدخال الكود للحذف.', false);
+                return;
+            }
+            if (!confirm('هل تريد الحذف نهائياً؟')) return;
             try {
-                await deleteDoc(doc(db, "products", code));
-                alert("تم الحذف بنجاح.");
+                await deleteDoc(doc(db, "products", itemCode));
+                if(typeof showToast==='function') showToast('✅ تم حذف الصنف بنجاح.', true);
                 if (window.clearItemForm) window.clearItemForm();
-            } catch (e) { alert("خطأ: " + e.message); }
+            } catch (e) {
+                if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+            }
         }
     },
 
@@ -169,21 +202,36 @@ const MainApp = {
             const code = itemSelect.value;
             const qtyBought = parseFloat(document.getElementById('poQtyBought').value)||0;
             const maxQty = parseFloat(document.getElementById('poQtyOnHand').value)||0;
-            if (!code) return alert("اختر صنفاً أولاً.");
-            if (qtyBought <= 0 || qtyBought > maxQty) return alert("كمية غير صحيحة أو تجاوزت المتاح.");
+            if (!code) {
+                if(typeof showToast==='function') showToast('اختر صنفاً أولاً.', false);
+                return;
+            }
+            if (qtyBought <= 0 || qtyBought > maxQty) {
+                if(typeof showToast==='function') showToast('كمية غير صحيحة أو تجاوزت المتاح.', false);
+                return;
+            }
             const opt = itemSelect.options[itemSelect.selectedIndex];
             const name = opt.text.split(" - ")[0];
             const priceInclTax = parseFloat(opt.dataset.price);
             const existing = cart.find(i => i.code === code);
             if (existing) {
-                if ((existing.qty + qtyBought) > maxQty) return alert("تجاوزت المتاح!");
+                if ((existing.qty + qtyBought) > maxQty) {
+                    if(typeof showToast==='function') showToast('تجاوزت الكمية المتاحة!', false);
+                    return;
+                }
                 existing.qty += qtyBought;
                 existing.subtotal = existing.price * existing.qty;
             } else {
-                cart.push({ code, name, price: priceInclTax, qty: qtyBought, subtotal: priceInclTax * qtyBought });
+                cart.push({
+                    code, name,
+                    price: priceInclTax,
+                    qty: qtyBought,
+                    subtotal: priceInclTax * qtyBought
+                });
             }
             this.updateCartTable();
-            document.getElementById('poQtyBought').value = '';
+            document.getElementById('poQtyBought').value = 1;
+            if(typeof showToast==='function') showToast('✅ تمت الإضافة للسلة.', true);
         },
 
         updateCartTable: function() {
@@ -195,39 +243,76 @@ const MainApp = {
                 const priceExcl = item.price / 1.15;
                 const subtotalExcl = priceExcl * item.qty;
                 totalExcl += subtotalExcl;
-                totalTax += subtotalExcl * 0.15;
-                finalNet += item.subtotal;
+                totalTax  += subtotalExcl * 0.15;
+                finalNet  += item.subtotal;
                 tbody.innerHTML += `<tr>
-                    <td>${item.code}</td>
+                    <td style="font-size:11px;">${item.code}</td>
                     <td>${item.name}</td>
                     <td>${priceExcl.toFixed(2)}</td>
                     <td>${item.qty}</td>
                     <td>${item.subtotal.toFixed(2)}</td>
                     <td><button class="btn btn-sm btn-danger"
-                        onclick="window.App.pos.removeItem(${index})">
+                        onclick="window.App.pos.removeItem(${index})"
+                        style="padding:2px 6px;">
                         <i class="fas fa-trash"></i></button></td>
                 </tr>`;
             });
+            const discount = parseFloat(document.getElementById('poDiscount')?.value)||0;
+            const netAfterDiscount = Math.max(0, finalNet - discount);
             if(document.getElementById('subTotalVal'))
                 document.getElementById('subTotalVal').innerText = totalExcl.toFixed(2);
             if(document.getElementById('taxVal'))
                 document.getElementById('taxVal').innerText = totalTax.toFixed(2);
             if(document.getElementById('totalVal'))
-                document.getElementById('totalVal').innerText = finalNet.toFixed(2);
+                document.getElementById('totalVal').innerText = netAfterDiscount.toFixed(2);
         },
 
         removeItem: function(index) {
             cart.splice(index, 1);
             this.updateCartTable();
+            if(typeof showToast==='function') showToast('تم حذف الصنف من السلة.', false);
+        },
+
+        onCustomerChange: async function() {
+            const id = document.getElementById('cbCustomer')?.value;
+            if (id) {
+                const snap = await getDoc(doc(db, "customers", id));
+                if (snap.exists()) {
+                    const d = snap.data();
+                    if(document.getElementById('poCustId'))
+                        document.getElementById('poCustId').value = d.id;
+                    if(document.getElementById('poCustVat'))
+                        document.getElementById('poCustVat').value = d.vat||'غير ضريبي';
+                }
+            } else {
+                if(document.getElementById('poCustId'))
+                    document.getElementById('poCustId').value = '';
+                if(document.getElementById('poCustVat'))
+                    document.getElementById('poCustVat').value = '';
+            }
+        },
+
+        onItemChange: function() {
+            const sel = document.getElementById('cbItem');
+            const opt = sel?.options[sel.selectedIndex];
+            if (sel?.value && opt) {
+                if(document.getElementById('poItemName'))
+                    document.getElementById('poItemName').value = opt.text.split(" - ")[0];
+                if(document.getElementById('poQtyOnHand'))
+                    document.getElementById('poQtyOnHand').value = opt.dataset.qty;
+            }
         },
 
         placeOrder: async function() {
-            if (cart.length === 0) return alert("السلة فارغة!");
+            if (cart.length === 0) {
+                if(typeof showToast==='function') showToast('السلة فارغة!', false);
+                return;
+            }
             try {
                 const orderId = "INV-" + Date.now();
                 const netTotal = parseFloat(document.getElementById('totalVal').innerText)||0;
                 const discountVal = parseFloat(document.getElementById('poDiscount').value)||0;
-                const totalAfterDiscount = netTotal - discountVal;
+                const totalAfterDiscount = Math.max(0, netTotal);
                 const vatAmount = (totalAfterDiscount * 0.15) / 1.15;
                 const totalExclTax = totalAfterDiscount - vatAmount;
                 const custSel = document.getElementById('cbCustomer');
@@ -246,8 +331,8 @@ const MainApp = {
                         qty: i.qty, price: i.price, total: i.subtotal
                     })),
                     total: totalAfterDiscount,
-                    tax: vatAmount,
-                    subtotal: totalExclTax,
+                    tax: parseFloat(vatAmount.toFixed(2)),
+                    subtotal: parseFloat(totalExclTax.toFixed(2)),
                     timestamp: new Date().toISOString(),
                     sellerName: "متجر التاجر برو",
                     vatNumber: "300000000000003"
@@ -262,25 +347,47 @@ const MainApp = {
                     const itemRef = doc(db, "products", item.code);
                     const itemSnap = await getDoc(itemRef);
                     if (itemSnap.exists()) {
-                        const curQty = parseFloat(itemSnap.data().qty ?? itemSnap.data().quantity)||0;
-                        await setDoc(itemRef, { quantity: curQty - item.qty, qty: curQty - item.qty }, { merge: true });
+                        const curQty = parseFloat(
+                            itemSnap.data().qty ?? itemSnap.data().quantity
+                        )||0;
+                        const newQty = Math.max(0, curQty - item.qty);
+                        await setDoc(itemRef, {
+                            quantity: newQty, qty: newQty
+                        }, { merge: true });
                     }
                 }
 
                 if (typeof window.generateInvoiceQR === "function")
                     window.generateInvoiceQR(invoiceData);
 
-                alert(`✅ تم اعتماد الفاتورة برقم: ${orderId}`);
+                if(typeof showToast==='function')
+                    showToast(`✅ تم اعتماد الفاتورة: ${orderId}`, true);
+
                 cart = [];
                 this.updateCartTable();
-            } catch (e) { alert("خطأ في الفاتورة: " + e.message); }
+                if(document.getElementById('poDiscount'))
+                    document.getElementById('poDiscount').value = 0;
+                if(document.getElementById('cbCustomer'))
+                    document.getElementById('cbCustomer').selectedIndex = 0;
+                if(document.getElementById('poCustId'))
+                    document.getElementById('poCustId').value = '';
+                if(document.getElementById('poCustVat'))
+                    document.getElementById('poCustVat').value = '';
+
+            } catch (e) {
+                if(typeof showToast==='function')
+                    showToast('خطأ في الفاتورة: ' + e.message, false);
+            }
         }
     },
 
     processReturn: async function() {
         const input = document.getElementById('return-ref');
         const container = document.getElementById('return-details');
-        if (!input?.value.trim()) return alert("يرجى إدخال رقم الفاتورة.");
+        if (!input?.value.trim()) {
+            if(typeof showToast==='function') showToast('يرجى إدخال رقم الفاتورة.', false);
+            return;
+        }
         const invoiceId = input.value.trim();
         container.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري...`;
         try {
@@ -296,14 +403,17 @@ const MainApp = {
                 <thead><tr><th>الصنف</th><th>الكمية</th><th>إرجاع</th></tr></thead><tbody>`;
             inv.items.forEach((item, i) => {
                 html += `<tr>
-                    <td>${item.name}</td><td>${item.qty||item.quantity}</td>
+                    <td>${item.name}</td>
+                    <td>${item.qty||item.quantity}</td>
                     <td><button class="btn btn-sm btn-danger"
                         onclick="window.App.executeItemReturn('${invoiceId}','${item.code}',
                         ${item.qty||item.quantity},${item.price},${i})">إرجاع</button></td>
                 </tr>`;
             });
             container.innerHTML = html + `</tbody></table>`;
-        } catch (e) { container.innerHTML = `خطأ: ${e.message}`; }
+        } catch (e) {
+            container.innerHTML = `خطأ: ${e.message}`;
+        }
     },
 
     executeItemReturn: async function(invoiceId, itemCode, qty, price, itemIndex) {
@@ -312,8 +422,12 @@ const MainApp = {
             const itemRef = doc(db, "products", itemCode);
             const itemSnap = await getDoc(itemRef);
             if (itemSnap.exists()) {
-                const cur = parseFloat(itemSnap.data().qty ?? itemSnap.data().quantity)||0;
-                await setDoc(itemRef, { quantity: cur+qty, qty: cur+qty }, { merge: true });
+                const cur = parseFloat(
+                    itemSnap.data().qty ?? itemSnap.data().quantity
+                )||0;
+                await setDoc(itemRef, {
+                    quantity: cur + qty, qty: cur + qty
+                }, { merge: true });
             }
             const orderRef = doc(db, "orders", invoiceId);
             const orderSnap = await getDoc(orderRef);
@@ -323,19 +437,20 @@ const MainApp = {
                 inv.total = parseFloat(inv.total||0) - (qty * price);
                 if (inv.items.length === 0) {
                     await deleteDoc(orderRef);
-                    alert("حُذفت الفاتورة بنجاح.");
+                    if(typeof showToast==='function') showToast('حُذفت الفاتورة بنجاح.', true);
                 } else {
                     await setDoc(orderRef, inv);
-                    alert("تمت معالجة المرتجع.");
+                    if(typeof showToast==='function') showToast('تمت معالجة المرتجع.', true);
                 }
             }
             this.processReturn();
-        } catch (e) { alert("خطأ: " + e.message); }
+        } catch (e) {
+            if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+        }
     }
 };
 
 window.App = MainApp;
-
 // ==========================================
 // ثالثاً: المستمعات الحية
 // ==========================================
@@ -388,12 +503,16 @@ function initRealtimeListeners() {
         const cbItem = document.getElementById('cbItem');
         if (tbody) tbody.innerHTML = '';
         if (cbItem) cbItem.innerHTML = '<option value="" selected>اختر الصنف</option>';
+        let totalProducts = 0;
+        let lowStockCount = 0;
         snapshot.forEach((d) => {
             const data = d.data();
             const qty = data.qty !== undefined ? data.qty : (data.quantity||0);
             const code = data.code || d.id;
             const lowStock = qty > 0 && qty <= (data.minQty||0);
             const outStock = qty === 0;
+            totalProducts++;
+            if (lowStock || outStock) lowStockCount++;
             if (tbody) tbody.innerHTML += `<tr>
                 <td style="font-size:11px;">${code}</td>
                 <td>${data.name}</td>
@@ -416,9 +535,16 @@ function initRealtimeListeners() {
                 </td>
             </tr>`;
             if (cbItem) cbItem.innerHTML +=
-                `<option value="${code}" data-price="${data.price}"
-                 data-qty="${qty}">${data.name} - ${parseFloat(data.price||0).toFixed(2)}</option>`;
+                `<option value="${code}"
+                 data-price="${data.price}"
+                 data-qty="${qty}">
+                 ${data.name} - ${parseFloat(data.price||0).toFixed(2)}
+                 </option>`;
         });
+        // تنبيه المخزن المنخفض في الداشبورد
+        const stockAlert = document.getElementById('stockAlertCount');
+        if (stockAlert) stockAlert.innerText = lowStockCount > 0
+            ? `⚠️ ${lowStockCount} صنف منخفض` : '';
     });
 
     // ===== الطلبات =====
@@ -430,35 +556,11 @@ function initRealtimeListeners() {
         if (cnt) cnt.innerText = snapshot.size;
     });
 
-    // ===== تغيير العميل في الكاشير =====
-    const cbCustomer = document.getElementById('cbCustomer');
-    if (cbCustomer) {
-        cbCustomer.addEventListener('change', async function() {
-            const id = this.value;
-            if (id) {
-                const snap = await getDoc(doc(db, "customers", id));
-                if (snap.exists()) {
-                    const d = snap.data();
-                    if(document.getElementById('poCustId'))
-                        document.getElementById('poCustId').value = d.id;
-                    if(document.getElementById('poCustVat'))
-                        document.getElementById('poCustVat').value = d.vat||'غير ضريبي';
-                }
-            }
-        });
-    }
-
-    // ===== تغيير الصنف في الكاشير =====
-    const cbItem = document.getElementById('cbItem');
-    if (cbItem) {
-        cbItem.addEventListener('change', function() {
-            const opt = this.options[this.selectedIndex];
-            if (this.value) {
-                if(document.getElementById('poItemName'))
-                    document.getElementById('poItemName').value = opt.text.split(" - ")[0];
-                if(document.getElementById('poQtyOnHand'))
-                    document.getElementById('poQtyOnHand').value = opt.dataset.qty;
-            }
+    // ===== خصم يحدث التوتال فوراً =====
+    const discountInput = document.getElementById('poDiscount');
+    if (discountInput) {
+        discountInput.addEventListener('input', () => {
+            if (window.App?.pos) window.App.pos.updateCartTable();
         });
     }
 }
@@ -473,7 +575,6 @@ if (document.readyState === 'loading') {
 // رابعاً: دوال مساعدة عامة
 // ==========================================
 
-// حذف عميل من الجدول مباشرة
 window.deleteCustomerById = async function(id) {
     if (!confirm(`حذف العميل: ${id}?`)) return;
     try {
@@ -481,11 +582,12 @@ window.deleteCustomerById = async function(id) {
         let local = JSON.parse(localStorage.getItem('altajer_customers'))||[];
         local = local.filter(c => c.id !== id);
         localStorage.setItem('altajer_customers', JSON.stringify(local));
-        if(typeof showToast === 'function') showToast('تم حذف العميل.', false);
-    } catch(e) { alert("خطأ: " + e.message); }
+        if(typeof showToast==='function') showToast('✅ تم حذف العميل.', true);
+    } catch(e) {
+        if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+    }
 };
 
-// تحميل بيانات العميل للتعديل
 window.loadCustomerToEdit = function(id) {
     const list = JSON.parse(localStorage.getItem('altajer_customers'))||[];
     const c = list.find(x => x.id === id);
@@ -494,50 +596,80 @@ window.loadCustomerToEdit = function(id) {
         document.getElementById('custId').value = c.id;
         document.getElementById('custId').disabled = true;
     }
-    if(document.getElementById('custName')) document.getElementById('custName').value = c.name||'';
-    if(document.getElementById('custType')) document.getElementById('custType').value = c.type||'B2C';
+    if(document.getElementById('custName'))
+        document.getElementById('custName').value = c.name||'';
+    if(document.getElementById('custType'))
+        document.getElementById('custType').value = c.type||'B2C';
     if(window.setCustType) window.setCustType(c.type||'B2C');
-    if(document.getElementById('custVat')) document.getElementById('custVat').value = c.vat||'';
-    if(document.getElementById('custCR')) document.getElementById('custCR').value = c.cr||'';
-    if(document.getElementById('custContact')) document.getElementById('custContact').value = c.contact||'';
-    if(document.getElementById('custCity')) document.getElementById('custCity').value = c.city||'';
-    if(document.getElementById('custDistrict')) document.getElementById('custDistrict').value = c.district||'';
-    if(document.getElementById('custStreet')) document.getElementById('custStreet').value = c.street_name||'';
-    if(document.getElementById('custBuilding')) document.getElementById('custBuilding').value = c.building_no||'';
-    if(document.getElementById('custPostal')) document.getElementById('custPostal').value = c.postal_code||'';
-    if(document.getElementById('custAddNo')) document.getElementById('custAddNo').value = c.additional_no||'';
-    if(document.getElementById('lblCustBtn')) document.getElementById('lblCustBtn').innerText = 'تعديل العميل';
+    if(document.getElementById('custVat'))
+        document.getElementById('custVat').value = c.vat||'';
+    if(document.getElementById('custCR'))
+        document.getElementById('custCR').value = c.cr||'';
+    if(document.getElementById('custContact'))
+        document.getElementById('custContact').value = c.contact||'';
+    if(document.getElementById('custCity'))
+        document.getElementById('custCity').value = c.city||'';
+    if(document.getElementById('custDistrict'))
+        document.getElementById('custDistrict').value = c.district||'';
+    if(document.getElementById('custStreet'))
+        document.getElementById('custStreet').value = c.street_name||'';
+    if(document.getElementById('custBuilding'))
+        document.getElementById('custBuilding').value = c.building_no||'';
+    if(document.getElementById('custPostal'))
+        document.getElementById('custPostal').value = c.postal_code||'';
+    if(document.getElementById('custAddNo'))
+        document.getElementById('custAddNo').value = c.additional_no||'';
+    if(document.getElementById('lblCustBtn'))
+        document.getElementById('lblCustBtn').innerText = 'تعديل العميل';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if(typeof showToast === 'function') showToast('جاهز للتعديل — اضغط حفظ بعد التغيير.', true);
+    if(typeof showToast==='function')
+        showToast('جاهز للتعديل — اضغط حفظ بعد التغيير.', true);
 };
 
-// حذف صنف من الجدول مباشرة
 window.deleteItemById = async function(code) {
     if (!confirm(`حذف الصنف: ${code}?`)) return;
     try {
         await deleteDoc(doc(db, "products", code));
-        if(typeof showToast === 'function') showToast('تم حذف الصنف.', false);
-    } catch(e) { alert("خطأ: " + e.message); }
+        if(typeof showToast==='function') showToast('✅ تم حذف الصنف.', true);
+    } catch(e) {
+        if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+    }
 };
 
-// تحميل بيانات الصنف للتعديل
 window.loadItemToEdit = async function(code) {
     try {
         const snap = await getDoc(doc(db, "products", code));
-        if (!snap.exists()) return alert("الصنف غير موجود.");
+        if (!snap.exists()) {
+            if(typeof showToast==='function') showToast('الصنف غير موجود.', false);
+            return;
+        }
         const d = snap.data();
-        if(document.getElementById('itemCode')) document.getElementById('itemCode').value = d.code||code;
-        if(document.getElementById('itemName')) document.getElementById('itemName').value = d.name||'';
-        if(document.getElementById('itemCategory')) document.getElementById('itemCategory').value = d.category||'';
-        if(document.getElementById('itemUnit')) document.getElementById('itemUnit').value = d.unit||'قطعة';
-        if(document.getElementById('itemPrice')) document.getElementById('itemPrice').value = d.price||0;
-        if(document.getElementById('itemPriceType')) document.getElementById('itemPriceType').value = d.priceType||'inclusive';
-        if(document.getElementById('itemQty')) document.getElementById('itemQty').value = d.qty||d.quantity||0;
-        if(document.getElementById('itemMinQty')) document.getElementById('itemMinQty').value = d.minQty||0;
-        if(document.getElementById('itemNotes')) document.getElementById('itemNotes').value = d.notes||'';
+        if(document.getElementById('itemCode'))
+            document.getElementById('itemCode').value = d.code||code;
+        if(document.getElementById('itemName'))
+            document.getElementById('itemName').value = d.name||'';
+        if(document.getElementById('itemCategory'))
+            document.getElementById('itemCategory').value = d.category||'';
+        if(document.getElementById('itemUnit'))
+            document.getElementById('itemUnit').value = d.unit||'قطعة';
+        if(document.getElementById('itemPrice'))
+            document.getElementById('itemPrice').value = d.price||0;
+        if(document.getElementById('itemPriceType'))
+            document.getElementById('itemPriceType').value = d.priceType||'inclusive';
+        if(document.getElementById('itemQty'))
+            document.getElementById('itemQty').value = d.qty||d.quantity||0;
+        if(document.getElementById('itemMinQty'))
+            document.getElementById('itemMinQty').value = d.minQty||0;
+        if(document.getElementById('itemNotes'))
+            document.getElementById('itemNotes').value = d.notes||'';
+        // الانتقال لقسم المخزن تلقائياً
+        if(typeof switchView==='function') switchView(2);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        if(typeof showToast === 'function') showToast('جاهز للتعديل — اضغط حفظ بعد التغيير.', true);
-    } catch(e) { alert("خطأ: " + e.message); }
+        if(typeof showToast==='function')
+            showToast('جاهز للتعديل — اضغط حفظ بعد التغيير.', true);
+    } catch(e) {
+        if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+    }
 };
 
 // ==========================================
@@ -558,9 +690,9 @@ function encodeZatcaTLV(seller, vat, ts, total, vatAmt) {
                String.fromCharCode(...bytes);
     }
     return btoa(
-        toTLV(1,seller) + toTLV(2,vat) + toTLV(3,ts) +
-        toTLV(4,Number(total).toFixed(2)) +
-        toTLV(5,Number(vatAmt).toFixed(2))
+        toTLV(1, seller) + toTLV(2, vat) + toTLV(3, ts) +
+        toTLV(4, Number(total).toFixed(2)) +
+        toTLV(5, Number(vatAmt).toFixed(2))
     );
 }
 
@@ -570,11 +702,11 @@ window.generateInvoiceQR = function(invoiceData) {
     container.innerHTML = "";
     try {
         const qrText = encodeZatcaTLV(
-            invoiceData.sellerName||"متجر التاجر برو",
-            invoiceData.vatNumber ||"300000000000003",
-            invoiceData.timestamp ||new Date().toISOString(),
-            invoiceData.total||0,
-            invoiceData.tax||((invoiceData.total||0)*0.15/1.15)
+            invoiceData.sellerName || "متجر التاجر برو",
+            invoiceData.vatNumber  || "300000000000003",
+            invoiceData.timestamp  || new Date().toISOString(),
+            invoiceData.total      || 0,
+            invoiceData.tax        || ((invoiceData.total||0) * 0.15 / 1.15)
         );
         new QRCode(container, {
             text: qrText, width: 128, height: 128,

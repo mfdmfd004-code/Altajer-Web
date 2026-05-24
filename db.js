@@ -368,8 +368,17 @@ invoiceFooter: settings.invoiceFooter || ""
                 if (typeof window.generateInvoiceQR === "function")
                     window.generateInvoiceQR(invoiceData);
 
-                if(typeof showToast==='function')
-                    showToast(`✅ تم اعتماد الفاتورة: ${orderId}`, true);
+                // حفظ الفاتورة للطباعة
+sessionStorage.setItem('altajer_print_invoice', JSON.stringify(invoiceData));
+localStorage.setItem('altajer_last_invoice', JSON.stringify(invoiceData));
+
+if(typeof showToast==='function')
+    showToast(`✅ تم اعتماد الفاتورة: ${orderId}`, true);
+
+// الانتقال لصفحة الطباعة بعد ثانية
+setTimeout(() => {
+    window.location.href = 'print.html';
+}, 1500);
 
                 cart = [];
                 this.updateCartTable();

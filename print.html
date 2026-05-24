@@ -451,11 +451,15 @@
                         filename: `فاتورة-${inv.invoiceNumber}.pdf`,
                         image: { type:'jpeg', quality:0.97 },
                         html2canvas: {
-                            scale: 2,
-                            useCORS: true,
-                            logging: false,
-                            letterRendering: true,
-                            allowTaint: false
+    scale: 2,
+    useCORS: true,
+    logging: false,
+    letterRendering: true,
+    allowTaint: false,
+    onclone: function(doc) {
+        return new Promise(resolve => setTimeout(resolve, 800));
+    }
+},
                         },
                         jsPDF: { unit:'mm', format:'a4', orientation:'portrait' }
                     }).from(document.getElementById('a4El')).save();

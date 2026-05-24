@@ -2,466 +2,645 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>تاجر برو المحاسبي - إعدادات المؤسسة والمطابقة الضريبية</title>
-    
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0c3f65">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — إعدادات المؤسسة</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap">
     <style>
-        :root {
-            --dark-bg: #0d1b2a;
-            --card-bg: #1b263b;
-            --sea-blue: #0077b6;
-            --light-green: #38b000;
-            --neon-cyan: #00b4d8;
-            --neon-pink: #e81cff;
-            --text-white: #ffffff;
-            --danger-red: #e63946;
-            --warning-orange: #ffb703;
-        }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
 
         body {
-            background-color: var(--dark-bg);
-            color: var(--text-white);
-            margin: 0;
-            padding: 20px 10px;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+            min-height: 100vh; color: #fff;
+            padding: 20px 10px 40px 10px;
         }
 
-        .settings-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: var(--card-bg);
-            border: 2px solid var(--sea-blue);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.2);
-            position: relative;
+        .page-header {
+            display: flex; align-items: center; justify-content: space-between;
+            max-width: 800px; margin: 0 auto 20px auto;
+            padding: 0 5px;
         }
 
-        .settings-container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--neon-cyan), var(--sea-blue), var(--neon-pink));
-            border-top-left-radius: 14px;
-            border-top-right-radius: 14px;
+        .page-title {
+            font-size: 18px; font-weight: 900; color: #00b4d8;
+            display: flex; align-items: center; gap: 8px;
         }
 
-        .settings-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px dashed rgba(0, 180, 216, 0.3);
-            padding-bottom: 15px;
-            margin-bottom: 30px;
+        .btn-back {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white; padding: 8px 16px;
+            border-radius: 10px; font-size: 13px;
+            cursor: pointer; font-family: 'Cairo', sans-serif;
+            transition: 0.2s; text-decoration: none;
+            display: flex; align-items: center; gap: 6px;
         }
 
-        .settings-title {
-            font-size: 22px;
-            font-weight: bold;
-            color: var(--neon-cyan);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-shadow: 0 0 10px rgba(0, 180, 216, 0.4);
+        .btn-back:hover { background: rgba(0,180,216,0.2); color: #00b4d8; }
+
+        .settings-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; padding: 25px 20px;
+            margin-bottom: 16px;
+            max-width: 800px; margin-left: auto; margin-right: auto;
         }
 
-        .section-subtitle {
-            font-size: 16px;
-            color: var(--neon-cyan);
-            margin-top: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
-            padding-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .section-title {
+            font-size: 14px; font-weight: 700; color: #00b4d8;
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 20px; padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,180,216,0.2);
         }
 
-        .input-container {
-            position: relative;
-            margin-bottom: 30px;
+        .field-group { margin-bottom: 18px; }
+
+        .field-group label {
+            display: block; font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 6px; font-weight: 600;
         }
 
-        .input-container input, .input-container select {
-            border: 0;
-            border-bottom: 2px solid #4a5568;
-            background: transparent;
-            width: 100%;
-            padding: 10px 5px 5px 5px;
-            font-size: 16px;
-            color: #fff;
-            transition: border-color 0.3s;
-        }
-
-        .input-container input:focus, .input-container select:focus {
-            outline: none;
-            border-bottom: 2px solid var(--neon-cyan);
-        }
-
-        .input-container select option {
-            background-color: var(--dark-bg);
-            color: white;
-        }
-
-        .input-container label {
-            position: absolute;
-            top: -12px;
-            right: 5px;
-            font-size: 13px;
-            color: #a0aec0;
-            pointer-events: none;
-            transition: all 0.3s ease-in-out;
-        }
-
-        html[dir="ltr"] .input-container label {
-            left: 5px;
-            right: auto;
-        }
-
-        .lang-selector {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--neon-cyan);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            outline: none;
-        }
-
-        .btn-neon {
-            position: relative;
-            background: #2d3748;
-            color: #fff;
-            border: none;
-            padding: 12px 25px;
-            font-weight: 600;
-            font-size: 1rem;
+        .field-group input,
+        .field-group select,
+        .field-group textarea {
+            width: 100%; padding: 11px 14px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; color: white;
+            font-size: 14px; font-family: 'Cairo', sans-serif;
             transition: 0.3s;
-            border-radius: 8px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .btn-neon:hover {
-            background: var(--clr);
-            box-shadow: 0 0 15px var(--clr);
-            color: #fff;
+        .field-group input:focus,
+        .field-group select:focus,
+        .field-group textarea:focus {
+            outline: none; border-color: #00b4d8;
+            background: rgba(0,180,216,0.08);
+            box-shadow: 0 0 0 3px rgba(0,180,216,0.12);
+        }
+
+        .field-group input::placeholder { color: rgba(255,255,255,0.2); }
+        .field-group select option { background: #1e3a5f; color: white; }
+
+        .vat-hint {
+            font-size: 11px; margin-top: 5px;
+            color: rgba(255,255,255,0.4);
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        /* مفتاح الضريبة */
+        .tax-toggle-row {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px; padding: 14px 16px;
+            margin-bottom: 16px;
+        }
+
+        .tax-toggle-label {
+            font-size: 13px; font-weight: 600;
+        }
+
+        .tax-toggle-label small {
+            display: block; font-size: 11px;
+            color: rgba(255,255,255,0.4); font-weight: 400;
+        }
+
+        .switch {
+            position: relative; width: 52px; height: 28px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.15);
+            border-radius: 28px; transition: 0.3s;
+        }
+
+        .slider:before {
+            content: ''; position: absolute;
+            width: 22px; height: 22px;
+            left: 3px; bottom: 3px;
+            background: white; border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        input:checked + .slider { background: #2b9348; }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* بادج الدولة */
+        .country-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(0,180,216,0.1);
+            border: 1px solid rgba(0,180,216,0.3);
+            border-radius: 20px; padding: 4px 12px;
+            font-size: 12px; color: #00b4d8;
+            margin-bottom: 16px;
+        }
+
+        /* أزرار الحفظ */
+        .btn-save {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #2b9348, #38b000);
+            color: white; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer; transition: 0.3s;
+            box-shadow: 0 4px 20px rgba(43,147,72,0.3);
+            display: flex; align-items: center;
+            justify-content: center; gap: 8px;
+        }
+
+        .btn-save:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(43,147,72,0.4);
         }
 
-        .api-toast {
-            position: fixed;
-            top: 30px;
-            right: 20px;
-            z-index: 2000;
-            padding: 12px 25px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            display: none;
-            animation: slideInToast 0.3s ease-out;
-        }
-        html[dir="ltr"] .api-toast { right: auto; left: 20px; }
-        @keyframes slideInToast { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .helper-text {
-            font-size: 11px;
-            color: var(--warning-orange);
-            margin-top: 5px;
-            display: block;
+        .toast {
+            position: fixed; top: 20px; left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 25px; border-radius: 30px;
+            color: white; font-weight: 700; font-size: 13px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            display: none; z-index: 9999;
+            font-family: 'Cairo', sans-serif;
+            text-align: center; max-width: 90%;
         }
 
-        .national-address-box, .barcode-generator-box {
-            background: rgba(13, 27, 42, 0.4);
-            border: 1px dashed rgba(0, 180, 216, 0.2);
-            border-radius: 12px;
-            padding: 20px 15px 5px 15px;
-            margin-bottom: 25px;
+        .spinner {
+            display: inline-block; width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white; border-radius: 50%;
+            animation: spin 0.7s linear infinite;
         }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .national-box {
+            background: rgba(0,0,0,0.2);
+            border: 1px dashed rgba(0,180,216,0.2);
+            border-radius: 12px; padding: 16px 12px 4px 12px;
+            margin-bottom: 8px;
+        }
+
+        /* مؤشر قوة كلمة المرور */
+        .vat-valid { color: #38b000; }
+        .vat-invalid { color: #d90429; }
     </style>
 </head>
 <body>
 
-<div id="apiToast" class="api-toast"></div>
+<div id="toast" class="toast"></div>
 
-<div class="settings-container">
-    <div class="settings-header">
-        <div class="settings-title">
-            <i class='bx bx-cog bx-spin'></i>
-            <span data-i18n="set-title">إعدادات المؤسسة والمطابقة الضريبية</span>
-        </div>
-        <div>
-            <select class="lang-selector" onchange="changeLanguage(this.value)" id="langSelect">
-                <option value="ar">العربية (AR)</option>
-                <option value="en">English (EN)</option>
-            </select>
-        </div>
+<!-- رأس الصفحة -->
+<div class="page-header">
+    <div class="page-title">
+        <i class="fas fa-cogs"></i> إعدادات المؤسسة
     </div>
-
-    <form id="settingsForm" onsubmit="handleSettingsSubmit(event)">
-        
-        <div class="section-subtitle">
-            <i class="fas fa-building"></i> <span data-i18n="sub-basic-info">البيانات الأساسية للمنشأة</span>
-        </div>
-
-        <div class="input-container">
-            <input id="setCompanyName" type="text" required placeholder=" ">
-            <label data-i18n="lbl-set-name">اسم المنشأة / المؤسسة التجاري الرسمي</label>
-        </div>
-
-        <div class="input-container">
-            <input id="setVatNumber" type="text" required pattern="3[0-9]{14}" maxlength="15" placeholder=" ">
-            <label data-i18n="lbl-set-vat">الرقم الضريبي للمنشأة (15 خانة يبدأ بـ 3)</label>
-            <span class="helper-text" data-i18n="lbl-set-vat-hint">إلزامي لهيئة الزكاة والضريبة والجمارك السعودية ZATCA</span>
-        </div>
-
-        <div class="input-container">
-            <input id="setPhone" type="text" required placeholder=" ">
-            <label data-i18n="lbl-set-phone">رقم الهاتف / الاتصال المعتمد في الفاتورة</label>
-        </div>
-
-        <div class="section-subtitle">
-            <i class="fas fa-barcode"></i> <span data-i18n="sub-barcode-settings">نظام توليد الباركود التصاعدي التلقائي الأصلي</span>
-        </div>
-        <div class="barcode-generator-box">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="input-container">
-                        <select id="autoBarcodeToggle" onchange="toggleBarcodeFields(this.value)">
-                            <option value="true">تفعيل التوليد التلقائي للأصناف</option>
-                            <option value="false">إيقاف (إدخال يدوي فقط)</option>
-                        </select>
-                        <label>حالة محرك الأكواد</label>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="input-container">
-                        <input id="barcodePrefix" type="text" placeholder=" ">
-                        <label>بادئة الباركود (مثال: PRD)</label>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="input-container">
-                        <input id="barcodeNextNumber" type="number" placeholder=" ">
-                        <label>التسلسل التالي (يبدأ من)</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-subtitle">
-            <i class="fas fa-map-marked-alt"></i> <span data-i18n="sub-national-address">تفاصيل العنوان الوطني المعتمد (الامتثال الضريبي)</span>
-        </div>
-
-        <div class="national-address-box">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="input-container">
-                        <input id="addrCity" type="text" required placeholder=" ">
-                        <label data-i18n="lbl-addr-city">المدينة</label>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-container">
-                        <input id="addrDistrict" type="text" required placeholder=" ">
-                        <label data-i18n="lbl-addr-district">الحي</label>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="input-container">
-                        <input id="addrStreet" type="text" required placeholder=" ">
-                        <label data-i18n="lbl-addr-street">اسم الشارع رئيسي/فرعي</label>
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="input-container">
-                        <input id="addrBuildingNo" type="text" required placeholder=" ">
-                        <label data-i18n="lbl-addr-building">رقم المبنى</label>
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="input-container">
-                        <input id="addrPostalCode" type="text" required placeholder=" ">
-                        <label data-i18n="lbl-addr-postal">الرمز البريدي</label>
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="input-container">
-                        <input id="addrAdditionalNo" type="text" placeholder=" ">
-                        <label data-i18n="lbl-addr-additional">الرقم الإضافي (إن وجد)</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-subtitle">
-            <i class="fas fa-print"></i> <span data-i18n="sub-print-settings">خيارات الطباعة والتصدير</span>
-        </div>
-
-        <div class="input-container">
-            <select id="setPrintOption" required>
-                <option value="80mm" selected data-i18n="opt-80">طابعة فواتير حرارية (80mm)</option>
-                <option value="58mm" data-i18n="opt-58">طابعة فواتير حرارية صغيرة (58mm)</option>
-                <option value="A4" data-i18n="opt-a4">طابعة مكتبية عادية (A4)</option>
-                <option value="PDF" data-i18n="opt-pdf">حفظ وتصدير كملف رقمي إلكتروني (PDF)</option>
-            </select>
-            <label data-i18n="lbl-set-print">خيار الطباعة والتصدير الافتراضي للفواتير</label>
-        </div>
-
-        <div class="d-flex flex-wrap gap-3 mt-4 justify-content-between">
-            <button type="submit" class="btn-neon" style="--clr:var(--light-green)">
-                <i class="fas fa-save"></i> <span data-i18n="btn-save-settings">حفظ الإعدادات ومزامنتها</span>
-            </button>
-            <button type="button" onclick="window.location.href='index.html'" class="btn-neon" style="--clr:var(--neon-cyan)">
-                <i class="fas fa-home"></i> <span data-i18n="btn-dashboard">العودة للرئيسية</span>
-            </button>
-        </div>
-    </form>
+    <a href="index.html" class="btn-back">
+        <i class="fas fa-arrow-right"></i> الرئيسية
+    </a>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<!-- ===== بطاقة: بيانات المؤسسة ===== -->
+<div class="settings-card">
+    <div class="section-title">
+        <i class="fas fa-building"></i> بيانات المؤسسة / المورد
+    </div>
 
-<script src="app.js"></script>
+    <div class="field-group">
+        <label>اسم المؤسسة / الشركة *</label>
+        <input type="text" id="setCompanyName" placeholder="الاسم الرسمي كما يظهر في الفاتورة">
+    </div>
 
+    <div class="field-group">
+        <label>البلد *</label>
+        <select id="setCountry" onchange="onCountryChange()">
+            <option value="">-- اختر البلد --</option>
+            <optgroup label="الخليج العربي">
+                <option value="SA">🇸🇦 المملكة العربية السعودية</option>
+                <option value="AE">🇦🇪 الإمارات العربية المتحدة</option>
+                <option value="KW">🇰🇼 الكويت</option>
+                <option value="QA">🇶🇦 قطر</option>
+                <option value="BH">🇧🇭 البحرين</option>
+                <option value="OM">🇴🇲 سلطنة عُمان</option>
+            </optgroup>
+            <optgroup label="أفريقيا">
+                <option value="EG">🇪🇬 مصر</option>
+                <option value="MA">🇲🇦 المغرب</option>
+                <option value="TN">🇹🇳 تونس</option>
+                <option value="DZ">🇩🇿 الجزائر</option>
+                <option value="LY">🇱🇾 ليبيا</option>
+                <option value="SD">🇸🇩 السودان</option>
+                <option value="NG">🇳🇬 نيجيريا</option>
+                <option value="KE">🇰🇪 كينيا</option>
+                <option value="ET">🇪🇹 إثيوبيا</option>
+                <option value="GH">🇬🇭 غانا</option>
+                <option value="TZ">🇹🇿 تنزانيا</option>
+                <option value="SN">🇸🇳 السنغال</option>
+            </optgroup>
+            <optgroup label="باقي العالم">
+                <option value="TR">🇹🇷 تركيا</option>
+                <option value="PK">🇵🇰 باكستان</option>
+                <option value="IN">🇮🇳 الهند</option>
+                <option value="US">🇺🇸 الولايات المتحدة</option>
+                <option value="GB">🇬🇧 المملكة المتحدة</option>
+                <option value="DE">🇩🇪 ألمانيا</option>
+                <option value="FR">🇫🇷 فرنسا</option>
+                <option value="OTHER">🌍 أخرى</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <div class="field-group">
+        <label>رقم الهاتف / التواصل</label>
+        <input type="text" id="setPhone" placeholder="05xxxxxxxx">
+    </div>
+
+    <div class="field-group">
+        <label>البريد الإلكتروني للمؤسسة</label>
+        <input type="email" id="setEmail" placeholder="info@company.com">
+    </div>
+
+    <div class="field-group">
+        <label>الموقع الإلكتروني (اختياري)</label>
+        <input type="text" id="setWebsite" placeholder="www.company.com">
+    </div>
+
+    <div class="field-group">
+        <label>العملة المستخدمة</label>
+        <select id="setCurrency">
+            <option value="SAR">ريال سعودي (SAR)</option>
+            <option value="AED">درهم إماراتي (AED)</option>
+            <option value="KWD">دينار كويتي (KWD)</option>
+            <option value="QAR">ريال قطري (QAR)</option>
+            <option value="EGP">جنيه مصري (EGP)</option>
+            <option value="USD">دولار أمريكي (USD)</option>
+            <option value="GBP">جنيه إسترليني (GBP)</option>
+            <option value="EUR">يورو (EUR)</option>
+            <option value="NGN">نيرا نيجيرية (NGN)</option>
+            <option value="KES">شلن كيني (KES)</option>
+            <option value="OTHER">أخرى</option>
+        </select>
+    </div>
+</div>
+
+<!-- ===== بطاقة: نظام الضريبة ===== -->
+<div class="settings-card">
+    <div class="section-title">
+        <i class="fas fa-percent"></i> نظام الضريبة
+    </div>
+
+    <!-- مفتاح تفعيل الضريبة -->
+    <div class="tax-toggle-row">
+        <div class="tax-toggle-label">
+            تفعيل نظام الضريبة
+            <small>الفواتير ستتضمن حساب الضريبة تلقائياً</small>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="taxEnabled" onchange="onTaxToggle()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <!-- حقول الضريبة — تظهر عند التفعيل -->
+    <div id="taxFields" style="display:none;">
+        <div class="field-group">
+            <label>نسبة الضريبة %</label>
+            <select id="taxRate">
+                <option value="15">15% — ضريبة القيمة المضافة السعودية (ZATCA)</option>
+                <option value="14">14% — ضريبة القيمة المضافة المصرية</option>
+                <option value="10">10% — نسبة مخصصة</option>
+                <option value="7.5">7.5% — نيجيريا (VAT)</option>
+                <option value="16">16% — كينيا (VAT)</option>
+                <option value="20">20% — المملكة المتحدة / فرنسا / ألمانيا</option>
+                <option value="custom">نسبة مخصصة</option>
+            </select>
+        </div>
+
+        <div class="field-group" id="customTaxField" style="display:none;">
+            <label>أدخل نسبة الضريبة المخصصة %</label>
+            <input type="number" id="customTaxRate" placeholder="مثال: 12" min="0" max="100">
+        </div>
+
+        <div class="field-group">
+            <label>الرقم الضريبي للمؤسسة</label>
+            <input type="text" id="setVatNumber" placeholder="أدخل الرقم الضريبي"
+                   oninput="validateVat(this)">
+            <div id="vatHint" class="vat-hint">
+                <i class="fas fa-info-circle"></i>
+                <span>للسعودية: 15 خانة تبدأ وتنتهي بـ 3</span>
+            </div>
+        </div>
+
+        <!-- السجل التجاري -->
+        <div class="field-group">
+            <label>رقم السجل التجاري / رخصة العمل</label>
+            <input type="text" id="setCR" placeholder="1010000000">
+        </div>
+    </div>
+</div>
+
+<!-- ===== بطاقة: العنوان ===== -->
+<div class="settings-card">
+    <div class="section-title">
+        <i class="fas fa-map-marker-alt"></i> عنوان المؤسسة
+    </div>
+
+    <div class="national-box">
+        <div class="row g-2">
+            <div class="col-6">
+                <div class="field-group">
+                    <label>المدينة</label>
+                    <input type="text" id="addrCity" placeholder="الرياض">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="field-group">
+                    <label>الحي / المنطقة</label>
+                    <input type="text" id="addrDistrict" placeholder="العليا">
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="field-group">
+                    <label>اسم الشارع</label>
+                    <input type="text" id="addrStreet" placeholder="شارع الملك فهد">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="field-group">
+                    <label>رقم المبنى</label>
+                    <input type="text" id="addrBuilding" placeholder="1234">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="field-group">
+                    <label>الرمز البريدي</label>
+                    <input type="text" id="addrPostal" placeholder="12345">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="field-group">
+                    <label>الرقم الإضافي</label>
+                    <input type="text" id="addrAddNo" placeholder="6789">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== بطاقة: الفاتورة والطباعة ===== -->
+<div class="settings-card">
+    <div class="section-title">
+        <i class="fas fa-file-invoice"></i> إعدادات الفاتورة والطباعة
+    </div>
+
+    <div class="field-group">
+        <label>خيار الطباعة الافتراضي</label>
+        <select id="setPrintOption">
+            <option value="80mm">طابعة حرارية (80mm)</option>
+            <option value="58mm">طابعة حرارية صغيرة (58mm)</option>
+            <option value="A4">طابعة مكتبية (A4)</option>
+            <option value="PDF">تصدير PDF</option>
+        </select>
+    </div>
+
+    <div class="field-group">
+        <label>ملاحظة تظهر في أسفل كل فاتورة (اختياري)</label>
+        <textarea id="invoiceFooter" rows="2"
+                  placeholder="مثال: شكراً لتعاملكم معنا — لا يُقبل الإرجاع بعد 7 أيام"
+                  style="resize:none;"></textarea>
+    </div>
+
+    <!-- الباركود -->
+    <div class="tax-toggle-row mt-2">
+        <div class="tax-toggle-label">
+            توليد الباركود التلقائي
+            <small>يولد كود فريد لكل صنف جديد تلقائياً</small>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="autoBarcodeToggle" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="row g-2 mt-1">
+        <div class="col-6">
+            <div class="field-group">
+                <label>بادئة الباركود</label>
+                <input type="text" id="barcodePrefix" placeholder="PRD-" value="PRD-">
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="field-group">
+                <label>يبدأ التسلسل من</label>
+                <input type="number" id="barcodeStart" placeholder="1001" value="1001">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== زر الحفظ ===== -->
+<div style="max-width:800px;margin:0 auto;padding:0 5px;">
+    <button class="btn-save" onclick="saveSettings()">
+        <i class="fas fa-save"></i> حفظ الإعدادات ومزامنتها
+    </button>
+</div>
+
+<script type="module" src="firebase-config.js"></script>
 <script>
-    const translations = {
-        ar: {
-            "set-title": "إعدادات المؤسسة والمطابقة الضريبية", "sub-basic-info": "البيانات الأساسية للمنشأة",
-            "lbl-set-name": "اسم المنشأة / المؤسسة التجاري الرسمي", "lbl-set-vat": "الرقم الضريبي للمنشأة (15 خانة يبدأ بـ 3)", 
-            "lbl-set-vat-hint": "إلزامي لهيئة الزكاة والضريبة والجمارك السعودية ZATCA", "lbl-set-phone": "رقم الهاتف / الاتصال المعتمد في الفاتورة",
-            "sub-national-address": "تفاصيل العنوان الوطني المعتمد (الامتثال الضريبي)", "lbl-addr-city": "المدينة", "lbl-addr-district": "الحي", 
-            "lbl-addr-street": "اسم الشارع رئيسي/فرعي", "lbl-addr-building": "رقم المبنى", "lbl-addr-postal": "الرمز البريدي", 
-            "lbl-addr-additional": "الرقم الإضافي (إن وجد)", "sub-print-settings": "خيارات الطباعة والتصدير", "sub-barcode-settings": "نظام توليد الباركود التصاعدي التلقائي الأصلي",
-            "opt-80": "طابعة فواتير حرارية (80mm)", "opt-58": "طابعة فواتير حرارية صغيرة (58mm)", "opt-a4": "طابعة مكتبية عادية (A4)", 
-            "opt-pdf": "حفظ وتصدير كملف رقمي إلكتروني (PDF)", "lbl-set-print": "خيار الطباعة والتصدير الافتراضي للفواتير", 
-            "btn-save-settings": "حفظ الإعدادات ومزامنتها", "btn-dashboard": "العودة للرئيسية"
-        },
-        en: {
-            "set-title": "Enterprise Settings & Tax Compliance", "sub-basic-info": "Basic Enterprise Information",
-            "lbl-set-name": "Official Trade / Company Name", "lbl-set-vat": "Enterprise VAT Number (15 Digits starts with 3)", 
-            "lbl-set-vat-hint": "Mandatory for Saudi ZATCA & Tax Regulations", "lbl-set-phone": "Certified Contact Number for Invoices",
-            "sub-national-address": "National Address Details (Tax Compliance)", "lbl-addr-city": "City", "lbl-addr-district": "District", 
-            "lbl-addr-street": "Street Name", "lbl-addr-building": "Building No", "lbl-addr-postal": "Postal Code", 
-            "lbl-addr-additional": "Additional No", "sub-print-settings": "Printing & Export Options", "sub-barcode-settings": "Automatic Serial Barcode Engine",
-            "opt-80": "Thermal Receipt Printer (80mm)", "opt-58": "Small Thermal Printer (58mm)", "opt-a4": "Standard Office Printer (A4)", 
-            "opt-pdf": "Save & Export as Digital Document (PDF)", "lbl-set-print": "Default Invoice Print/Export Option", 
-            "btn-save-settings": "Save & Sync Settings", "btn-dashboard": "Back to Dashboard"
+    const ADMIN_UID = 'RWp5xxVVphaNI2uIl5hMBBC5Ar93';
+
+    // ===== Toast =====
+    function showToast(msg, ok = true) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.backgroundColor = ok ? '#2b9348' : '#d90429';
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 4000);
+    }
+
+    // ===== تغيير البلد =====
+    function onCountryChange() {
+        const country = document.getElementById('setCountry').value;
+        const taxEnabled = document.getElementById('taxEnabled');
+        const taxRate = document.getElementById('taxRate');
+
+        // ضبط العملة تلقائياً حسب البلد
+        const currencyMap = {
+            SA:'SAR', AE:'AED', KW:'KWD', QA:'QAR', BH:'BHD', OM:'OMR',
+            EG:'EGP', MA:'MAD', TN:'TND', NG:'NGN', KE:'KES',
+            US:'USD', GB:'GBP', DE:'EUR', FR:'EUR', TR:'TRY', IN:'INR'
+        };
+        const currency = document.getElementById('setCurrency');
+        if(currencyMap[country]) currency.value = currencyMap[country];
+
+        // ضبط نسبة الضريبة تلقائياً
+        const taxMap = {
+            SA:'15', AE:'5', EG:'14', NG:'7.5', KE:'16', GB:'20', DE:'20', FR:'20'
+        };
+        if(taxMap[country]) {
+            taxRate.value = taxMap[country];
+            taxEnabled.checked = true;
+            onTaxToggle();
         }
-    };
+    }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        // تحميل الإعدادات من ذاكرة الجوال المحلية فوراً
-        const savedSettings = JSON.parse(localStorage.getItem('altajer_enterprise_settings'));
-        if (savedSettings) {
-            document.getElementById('setCompanyName').value = savedSettings.company_name || '';
-            document.getElementById('setVatNumber').value = savedSettings.vat_number || '';
-            document.getElementById('setPhone').value = savedSettings.phone || '';
-            document.getElementById('setPrintOption').value = savedSettings.print_option || '80mm';
-            
-            document.getElementById('addrCity').value = savedSettings.city || '';
-            document.getElementById('addrDistrict').value = savedSettings.district || '';
-            document.getElementById('addrStreet').value = savedSettings.street || '';
-            document.getElementById('addrBuildingNo').value = savedSettings.building_no || '';
-            document.getElementById('addrPostalCode').value = savedSettings.postal_code || '';
-            document.getElementById('addrAdditionalNo').value = savedSettings.additional_no || '';
+    // ===== تفعيل/إيقاف الضريبة =====
+    function onTaxToggle() {
+        const enabled = document.getElementById('taxEnabled').checked;
+        document.getElementById('taxFields').style.display = enabled ? 'block' : 'none';
+    }
 
-            // استعادة قيم تهيئة الباركود التلقائي
-            document.getElementById('autoBarcodeToggle').value = savedSettings.auto_barcode !== undefined ? String(savedSettings.auto_barcode) : 'true';
-            document.getElementById('barcodePrefix').value = savedSettings.barcode_prefix || 'PRD-';
-            document.getElementById('barcodeNextNumber').value = savedSettings.barcode_next_number || 1001;
-            toggleBarcodeFields(String(savedSettings.auto_barcode));
-        } else {
-            // تهيئة افتراضية لأول مرة
-            document.getElementById('barcodePrefix').value = 'PRD-';
-            document.getElementById('barcodeNextNumber').value = 1001;
-        }
-
-        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
-        document.getElementById('langSelect').value = currentLang;
-        changeLanguage(currentLang);
+    // ===== نسبة ضريبة مخصصة =====
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('taxRate').addEventListener('change', function() {
+            document.getElementById('customTaxField').style.display =
+                this.value === 'custom' ? 'block' : 'none';
+        });
+        loadSettings();
+        checkAuth();
     });
 
-    function toggleBarcodeFields(status) {
-        const disabled = status === 'false';
-        document.getElementById('barcodePrefix').disabled = disabled;
-        document.getElementById('barcodeNextNumber').disabled = disabled;
+    // ===== تحقق الرقم الضريبي =====
+    function validateVat(input) {
+        const val = input.value.trim();
+        const hint = document.getElementById('vatHint');
+        const country = document.getElementById('setCountry').value;
+        if(country === 'SA') {
+            if(val.length === 15 && val.startsWith('3') && val.endsWith('3') && !isNaN(val)) {
+                hint.innerHTML = '<i class="fas fa-check-circle vat-valid"></i> <span class="vat-valid">رقم ضريبي صحيح — متوافق مع ZATCA</span>';
+            } else if(val.length > 0) {
+                hint.innerHTML = '<i class="fas fa-times-circle vat-invalid"></i> <span class="vat-invalid">يجب أن يكون 15 خانة يبدأ وينتهي بـ 3</span>';
+            } else {
+                hint.innerHTML = '<i class="fas fa-info-circle"></i> <span>للسعودية: 15 خانة تبدأ وتنتهي بـ 3</span>';
+            }
+        }
     }
 
-    function changeLanguage(lang) {
-        localStorage.setItem('altajer_lang', lang);
-        document.documentElement.lang = lang; 
-        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-        $('[data-i18n]').each(function() { 
-            const key = $(this).data('i18n'); 
-            if (translations[lang] && translations[lang][key]) { $(this).text(translations[lang][key]); } 
-        });
-    }
+    // ===== حفظ الإعدادات =====
+    async function saveSettings() {
+        const companyName = document.getElementById('setCompanyName').value.trim();
+        const country     = document.getElementById('setCountry').value;
+        if(!companyName) return showToast('يرجى إدخال اسم المؤسسة', false);
+        if(!country)     return showToast('يرجى اختيار البلد', false);
 
-    function showToast(message, isSuccess = true) {
-        const toast = document.getElementById('apiToast'); 
-        toast.innerText = message;
-        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
-        toast.style.display = 'block'; 
-        setTimeout(() => { toast.style.display = 'none'; }, 3500);
-    }
+        const taxEnabled  = document.getElementById('taxEnabled').checked;
+        const taxRateEl   = document.getElementById('taxRate').value;
+        const finalTax    = taxRateEl === 'custom'
+            ? parseFloat(document.getElementById('customTaxRate').value)||0
+            : parseFloat(taxRateEl)||0;
 
-    function handleSettingsSubmit(e) {
-        e.preventDefault();
-        
-        const settingsPayload = {
-            company_name: document.getElementById('setCompanyName').value,
-            vat_number: document.getElementById('setVatNumber').value,
-            phone: document.getElementById('setPhone').value,
-            print_option: document.getElementById('setPrintOption').value,
-            city: document.getElementById('addrCity').value,
-            district: document.getElementById('addrDistrict').value,
-            street: document.getElementById('addrStreet').value,
-            building_no: document.getElementById('addrBuildingNo').value,
-            postal_code: document.getElementById('addrPostalCode').value,
-            additional_no: document.getElementById('addrAdditionalNo').value,
-            
-            // تخزين إعدادات الباركود ليتم سحبها في شاشة المخزن أو المشتريات
-            auto_barcode: document.getElementById('autoBarcodeToggle').value === 'true',
-            barcode_prefix: document.getElementById('barcodePrefix').value,
-            barcode_next_number: parseInt(document.getElementById('barcodeNextNumber').value || 1001)
+        const settings = {
+            companyName,
+            country,
+            phone:        document.getElementById('setPhone').value.trim(),
+            email:        document.getElementById('setEmail').value.trim(),
+            website:      document.getElementById('setWebsite').value.trim(),
+            currency:     document.getElementById('setCurrency').value,
+            taxEnabled,
+            taxRate:      finalTax,
+            vatNumber:    document.getElementById('setVatNumber').value.trim(),
+            cr:           document.getElementById('setCR').value.trim(),
+            address: {
+                city:     document.getElementById('addrCity').value.trim(),
+                district: document.getElementById('addrDistrict').value.trim(),
+                street:   document.getElementById('addrStreet').value.trim(),
+                building: document.getElementById('addrBuilding').value.trim(),
+                postal:   document.getElementById('addrPostal').value.trim(),
+                addNo:    document.getElementById('addrAddNo').value.trim()
+            },
+            printOption:    document.getElementById('setPrintOption').value,
+            invoiceFooter:  document.getElementById('invoiceFooter').value.trim(),
+            autoBarcode:    document.getElementById('autoBarcodeToggle').checked,
+            barcodePrefix:  document.getElementById('barcodePrefix').value.trim(),
+            barcodeStart:   parseInt(document.getElementById('barcodeStart').value)||1001,
+            updatedAt:      new Date().toISOString()
         };
 
-        // 1. التخزين الفوري والمحلي على الجوال لحماية البيانات
-        localStorage.setItem('altajer_enterprise_settings', JSON.stringify(settingsPayload));
-        
-        // 2. المزامنة والترحيل الفوري لقاعدة بيانات Google Firebase المعتمدة لديك
-        if (typeof firebase !== 'undefined' && firebase.database) {
-            firebase.database().ref('enterprise_settings/').set(settingsPayload)
-            .then(() => {
-                showToast("تم مزامنة وحفظ إعدادات المنشأة وتأمينها في غوغل فايربيس بنجاح");
-            })
-            .catch((err) => {
-                showToast("تم الحفظ محلياً؛ جاري محاولة المزامنة مع فايربيس تلقائياً", true);
-            });
-        } else {
-            // ترحيل احتياطي محلي في بيئة اختبار متصفح الجوال
-            showToast("تم تأمين وحفظ الإعدادات على الجوال (وضع العمل دون اتصال المباشر)", true);
+        // حفظ محلي فوري
+        localStorage.setItem('altajer_settings', JSON.stringify(settings));
+
+        // حفظ في Firebase تحت UID المستخدم
+        try {
+            let tries = 0;
+            while(!window.__firebaseDb && tries < 20) {
+                await new Promise(r => setTimeout(r, 200));
+                tries++;
+            }
+
+            if(window.__firebaseDb && window.__firebaseAuth?.currentUser) {
+                const uid = window.__firebaseAuth.currentUser.uid;
+                const { doc, setDoc } =
+                    await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+                await setDoc(
+                    doc(window.__firebaseDb, 'users', uid, 'settings', 'profile'),
+                    settings,
+                    { merge: true }
+                );
+                showToast('✅ تم حفظ الإعدادات ومزامنتها بنجاح', true);
+            } else {
+                showToast('✅ تم الحفظ محلياً — سيتم المزامنة عند الاتصال', true);
+            }
+        } catch(e) {
+            console.error(e);
+            showToast('✅ تم الحفظ محلياً', true);
         }
+    }
+
+    // ===== تحميل الإعدادات =====
+    function loadSettings() {
+        const s = JSON.parse(localStorage.getItem('altajer_settings'));
+        if(!s) return;
+
+        if(s.companyName) document.getElementById('setCompanyName').value = s.companyName;
+        if(s.country)     { document.getElementById('setCountry').value = s.country; }
+        if(s.phone)       document.getElementById('setPhone').value = s.phone;
+        if(s.email)       document.getElementById('setEmail').value = s.email;
+        if(s.website)     document.getElementById('setWebsite').value = s.website;
+        if(s.currency)    document.getElementById('setCurrency').value = s.currency;
+        if(s.taxEnabled)  {
+            document.getElementById('taxEnabled').checked = true;
+            onTaxToggle();
+        }
+        if(s.taxRate)     document.getElementById('taxRate').value = s.taxRate;
+        if(s.vatNumber)   document.getElementById('setVatNumber').value = s.vatNumber;
+        if(s.cr)          document.getElementById('setCR').value = s.cr;
+        if(s.address) {
+            document.getElementById('addrCity').value     = s.address.city||'';
+            document.getElementById('addrDistrict').value = s.address.district||'';
+            document.getElementById('addrStreet').value   = s.address.street||'';
+            document.getElementById('addrBuilding').value = s.address.building||'';
+            document.getElementById('addrPostal').value   = s.address.postal||'';
+            document.getElementById('addrAddNo').value    = s.address.addNo||'';
+        }
+        if(s.printOption)   document.getElementById('setPrintOption').value = s.printOption;
+        if(s.invoiceFooter) document.getElementById('invoiceFooter').value = s.invoiceFooter;
+        if(s.barcodePrefix) document.getElementById('barcodePrefix').value = s.barcodePrefix;
+        if(s.barcodeStart)  document.getElementById('barcodeStart').value  = s.barcodeStart;
+        if(s.autoBarcode !== undefined)
+            document.getElementById('autoBarcodeToggle').checked = s.autoBarcode;
+    }
+
+    // ===== التحقق من تسجيل الدخول =====
+    async function checkAuth() {
+        let tries = 0;
+        while(!window.__firebaseAuth && tries < 20) {
+            await new Promise(r => setTimeout(r, 200));
+            tries++;
+        }
+        if(!window.__firebaseAuth) return;
+        const { onAuthStateChanged } =
+            await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js');
+        onAuthStateChanged(window.__firebaseAuth, (user) => {
+            if(!user) window.location.href = 'login.html';
+        });
     }
 </script>
 </body>

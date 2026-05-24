@@ -410,7 +410,12 @@
             <option value="PDF">تصدير PDF</option>
         </select>
     </div>
-
+<div class="field-group">
+    <label>شروط الدفع وسياسة التوريد</label>
+    <textarea id="paymentTerms" rows="3"
+              placeholder="مثال: الدفع عند الاستلام — لا يُقبل الإرجاع بعد 7 أيام — الأسعار شاملة الضريبة"
+              style="resize:none;"></textarea>
+</div>
     <div class="field-group">
         <label>ملاحظة تظهر في أسفل كل فاتورة (اختياري)</label>
         <textarea id="invoiceFooter" rows="2"
@@ -558,6 +563,7 @@
             },
             printOption:    document.getElementById('setPrintOption').value,
             invoiceFooter:  document.getElementById('invoiceFooter').value.trim(),
+            paymentTerms: document.getElementById('paymentTerms').value.trim(),
             autoBarcode:    document.getElementById('autoBarcodeToggle').checked,
             barcodePrefix:  document.getElementById('barcodePrefix').value.trim(),
             barcodeStart:   parseInt(document.getElementById('barcodeStart').value)||1001,
@@ -622,6 +628,7 @@
         }
         if(s.printOption)   document.getElementById('setPrintOption').value = s.printOption;
         if(s.invoiceFooter) document.getElementById('invoiceFooter').value = s.invoiceFooter;
+        if(s.paymentTerms) document.getElementById('paymentTerms').value = s.paymentTerms;
         if(s.barcodePrefix) document.getElementById('barcodePrefix').value = s.barcodePrefix;
         if(s.barcodeStart)  document.getElementById('barcodeStart').value  = s.barcodeStart;
         if(s.autoBarcode !== undefined)

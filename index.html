@@ -169,7 +169,10 @@
 <nav class="top-navbar d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center gap-2">
         <img src="https://cdn-icons-png.flaticon.com/512/3222/3222675.png" width="28" alt="logo">
-        <h6 class="m-0 fw-bold text-uppercase" data-i18n="app-title">تاجر برو المحاسبي</h6>
+        <div>
+    <h6 class="m-0 fw-bold text-uppercase" data-i18n="app-title">تاجر برو المحاسبي</h6>
+    <small id="userDisplayName" style="font-size:10px;color:var(--neon-cyan);display:block;"></small>
+</div>
     </div>
     <div class="d-flex align-items-center gap-2">
         <select id="themeSelector" class="form-select form-select-sm bg-transparent text-white" style="width:95px;font-size:11px;" onchange="changeTheme(this.value)">
@@ -182,6 +185,9 @@
         <button onclick="changeLanguage('ar')" class="btn btn-sm text-white p-0 fw-bold">AR</button>
         <span class="text-muted">|</span>
         <button onclick="changeLanguage('en')" class="btn btn-sm text-white p-0 fw-bold">EN</button>
+        <a href="settings.html" style="color:white;font-size:18px;margin-right:8px;">
+    <i class="fas fa-cogs"></i>
+</a>
     </div>
 </nav>
 
@@ -238,7 +244,7 @@
             <div class="menu-item" onclick="showUnderDevelopment('الجرد')"><i class="fas fa-clipboard-list"></i><span data-i18n="m-inventory">الجرد الدوري</span></div>
             <div class="menu-item" onclick="showUnderDevelopment('المصاريف')"><i class="fas fa-wallet"></i><span data-i18n="m-expenses">المصاريف</span></div>
             <div class="menu-item" onclick="showUnderDevelopment('السندات')"><i class="fas fa-receipt"></i><span data-i18n="m-vouchers">السندات</span></div>
-            <div class="menu-item" onclick="showUnderDevelopment('الإعدادات')"><i class="fas fa-cogs"></i><span data-i18n="m-settings">الإعدادات</span></div>
+            <div class="menu-item" onclick="window.location.href='settings.html'"><i class="fas fa-cogs"></i><span data-i18n="m-settings">الإعدادات</span></div>
             <div class="menu-item" onclick="showUnderDevelopment('الموظفين')"><i class="fas fa-user-tie"></i><span data-i18n="m-employees">الموظفين</span></div>
             <div class="menu-item" onclick="showUnderDevelopment('الدعم')"><i class="fas fa-headset"></i><span data-i18n="m-support">الدعم الفني</span></div>
         </div>

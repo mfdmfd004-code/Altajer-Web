@@ -375,13 +375,21 @@ localStorage.setItem('altajer_last_invoice', JSON.stringify(invoiceData));
 if(typeof showToast==='function')
     showToast(`✅ تم اعتماد الفاتورة: ${orderId}`, true);
 
+cart = [];
+this.updateCartTable();
+if(document.getElementById('poDiscount'))
+    document.getElementById('poDiscount').value = 0;
+if(document.getElementById('cbCustomer'))
+    document.getElementById('cbCustomer').selectedIndex = 0;
+if(document.getElementById('poCustId'))
+    document.getElementById('poCustId').value = '';
+if(document.getElementById('poCustVat'))
+    document.getElementById('poCustVat').value = '';
+
 // الانتقال لصفحة الطباعة بعد ثانية
 setTimeout(() => {
     window.location.href = 'print.html';
 }, 1500);
-
-                cart = [];
-                this.updateCartTable();
                 if(document.getElementById('poDiscount'))
                     document.getElementById('poDiscount').value = 0;
                 if(document.getElementById('cbCustomer'))

@@ -528,9 +528,14 @@
             <div class="col-md-4">
                 <div class="p-3 rounded h-100" style="background:var(--card-bg);">
                     <h6 class="mb-3 border-bottom pb-2 text-info">الأصناف</h6>
-                    <select id="cbItem" class="form-select bg-transparent text-white mb-3" onchange="onPosItemChange()">
-                        <option value="" selected>اختر الصنف</option>
-                    </select>
+                    <div style="position:relative;margin-bottom:8px;">
+    <input type="text" id="itemSearch"
+           placeholder="🔍 ابحث عن صنف بالاسم..."
+           oninput="filterItems(this.value)"
+           style="width:100%;padding:10px 12px;background:rgba(255,255,255,0.07);
+                  border:1px solid rgba(255,255,255,0.15);border-radius:10px;
+                  color:var(--text-white);font-size:13px;font-family:inherit;">
+</div>
                     <div class="row">
                         <div class="col-6">
                             <div class="input-container m-0">
@@ -770,6 +775,21 @@
         if(window.App && window.App.pos && window.App.pos.onCustomerChange)
             window.App.pos.onCustomerChange();
     };
+    window.filterItems = function(query) {
+    const select = document.getElementById('cbItem');
+    const options = select.querySelectorAll('option');
+    const q = query.trim().toLowerCase();
+    options.forEach(opt => {
+        if(!opt.value) return;
+        opt.style.display = !q || opt.text.toLowerCase().includes(q) ? '' : 'none';
+    });
+    // إن كان هناك نتيجة واحدة اختارها تلقائياً
+    const visible = [...options].filter(o => o.value && o.style.display !== 'none');
+    if(visible.length === 1) {
+        select.value = visible[0].value;
+        window.onPosItemChange();
+    }
+};
     window.onPosItemChange = function() {
         if(window.App && window.App.pos && window.App.pos.onItemChange)
             window.App.pos.onItemChange();

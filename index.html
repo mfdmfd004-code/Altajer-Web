@@ -671,7 +671,7 @@
         });
     };
 
-    // ===== تحقق الرقم الضريبي حي =====
+    // ===== تحقق الرقم الضريبي =====
     window.validateVatInput = function(input) {
         const val = input.value.trim();
         const hint = document.getElementById('vatHintMain');
@@ -697,7 +697,10 @@
         if(form) form.reset();
         document.getElementById('custType').value = 'B2C';
         window.setCustType('B2C');
-        document.getElementById('lblCustBtn').innerText = 'حفظ العميل';
+        const id = document.getElementById('custId');
+        if(id) id.disabled = false;
+        const lbl = document.getElementById('lblCustBtn');
+        if(lbl) lbl.innerText = 'حفظ العميل';
         const hint = document.getElementById('vatHintMain');
         if(hint) {
             hint.style.color = 'var(--text-muted)';
@@ -705,28 +708,41 @@
         }
     };
 
+    // ===== حذف العميل الحالي =====
+    window.deleteCurrentCustomer = function() {
+        const id = document.getElementById('custId')?.value.trim();
+        if(!id) return showToast('اختر عميلاً أولاً', false);
+        if(window.App && window.App.customer) window.App.customer.delete(id);
+    };
+
+    // ===== تفريغ نموذج الصنف =====
+    window.clearItemForm = function() {
+        const form = document.getElementById('itemForm');
+        if(form) form.reset();
+        showToast('تم تفريغ النموذج', true);
+    };
+
+    // ===== حذف الصنف الحالي =====
+    window.deleteCurrentItem = function() {
+        const code = document.getElementById('itemCode')?.value.trim();
+        if(!code) return showToast('اختر صنفاً أولاً', false);
+        if(window.App && window.App.item) window.App.item.delete(code);
+    };
+
     // ===== ربط أزرار النماذج =====
     window.handleCustomerSubmit = function(e) {
         e.preventDefault();
         const vat = document.getElementById('custVat').value.trim();
         const type = document.getElementById('custType').value;
-
-        // تحقق ZATCA
         if(vat !== '') {
-            if(vat.length !== 15 || isNaN(vat)) {
+            if(vat.length !== 15 || isNaN(vat))
                 return showToast('❌ الرقم الضريبي يجب أن يكون 15 خانة رقمية!', false);
-            }
-            if(!vat.startsWith('3') || !vat.endsWith('3')) {
+            if(!vat.startsWith('3') || !vat.endsWith('3'))
                 return showToast('❌ الرقم الضريبي يجب أن يبدأ وينتهي بـ 3!', false);
-            }
         }
-        if((type === 'B2B' || type === 'GOV') && vat === '') {
+        if((type === 'B2B' || type === 'GOV') && vat === '')
             return showToast('⚠️ الرقم الضريبي إلزامي لعملاء B2B والجهات الحكومية!', false);
-        }
-
-        if(window.App && window.App.customer) {
-            window.App.customer.addOrUpdate();
-        }
+        if(window.App && window.App.customer) window.App.customer.addOrUpdate();
     };
 
     window.handleItemSubmit = function(e) {
@@ -745,14 +761,12 @@
         if(window.App && window.App.pos) window.App.pos.placeOrder();
     };
     window.onPosCustomerChange = function() {
-        if(window.App && window.App.pos) window.App.pos.onCustomerChange
-            ? window.App.pos.onCustomerChange()
-            : null;
+        if(window.App && window.App.pos && window.App.pos.onCustomerChange)
+            window.App.pos.onCustomerChange();
     };
     window.onPosItemChange = function() {
-        if(window.App && window.App.pos) window.App.pos.onItemChange
-            ? window.App.pos.onItemChange()
-            : null;
+        if(window.App && window.App.pos && window.App.pos.onItemChange)
+            window.App.pos.onItemChange();
     };
 
     // ===== الترجمة =====
@@ -765,12 +779,7 @@
             "m-products":"المستودع","m-purchases":"المشتريات","m-returns":"المرتجعات",
             "m-profits":"الأرباح","m-vat":"الإقرار الضريبي","m-inventory":"الجرد الدوري",
             "m-expenses":"المصاريف","m-vouchers":"السندات","m-settings":"الإعدادات",
-            "m-employees":"الموظفين","m-support":"الدعم الفني",
-            "lbl-item-code":"باركود / كود الصنف","lbl-item-name":"اسم المنتج / الصنف",
-            "lbl-item-price":"سعر البيع (شامل الضريبة)","lbl-item-qty":"الكمية المتاحة",
-            "th-item-code":"الكود","th-item-name":"اسم الصنف",
-            "th-item-price":"السعر شامل الضريبة","th-item-qty":"الكمية",
-            "btn-add":"إضافة"
+            "m-employees":"الموظفين","m-support":"الدعم الفني"
         },
         en: {
             "app-title":"Altajer Pro","nav-dashboard":"Dashboard",
@@ -780,12 +789,7 @@
             "m-products":"Warehouse","m-purchases":"Purchases","m-returns":"Returns",
             "m-profits":"Profits","m-vat":"VAT Filing","m-inventory":"Inventory Count",
             "m-expenses":"Expenses","m-vouchers":"Vouchers","m-settings":"Settings",
-            "m-employees":"Employees","m-support":"Support",
-            "lbl-item-code":"Item Code / Barcode","lbl-item-name":"Item Name",
-            "lbl-item-price":"Price (Inc. VAT)","lbl-item-qty":"Available Qty",
-            "th-item-code":"Code","th-item-name":"Item Name",
-            "th-item-price":"Price (Inc VAT)","th-item-qty":"Qty",
-            "btn-add":"Add"
+            "m-employees":"Employees","m-support":"Support"
         }
     };
 
@@ -794,9 +798,8 @@
         document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            if(translations[lang] && translations[lang][key]) {
+            if(translations[lang] && translations[lang][key])
                 el.textContent = translations[lang][key];
-            }
         });
     };
 
@@ -819,6 +822,21 @@
             }
         });
     }
+
+    // ===== حماية الصفحة — التحقق من تسجيل الدخول =====
+    import('https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js')
+    .then(({ onAuthStateChanged, getAuth }) => {
+        const auth = getAuth();
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                // عرض اسم المستخدم في الشريط العلوي
+                const nameEl = document.getElementById('userDisplayName');
+                if(nameEl) nameEl.innerText = user.displayName || user.email;
+            }
+        });
+    });
 </script>
 
 <script src="wafeq-service.js"></script>

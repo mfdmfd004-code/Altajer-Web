@@ -11,6 +11,8 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
         body { background: linear-gradient(135deg, #0f172a, #1e3a5f); min-height: 100vh; padding: 20px 10px 40px; color: #fff; }
+
+        /* شاشة الخيارات */
         .options-screen { max-width: 480px; margin: 0 auto; }
         .options-header { text-align: center; margin-bottom: 25px; }
         .icon-circle { width: 70px; height: 70px; background: linear-gradient(135deg, #2b9348, #38b000); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; box-shadow: 0 0 30px rgba(43,147,72,0.4); font-size: 28px; color: white; }
@@ -18,7 +20,7 @@
         .options-header p { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; }
         .inv-summary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 14px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .inv-num { font-size: 13px; color: #00b4d8; font-weight: 700; }
-        .inv-total { font-size: 20px; font-weight: 900; color: #38b000; }
+        .inv-total-s { font-size: 20px; font-weight: 900; color: #38b000; }
         .inv-date-s { font-size: 11px; color: rgba(255,255,255,0.4); }
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .opt-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 18px 12px; cursor: pointer; transition: 0.3s; color: white; display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -32,83 +34,77 @@
         .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 30px; color: white; font-weight: 700; font-size: 13px; display: none; z-index: 9999; max-width: 90%; text-align: center; font-family: 'Cairo', sans-serif; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
         #invoicePrintArea { display: none; }
 
-        /* ===== فاتورة A4 ===== */
-        .invoice-a4 { width: 210mm; min-height: 297mm; background: white; color: #1a1a2e; padding: 10mm 14mm 12mm; font-family: 'Cairo', sans-serif; margin: 0 auto; }
+        /* فاتورة A4 */
+        .invoice-a4 { width: 210mm; min-height: 297mm; background: white; color: #1a1a2e; padding: 10mm 12mm 12mm; font-family: 'Cairo', sans-serif; margin: 0 auto; }
 
-        /* ترويسة مركزية صغيرة */
-        .inv-header-badge {
-            text-align: center; margin-bottom: 5mm;
-        }
-        .inv-type-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #0077b6, #023e8a);
-            color: white; font-size: 13px; font-weight: 900;
-            padding: 5px 30px; border-radius: 20px;
-            letter-spacing: 1px;
-        }
+        /* ترويسة مركزية */
+        .inv-badge-row { text-align: center; margin-bottom: 6mm; }
+        .inv-type-badge { display: inline-block; background: linear-gradient(135deg, #0077b6, #023e8a); color: white; font-size: 12px; font-weight: 900; padding: 4px 28px; border-radius: 20px; letter-spacing: 1px; }
 
         /* بيانات الطرفين */
-        .inv-parties { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4mm; padding-bottom: 4mm; border-bottom: 2px solid #e0e7ff; }
-        .party-box { width: 40%; }
-        .party-label { font-size: 9px; font-weight: 700; color: #0077b6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; padding-bottom: 3px; border-bottom: 2px solid #0077b6; display: inline-block; }
-        .party-label.green { color: #2b9348; border-color: #2b9348; }
-        .party-name { font-size: 14px; font-weight: 900; color: #1a1a2e; margin-bottom: 3px; }
-        .party-detail { font-size: 10px; color: #555; margin-top: 2px; display: flex; align-items: center; gap: 4px; }
-        .party-detail i { color: #0077b6; font-size: 9px; width: 12px; }
-        .logo-center { text-align: center; }
-        .logo-center img { width: 50px; opacity: 0.6; }
-        .logo-center small { display: block; font-size: 8px; color: #bbb; margin-top: 3px; }
+        .inv-parties { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5mm; padding-bottom: 4mm; border-bottom: 2px solid #dbeafe; }
+        .party-seller { width: 42%; }
+        .party-logo { text-align: center; width: 14%; padding-top: 4px; }
+        .party-logo img { width: 45px; opacity: 0.55; }
+        .party-logo small { display: block; font-size: 7px; color: #ccc; margin-top: 2px; }
+        .party-buyer { width: 42%; text-align: left; }
+        .p-label { font-size: 9px; font-weight: 700; letter-spacing: 1px; padding-bottom: 3px; margin-bottom: 5px; display: inline-block; }
+        .p-label-blue { color: #0077b6; border-bottom: 2px solid #0077b6; }
+        .p-label-green { color: #2b9348; border-bottom: 2px solid #2b9348; }
+        .p-name { font-size: 14px; font-weight: 900; color: #1a1a2e; margin-bottom: 3px; }
+        .p-line { font-size: 10px; color: #555; margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+        .p-line i { font-size: 9px; color: #0077b6; width: 11px; }
 
-        /* سطر معلومات الفاتورة */
-        .inv-info-bar { display: flex; justify-content: space-between; align-items: center; background: #f0f7ff; border: 1px solid #cce3f5; border-radius: 8px; padding: 7px 14px; margin-bottom: 4mm; font-size: 11px; }
-        .inv-info-item { text-align: center; }
-        .inv-info-label { font-size: 9px; color: #0077b6; font-weight: 700; display: block; }
-        .inv-info-value { font-weight: 900; color: #1a1a2e; }
-        .inv-info-item.total-item .inv-info-value { color: #2b9348; font-size: 14px; }
+        /* شريط معلومات */
+        .inv-infobar { display: flex; justify-content: space-between; align-items: center; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 6px 12px; margin-bottom: 4mm; }
+        .infobar-item { text-align: center; }
+        .infobar-lbl { font-size: 8px; color: #0077b6; font-weight: 700; display: block; }
+        .infobar-val { font-size: 11px; font-weight: 900; color: #1e3a5f; }
+        .infobar-item.green .infobar-val { color: #2b9348; font-size: 13px; }
 
         /* جدول الأصناف */
-        .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 4mm; font-size: 11px; }
-        .inv-table thead tr { background: linear-gradient(135deg, #0077b6, #023e8a); color: white; }
-        .inv-table th { padding: 7px 6px; text-align: center; font-weight: 700; font-size: 10px; }
-        .inv-table th.right { text-align: right; }
-        .inv-table td { padding: 6px 6px; text-align: center; border-bottom: 1px solid #f0f0f0; color: #333; font-size: 10px; }
-        .inv-table td.name-cell { text-align: right; font-weight: 600; }
-        .inv-table td.code-cell { font-size: 9px; color: #888; }
-        .inv-table tr:nth-child(even) td { background: #fafbff; }
-        .inv-table tr:last-child td { border-bottom: 2px solid #0077b6; }
-        .cur { font-size: 9px; color: #888; margin-right: 2px; }
+        .inv-tbl { width: 100%; border-collapse: collapse; margin-bottom: 4mm; }
+        .inv-tbl thead tr { background: #0077b6; color: white; }
+        .inv-tbl th { padding: 6px 5px; text-align: center; font-size: 9px; font-weight: 700; }
+        .inv-tbl th.r { text-align: right; }
+        .inv-tbl td { padding: 5px 5px; text-align: center; border-bottom: 1px solid #f0f0f0; font-size: 10px; color: #333; }
+        .inv-tbl td.name-td { text-align: right; font-weight: 600; }
+        .inv-tbl td.code-td { font-size: 9px; color: #888; }
+        .inv-tbl tr:nth-child(even) td { background: #f8faff; }
+        .inv-tbl tr:last-child td { border-bottom: 2px solid #0077b6; }
+        .cur { font-size: 8px; color: #999; }
 
-        /* القسم السفلي */
-        .inv-bottom { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4mm; gap: 10mm; }
-        .inv-notes-box { flex: 1; }
-        .inv-notes-title { font-size: 10px; font-weight: 700; color: #0077b6; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
-        .inv-notes-content { font-size: 9px; color: #555; border: 1px dashed #cce3f5; border-radius: 6px; padding: 7px; min-height: 45px; line-height: 1.7; }
-        .inv-totals-box { width: 200px; }
-        .tot-row { display: flex; justify-content: space-between; padding: 5px 9px; font-size: 10px; border-bottom: 1px solid #f0f0f0; }
-        .tot-row.highlight { background: #f0f7ff; font-weight: 700; }
-        .tot-row.discount { color: #d90429; }
-        .tot-row.total-final { background: linear-gradient(135deg, #0077b6, #023e8a); color: white; font-weight: 900; font-size: 13px; border-radius: 0 0 8px 8px; padding: 7px 9px; }
+        /* قسم أسفل */
+        .inv-bottom { display: flex; gap: 8mm; margin-bottom: 4mm; }
+        .inv-notes { flex: 1; }
+        .inv-notes-ttl { font-size: 9px; font-weight: 700; color: #0077b6; margin-bottom: 4px; display: flex; align-items: center; gap: 3px; }
+        .inv-notes-body { font-size: 9px; color: #555; border: 1px dashed #bfdbfe; border-radius: 6px; padding: 6px; min-height: 42px; line-height: 1.7; }
+        .inv-tots { width: 190px; }
+        .tot-r { display: flex; justify-content: space-between; padding: 4px 8px; font-size: 10px; border-bottom: 1px solid #f0f0f0; }
+        .tot-r.hl { background: #eff6ff; font-weight: 700; }
+        .tot-r.disc { color: #dc2626; }
+        .tot-r.fin { background: linear-gradient(135deg, #0077b6, #023e8a); color: white; font-weight: 900; font-size: 12px; padding: 6px 8px; border-radius: 0 0 8px 8px; }
 
         /* شروط الدفع */
-        .inv-terms-box { background: #fffbf0; border: 1px solid #ffd166; border-radius: 8px; padding: 7px 11px; margin-bottom: 4mm; }
-        .inv-terms-title { font-size: 9px; font-weight: 700; color: #b56a00; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
-        .inv-terms-content { font-size: 8px; color: #7a4f00; line-height: 1.7; }
+        .inv-terms { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 7px; padding: 6px 10px; margin-bottom: 4mm; }
+        .inv-terms-ttl { font-size: 9px; font-weight: 700; color: #92400e; margin-bottom: 3px; display: flex; align-items: center; gap: 3px; }
+        .inv-terms-body { font-size: 8px; color: #78350f; line-height: 1.7; }
 
         /* تذييل */
-        .inv-footer { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dashed #cce3f5; padding-top: 4mm; }
-        .inv-qr-box { text-align: center; }
-        .inv-qr-label { font-size: 8px; color: #0077b6; margin-top: 3px; display: flex; align-items: center; justify-content: center; gap: 3px; }
-        .inv-footer-mid { flex: 1; text-align: center; padding: 0 8px; font-size: 9px; color: #777; line-height: 1.7; }
-        .inv-stamp-box { width: 95px; height: 85px; border: 2px dashed #cce3f5; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #b0c8de; font-size: 9px; text-align: center; gap: 4px; }
-        .inv-stamp-box i { font-size: 20px; }
+        .inv-footer { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dashed #bfdbfe; padding-top: 4mm; }
+        .inv-qr { text-align: center; }
+        .inv-qr-lbl { font-size: 7px; color: #0077b6; margin-top: 2px; display: flex; align-items: center; justify-content: center; gap: 2px; }
+        .inv-footer-mid { flex: 1; text-align: center; padding: 0 6px; font-size: 8px; color: #888; line-height: 1.7; }
+        .inv-stamp { width: 88px; height: 80px; border: 2px dashed #bfdbfe; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #93c5fd; font-size: 8px; gap: 3px; }
+        .inv-stamp i { font-size: 18px; }
 
         /* حرارية */
-        .invoice-thermal80 { width: 80mm; background: white; color: #000; padding: 4mm 3mm; font-family: 'Cairo', sans-serif; font-size: 11px; margin: 0 auto; }
-        .invoice-thermal58 { width: 58mm; background: white; color: #000; padding: 3mm 2mm; font-family: 'Cairo', sans-serif; font-size: 9px; margin: 0 auto; }
-        .thermal-center { text-align: center; }
-        .thermal-divider { border: none; border-top: 1px dashed #000; margin: 3mm 0; }
-        .thermal-row { display: flex; justify-content: space-between; font-size: 10px; margin: 1mm 0; }
-        .thermal-total-row { display: flex; justify-content: space-between; font-size: 12px; font-weight: 900; margin: 1mm 0; }
+        .inv-thermal80 { width: 80mm; background: white; color: #000; padding: 4mm 3mm; font-size: 11px; margin: 0 auto; }
+        .inv-thermal58 { width: 58mm; background: white; color: #000; padding: 3mm 2mm; font-size: 9px; margin: 0 auto; }
+        .th-center { text-align: center; }
+        .th-div { border: none; border-top: 1px dashed #000; margin: 2mm 0; }
+        .th-row { display: flex; justify-content: space-between; font-size: 10px; margin: 1mm 0; }
+        .th-tot { display: flex; justify-content: space-between; font-size: 12px; font-weight: 900; margin: 1mm 0; }
 
         @media print {
             body { background: white !important; padding: 0 !important; }
@@ -121,6 +117,7 @@
 
 <div id="toast" class="toast"></div>
 
+<!-- شاشة الخيارات -->
 <div class="options-screen" id="optionsScreen">
     <div class="options-header">
         <div class="icon-circle"><i class="fas fa-check"></i></div>
@@ -134,13 +131,13 @@
         </div>
         <div>
             <div style="font-size:11px;color:rgba(255,255,255,0.4);text-align:left;">الإجمالي</div>
-            <div class="inv-total" id="summaryTotal">0.00</div>
+            <div class="inv-total-s" id="summaryTotal">0.00</div>
         </div>
     </div>
     <div class="options-grid">
         <div class="opt-btn" style="--clr:#0077b6;" onclick="printInvoice('thermal80')">
             <div class="opt-icon"><i class="fas fa-print"></i></div>
-            <div><div class="opt-title">حرارية 80mm</div><div class="opt-sub">طابعة POS عادية</div></div>
+            <div><div class="opt-title">حرارية 80mm</div><div class="opt-sub">طابعة POS</div></div>
         </div>
         <div class="opt-btn" style="--clr:#7209b7;" onclick="printInvoice('thermal58')">
             <div class="opt-icon"><i class="fas fa-receipt"></i></div>
@@ -168,15 +165,21 @@
 
 <script type="module" src="firebase-config.js"></script>
 <script>
-    const invoiceData = JSON.parse(sessionStorage.getItem('altajer_print_invoice') || localStorage.getItem('altajer_last_invoice') || 'null');
-    const settings    = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
+    const inv = JSON.parse(
+        sessionStorage.getItem('altajer_print_invoice') ||
+        localStorage.getItem('altajer_last_invoice') || 'null'
+    );
+    const S = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
 
-    const CURRENCY_LABELS = {
+    // خريطة العملات
+    const CUR_MAP = {
         SAR:'ر.س', AED:'د.إ', KWD:'د.ك', QAR:'ر.ق', BHD:'د.ب', OMR:'ر.ع',
-        EGP:'ج.م', MAD:'د.م', TND:'د.ت', DZD:'د.ج', USD:'$', GBP:'£',
-        EUR:'€', NGN:'₦', KES:'KSh', TRY:'₺', INR:'₹', OTHER:''
+        EGP:'ج.م', MAD:'د.م', TND:'د.ت', DZD:'د.ج', LYD:'د.ل', SDG:'ج.س',
+        USD:'$', GBP:'£', EUR:'€', NGN:'₦', KES:'KSh', TZS:'TSh',
+        GHS:'₵', TRY:'₺', INR:'₹', PKR:'₨', OTHER:''
     };
-    const CUR = CURRENCY_LABELS[settings.currency] || settings.currency || 'ر.س';
+    const C = CUR_MAP[S.currency] || S.currency || 'ر.س';
+    const TAX = S.taxEnabled ? (S.taxRate || 15) : 0;
 
     function showToast(msg, ok=true) {
         const t = document.getElementById('toast');
@@ -186,325 +189,309 @@
         setTimeout(() => t.style.display='none', 4000);
     }
 
+    // ملء ملخص الشاشة
     function fillSummary() {
-        if(!invoiceData) return;
-        document.getElementById('summaryNum').innerText  = invoiceData.invoiceNumber || '—';
-        document.getElementById('summaryDate').innerText = invoiceData.date || '—';
+        if(!inv) return;
+        document.getElementById('summaryNum').innerText  = inv.invoiceNumber || '—';
+        document.getElementById('summaryDate').innerText = inv.date || '—';
         document.getElementById('summaryTotal').innerText =
-            (parseFloat(invoiceData.total)||0).toFixed(2) + ' ' + CUR;
+            parseFloat(inv.total||0).toFixed(2) + ' ' + C;
     }
     fillSummary();
 
-    function fmt(num) {
-        return `${parseFloat(num||0).toFixed(2)} <span class="cur">${CUR}</span>`;
+    // وقت منسق
+    function fmtTime(ts) {
+        try { return new Date(ts||Date.now()).toLocaleTimeString('en-GB'); }
+        catch(e) { return ''; }
     }
 
-    function getTime(ts) {
+    // بناء QR
+    function buildQR(id, data) {
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.innerHTML = '';
         try {
-            const d = new Date(ts || Date.now());
-            return d.toLocaleTimeString('en-GB');
-        } catch(e) { return ''; }
-    }
-
-    function buildQR(containerId, inv) {
-        const container = document.getElementById(containerId);
-        if(!container) return;
-        container.innerHTML = '';
-        try {
-            function toTLV(tag, value) {
-                const bytes = new TextEncoder().encode(value);
-                return String.fromCharCode(tag) +
-                       String.fromCharCode(bytes.length) +
-                       String.fromCharCode(...bytes);
+            function tlv(tag, val) {
+                const b = new TextEncoder().encode(val);
+                return String.fromCharCode(tag, b.length, ...b);
             }
-            const qrText = btoa(
-                toTLV(1, inv.sellerName || settings.companyName || 'تاجر برو') +
-                toTLV(2, inv.vatNumber  || settings.vatNumber   || '') +
-                toTLV(3, inv.timestamp  || new Date().toISOString()) +
-                toTLV(4, Number(inv.total||0).toFixed(2)) +
-                toTLV(5, Number(inv.tax||0).toFixed(2))
+            const txt = btoa(
+                tlv(1, data.sellerName || S.companyName || 'تاجر برو') +
+                tlv(2, data.vatNumber  || S.vatNumber   || '') +
+                tlv(3, data.timestamp  || new Date().toISOString()) +
+                tlv(4, Number(data.total||0).toFixed(2)) +
+                tlv(5, Number(data.tax||0).toFixed(2))
             );
-            new QRCode(container, {
-                text: qrText, width: 85, height: 85,
-                colorDark: '#000000', colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.M
-            });
-        } catch(e) { console.error('QR:', e); }
+            new QRCode(el, { text:txt, width:82, height:82,
+                colorDark:'#000', colorLight:'#fff',
+                correctLevel: QRCode.CorrectLevel.M });
+        } catch(e) { console.error(e); }
     }
 
-    function buildA4(inv, s) {
-        const taxRate = s.taxEnabled ? (s.taxRate || 15) : 0;
-        const addr    = s.address || {};
-        const invType = taxRate > 0 ? 'فاتورة ضريبية' : 'فاتورة ضريبية مبسطة';
-        const thTax   = taxRate > 0 ? `<th>الضريبة <span style="font-weight:400;font-size:9px;">${CUR}</span></th>` : '';
+    // ===== بناء فاتورة A4 =====
+    function buildA4() {
+        const addr = S.address || {};
+        const invType = TAX > 0 ? 'فاتورة ضريبية' : 'فاتورة ضريبية مبسطة';
+        const thTax = TAX > 0
+            ? `<th>الضريبة<br><span style="font-weight:400;font-size:8px;">${C}</span></th>` : '';
 
-        const itemsHTML = (inv.items||[]).map((item, i) => {
-            const priceExcl = taxRate > 0
-                ? parseFloat(item.price / (1 + taxRate/100)).toFixed(2)
+        const rows = (inv.items||[]).map((item, i) => {
+            const exclPrice = TAX > 0
+                ? (item.price / (1 + TAX/100)).toFixed(2)
                 : parseFloat(item.price).toFixed(2);
-            const priceIncl = parseFloat(item.price).toFixed(2);
-            const taxAmt    = taxRate > 0
-                ? (parseFloat(item.price) - parseFloat(priceExcl)).toFixed(2)
-                : null;
-            const total     = parseFloat(item.total||0).toFixed(2);
+            const taxAmt = TAX > 0
+                ? (item.price - parseFloat(exclPrice)).toFixed(2) : null;
+            const inclPrice = parseFloat(item.price).toFixed(2);
+            const total    = parseFloat(item.total||0).toFixed(2);
             return `<tr>
                 <td>${i+1}</td>
-                <td class="code-cell">${item.code||'—'}</td>
-                <td class="name-cell">${item.name}</td>
+                <td class="code-td">${item.code||'—'}</td>
+                <td class="name-td">${item.name}</td>
                 <td>${item.qty}</td>
-                <td>${priceExcl} <span class="cur">${CUR}</span></td>
-                ${taxRate>0?`<td>${taxAmt} <span class="cur">${CUR}</span></td>`:''}
-                <td style="font-weight:700;">${priceIncl} <span class="cur">${CUR}</span></td>
-                <td style="font-weight:900;color:#0077b6;">${total} <span class="cur">${CUR}</span></td>
+                <td>${exclPrice} <span class="cur">${C}</span></td>
+                ${TAX>0?`<td>${taxAmt} <span class="cur">${C}</span></td>`:''}
+                <td style="font-weight:700;">${inclPrice} <span class="cur">${C}</span></td>
+                <td style="font-weight:900;color:#0077b6;">${total} <span class="cur">${C}</span></td>
             </tr>`;
         }).join('');
 
-        const defaultTerms = `• الدفع عند الاستلام ما لم يُتفق على غير ذلك كتابياً.
-• لا يُقبل الإرجاع أو الاستبدال بعد 7 أيام من تاريخ الفاتورة.
-• الأسعار شاملة ضريبة القيمة المضافة ما لم يُذكر خلاف ذلك.
-• في حالة النزاع، يُرجع إلى الجهة القضائية المختصة.`;
+        const defTerms = `• الدفع عند الاستلام ما لم يُتفق على خلاف ذلك كتابياً.
+• لا يُقبل الإرجاع بعد 7 أيام من تاريخ الفاتورة.
+• الأسعار شاملة الضريبة ما لم يُذكر خلاف ذلك.
+• عند النزاع يُرجع للجهة القضائية المختصة.`;
 
-        return `
-        <div class="invoice-a4" id="a4Content">
+        return `<div class="invoice-a4" id="a4El">
 
-            <!-- ترويسة مركزية صغيرة -->
-            <div class="inv-header-badge">
+            <div class="inv-badge-row">
                 <span class="inv-type-badge">${invType}</span>
             </div>
 
-            <!-- بيانات الطرفين -->
             <div class="inv-parties">
-                <div class="party-box">
-                    <div class="party-label">المورد / البائع</div>
-                    <div class="party-name">${s.companyName||'تاجر برو'}</div>
-                    ${s.vatNumber?`<div class="party-detail"><i class="fas fa-hashtag"></i>الرقم الضريبي: ${s.vatNumber}</div>`:''}
-                    ${s.cr?`<div class="party-detail"><i class="fas fa-id-card"></i>س.ت: ${s.cr}</div>`:''}
-                    ${s.phone?`<div class="party-detail"><i class="fas fa-phone"></i>${s.phone}</div>`:''}
-                    ${s.email?`<div class="party-detail"><i class="fas fa-envelope"></i>${s.email}</div>`:''}
-                    ${s.website?`<div class="party-detail"><i class="fas fa-globe"></i>${s.website}</div>`:''}
-                    ${addr.city?`<div class="party-detail"><i class="fas fa-map-marker-alt"></i>${addr.city}${addr.district?' — '+addr.district:''}${addr.street?' — '+addr.street:''}</div>`:''}
-                    ${addr.building?`<div class="party-detail"><i class="fas fa-building"></i>م.${addr.building} | ب.${addr.postal||''} | إ.${addr.addNo||''}</div>`:''}
+                <div class="party-seller">
+                    <span class="p-label p-label-blue">المورد / البائع</span>
+                    <div class="p-name">${S.companyName||'تاجر برو'}</div>
+                    ${S.vatNumber?`<div class="p-line"><i class="fas fa-hashtag"></i>ضريبي: ${S.vatNumber}</div>`:''}
+                    ${S.cr?`<div class="p-line"><i class="fas fa-id-card"></i>س.ت: ${S.cr}</div>`:''}
+                    ${S.phone?`<div class="p-line"><i class="fas fa-phone"></i>${S.phone}</div>`:''}
+                    ${S.email?`<div class="p-line"><i class="fas fa-envelope"></i>${S.email}</div>`:''}
+                    ${addr.city?`<div class="p-line"><i class="fas fa-map-marker-alt"></i>${addr.city}${addr.district?' — '+addr.district:''}${addr.street?' — '+addr.street:''}</div>`:''}
                 </div>
-
-                <div class="logo-center">
+                <div class="party-logo">
                     <img src="https://cdn-icons-png.flaticon.com/512/3222/3222675.png" alt="logo">
-                    <small>تاجر برو المحاسبي</small>
+                    <small>Altajer Pro</small>
                 </div>
-
-                <div class="party-box" style="text-align:left;">
-                    <div class="party-label green">العميل / المشتري</div>
-                    <div class="party-name">${inv.customer||'نقدي / عميل عام'}</div>
-                    ${inv.customerVat&&inv.customerVat!=='غير ضريبي'?`<div class="party-detail"><i class="fas fa-hashtag"></i>الرقم الضريبي: ${inv.customerVat}</div>`:''}
-                    <div class="party-detail"><i class="fas fa-calendar"></i>التاريخ: ${inv.date}</div>
-                    <div class="party-detail"><i class="fas fa-clock"></i>${getTime(inv.timestamp)}</div>
-                </div>
-            </div>
-
-            <!-- سطر معلومات الفاتورة -->
-            <div class="inv-info-bar">
-                <div class="inv-info-item">
-                    <span class="inv-info-label">رقم الفاتورة</span>
-                    <span class="inv-info-value" style="font-size:10px;">${inv.invoiceNumber}</span>
-                </div>
-                <div class="inv-info-item">
-                    <span class="inv-info-label">التاريخ</span>
-                    <span class="inv-info-value" style="font-size:11px;">${inv.date}</span>
-                </div>
-                <div class="inv-info-item">
-                    <span class="inv-info-label">العملة</span>
-                    <span class="inv-info-value">${CUR}</span>
-                </div>
-                ${taxRate>0?`<div class="inv-info-item"><span class="inv-info-label">الضريبة</span><span class="inv-info-value">${taxRate}%</span></div>`:''}
-                <div class="inv-info-item total-item">
-                    <span class="inv-info-label" style="color:#2b9348;">الإجمالي</span>
-                    <span class="inv-info-value">${parseFloat(inv.total||0).toFixed(2)} ${CUR}</span>
+                <div class="party-buyer">
+                    <span class="p-label p-label-green">العميل / المشتري</span>
+                    <div class="p-name">${inv.customer||'نقدي'}</div>
+                    ${inv.customerVat&&inv.customerVat!=='غير ضريبي'?
+                        `<div class="p-line"><i class="fas fa-hashtag"></i>ضريبي: ${inv.customerVat}</div>`:''}
+                    <div class="p-line"><i class="fas fa-calendar"></i>${inv.date}</div>
+                    <div class="p-line"><i class="fas fa-clock"></i>${fmtTime(inv.timestamp)}</div>
                 </div>
             </div>
 
-            <!-- جدول الأصناف -->
-            <table class="inv-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>الكود</th>
-                        <th class="right">الصنف / الخدمة</th>
-                        <th>الكمية</th>
-                        <th>سعر الوحدة <span style="font-weight:400;font-size:9px;">${CUR}</span></th>
-                        ${thTax}
-                        <th>شامل الضريبة <span style="font-weight:400;font-size:9px;">${CUR}</span></th>
-                        <th>الإجمالي <span style="font-weight:400;font-size:9px;">${CUR}</span></th>
-                    </tr>
-                </thead>
-                <tbody>${itemsHTML}</tbody>
+            <div class="inv-infobar">
+                <div class="infobar-item">
+                    <span class="infobar-lbl">رقم الفاتورة</span>
+                    <span class="infobar-val" style="font-size:9px;">${inv.invoiceNumber}</span>
+                </div>
+                <div class="infobar-item">
+                    <span class="infobar-lbl">التاريخ</span>
+                    <span class="infobar-val">${inv.date}</span>
+                </div>
+                <div class="infobar-item">
+                    <span class="infobar-lbl">العملة</span>
+                    <span class="infobar-val">${C}</span>
+                </div>
+                ${TAX>0?`<div class="infobar-item"><span class="infobar-lbl">الضريبة</span><span class="infobar-val">${TAX}%</span></div>`:''}
+                <div class="infobar-item green">
+                    <span class="infobar-lbl">الإجمالي</span>
+                    <span class="infobar-val">${parseFloat(inv.total||0).toFixed(2)} ${C}</span>
+                </div>
+            </div>
+
+            <table class="inv-tbl">
+                <thead><tr>
+                    <th>#</th>
+                    <th>الكود</th>
+                    <th class="r">الصنف / الخدمة</th>
+                    <th>الكمية</th>
+                    <th>سعر الوحدة<br><span style="font-weight:400;font-size:8px;">${C}</span></th>
+                    ${thTax}
+                    <th>شامل الضريبة<br><span style="font-weight:400;font-size:8px;">${C}</span></th>
+                    <th>الإجمالي<br><span style="font-weight:400;font-size:8px;">${C}</span></th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
             </table>
 
-            <!-- ملاحظات + إجماليات -->
             <div class="inv-bottom">
-                <div class="inv-notes-box">
-                    <div class="inv-notes-title">
-                        <i class="fas fa-sticky-note"></i> ملاحظات
-                    </div>
-                    <div class="inv-notes-content">
-                        ${s.invoiceFooter||'شكراً لتعاملكم معنا — نسعد بخدمتكم دائماً'}
-                    </div>
+                <div class="inv-notes">
+                    <div class="inv-notes-ttl"><i class="fas fa-sticky-note"></i> ملاحظات</div>
+                    <div class="inv-notes-body">${S.invoiceFooter||'شكراً لتعاملكم معنا'}</div>
                 </div>
-                <div class="inv-totals-box">
-                    <div style="border:1px solid #e0e7ff;border-radius:8px;overflow:hidden;">
-                        <div class="tot-row">
+                <div class="inv-tots">
+                    <div style="border:1px solid #dbeafe;border-radius:8px;overflow:hidden;">
+                        <div class="tot-r">
                             <span>قبل الضريبة</span>
-                            <span>${parseFloat(inv.subtotal||0).toFixed(2)} ${CUR}</span>
+                            <span>${parseFloat(inv.subtotal||0).toFixed(2)} ${C}</span>
                         </div>
-                        ${taxRate>0?`<div class="tot-row highlight"><span>ضريبة ${taxRate}%</span><span>${parseFloat(inv.tax||0).toFixed(2)} ${CUR}</span></div>`:''}
-                        ${parseFloat(inv.discount||0)>0?`<div class="tot-row discount"><span>الخصم</span><span>- ${parseFloat(inv.discount).toFixed(2)} ${CUR}</span></div>`:''}
-                        <div class="tot-row total-final">
+                        ${TAX>0?`<div class="tot-r hl"><span>ضريبة ${TAX}%</span><span>${parseFloat(inv.tax||0).toFixed(2)} ${C}</span></div>`:''}
+                        ${parseFloat(inv.discount||0)>0?`<div class="tot-r disc"><span>الخصم</span><span>- ${parseFloat(inv.discount).toFixed(2)} ${C}</span></div>`:''}
+                        <div class="tot-r fin">
                             <span>الإجمالي</span>
-                            <span>${parseFloat(inv.total||0).toFixed(2)} ${CUR}</span>
+                            <span>${parseFloat(inv.total||0).toFixed(2)} ${C}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- شروط الدفع -->
-            <div class="inv-terms-box">
-                <div class="inv-terms-title">
-                    <i class="fas fa-file-contract"></i> شروط الدفع وسياسة التوريد
-                </div>
-                <div class="inv-terms-content">${s.paymentTerms||defaultTerms}</div>
+            <div class="inv-terms">
+                <div class="inv-terms-ttl"><i class="fas fa-file-contract"></i> شروط الدفع وسياسة التوريد</div>
+                <div class="inv-terms-body">${S.paymentTerms||defTerms}</div>
             </div>
 
-            <!-- التذييل -->
             <div class="inv-footer">
-                <div class="inv-qr-box">
+                <div class="inv-qr">
                     <div id="qrA4"></div>
-                    <div class="inv-qr-label">
-                        <i class="fas fa-shield-alt"></i> ZATCA QR
-                    </div>
+                    <div class="inv-qr-lbl"><i class="fas fa-shield-alt"></i> ZATCA QR</div>
                 </div>
                 <div class="inv-footer-mid">
-                    <div style="font-size:11px;font-weight:700;color:#333;margin-bottom:3px;">${s.companyName||'تاجر برو'}</div>
-                    ${s.phone?`<div>${s.phone}</div>`:''}
-                    ${s.email?`<div>${s.email}</div>`:''}
-                    ${s.website?`<div>${s.website}</div>`:''}
-                    <div style="font-size:8px;color:#bbb;margin-top:4px;">Powered by Altajer Pro</div>
+                    <div style="font-size:10px;font-weight:700;color:#333;margin-bottom:3px;">${S.companyName||'تاجر برو'}</div>
+                    ${S.phone?`<div>${S.phone}</div>`:''}
+                    ${S.email?`<div>${S.email}</div>`:''}
+                    ${S.website?`<div>${S.website}</div>`:''}
+                    <div style="font-size:7px;color:#bbb;margin-top:3px;">Powered by Altajer Pro</div>
                 </div>
-                <div class="inv-stamp-box">
+                <div class="inv-stamp">
                     <i class="fas fa-stamp"></i>
                     <span>ختم وتوقيع</span>
                     <span>المؤسسة</span>
                 </div>
             </div>
-
         </div>`;
     }
 
-    function buildThermal(inv, s, width) {
-        const taxRate = s.taxEnabled ? (s.taxRate||15) : 0;
-        const cls     = width===80 ? 'invoice-thermal80' : 'invoice-thermal58';
-        const itemsHTML = (inv.items||[]).map(item => {
-            const priceExcl = taxRate>0
-                ? parseFloat(item.price/(1+taxRate/100)).toFixed(2)
+    // ===== بناء فاتورة حرارية =====
+    function buildThermal(width) {
+        const cls = width===80 ? 'inv-thermal80' : 'inv-thermal58';
+        const rows = (inv.items||[]).map(item => {
+            const ex = TAX>0
+                ? parseFloat(item.price/(1+TAX/100)).toFixed(2)
                 : parseFloat(item.price).toFixed(2);
-            return `
-            <div class="thermal-row">
-                <span style="max-width:55%;overflow:hidden;">${item.name}</span>
-                <span>${parseFloat(item.total||0).toFixed(2)} ${CUR}</span>
+            return `<div class="th-row">
+                <span style="max-width:55%;overflow:hidden;text-overflow:ellipsis;">${item.name}</span>
+                <span>${parseFloat(item.total||0).toFixed(2)} ${C}</span>
             </div>
-            <div style="font-size:9px;color:#555;padding-right:5px;margin-bottom:1mm;">
-                ${item.qty} × ${priceExcl} ${CUR}${taxRate>0?' | ض: '+parseFloat(item.price-priceExcl).toFixed(2)+' '+CUR:''}
+            <div style="font-size:9px;color:#666;padding-right:5px;margin-bottom:1mm;">
+                ${item.qty} × ${ex} ${C}${TAX>0?' | ض: '+parseFloat(item.price-ex).toFixed(2)+' '+C:''}
             </div>`;
         }).join('');
 
-        return `
-        <div class="${cls}" id="thermalContent">
-            <div class="thermal-center">
-                <div style="font-size:15px;font-weight:900;">${s.companyName||'تاجر برو'}</div>
-                ${s.vatNumber?`<div style="font-size:8px;">الرقم الضريبي: ${s.vatNumber}</div>`:''}
-                ${s.phone?`<div style="font-size:9px;">${s.phone}</div>`:''}
-                ${s.address?.city?`<div style="font-size:9px;">${s.address.city}</div>`:''}
-                <div style="font-size:10px;font-weight:700;margin-top:2mm;border:1px solid #000;display:inline-block;padding:1px 10px;border-radius:10px;">
-                    ${taxRate>0?'فاتورة ضريبية':'فاتورة مبسطة'}
+        return `<div class="${cls}" id="thermalEl">
+            <div class="th-center">
+                <div style="font-size:14px;font-weight:900;">${S.companyName||'تاجر برو'}</div>
+                ${S.vatNumber?`<div style="font-size:8px;">ضريبي: ${S.vatNumber}</div>`:''}
+                ${S.phone?`<div style="font-size:9px;">${S.phone}</div>`:''}
+                ${(S.address||{}).city?`<div style="font-size:9px;">${S.address.city}</div>`:''}
+                <div style="font-size:9px;font-weight:700;border:1px solid #000;display:inline-block;padding:1px 8px;border-radius:8px;margin-top:2mm;">
+                    ${TAX>0?'فاتورة ضريبية':'فاتورة مبسطة'}
                 </div>
             </div>
-            <hr class="thermal-divider">
-            <div class="thermal-row"><span>رقم الفاتورة:</span><span style="font-size:9px;">${inv.invoiceNumber}</span></div>
-            <div class="thermal-row"><span>التاريخ:</span><span>${inv.date}</span></div>
-            <div class="thermal-row"><span>العميل:</span><span>${inv.customer||'نقدي'}</span></div>
-            ${inv.customerVat&&inv.customerVat!=='غير ضريبي'?`<div class="thermal-row"><span>الرقم الضريبي:</span><span style="font-size:8px;">${inv.customerVat}</span></div>`:''}
-            <hr class="thermal-divider">
-            <div style="font-size:9px;font-weight:700;margin-bottom:1mm;">الأصناف:</div>
-            ${itemsHTML}
-            <hr class="thermal-divider">
-            <div class="thermal-row"><span>قبل الضريبة:</span><span>${parseFloat(inv.subtotal||0).toFixed(2)} ${CUR}</span></div>
-            ${taxRate>0?`<div class="thermal-row"><span>ضريبة ${taxRate}%:</span><span>${parseFloat(inv.tax||0).toFixed(2)} ${CUR}</span></div>`:''}
-            ${parseFloat(inv.discount||0)>0?`<div class="thermal-row"><span>خصم:</span><span>- ${parseFloat(inv.discount).toFixed(2)} ${CUR}</span></div>`:''}
-            <hr class="thermal-divider">
-            <div class="thermal-total-row">
+            <hr class="th-div">
+            <div class="th-row"><span>رقم الفاتورة:</span><span style="font-size:9px;">${inv.invoiceNumber}</span></div>
+            <div class="th-row"><span>التاريخ:</span><span>${inv.date}</span></div>
+            <div class="th-row"><span>العميل:</span><span>${inv.customer||'نقدي'}</span></div>
+            ${inv.customerVat&&inv.customerVat!=='غير ضريبي'?`<div class="th-row"><span>ضريبي العميل:</span><span style="font-size:8px;">${inv.customerVat}</span></div>`:''}
+            <hr class="th-div">
+            ${rows}
+            <hr class="th-div">
+            <div class="th-row"><span>قبل الضريبة:</span><span>${parseFloat(inv.subtotal||0).toFixed(2)} ${C}</span></div>
+            ${TAX>0?`<div class="th-row"><span>ضريبة ${TAX}%:</span><span>${parseFloat(inv.tax||0).toFixed(2)} ${C}</span></div>`:''}
+            ${parseFloat(inv.discount||0)>0?`<div class="th-row"><span>خصم:</span><span>- ${parseFloat(inv.discount).toFixed(2)} ${C}</span></div>`:''}
+            <hr class="th-div">
+            <div class="th-tot">
                 <span>الإجمالي:</span>
-                <span>${parseFloat(inv.total||0).toFixed(2)} ${CUR}</span>
+                <span>${parseFloat(inv.total||0).toFixed(2)} ${C}</span>
             </div>
-            <hr class="thermal-divider">
-            <div class="thermal-center" style="margin-top:3mm;">
+            <hr class="th-div">
+            <div class="th-center" style="margin-top:2mm;">
                 <div id="qrThermal"></div>
-                <div style="font-size:8px;margin-top:2mm;">${s.invoiceFooter||'شكراً لتعاملكم معنا'}</div>
+                <div style="font-size:8px;margin-top:2mm;">${S.invoiceFooter||'شكراً لتعاملكم معنا'}</div>
                 <div style="font-size:7px;color:#777;margin-top:1mm;">Altajer Pro</div>
             </div>
         </div>`;
     }
 
+    // ===== طباعة =====
     function printInvoice(mode) {
-        if(!invoiceData) return showToast('لا توجد بيانات فاتورة', false);
+        if(!inv) return showToast('لا توجد بيانات فاتورة', false);
         const area = document.getElementById('invoicePrintArea');
-        if(mode==='a4')             area.innerHTML = buildA4(invoiceData, settings);
-        else if(mode==='thermal80') area.innerHTML = buildThermal(invoiceData, settings, 80);
-        else if(mode==='thermal58') area.innerHTML = buildThermal(invoiceData, settings, 58);
+        if(mode==='a4')             area.innerHTML = buildA4();
+        else if(mode==='thermal80') area.innerHTML = buildThermal(80);
+        else if(mode==='thermal58') area.innerHTML = buildThermal(58);
         setTimeout(() => {
-            buildQR(mode==='a4'?'qrA4':'qrThermal', invoiceData);
-            setTimeout(() => window.print(), 600);
+            buildQR(mode==='a4'?'qrA4':'qrThermal', inv);
+            setTimeout(() => window.print(), 700);
         }, 300);
     }
 
+    // ===== PDF =====
     async function exportPDF() {
-        if(!invoiceData) return showToast('لا توجد بيانات فاتورة', false);
+        if(!inv) return showToast('لا توجد بيانات فاتورة', false);
         showToast('جاري إنشاء PDF...', true);
         const area = document.getElementById('invoicePrintArea');
-        area.innerHTML = buildA4(invoiceData, settings);
+        area.innerHTML = buildA4();
         area.style.display = 'block';
         setTimeout(() => {
-            buildQR('qrA4', invoiceData);
+            buildQR('qrA4', inv);
             setTimeout(async () => {
                 try {
                     await html2pdf().set({
-                        margin: [5,5,5,5],
-                        filename: `فاتورة-${invoiceData.invoiceNumber}.pdf`,
-                        image: { type:'jpeg', quality:0.98 },
-                        html2canvas: { scale:2, useCORS:true, logging:false },
+                        margin: [4,4,4,4],
+                        filename: `فاتورة-${inv.invoiceNumber}.pdf`,
+                        image: { type:'jpeg', quality:0.97 },
+                        html2canvas: {
+                            scale: 2,
+                            useCORS: true,
+                            logging: false,
+                            letterRendering: true,
+                            allowTaint: false
+                        },
                         jsPDF: { unit:'mm', format:'a4', orientation:'portrait' }
-                    }).from(document.getElementById('a4Content')).save();
+                    }).from(document.getElementById('a4El')).save();
                     showToast('✅ تم حفظ PDF في جهازك', true);
-                } catch(e) { showToast('❌ فشل إنشاء PDF', false); }
+                } catch(e) {
+                    showToast('❌ فشل إنشاء PDF', false);
+                    console.error(e);
+                }
                 area.style.display = 'none';
-            }, 600);
+            }, 700);
         }, 300);
     }
 
+    // ===== مشاركة =====
     async function shareInvoice() {
-        if(!invoiceData) return showToast('لا توجد بيانات فاتورة', false);
-        const shareText = `*فاتورة من: ${settings.companyName||'تاجر برو'}*
-رقم: ${invoiceData.invoiceNumber}
-التاريخ: ${invoiceData.date}
-العميل: ${invoiceData.customer||'نقدي'}
+        if(!inv) return showToast('لا توجد بيانات فاتورة', false);
+        const lines = (inv.items||[]).map(i =>
+            `• ${i.name} × ${i.qty} = ${parseFloat(i.total||0).toFixed(2)} ${C}`
+        ).join('\n');
+        const txt = `*فاتورة من: ${S.companyName||'تاجر برو'}*
+رقم: ${inv.invoiceNumber}
+التاريخ: ${inv.date}
+العميل: ${inv.customer||'نقدي'}
 ─────────────────
-${(invoiceData.items||[]).map(i=>`• ${i.name} × ${i.qty} = ${parseFloat(i.total||0).toFixed(2)} ${CUR}`).join('\n')}
+${lines}
 ─────────────────
-المجموع: ${parseFloat(invoiceData.subtotal||0).toFixed(2)} ${CUR}
-${settings.taxEnabled?`الضريبة: ${parseFloat(invoiceData.tax||0).toFixed(2)} ${CUR}`:''}
-*الإجمالي: ${parseFloat(invoiceData.total||0).toFixed(2)} ${CUR}*${settings.phone?`\nللتواصل: ${settings.phone}`:''}`;
+قبل الضريبة: ${parseFloat(inv.subtotal||0).toFixed(2)} ${C}
+${TAX>0?`الضريبة ${TAX}%: ${parseFloat(inv.tax||0).toFixed(2)} ${C}`:''}
+*الإجمالي: ${parseFloat(inv.total||0).toFixed(2)} ${C}*
+${S.phone?`\nللتواصل: ${S.phone}`:''}`.trim();
 
         if(navigator.share) {
-            try { await navigator.share({ title:`فاتورة ${invoiceData.invoiceNumber}`, text: shareText }); }
+            try { await navigator.share({ title:`فاتورة ${inv.invoiceNumber}`, text:txt }); }
             catch(e) { if(e.name!=='AbortError') showToast('تعذرت المشاركة', false); }
         } else {
-            navigator.clipboard?.writeText(shareText).then(() =>
+            navigator.clipboard?.writeText(txt).then(() =>
                 showToast('✅ تم نسخ الفاتورة — الصقها في أي تطبيق', true));
         }
     }

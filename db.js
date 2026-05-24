@@ -304,6 +304,7 @@ const MainApp = {
         },
 
         placeOrder: async function() {
+            const settings = JSON.parse(localStorage.getItem('altajer_settings')) || {};
             if (cart.length === 0) {
                 if(typeof showToast==='function') showToast('السلة فارغة!', false);
                 return;
@@ -334,8 +335,15 @@ const MainApp = {
                     tax: parseFloat(vatAmount.toFixed(2)),
                     subtotal: parseFloat(totalExclTax.toFixed(2)),
                     timestamp: new Date().toISOString(),
-                    sellerName: "متجر التاجر برو",
-                    vatNumber: "300000000000003"
+                    sellerName: settings.companyName || "متجر التاجر برو",
+sellerPhone: settings.phone || "",
+sellerVat: settings.vatNumber || "",
+sellerCountry: settings.country || "",
+sellerCurrency: settings.currency || "SAR",
+sellerTaxRate: settings.taxEnabled ? (settings.taxRate || 15) : 15,
+sellerAddress: settings.address || {},
+vatNumber: settings.vatNumber || "300000000000003",
+invoiceFooter: settings.invoiceFooter || ""
                 };
 
                 await setDoc(doc(db, "orders", orderId), invoiceData);

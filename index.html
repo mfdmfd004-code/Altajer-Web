@@ -528,14 +528,9 @@
             <div class="col-md-4">
                 <div class="p-3 rounded h-100" style="background:var(--card-bg);">
                     <h6 class="mb-3 border-bottom pb-2 text-info">الأصناف</h6>
-                    <div style="position:relative;margin-bottom:8px;">
-    <input type="text" id="itemSearch"
-           placeholder="🔍 ابحث عن صنف بالاسم..."
-           oninput="filterItems(this.value)"
-           style="width:100%;padding:10px 12px;background:rgba(255,255,255,0.07);
-                  border:1px solid rgba(255,255,255,0.15);border-radius:10px;
-                  color:var(--text-white);font-size:13px;font-family:inherit;">
-</div>
+                    <select id="cbItem" class="form-select bg-transparent text-white mb-3" onchange="onPosItemChange()">
+    <option value="" selected>اختر الصنف</option>
+</select>
                     <div class="row">
                         <div class="col-6">
                             <div class="input-container m-0">

@@ -455,13 +455,17 @@ try {
                         image: { type:'jpeg', quality:0.97 },
                         html2canvas: {
     scale: 2,
-    useCORS: true,
-    logging: false,
-    letterRendering: true,
-    allowTaint: false,
-    onclone: function(doc) {
-        return new Promise(resolve => setTimeout(resolve, 800));
-    }
+                    useCORS: true,
+                    logging: false,
+                    letterRendering: true,
+                    allowTaint: false,
+                    onclone: function(clonedDoc) {
+                        const link = clonedDoc.createElement('link');
+                        link.rel = 'stylesheet';
+                        link.href = 'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap';
+                        clonedDoc.head.appendChild(link);
+                        return new Promise(resolve => setTimeout(resolve, 1500));
+                    }
 },
                         jsPDF: { unit:'mm', format:'a4', orientation:'portrait' }
                     }).from(document.getElementById('a4El')).save();

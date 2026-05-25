@@ -165,10 +165,13 @@
 
 <script type="module" src="firebase-config.js"></script>
 <script>
-    const inv = JSON.parse(
-        sessionStorage.getItem('altajer_print_invoice') ||
-        localStorage.getItem('altajer_last_invoice') || 'null'
-    );
+    let inv = null;
+try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const invParam = urlParams.get('inv');
+    if(invParam) inv = JSON.parse(decodeURIComponent(invParam));
+    else inv = JSON.parse(sessionStorage.getItem('altajer_print_invoice') || localStorage.getItem('altajer_last_invoice') || 'null');
+} catch(e) { inv = JSON.parse(localStorage.getItem('altajer_last_invoice') || 'null'); }
     const S = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
 
     // خريطة العملات

@@ -271,7 +271,7 @@ try {
 
             <div class="inv-parties">
                 <div class="party-seller">
-                    <span class="p-label p-label-blue">المورد / البائع</span>
+                    <span class="p-label p-label-blue">المورد — البائع</span>
                     <div class="p-name">${S.companyName||'تاجر برو'}</div>
                     ${S.vatNumber?`<div class="p-line"><i class="fas fa-hashtag"></i>ضريبي: ${S.vatNumber}</div>`:''}
                     ${S.cr?`<div class="p-line"><i class="fas fa-id-card"></i>س.ت: ${S.cr}</div>`:''}
@@ -284,7 +284,7 @@ try {
                     <small>Altajer Pro</small>
                 </div>
                 <div class="party-buyer">
-                    <span class="p-label p-label-green">العميل / المشتري</span>
+                    <span class="p-label p-label-green">العميل — المشتري</span>
                     <div class="p-name">${inv.customer||'نقدي'}</div>
                     ${inv.customerVat&&inv.customerVat!=='غير ضريبي'?
                         `<div class="p-line"><i class="fas fa-hashtag"></i>ضريبي: ${inv.customerVat}</div>`:''}

@@ -388,7 +388,7 @@ if(document.getElementById('poCustVat'))
 
 // الانتقال لصفحة الطباعة بعد ثانية
 setTimeout(() => {
-    window.location.href = 'print.html';
+    window.location.href = 'print.html?inv=' + encodeURIComponent(JSON.stringify(invoiceData));
 }, 1500);
                 if(document.getElementById('poDiscount'))
                     document.getElementById('poDiscount').value = 0;

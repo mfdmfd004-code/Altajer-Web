@@ -474,7 +474,45 @@ setTimeout(() => {
         }
     }
 };
+// ===== السندات =====
+voucher: {
+    save: async function() {
+        const type   = document.getElementById('voucherType')?.value || 'receipt';
+        const amount = parseFloat(document.getElementById('voucherAmount')?.value)||0;
+        const party  = (document.getElementById('voucherParty')?.value||'').trim();
+        const method = document.getElementById('voucherMethod')?.value || 'نقد';
+        const date   = document.getElementById('voucherDate')?.value || '';
+        const note   = document.getElementById('voucherNote')?.value || '';
 
+        if(!amount || amount <= 0) return showToast('يرجى إدخال مبلغ صحيح', false);
+        if(!party)  return showToast('يرجى إدخال اسم الطرف', false);
+        if(!date)   return showToast('يرجى اختيار التاريخ', false);
+
+        const voucherId = 'VCH-' + Date.now();
+        const data = {
+            id: voucherId, type, amount, party, method, date, note,
+            createdAt: new Date().toISOString()
+        };
+
+        try {
+            await setDoc(doc(db, 'vouchers', voucherId), data);
+            if(typeof showToast==='function') showToast('✅ تم حفظ السند بنجاح', true);
+            if(window.clearVoucherForm) window.clearVoucherForm();
+        } catch(e) {
+            if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+        }
+    },
+
+    delete: async function(id) {
+        if(!confirm('حذف هذا السند نهائياً؟')) return;
+        try {
+            await deleteDoc(doc(db, 'vouchers', id));
+            if(typeof showToast==='function') showToast('✅ تم حذف السند', true);
+        } catch(e) {
+            if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+        }
+    }
+},
 window.App = MainApp;
 // ==========================================
 // ثالثاً: المستمعات الحية
@@ -580,7 +618,53 @@ function initRealtimeListeners() {
         const cnt = document.getElementById('orderCount');
         if (cnt) cnt.innerText = snapshot.size;
     });
-
+// ===== السندات =====
+onSnapshot(collection(db, 'vouchers'), (snapshot) => {
+    const tbody = document.getElementById('vouchersTableBody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    let totalR = 0, totalP = 0;
+    const list = [];
+    snapshot.forEach(d => {
+        const v = d.data();
+        list.push(v);
+        if(v.type === 'receipt') totalR += parseFloat(v.amount||0);
+        else totalP += parseFloat(v.amount||0);
+        const color = v.type === 'receipt' ? '#2b9348' : '#d90429';
+        const label = v.type === 'receipt' ? 'قبض' : 'صرف';
+        tbody.innerHTML += `<tr>
+            <td style="font-size:10px;">${v.id}</td>
+            <td><span style="background:${color};color:white;padding:2px 8px;border-radius:10px;font-size:10px;">${label}</span></td>
+            <td>${v.party||'—'}</td>
+            <td style="font-weight:700;color:${color};">${parseFloat(v.amount||0).toFixed(2)}</td>
+            <td>${v.method||'—'}</td>
+            <td>${v.date||'—'}</td>
+            <td>
+                <button class="btn btn-sm btn-info"
+                    onclick="printVoucher('${v.id}')"
+                    style="padding:2px 6px;font-size:11px;">
+                    <i class="fas fa-print"></i>
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-sm btn-danger"
+                    onclick="window.App.voucher.delete('${v.id}')"
+                    style="padding:2px 6px;font-size:11px;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+    });
+    const bal = totalR - totalP;
+    if(document.getElementById('totalReceipt')) document.getElementById('totalReceipt').innerText = totalR.toFixed(2);
+    if(document.getElementById('totalPayment')) document.getElementById('totalPayment').innerText = totalP.toFixed(2);
+    if(document.getElementById('totalBalance')) {
+        const el = document.getElementById('totalBalance');
+        el.innerText = bal.toFixed(2);
+        el.style.color = bal >= 0 ? 'var(--neon-cyan)' : '#d90429';
+    }
+    localStorage.setItem('altajer_vouchers', JSON.stringify(list));
+});
     // ===== خصم يحدث التوتال فوراً =====
     const discountInput = document.getElementById('poDiscount');
     if (discountInput) {

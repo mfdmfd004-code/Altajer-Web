@@ -243,7 +243,7 @@
             <div class="menu-item" onclick="showUnderDevelopment('الإقرار الضريبي')"><i class="fas fa-percent"></i><span data-i18n="m-vat">الإقرار الضريبي</span></div>
             <div class="menu-item" onclick="showUnderDevelopment('الجرد')"><i class="fas fa-clipboard-list"></i><span data-i18n="m-inventory">الجرد الدوري</span></div>
             <div class="menu-item" onclick="showUnderDevelopment('المصاريف')"><i class="fas fa-wallet"></i><span data-i18n="m-expenses">المصاريف</span></div>
-            <div class="menu-item" onclick="switchView(4)"><i class="fas fa-receipt"></i><span data-i18n="m-vouchers">السندات</span></div>
+            <div class="menu-item" onclick="switchView(5)"><i class="fas fa-receipt"></i><span data-i18n="m-vouchers">السندات</span></div>
             <div class="menu-item" onclick="window.location.href='settings.html'"><i class="fas fa-cogs"></i><span data-i18n="m-settings">الإعدادات</span></div>
             <div class="menu-item" onclick="showUnderDevelopment('الموظفين')"><i class="fas fa-user-tie"></i><span data-i18n="m-employees">الموظفين</span></div>
             <div class="menu-item" onclick="showUnderDevelopment('الدعم')"><i class="fas fa-headset"></i><span data-i18n="m-support">الدعم الفني</span></div>
@@ -741,13 +741,14 @@
 
     // ===== التنقل بين الأقسام =====
     function switchView(index) {
-        const navBtns = document.querySelectorAll('.nav-btn');
-        const sections = document.querySelectorAll('body > .view-section');
-        navBtns.forEach(b => b.classList.remove('active-nav'));
-        sections.forEach(s => s.classList.remove('show'));
-        if(navBtns[index]) navBtns[index].classList.add('active-nav');
-        if(sections[index]) sections[index].classList.add('show');
-    }
+    const navBtns  = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('body > .view-section');
+    navBtns.forEach(b => b.classList.remove('active-nav'));
+    sections.forEach(s => s.classList.remove('show'));
+    // ربط أزرار التنقل السفلية بالأقسام الأربعة الأولى فقط
+    if(index < navBtns.length) navBtns[index].classList.add('active-nav');
+    if(sections[index]) sections[index].classList.add('show');
+}
 
     // ===== Toast =====
     function showToast(message, isSuccess = true) {

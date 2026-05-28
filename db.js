@@ -369,7 +369,6 @@ const MainApp = {
                 if (typeof window.generateInvoiceQR === "function")
                     window.generateInvoiceQR(invoiceData);
 
-                // حفظ الفاتورة للطباعة
                 sessionStorage.setItem('altajer_print_invoice', JSON.stringify(invoiceData));
                 localStorage.setItem('altajer_last_invoice', JSON.stringify(invoiceData));
 
@@ -387,7 +386,6 @@ const MainApp = {
                 if(document.getElementById('poCustVat'))
                     document.getElementById('poCustVat').value = '';
 
-                // الانتقال لصفحة الطباعة بعد ثانية
                 setTimeout(() => {
                     window.location.href = 'print.html?inv=' + encodeURIComponent(JSON.stringify(invoiceData));
                 }, 1500);
@@ -399,6 +397,7 @@ const MainApp = {
         }
     },
 
+    // ===== المرتجعات =====
     processReturn: async function() {
         const input = document.getElementById('return-ref');
         const container = document.getElementById('return-details');
@@ -467,7 +466,7 @@ const MainApp = {
         }
     },
 
-    // ===== السندات (تم نقلها للمكان الصحيح داخل الكائن) =====
+    // ===== السندات =====
     voucher: {
         save: async function() {
             const type   = document.getElementById('voucherType')?.value || 'receipt';
@@ -515,7 +514,8 @@ const MainApp = {
             }
         }
     }
-};
+
+}; // نهاية MainApp
 
 window.App = MainApp;
 
@@ -571,7 +571,6 @@ function initRealtimeListeners() {
         const cbItem = document.getElementById('cbItem');
         if (tbody) tbody.innerHTML = '';
         if (cbItem) cbItem.innerHTML = '<option value="" selected>اختر الصنف</option>';
-        let totalProducts = 0;
         let lowStockCount = 0;
         snapshot.forEach((d) => {
             const data = d.data();
@@ -579,7 +578,6 @@ function initRealtimeListeners() {
             const code = data.code || d.id;
             const lowStock = qty > 0 && qty <= (data.minQty||0);
             const outStock = qty === 0;
-            totalProducts++;
             if (lowStock || outStock) lowStockCount++;
             if (tbody) tbody.innerHTML += `<tr>
                 <td style="font-size:11px;">${code}</td>
@@ -661,8 +659,10 @@ function initRealtimeListeners() {
             </tr>`;
         });
         const bal = totalR - totalP;
-        if(document.getElementById('totalReceipt')) document.getElementById('totalReceipt').innerText = totalR.toFixed(2);
-        if(document.getElementById('totalPayment')) document.getElementById('totalPayment').innerText = totalP.toFixed(2);
+        if(document.getElementById('totalReceipt'))
+            document.getElementById('totalReceipt').innerText = totalR.toFixed(2);
+        if(document.getElementById('totalPayment'))
+            document.getElementById('totalPayment').innerText = totalP.toFixed(2);
         if(document.getElementById('totalBalance')) {
             const el = document.getElementById('totalBalance');
             el.innerText = bal.toFixed(2);
@@ -754,7 +754,6 @@ window.loadItemToEdit = async function(code) {
         if(document.getElementById('itemQty')) document.getElementById('itemQty').value = d.qty||d.quantity||0;
         if(document.getElementById('itemMinQty')) document.getElementById('itemMinQty').value = d.minQty||0;
         if(document.getElementById('itemNotes')) document.getElementById('itemNotes').value = d.notes||'';
-        
         if(typeof switchView==='function') switchView(2);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if(typeof showToast==='function') showToast('جاهز للتعديل — اضغط حفظ بعد التغيير.', true);

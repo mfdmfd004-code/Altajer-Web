@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+٢<!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="winter">
 <head>
     <meta charset="UTF-8">
@@ -975,6 +975,100 @@
             }
         });
     });
+    window.setVoucherType = function(type) {
+    document.getElementById('voucherType').value = type;
+    const btnR = document.getElementById('btnReceipt');
+    const btnP = document.getElementById('btnPayment');
+    if(type === 'receipt') {
+        btnR.style.background = 'var(--light-green)';
+        btnR.style.borderColor = 'var(--light-green)';
+        btnR.style.color = 'white';
+        btnP.style.background = 'transparent';
+        btnP.style.borderColor = 'var(--text-muted)';
+        btnP.style.color = 'var(--text-muted)';
+    } else {
+        btnP.style.background = 'var(--danger-red)';
+        btnP.style.borderColor = 'var(--danger-red)';
+        btnP.style.color = 'white';
+        btnR.style.background = 'transparent';
+        btnR.style.borderColor = 'var(--text-muted)';
+        btnR.style.color = 'var(--text-muted)';
+    }
+};
+
+window.clearVoucherForm = function() {
+    const form = document.getElementById('voucherForm');
+    if(form) form.reset();
+    window.setVoucherType('receipt');
+    const dateEl = document.getElementById('voucherDate');
+    if(dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+};
+
+window.handleVoucherSubmit = function(e) {
+    e.preventDefault();
+    if(window.App && window.App.voucher) window.App.voucher.save();
+};
+
+window.printVoucher = function(id) {
+    const list = JSON.parse(localStorage.getItem('altajer_vouchers') || '[]');
+    const v = list.find(x => x.id === id);
+    if(!v) return showToast('السند غير موجود', false);
+    const S = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
+    const CUR_MAP = { SAR:'ر.س', AED:'د.إ', USD:'$', GBP:'£', EUR:'€', OTHER:'' };
+    const C = CUR_MAP[S.currency] || S.currency || 'ر.س';
+    const color = v.type === 'receipt' ? '#2b9348' : '#d90429';
+    const label = v.type === 'receipt' ? 'سند قبض' : 'سند صرف';
+    const win = window.open('', '_blank');
+    win.document.write(`<!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>${label}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+        <style>
+            * { font-family:'Cairo',sans-serif; box-sizing:border-box; }
+            body { margin:20px; color:#1a1a2e; }
+            .voucher { max-width:400px; margin:0 auto; border:2px solid ${color}; border-radius:12px; padding:20px; }
+            .header { text-align:center; border-bottom:1px dashed #ccc; padding-bottom:12px; margin-bottom:16px; }
+            .badge { background:${color}; color:white; padding:4px 20px; border-radius:20px; font-size:14px; font-weight:900; }
+            .company { font-size:18px; font-weight:900; margin-top:10px; }
+            .row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #f0f0f0; font-size:13px; }
+            .amount { text-align:center; font-size:28px; font-weight:900; color:${color}; margin:16px 0; }
+            .sig-row { display:flex; justify-content:space-between; margin-top:30px; }
+            .sig-box { text-align:center; width:45%; border-top:1px solid #333; padding-top:5px; font-size:11px; }
+            .footer { text-align:center; font-size:11px; color:#777; margin-top:16px; }
+            @media print { body { margin:0; } }
+        </style>
+    </head>
+    <body>
+        <div class="voucher">
+            <div class="header">
+                <span class="badge">${label}</span>
+                <div class="company">${S.companyName||'تاجر برو'}</div>
+                ${S.phone?`<div style="font-size:12px;color:#555;">${S.phone}</div>`:''}
+            </div>
+            <div class="amount">${parseFloat(v.amount).toFixed(2)} ${C}</div>
+            <div class="row"><span>رقم السند:</span><span>${v.id}</span></div>
+            <div class="row"><span>التاريخ:</span><span>${v.date}</span></div>
+            <div class="row"><span>${v.type==='receipt'?'استلمنا من:':'صرفنا لـ:'}</span><span>${v.party}</span></div>
+            <div class="row"><span>طريقة الدفع:</span><span>${v.method}</span></div>
+            ${v.note?`<div class="row"><span>ملاحظة:</span><span>${v.note}</span></div>`:''}
+            <div class="sig-row">
+                <div class="sig-box">المستلم</div>
+                <div class="sig-box">المحاسب</div>
+            </div>
+            <div class="footer">تاجر برو المحاسبي</div>
+        </div>
+        <script>window.onload=function(){window.print();}<\/script>
+    </body>
+    </html>`);
+    win.document.close();
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dateEl = document.getElementById('voucherDate');
+    if(dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+});
 </script>
 
 <script src="wafeq-service.js"></script>

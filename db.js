@@ -38,6 +38,7 @@ export async function saveInvoice(invoiceData) {
         return invoiceId;
     } catch (e) { console.error("خطأ الفاتورة:", e); throw e; }
 }
+
 // ==========================================
 // ثانياً: المحرك الرئيسي
 // ==========================================
@@ -336,14 +337,14 @@ const MainApp = {
                     subtotal: parseFloat(totalExclTax.toFixed(2)),
                     timestamp: new Date().toISOString(),
                     sellerName: settings.companyName || "متجر التاجر برو",
-sellerPhone: settings.phone || "",
-sellerVat: settings.vatNumber || "",
-sellerCountry: settings.country || "",
-sellerCurrency: settings.currency || "SAR",
-sellerTaxRate: settings.taxEnabled ? (settings.taxRate || 15) : 15,
-sellerAddress: settings.address || {},
-vatNumber: settings.vatNumber || "300000000000003",
-invoiceFooter: settings.invoiceFooter || ""
+                    sellerPhone: settings.phone || "",
+                    sellerVat: settings.vatNumber || "",
+                    sellerCountry: settings.country || "",
+                    sellerCurrency: settings.currency || "SAR",
+                    sellerTaxRate: settings.taxEnabled ? (settings.taxRate || 15) : 15,
+                    sellerAddress: settings.address || {},
+                    vatNumber: settings.vatNumber || "300000000000003",
+                    invoiceFooter: settings.invoiceFooter || ""
                 };
 
                 await setDoc(doc(db, "orders", orderId), invoiceData);
@@ -369,27 +370,14 @@ invoiceFooter: settings.invoiceFooter || ""
                     window.generateInvoiceQR(invoiceData);
 
                 // حفظ الفاتورة للطباعة
-sessionStorage.setItem('altajer_print_invoice', JSON.stringify(invoiceData));
-localStorage.setItem('altajer_last_invoice', JSON.stringify(invoiceData));
+                sessionStorage.setItem('altajer_print_invoice', JSON.stringify(invoiceData));
+                localStorage.setItem('altajer_last_invoice', JSON.stringify(invoiceData));
 
-if(typeof showToast==='function')
-    showToast(`✅ تم اعتماد الفاتورة: ${orderId}`, true);
+                if(typeof showToast==='function')
+                    showToast(`✅ تم اعتماد الفاتورة: ${orderId}`, true);
 
-cart = [];
-this.updateCartTable();
-if(document.getElementById('poDiscount'))
-    document.getElementById('poDiscount').value = 0;
-if(document.getElementById('cbCustomer'))
-    document.getElementById('cbCustomer').selectedIndex = 0;
-if(document.getElementById('poCustId'))
-    document.getElementById('poCustId').value = '';
-if(document.getElementById('poCustVat'))
-    document.getElementById('poCustVat').value = '';
-
-// الانتقال لصفحة الطباعة بعد ثانية
-setTimeout(() => {
-    window.location.href = 'print.html?inv=' + encodeURIComponent(JSON.stringify(invoiceData));
-}, 1500);
+                cart = [];
+                this.updateCartTable();
                 if(document.getElementById('poDiscount'))
                     document.getElementById('poDiscount').value = 0;
                 if(document.getElementById('cbCustomer'))
@@ -398,6 +386,11 @@ setTimeout(() => {
                     document.getElementById('poCustId').value = '';
                 if(document.getElementById('poCustVat'))
                     document.getElementById('poCustVat').value = '';
+
+                // الانتقال لصفحة الطباعة بعد ثانية
+                setTimeout(() => {
+                    window.location.href = 'print.html?inv=' + encodeURIComponent(JSON.stringify(invoiceData));
+                }, 1500);
 
             } catch (e) {
                 if(typeof showToast==='function')
@@ -472,48 +465,60 @@ setTimeout(() => {
         } catch (e) {
             if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
         }
-    }
-};
-// ===== السندات =====
-voucher: {
-    save: async function() {
-        const type   = document.getElementById('voucherType')?.value || 'receipt';
-        const amount = parseFloat(document.getElementById('voucherAmount')?.value)||0;
-        const party  = (document.getElementById('voucherParty')?.value||'').trim();
-        const method = document.getElementById('voucherMethod')?.value || 'نقد';
-        const date   = document.getElementById('voucherDate')?.value || '';
-        const note   = document.getElementById('voucherNote')?.value || '';
-
-        if(!amount || amount <= 0) return showToast('يرجى إدخال مبلغ صحيح', false);
-        if(!party)  return showToast('يرجى إدخال اسم الطرف', false);
-        if(!date)   return showToast('يرجى اختيار التاريخ', false);
-
-        const voucherId = 'VCH-' + Date.now();
-        const data = {
-            id: voucherId, type, amount, party, method, date, note,
-            createdAt: new Date().toISOString()
-        };
-
-        try {
-            await setDoc(doc(db, 'vouchers', voucherId), data);
-            if(typeof showToast==='function') showToast('✅ تم حفظ السند بنجاح', true);
-            if(window.clearVoucherForm) window.clearVoucherForm();
-        } catch(e) {
-            if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
-        }
     },
 
-    delete: async function(id) {
-        if(!confirm('حذف هذا السند نهائياً؟')) return;
-        try {
-            await deleteDoc(doc(db, 'vouchers', id));
-            if(typeof showToast==='function') showToast('✅ تم حذف السند', true);
-        } catch(e) {
-            if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+    // ===== السندات (تم نقلها للمكان الصحيح داخل الكائن) =====
+    voucher: {
+        save: async function() {
+            const type   = document.getElementById('voucherType')?.value || 'receipt';
+            const amount = parseFloat(document.getElementById('voucherAmount')?.value)||0;
+            const party  = (document.getElementById('voucherParty')?.value||'').trim();
+            const method = document.getElementById('voucherMethod')?.value || 'نقد';
+            const date   = document.getElementById('voucherDate')?.value || '';
+            const note   = document.getElementById('voucherNote')?.value || '';
+
+            if(!amount || amount <= 0) {
+                if(typeof showToast==='function') showToast('يرجى إدخال مبلغ صحيح', false);
+                return;
+            }
+            if(!party) {
+                if(typeof showToast==='function') showToast('يرجى إدخال اسم الطرف', false);
+                return;
+            }
+            if(!date) {
+                if(typeof showToast==='function') showToast('يرجى اختيار التاريخ', false);
+                return;
+            }
+
+            const voucherId = 'VCH-' + Date.now();
+            const data = {
+                id: voucherId, type, amount, party, method, date, note,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await setDoc(doc(db, 'vouchers', voucherId), data);
+                if(typeof showToast==='function') showToast('✅ تم حفظ السند بنجاح', true);
+                if(window.clearVoucherForm) window.clearVoucherForm();
+            } catch(e) {
+                if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+            }
+        },
+
+        delete: async function(id) {
+            if(!confirm('حذف هذا السند نهائياً؟')) return;
+            try {
+                await deleteDoc(doc(db, 'vouchers', id));
+                if(typeof showToast==='function') showToast('✅ تم حذف السند', true);
+            } catch(e) {
+                if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
+            }
         }
     }
-},
+};
+
 window.App = MainApp;
+
 // ==========================================
 // ثالثاً: المستمعات الحية
 // ==========================================
@@ -604,7 +609,6 @@ function initRealtimeListeners() {
                  ${data.name} - ${parseFloat(data.price||0).toFixed(2)}
                  </option>`;
         });
-        // تنبيه المخزن المنخفض في الداشبورد
         const stockAlert = document.getElementById('stockAlertCount');
         if (stockAlert) stockAlert.innerText = lowStockCount > 0
             ? `⚠️ ${lowStockCount} صنف منخفض` : '';
@@ -618,53 +622,55 @@ function initRealtimeListeners() {
         const cnt = document.getElementById('orderCount');
         if (cnt) cnt.innerText = snapshot.size;
     });
-// ===== السندات =====
-onSnapshot(collection(db, 'vouchers'), (snapshot) => {
-    const tbody = document.getElementById('vouchersTableBody');
-    if(!tbody) return;
-    tbody.innerHTML = '';
-    let totalR = 0, totalP = 0;
-    const list = [];
-    snapshot.forEach(d => {
-        const v = d.data();
-        list.push(v);
-        if(v.type === 'receipt') totalR += parseFloat(v.amount||0);
-        else totalP += parseFloat(v.amount||0);
-        const color = v.type === 'receipt' ? '#2b9348' : '#d90429';
-        const label = v.type === 'receipt' ? 'قبض' : 'صرف';
-        tbody.innerHTML += `<tr>
-            <td style="font-size:10px;">${v.id}</td>
-            <td><span style="background:${color};color:white;padding:2px 8px;border-radius:10px;font-size:10px;">${label}</span></td>
-            <td>${v.party||'—'}</td>
-            <td style="font-weight:700;color:${color};">${parseFloat(v.amount||0).toFixed(2)}</td>
-            <td>${v.method||'—'}</td>
-            <td>${v.date||'—'}</td>
-            <td>
-                <button class="btn btn-sm btn-info"
-                    onclick="printVoucher('${v.id}')"
-                    style="padding:2px 6px;font-size:11px;">
-                    <i class="fas fa-print"></i>
-                </button>
-            </td>
-            <td>
-                <button class="btn btn-sm btn-danger"
-                    onclick="window.App.voucher.delete('${v.id}')"
-                    style="padding:2px 6px;font-size:11px;">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        </tr>`;
+
+    // ===== السندات =====
+    onSnapshot(collection(db, 'vouchers'), (snapshot) => {
+        const tbody = document.getElementById('vouchersTableBody');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        let totalR = 0, totalP = 0;
+        const list = [];
+        snapshot.forEach(d => {
+            const v = d.data();
+            list.push(v);
+            if(v.type === 'receipt') totalR += parseFloat(v.amount||0);
+            else totalP += parseFloat(v.amount||0);
+            const color = v.type === 'receipt' ? '#2b9348' : '#d90429';
+            const label = v.type === 'receipt' ? 'قبض' : 'صرف';
+            tbody.innerHTML += `<tr>
+                <td style="font-size:10px;">${v.id}</td>
+                <td><span style="background:${color};color:white;padding:2px 8px;border-radius:10px;font-size:10px;">${label}</span></td>
+                <td>${v.party||'—'}</td>
+                <td style="font-weight:700;color:${color};">${parseFloat(v.amount||0).toFixed(2)}</td>
+                <td>${v.method||'—'}</td>
+                <td>${v.date||'—'}</td>
+                <td>
+                    <button class="btn btn-sm btn-info"
+                        onclick="printVoucher('${v.id}')"
+                        style="padding:2px 6px;font-size:11px;">
+                        <i class="fas fa-print"></i>
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-danger"
+                        onclick="window.App.voucher.delete('${v.id}')"
+                        style="padding:2px 6px;font-size:11px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
+        });
+        const bal = totalR - totalP;
+        if(document.getElementById('totalReceipt')) document.getElementById('totalReceipt').innerText = totalR.toFixed(2);
+        if(document.getElementById('totalPayment')) document.getElementById('totalPayment').innerText = totalP.toFixed(2);
+        if(document.getElementById('totalBalance')) {
+            const el = document.getElementById('totalBalance');
+            el.innerText = bal.toFixed(2);
+            el.style.color = bal >= 0 ? 'var(--neon-cyan)' : '#d90429';
+        }
+        localStorage.setItem('altajer_vouchers', JSON.stringify(list));
     });
-    const bal = totalR - totalP;
-    if(document.getElementById('totalReceipt')) document.getElementById('totalReceipt').innerText = totalR.toFixed(2);
-    if(document.getElementById('totalPayment')) document.getElementById('totalPayment').innerText = totalP.toFixed(2);
-    if(document.getElementById('totalBalance')) {
-        const el = document.getElementById('totalBalance');
-        el.innerText = bal.toFixed(2);
-        el.style.color = bal >= 0 ? 'var(--neon-cyan)' : '#d90429';
-    }
-    localStorage.setItem('altajer_vouchers', JSON.stringify(list));
-});
+
     // ===== خصم يحدث التوتال فوراً =====
     const discountInput = document.getElementById('poDiscount');
     if (discountInput) {
@@ -683,7 +689,6 @@ if (document.readyState === 'loading') {
 // ==========================================
 // رابعاً: دوال مساعدة عامة
 // ==========================================
-
 window.deleteCustomerById = async function(id) {
     if (!confirm(`حذف العميل: ${id}?`)) return;
     try {
@@ -705,34 +710,21 @@ window.loadCustomerToEdit = function(id) {
         document.getElementById('custId').value = c.id;
         document.getElementById('custId').disabled = true;
     }
-    if(document.getElementById('custName'))
-        document.getElementById('custName').value = c.name||'';
-    if(document.getElementById('custType'))
-        document.getElementById('custType').value = c.type||'B2C';
+    if(document.getElementById('custName')) document.getElementById('custName').value = c.name||'';
+    if(document.getElementById('custType')) document.getElementById('custType').value = c.type||'B2C';
     if(window.setCustType) window.setCustType(c.type||'B2C');
-    if(document.getElementById('custVat'))
-        document.getElementById('custVat').value = c.vat||'';
-    if(document.getElementById('custCR'))
-        document.getElementById('custCR').value = c.cr||'';
-    if(document.getElementById('custContact'))
-        document.getElementById('custContact').value = c.contact||'';
-    if(document.getElementById('custCity'))
-        document.getElementById('custCity').value = c.city||'';
-    if(document.getElementById('custDistrict'))
-        document.getElementById('custDistrict').value = c.district||'';
-    if(document.getElementById('custStreet'))
-        document.getElementById('custStreet').value = c.street_name||'';
-    if(document.getElementById('custBuilding'))
-        document.getElementById('custBuilding').value = c.building_no||'';
-    if(document.getElementById('custPostal'))
-        document.getElementById('custPostal').value = c.postal_code||'';
-    if(document.getElementById('custAddNo'))
-        document.getElementById('custAddNo').value = c.additional_no||'';
-    if(document.getElementById('lblCustBtn'))
-        document.getElementById('lblCustBtn').innerText = 'تعديل العميل';
+    if(document.getElementById('custVat')) document.getElementById('custVat').value = c.vat||'';
+    if(document.getElementById('custCR')) document.getElementById('custCR').value = c.cr||'';
+    if(document.getElementById('custContact')) document.getElementById('custContact').value = c.contact||'';
+    if(document.getElementById('custCity')) document.getElementById('custCity').value = c.city||'';
+    if(document.getElementById('custDistrict')) document.getElementById('custDistrict').value = c.district||'';
+    if(document.getElementById('custStreet')) document.getElementById('custStreet').value = c.street_name||'';
+    if(document.getElementById('custBuilding')) document.getElementById('custBuilding').value = c.building_no||'';
+    if(document.getElementById('custPostal')) document.getElementById('custPostal').value = c.postal_code||'';
+    if(document.getElementById('custAddNo')) document.getElementById('custAddNo').value = c.additional_no||'';
+    if(document.getElementById('lblCustBtn')) document.getElementById('lblCustBtn').innerText = 'تعديل العميل';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if(typeof showToast==='function')
-        showToast('جاهز للتعديل — اضغط حفظ بعد التغيير.', true);
+    if(typeof showToast==='function') showToast('جاهز للتعديل — اضغط حفظ بعد التغيير.', true);
 };
 
 window.deleteItemById = async function(code) {
@@ -753,29 +745,19 @@ window.loadItemToEdit = async function(code) {
             return;
         }
         const d = snap.data();
-        if(document.getElementById('itemCode'))
-            document.getElementById('itemCode').value = d.code||code;
-        if(document.getElementById('itemName'))
-            document.getElementById('itemName').value = d.name||'';
-        if(document.getElementById('itemCategory'))
-            document.getElementById('itemCategory').value = d.category||'';
-        if(document.getElementById('itemUnit'))
-            document.getElementById('itemUnit').value = d.unit||'قطعة';
-        if(document.getElementById('itemPrice'))
-            document.getElementById('itemPrice').value = d.price||0;
-        if(document.getElementById('itemPriceType'))
-            document.getElementById('itemPriceType').value = d.priceType||'inclusive';
-        if(document.getElementById('itemQty'))
-            document.getElementById('itemQty').value = d.qty||d.quantity||0;
-        if(document.getElementById('itemMinQty'))
-            document.getElementById('itemMinQty').value = d.minQty||0;
-        if(document.getElementById('itemNotes'))
-            document.getElementById('itemNotes').value = d.notes||'';
-        // الانتقال لقسم المخزن تلقائياً
+        if(document.getElementById('itemCode')) document.getElementById('itemCode').value = d.code||code;
+        if(document.getElementById('itemName')) document.getElementById('itemName').value = d.name||'';
+        if(document.getElementById('itemCategory')) document.getElementById('itemCategory').value = d.category||'';
+        if(document.getElementById('itemUnit')) document.getElementById('itemUnit').value = d.unit||'قطعة';
+        if(document.getElementById('itemPrice')) document.getElementById('itemPrice').value = d.price||0;
+        if(document.getElementById('itemPriceType')) document.getElementById('itemPriceType').value = d.priceType||'inclusive';
+        if(document.getElementById('itemQty')) document.getElementById('itemQty').value = d.qty||d.quantity||0;
+        if(document.getElementById('itemMinQty')) document.getElementById('itemMinQty').value = d.minQty||0;
+        if(document.getElementById('itemNotes')) document.getElementById('itemNotes').value = d.notes||'';
+        
         if(typeof switchView==='function') switchView(2);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        if(typeof showToast==='function')
-            showToast('جاهز للتعديل — اضغط حفظ بعد التغيير.', true);
+        if(typeof showToast==='function') showToast('جاهز للتعديل — اضغط حفظ بعد التغيير.', true);
     } catch(e) {
         if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
     }

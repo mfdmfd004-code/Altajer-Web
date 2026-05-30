@@ -1,5 +1,5 @@
-// التاجر برو — مصدر Firebase الموحد (النسخة المستقرة 10.8.0)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+// التاجر برو — مصدر Firebase الموحد (النسخة المستقرة السريعة 10.8.0)
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signInWithPopup,
          GoogleAuthProvider, signOut, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -15,21 +15,14 @@ const firebaseConfig = {
   measurementId: "G-2SKNNZF03R"
 };
 
-// تشغيل مرة واحدة فقط
-let app;
-try {
-    app = initializeApp(firebaseConfig);
-} catch(e) {
-    // تجنب خطأ التهيئة المزدوجة
-    const { getApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-    app = getApp();
-}
+// التحقق الفوري لتجنب التهيئة المزدوجة
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 export const auth     = getAuth(app);
 export const db       = getFirestore(app);
 export const provider = new GoogleAuthProvider();
 
-// إتاحة عالمية
+// إتاحة عالمية للمتغيرات لضمان عمل كافة صفحات النظام وسكربتاته
 window.__firebaseApp  = app;
 window.__firebaseAuth = auth;
 window.__firebaseDb   = db;

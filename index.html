@@ -70,6 +70,7 @@
             text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; cursor: pointer;
         }
+        .menu-item:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
         .menu-item i { font-size: 24px; color: var(--neon-cyan); margin-bottom: 8px; }
         .menu-item span { display: block; font-size: 12px; font-weight: 500; }
         .stat-card {
@@ -149,9 +150,7 @@
             font-size: 12px; color: var(--neon-cyan); margin-bottom: 10px;
             display: flex; align-items: center; gap: 6px;
         }
-        .field-group {
-            margin-bottom: 15px;
-        }
+        .field-group { margin-bottom: 15px; }
         .field-group label {
             font-size: 11px; color: var(--neon-cyan);
             display: block; margin-bottom: 5px;
@@ -166,13 +165,14 @@
 </head>
 <body>
 <div id="apiToast"></div>
+
 <nav class="top-navbar d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center gap-2">
         <img src="https://cdn-icons-png.flaticon.com/512/3222/3222675.png" width="28" alt="logo">
         <div>
-    <h6 class="m-0 fw-bold text-uppercase" data-i18n="app-title">تاجر برو المحاسبي</h6>
-    <small id="userDisplayName" style="font-size:10px;color:var(--neon-cyan);display:block;"></small>
-</div>
+            <h6 class="m-0 fw-bold text-uppercase" data-i18n="app-title">تاجر برو المحاسبي</h6>
+            <small id="userDisplayName" style="font-size:10px;color:var(--neon-cyan);display:block;"></small>
+        </div>
     </div>
     <div class="d-flex align-items-center gap-2">
         <select id="themeSelector" class="form-select form-select-sm bg-transparent text-white" style="width:95px;font-size:11px;" onchange="changeTheme(this.value)">
@@ -186,8 +186,8 @@
         <span class="text-muted">|</span>
         <button onclick="changeLanguage('en')" class="btn btn-sm text-white p-0 fw-bold">EN</button>
         <a href="settings.html" style="color:white;font-size:18px;margin-right:8px;">
-    <i class="fas fa-cogs"></i>
-</a>
+            <i class="fas fa-cogs"></i>
+        </a>
     </div>
 </nav>
 
@@ -207,7 +207,7 @@
 </div>
 
 <!-- ===== قسم الرئيسية ===== -->
-<div id="dashboardSection" class="view-section show">
+<div id="view-0" class="view-section show">
     <div class="container-fluid">
         <div class="row g-2 mb-3">
             <div class="col-6">
@@ -235,18 +235,42 @@
             </button>
         </div>
         <div class="dashboard-grid">
-            <div class="menu-item" onclick="switchView(3)"><i class="fas fa-file-invoice-dollar"></i><span data-i18n="m-invoice">فاتورة مبيعات</span></div>
-            <div class="menu-item" onclick="switchView(2)"><i class="fas fa-cubes"></i><span data-i18n="m-products">المستودع</span></div>
-            <div class="menu-item" onclick="showUnderDevelopment('المشتريات')"><i class="fas fa-shopping-cart"></i><span data-i18n="m-purchases">المشتريات</span></div>
-            <div class="menu-item" onclick="showUnderDevelopment('المرتجعات')"><i class="fas fa-undo"></i><span data-i18n="m-returns">المرتجعات</span></div>
-            <div class="menu-item" onclick="showUnderDevelopment('الأرباح')"><i class="fas fa-chart-line"></i><span data-i18n="m-profits">الأرباح</span></div>
-            <div class="menu-item" onclick="showUnderDevelopment('الإقرار الضريبي')"><i class="fas fa-percent"></i><span data-i18n="m-vat">الإقرار الضريبي</span></div>
-            <div class="menu-item" onclick="showUnderDevelopment('الجرد')"><i class="fas fa-clipboard-list"></i><span data-i18n="m-inventory">الجرد الدوري</span></div>
-            <div class="menu-item" onclick="showUnderDevelopment('المصاريف')"><i class="fas fa-wallet"></i><span data-i18n="m-expenses">المصاريف</span></div>
-            <div class="menu-item" onclick="switchView(5)"><i class="fas fa-receipt"></i><span data-i18n="m-vouchers">السندات</span></div>
-            <div class="menu-item" onclick="window.location.href='settings.html'"><i class="fas fa-cogs"></i><span data-i18n="m-settings">الإعدادات</span></div>
-            <div class="menu-item" onclick="showUnderDevelopment('الموظفين')"><i class="fas fa-user-tie"></i><span data-i18n="m-employees">الموظفين</span></div>
-            <div class="menu-item" onclick="showUnderDevelopment('الدعم')"><i class="fas fa-headset"></i><span data-i18n="m-support">الدعم الفني</span></div>
+            <div class="menu-item" onclick="switchView(3)">
+                <i class="fas fa-file-invoice-dollar"></i><span data-i18n="m-invoice">فاتورة مبيعات</span>
+            </div>
+            <div class="menu-item" onclick="switchView(2)">
+                <i class="fas fa-cubes"></i><span data-i18n="m-products">المستودع</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='purchases.html'">
+                <i class="fas fa-shopping-cart"></i><span data-i18n="m-purchases">المشتريات</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='returns.html'">
+                <i class="fas fa-undo"></i><span data-i18n="m-returns">المرتجعات</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='profits.html'">
+                <i class="fas fa-chart-line"></i><span data-i18n="m-profits">الأرباح</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='vat-filing.html'">
+                <i class="fas fa-percent"></i><span data-i18n="m-vat">الإقرار الضريبي</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='inventory-count.html'">
+                <i class="fas fa-clipboard-list"></i><span data-i18n="m-inventory">الجرد الدوري</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='expenses.html'">
+                <i class="fas fa-wallet"></i><span data-i18n="m-expenses">المصاريف</span>
+            </div>
+            <div class="menu-item" onclick="switchView(4)">
+                <i class="fas fa-receipt"></i><span data-i18n="m-vouchers">السندات</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='settings.html'">
+                <i class="fas fa-cogs"></i><span data-i18n="m-settings">الإعدادات</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='employees.html'">
+                <i class="fas fa-user-tie"></i><span data-i18n="m-employees">الموظفين</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='receipts.html'">
+                <i class="fas fa-file-alt"></i><span data-i18n="m-receipts">السندات المالية</span>
+            </div>
         </div>
         <div class="mt-4 p-3 rounded" style="background:var(--card-bg);">
             <h6 class="mb-3 text-muted text-center" style="font-size:13px;">مخطط مبيعات ومخزون تاجر برو</h6>
@@ -256,17 +280,15 @@
 </div>
 
 <!-- ===== قسم العملاء ===== -->
-<div id="customersSection" class="view-section">
+<div id="view-1" class="view-section">
     <div class="container-fluid">
         <div class="row g-4">
-            <!-- نموذج العميل -->
             <div class="col-lg-5">
                 <div class="p-3 rounded" style="background:var(--card-bg);">
                     <div class="zatca-badge">
                         <i class="fas fa-shield-alt"></i> متوافق مع ZATCA
                     </div>
                     <form id="customerForm" onsubmit="handleCustomerSubmit(event)">
-                        <!-- نوع العميل -->
                         <div class="section-label mt-2">
                             <i class="fas fa-user-tag"></i> نوع العميل
                         </div>
@@ -282,17 +304,14 @@
                                 <i class="fas fa-landmark"></i> حكومي GOV
                             </button>
                         </div>
-                        <!-- معرّف العميل -->
                         <div class="field-group">
                             <label>معرّف العميل *</label>
                             <input type="text" id="custId" required placeholder="مثال: CUST-001">
                         </div>
-                        <!-- اسم العميل -->
                         <div class="field-group">
                             <label>اسم العميل *</label>
                             <input type="text" id="custName" required placeholder="الاسم الكامل أو اسم الشركة">
                         </div>
-                        <!-- الرقم الضريبي -->
                         <div class="field-group">
                             <label>الرقم الضريبي (VAT)</label>
                             <input type="text" id="custVat" placeholder="300000000000003"
@@ -301,17 +320,14 @@
                         <div id="vatHintMain" class="vat-hint">
                             يبدأ وينتهي بـ 3 — مثال: 300000000000003
                         </div>
-                        <!-- السجل التجاري -->
                         <div class="field-group">
                             <label>السجل التجاري (CR)</label>
                             <input type="text" id="custCR" placeholder="1010000000">
                         </div>
-                        <!-- رقم التواصل -->
                         <div class="field-group">
                             <label>رقم التواصل</label>
                             <input type="text" id="custContact" placeholder="05xxxxxxxx">
                         </div>
-                        <!-- العنوان الوطني -->
                         <div class="section-label mt-2">
                             <i class="fas fa-map-marker-alt"></i> العنوان الوطني
                         </div>
@@ -355,7 +371,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- أزرار -->
                         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
                             <button type="submit" class="btn-neon" style="--clr:var(--light-green);flex:1;">
                                 <i class="fas fa-save"></i>
@@ -373,19 +388,13 @@
                     </form>
                 </div>
             </div>
-            <!-- جدول العملاء -->
             <div class="col-lg-7">
                 <div class="table-responsive-custom">
                     <table class="table table-dark table-hover table-dark-custom text-center">
                         <thead>
                             <tr>
-                                <th>المعرّف</th>
-                                <th>النوع</th>
-                                <th>الاسم</th>
-                                <th>الرقم الضريبي</th>
-                                <th>التواصل</th>
-                                <th>المدينة</th>
-                                <th>إجراء</th>
+                                <th>المعرّف</th><th>النوع</th><th>الاسم</th>
+                                <th>الرقم الضريبي</th><th>التواصل</th><th>المدينة</th><th>إجراء</th>
                             </tr>
                         </thead>
                         <tbody id="customerTableBody"></tbody>
@@ -397,7 +406,7 @@
 </div>
 
 <!-- ===== قسم المخزن ===== -->
-<div id="manageItem" class="view-section">
+<div id="view-2" class="view-section">
     <div class="container-fluid">
         <div class="row g-4">
             <div class="col-lg-5">
@@ -489,12 +498,8 @@
                     <table class="table table-dark table-hover table-dark-custom text-center">
                         <thead>
                             <tr>
-                                <th>الكود</th>
-                                <th>الصنف</th>
-                                <th>التصنيف</th>
-                                <th>السعر</th>
-                                <th>الكمية</th>
-                                <th>حذف</th>
+                                <th>الكود</th><th>الصنف</th><th>التصنيف</th>
+                                <th>السعر</th><th>الكمية</th><th>حذف</th>
                             </tr>
                         </thead>
                         <tbody id="itemTableBody"></tbody>
@@ -504,124 +509,9 @@
         </div>
     </div>
 </div>
-<!-- ===== قسم السندات ===== -->
-<div id="vouchersSection" class="view-section">
-    <div class="container-fluid">
-        <div class="row g-4">
-            <!-- نموذج السند -->
-            <div class="col-lg-5">
-                <div class="p-3 rounded" style="background:var(--card-bg);">
-                    <div style="font-size:13px;color:var(--neon-cyan);margin-bottom:15px;display:flex;align-items:center;gap:6px;">
-                        <i class="fas fa-receipt"></i> إنشاء سند جديد
-                    </div>
-                    <form id="voucherForm" onsubmit="handleVoucherSubmit(event)">
-                        <!-- نوع السند -->
-                        <div class="field-group">
-                            <label>نوع السند *</label>
-                            <div style="display:flex;gap:8px;">
-                                <button type="button" id="btnReceipt"
-                                    onclick="setVoucherType('receipt')"
-                                    style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--light-green);background:var(--light-green);color:white;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;">
-                                    <i class="fas fa-arrow-down"></i> قبض
-                                </button>
-                                <button type="button" id="btnPayment"
-                                    onclick="setVoucherType('payment')"
-                                    style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--text-muted);background:transparent;color:var(--text-muted);cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;">
-                                    <i class="fas fa-arrow-up"></i> صرف
-                                </button>
-                            </div>
-                            <input type="hidden" id="voucherType" value="receipt">
-                        </div>
-                        <!-- المبلغ -->
-                        <div class="field-group">
-                            <label>المبلغ *</label>
-                            <input type="number" id="voucherAmount" required min="0" step="0.01" placeholder="0.00">
-                        </div>
-                        <!-- اسم الطرف -->
-                        <div class="field-group">
-                            <label>اسم العميل أو المورد *</label>
-                            <input type="text" id="voucherParty" required placeholder="اسم الشخص أو الجهة">
-                        </div>
-                        <!-- طريقة الدفع -->
-                        <div class="field-group">
-                            <label>طريقة الدفع</label>
-                            <select id="voucherMethod">
-                                <option value="نقد">نقد</option>
-                                <option value="تحويل بنكي">تحويل بنكي</option>
-                                <option value="شيك">شيك</option>
-                                <option value="بطاقة">بطاقة</option>
-                                <option value="أخرى">أخرى</option>
-                            </select>
-                        </div>
-                        <!-- التاريخ -->
-                        <div class="field-group">
-                            <label>التاريخ *</label>
-                            <input type="date" id="voucherDate" required>
-                        </div>
-                        <!-- ملاحظة -->
-                        <div class="field-group">
-                            <label>ملاحظة</label>
-                            <textarea id="voucherNote" rows="2" placeholder="ملاحظة اختيارية..."
-                                style="width:100%;padding:10px;background:transparent;border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;resize:none;box-sizing:border-box;"></textarea>
-                        </div>
-                        <!-- أزرار -->
-                        <div style="display:flex;gap:8px;">
-                            <button type="submit" class="btn-neon" style="--clr:var(--light-green);flex:1;">
-                                <i class="fas fa-save"></i> حفظ السند
-                            </button>
-                            <button type="button" class="btn-neon" style="--clr:var(--text-muted);" onclick="clearVoucherForm()">
-                                <i class="fas fa-redo"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <!-- جدول وإحصائيات -->
-            <div class="col-lg-7">
-                <!-- بطاقات الإجماليات -->
-                <div class="row g-2 mb-3">
-                    <div class="col-4">
-                        <div class="p-3 rounded text-center" style="background:var(--card-bg);border-right:4px solid var(--light-green);">
-                            <small class="text-muted d-block">إجمالي القبض</small>
-                            <h5 id="totalReceipt" class="m-0 text-success fw-bold">0.00</h5>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="p-3 rounded text-center" style="background:var(--card-bg);border-right:4px solid var(--danger-red);">
-                            <small class="text-muted d-block">إجمالي الصرف</small>
-                            <h5 id="totalPayment" class="m-0 text-danger fw-bold">0.00</h5>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="p-3 rounded text-center" style="background:var(--card-bg);border-right:4px solid var(--neon-cyan);">
-                            <small class="text-muted d-block">الرصيد</small>
-                            <h5 id="totalBalance" class="m-0 fw-bold" style="color:var(--neon-cyan);">0.00</h5>
-                        </div>
-                    </div>
-                </div>
-                <!-- جدول السندات -->
-                <div class="table-responsive-custom">
-                    <table class="table table-dark table-hover table-dark-custom text-center">
-                        <thead>
-                            <tr>
-                                <th>رقم السند</th>
-                                <th>النوع</th>
-                                <th>الطرف</th>
-                                <th>المبلغ</th>
-                                <th>طريقة الدفع</th>
-                                <th>التاريخ</th>
-                                <th>طباعة</th>
-                                <th>حذف</th>
-                            </tr>
-                        </thead>
-                        <tbody id="vouchersTableBody"></tbody>
-                    </table>
-                </div>
-        </div>
-    </div>
-</div>
+
 <!-- ===== قسم الكاشير ===== -->
-<div id="placeOrder" class="view-section">
+<div id="view-3" class="view-section">
     <div class="container-fluid">
         <div class="row g-3">
             <div class="col-md-4">
@@ -644,8 +534,8 @@
                 <div class="p-3 rounded h-100" style="background:var(--card-bg);">
                     <h6 class="mb-3 border-bottom pb-2 text-info">الأصناف</h6>
                     <select id="cbItem" class="form-select bg-transparent text-white mb-3" onchange="onPosItemChange()">
-    <option value="" selected>اختر الصنف</option>
-</select>
+                        <option value="" selected>اختر الصنف</option>
+                    </select>
                     <div class="row">
                         <div class="col-6">
                             <div class="input-container m-0">
@@ -724,9 +614,113 @@
         </div>
     </div>
 </div>
+
+<!-- ===== قسم السندات ===== -->
+<div id="view-4" class="view-section">
+    <div class="container-fluid">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="p-3 rounded" style="background:var(--card-bg);">
+                    <div style="font-size:13px;color:var(--neon-cyan);margin-bottom:15px;display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-receipt"></i> إنشاء سند جديد
+                    </div>
+                    <form id="voucherForm" onsubmit="handleVoucherSubmit(event)">
+                        <div class="field-group">
+                            <label>نوع السند *</label>
+                            <div style="display:flex;gap:8px;">
+                                <button type="button" id="btnReceipt"
+                                    onclick="setVoucherType('receipt')"
+                                    style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--light-green);background:var(--light-green);color:white;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;">
+                                    <i class="fas fa-arrow-down"></i> قبض
+                                </button>
+                                <button type="button" id="btnPayment"
+                                    onclick="setVoucherType('payment')"
+                                    style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--text-muted);background:transparent;color:var(--text-muted);cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;">
+                                    <i class="fas fa-arrow-up"></i> صرف
+                                </button>
+                            </div>
+                            <input type="hidden" id="voucherType" value="receipt">
+                        </div>
+                        <div class="field-group">
+                            <label>المبلغ *</label>
+                            <input type="number" id="voucherAmount" required min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="field-group">
+                            <label>اسم العميل أو المورد *</label>
+                            <input type="text" id="voucherParty" required placeholder="اسم الشخص أو الجهة">
+                        </div>
+                        <div class="field-group">
+                            <label>طريقة الدفع</label>
+                            <select id="voucherMethod">
+                                <option value="نقد">نقد</option>
+                                <option value="تحويل بنكي">تحويل بنكي</option>
+                                <option value="شيك">شيك</option>
+                                <option value="بطاقة">بطاقة</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label>التاريخ *</label>
+                            <input type="date" id="voucherDate" required>
+                        </div>
+                        <div class="field-group">
+                            <label>ملاحظة</label>
+                            <textarea id="voucherNote" rows="2" placeholder="ملاحظة اختيارية..."
+                                style="width:100%;padding:10px;background:transparent;border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;resize:none;box-sizing:border-box;"></textarea>
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <button type="submit" class="btn-neon" style="--clr:var(--light-green);flex:1;">
+                                <i class="fas fa-save"></i> حفظ السند
+                            </button>
+                            <button type="button" class="btn-neon" style="--clr:var(--text-muted);" onclick="clearVoucherForm()">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-2 mb-3">
+                    <div class="col-4">
+                        <div class="p-3 rounded text-center" style="background:var(--card-bg);border-right:4px solid var(--light-green);">
+                            <small class="text-muted d-block">إجمالي القبض</small>
+                            <h5 id="totalReceipt" class="m-0 text-success fw-bold">0.00</h5>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded text-center" style="background:var(--card-bg);border-right:4px solid var(--danger-red);">
+                            <small class="text-muted d-block">إجمالي الصرف</small>
+                            <h5 id="totalPayment" class="m-0 text-danger fw-bold">0.00</h5>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded text-center" style="background:var(--card-bg);border-right:4px solid var(--neon-cyan);">
+                            <small class="text-muted d-block">الرصيد</small>
+                            <h5 id="totalBalance" class="m-0 fw-bold" style="color:var(--neon-cyan);">0.00</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive-custom">
+                    <table class="table table-dark table-hover table-dark-custom text-center">
+                        <thead>
+                            <tr>
+                                <th>رقم السند</th><th>النوع</th><th>الطرف</th>
+                                <th>المبلغ</th><th>طريقة الدفع</th><th>التاريخ</th>
+                                <th>طباعة</th><th>حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vouchersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
 <script>
     // ===== الثيم =====
     function changeTheme(themeName) {
@@ -740,14 +734,15 @@
 
     // ===== التنقل بين الأقسام =====
     function switchView(index) {
-    const navBtns  = document.querySelectorAll('.nav-btn');
-    const sections = document.querySelectorAll('body > .view-section');
-    navBtns.forEach(b => b.classList.remove('active-nav'));
-    sections.forEach(s => s.classList.remove('show'));
-    // ربط أزرار التنقل السفلية بالأقسام الأربعة الأولى فقط
-    if(index < navBtns.length) navBtns[index].classList.add('active-nav');
-    if(sections[index]) sections[index].classList.add('show');
-}
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const sections = document.querySelectorAll('.view-section');
+        navBtns.forEach(b => b.classList.remove('active-nav'));
+        sections.forEach(s => s.classList.remove('show'));
+        if(index < navBtns.length) navBtns[index].classList.add('active-nav');
+        const target = document.getElementById('view-' + index);
+        if(target) target.classList.add('show');
+        window.scrollTo(0, 0);
+    }
 
     // ===== Toast =====
     function showToast(message, isSuccess = true) {
@@ -756,11 +751,6 @@
         toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
         toast.style.display = 'block';
         setTimeout(() => { toast.style.display = 'none'; }, 4000);
-    }
-
-    // ===== تحت التطوير =====
-    function showUnderDevelopment(name) {
-        showToast(`ميزة (${name}) قيد التطوير.`, false);
     }
 
     // ===== باركود تلقائي =====
@@ -830,28 +820,24 @@
         }
     };
 
-    // ===== حذف العميل الحالي =====
     window.deleteCurrentCustomer = function() {
         const id = document.getElementById('custId')?.value.trim();
         if(!id) return showToast('اختر عميلاً أولاً', false);
         if(window.App && window.App.customer) window.App.customer.delete(id);
     };
 
-    // ===== تفريغ نموذج الصنف =====
     window.clearItemForm = function() {
         const form = document.getElementById('itemForm');
         if(form) form.reset();
         showToast('تم تفريغ النموذج', true);
     };
 
-    // ===== حذف الصنف الحالي =====
     window.deleteCurrentItem = function() {
         const code = document.getElementById('itemCode')?.value.trim();
         if(!code) return showToast('اختر صنفاً أولاً', false);
         if(window.App && window.App.item) window.App.item.delete(code);
     };
 
-    // ===== ربط أزرار النماذج =====
     window.handleCustomerSubmit = function(e) {
         e.preventDefault();
         const vat = document.getElementById('custVat').value.trim();
@@ -872,7 +858,6 @@
         if(window.App && window.App.item) window.App.item.addOrUpdate();
     };
 
-    // ===== ربط أزرار الكاشير =====
     window.addItemToCart = function() {
         if(window.App && window.App.pos) window.App.pos.addToCart();
     };
@@ -886,21 +871,6 @@
         if(window.App && window.App.pos && window.App.pos.onCustomerChange)
             window.App.pos.onCustomerChange();
     };
-    window.filterItems = function(query) {
-    const select = document.getElementById('cbItem');
-    const options = select.querySelectorAll('option');
-    const q = query.trim().toLowerCase();
-    options.forEach(opt => {
-        if(!opt.value) return;
-        opt.style.display = !q || opt.text.toLowerCase().includes(q) ? '' : 'none';
-    });
-    // إن كان هناك نتيجة واحدة اختارها تلقائياً
-    const visible = [...options].filter(o => o.value && o.style.display !== 'none');
-    if(visible.length === 1) {
-        select.value = visible[0].value;
-        window.onPosItemChange();
-    }
-};
     window.onPosItemChange = function() {
         if(window.App && window.App.pos && window.App.pos.onItemChange)
             window.App.pos.onItemChange();
@@ -916,7 +886,7 @@
             "m-products":"المستودع","m-purchases":"المشتريات","m-returns":"المرتجعات",
             "m-profits":"الأرباح","m-vat":"الإقرار الضريبي","m-inventory":"الجرد الدوري",
             "m-expenses":"المصاريف","m-vouchers":"السندات","m-settings":"الإعدادات",
-            "m-employees":"الموظفين","m-support":"الدعم الفني"
+            "m-employees":"الموظفين","m-support":"الدعم الفني","m-receipts":"السندات المالية"
         },
         en: {
             "app-title":"Altajer Pro","nav-dashboard":"Dashboard",
@@ -926,7 +896,7 @@
             "m-products":"Warehouse","m-purchases":"Purchases","m-returns":"Returns",
             "m-profits":"Profits","m-vat":"VAT Filing","m-inventory":"Inventory Count",
             "m-expenses":"Expenses","m-vouchers":"Vouchers","m-settings":"Settings",
-            "m-employees":"Employees","m-support":"Support"
+            "m-employees":"Employees","m-support":"Support","m-receipts":"Financial Receipts"
         }
     };
 
@@ -960,119 +930,125 @@
         });
     }
 
-    // ===== حماية الصفحة — التحقق من تسجيل الدخول =====
-    import('https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js')
-    .then(({ onAuthStateChanged, getAuth }) => {
+    // ===== السندات =====
+    window.setVoucherType = function(type) {
+        document.getElementById('voucherType').value = type;
+        const btnR = document.getElementById('btnReceipt');
+        const btnP = document.getElementById('btnPayment');
+        if(type === 'receipt') {
+            btnR.style.background = 'var(--light-green)';
+            btnR.style.borderColor = 'var(--light-green)';
+            btnR.style.color = 'white';
+            btnP.style.background = 'transparent';
+            btnP.style.borderColor = 'var(--text-muted)';
+            btnP.style.color = 'var(--text-muted)';
+        } else {
+            btnP.style.background = 'var(--danger-red)';
+            btnP.style.borderColor = 'var(--danger-red)';
+            btnP.style.color = 'white';
+            btnR.style.background = 'transparent';
+            btnR.style.borderColor = 'var(--text-muted)';
+            btnR.style.color = 'var(--text-muted)';
+        }
+    };
+
+    window.clearVoucherForm = function() {
+        const form = document.getElementById('voucherForm');
+        if(form) form.reset();
+        window.setVoucherType('receipt');
+        const dateEl = document.getElementById('voucherDate');
+        if(dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+    };
+
+    window.handleVoucherSubmit = function(e) {
+        e.preventDefault();
+        if(window.App && window.App.voucher) window.App.voucher.save();
+    };
+
+    window.printVoucher = function(id) {
+        const list = JSON.parse(localStorage.getItem('altajer_vouchers') || '[]');
+        const v = list.find(x => x.id === id);
+        if(!v) return showToast('السند غير موجود', false);
+        const S = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
+        const CUR_MAP = { SAR:'ر.س', AED:'د.إ', USD:'$', GBP:'£', EUR:'€', OTHER:'' };
+        const C = CUR_MAP[S.currency] || S.currency || 'ر.س';
+        const color = v.type === 'receipt' ? '#2b9348' : '#d90429';
+        const label = v.type === 'receipt' ? 'سند قبض' : 'سند صرف';
+        const win = window.open('', '_blank');
+        win.document.write(`<!DOCTYPE html>
+        <html lang="ar" dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <title>${label}</title>
+            <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+            <style>
+                * { font-family:'Cairo',sans-serif; box-sizing:border-box; }
+                body { margin:20px; color:#1a1a2e; }
+                .voucher { max-width:400px; margin:0 auto; border:2px solid ${color}; border-radius:12px; padding:20px; }
+                .header { text-align:center; border-bottom:1px dashed #ccc; padding-bottom:12px; margin-bottom:16px; }
+                .badge { background:${color}; color:white; padding:4px 20px; border-radius:20px; font-size:14px; font-weight:900; }
+                .company { font-size:18px; font-weight:900; margin-top:10px; }
+                .row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #f0f0f0; font-size:13px; }
+                .amount { text-align:center; font-size:28px; font-weight:900; color:${color}; margin:16px 0; }
+                .sig-row { display:flex; justify-content:space-between; margin-top:30px; }
+                .sig-box { text-align:center; width:45%; border-top:1px solid #333; padding-top:5px; font-size:11px; }
+                .footer { text-align:center; font-size:11px; color:#777; margin-top:16px; }
+                @media print { body { margin:0; } }
+            </style>
+        </head>
+        <body>
+            <div class="voucher">
+                <div class="header">
+                    <span class="badge">${label}</span>
+                    <div class="company">${S.companyName||'تاجر برو'}</div>
+                    ${S.phone?`<div style="font-size:12px;color:#555;">${S.phone}</div>`:''}
+                </div>
+                <div class="amount">${parseFloat(v.amount).toFixed(2)} ${C}</div>
+                <div class="row"><span>رقم السند:</span><span>${v.id}</span></div>
+                <div class="row"><span>التاريخ:</span><span>${v.date}</span></div>
+                <div class="row"><span>${v.type==='receipt'?'استلمنا من:':'صرفنا لـ:'}</span><span>${v.party}</span></div>
+                <div class="row"><span>طريقة الدفع:</span><span>${v.method}</span></div>
+                ${v.note?`<div class="row"><span>ملاحظة:</span><span>${v.note}</span></div>`:''}
+                <div class="sig-row">
+                    <div class="sig-box">المستلم</div>
+                    <div class="sig-box">المحاسب</div>
+                </div>
+                <div class="footer">تاجر برو المحاسبي</div>
+            </div>
+            <script>window.onload=function(){window.print();}<\/script>
+        </body>
+        </html>`);
+        win.document.close();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateEl = document.getElementById('voucherDate');
+        if(dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+    });
+</script>
+
+<!-- ✅ Firebase وdb يجب أن يكونا type="module" -->
+<script type="module" src="firebase-config.js"></script>
+<script type="module" src="db.js"></script>
+<script src="wafeq-service.js" defer></script>
+
+<!-- ✅ حماية الصفحة — منفصلة في module خاص بها -->
+<script type="module">
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    
+    // ننتظر قليلاً حتى يتهيأ Firebase من firebase-config.js
+    setTimeout(() => {
         const auth = getAuth();
         onAuthStateChanged(auth, (user) => {
             if (!user) {
                 window.location.href = 'login.html';
             } else {
-                // عرض اسم المستخدم في الشريط العلوي
                 const nameEl = document.getElementById('userDisplayName');
                 if(nameEl) nameEl.innerText = user.displayName || user.email;
             }
         });
-    });
-    window.setVoucherType = function(type) {
-    document.getElementById('voucherType').value = type;
-    const btnR = document.getElementById('btnReceipt');
-    const btnP = document.getElementById('btnPayment');
-    if(type === 'receipt') {
-        btnR.style.background = 'var(--light-green)';
-        btnR.style.borderColor = 'var(--light-green)';
-        btnR.style.color = 'white';
-        btnP.style.background = 'transparent';
-        btnP.style.borderColor = 'var(--text-muted)';
-        btnP.style.color = 'var(--text-muted)';
-    } else {
-        btnP.style.background = 'var(--danger-red)';
-        btnP.style.borderColor = 'var(--danger-red)';
-        btnP.style.color = 'white';
-        btnR.style.background = 'transparent';
-        btnR.style.borderColor = 'var(--text-muted)';
-        btnR.style.color = 'var(--text-muted)';
-    }
-};
-
-window.clearVoucherForm = function() {
-    const form = document.getElementById('voucherForm');
-    if(form) form.reset();
-    window.setVoucherType('receipt');
-    const dateEl = document.getElementById('voucherDate');
-    if(dateEl) dateEl.value = new Date().toISOString().split('T')[0];
-};
-
-window.handleVoucherSubmit = function(e) {
-    e.preventDefault();
-    if(window.App && window.App.voucher) window.App.voucher.save();
-};
-
-window.printVoucher = function(id) {
-    const list = JSON.parse(localStorage.getItem('altajer_vouchers') || '[]');
-    const v = list.find(x => x.id === id);
-    if(!v) return showToast('السند غير موجود', false);
-    const S = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
-    const CUR_MAP = { SAR:'ر.س', AED:'د.إ', USD:'$', GBP:'£', EUR:'€', OTHER:'' };
-    const C = CUR_MAP[S.currency] || S.currency || 'ر.س';
-    const color = v.type === 'receipt' ? '#2b9348' : '#d90429';
-    const label = v.type === 'receipt' ? 'سند قبض' : 'سند صرف';
-    const win = window.open('', '_blank');
-    win.document.write(`<!DOCTYPE html>
-    <html lang="ar" dir="rtl">
-    <head>
-        <meta charset="UTF-8">
-        <title>${label}</title>
-        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-        <style>
-            * { font-family:'Cairo',sans-serif; box-sizing:border-box; }
-            body { margin:20px; color:#1a1a2e; }
-            .voucher { max-width:400px; margin:0 auto; border:2px solid ${color}; border-radius:12px; padding:20px; }
-            .header { text-align:center; border-bottom:1px dashed #ccc; padding-bottom:12px; margin-bottom:16px; }
-            .badge { background:${color}; color:white; padding:4px 20px; border-radius:20px; font-size:14px; font-weight:900; }
-            .company { font-size:18px; font-weight:900; margin-top:10px; }
-            .row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #f0f0f0; font-size:13px; }
-            .amount { text-align:center; font-size:28px; font-weight:900; color:${color}; margin:16px 0; }
-            .sig-row { display:flex; justify-content:space-between; margin-top:30px; }
-            .sig-box { text-align:center; width:45%; border-top:1px solid #333; padding-top:5px; font-size:11px; }
-            .footer { text-align:center; font-size:11px; color:#777; margin-top:16px; }
-            @media print { body { margin:0; } }
-        </style>
-    </head>
-    <body>
-        <div class="voucher">
-            <div class="header">
-                <span class="badge">${label}</span>
-                <div class="company">${S.companyName||'تاجر برو'}</div>
-                ${S.phone?`<div style="font-size:12px;color:#555;">${S.phone}</div>`:''}
-            </div>
-            <div class="amount">${parseFloat(v.amount).toFixed(2)} ${C}</div>
-            <div class="row"><span>رقم السند:</span><span>${v.id}</span></div>
-            <div class="row"><span>التاريخ:</span><span>${v.date}</span></div>
-            <div class="row"><span>${v.type==='receipt'?'استلمنا من:':'صرفنا لـ:'}</span><span>${v.party}</span></div>
-            <div class="row"><span>طريقة الدفع:</span><span>${v.method}</span></div>
-            ${v.note?`<div class="row"><span>ملاحظة:</span><span>${v.note}</span></div>`:''}
-            <div class="sig-row">
-                <div class="sig-box">المستلم</div>
-                <div class="sig-box">المحاسب</div>
-            </div>
-            <div class="footer">تاجر برو المحاسبي</div>
-        </div>
-        <script>window.onload=function(){window.print();}<\/script>
-    </body>
-    </html>`);
-    win.document.close();
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    const dateEl = document.getElementById('voucherDate');
-    if(dateEl) dateEl.value = new Date().toISOString().split('T')[0];
-});
+    }, 500);
 </script>
-
-<script type="module" src="firebase-config.js"></script>
-<script type="module" src="db.js"></script>
-<script src="wafeq-service.js" defer></script>
 
 </body>
 </html>

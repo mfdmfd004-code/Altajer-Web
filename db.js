@@ -5,29 +5,53 @@ import {
     getDoc, deleteDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// استيراد نظام التحقق لمعرفة المستخدم الحالي
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
 let cart = [];
+let currentUserUid = null; // هنا سيتم تخزين المعرف الفريد للمستخدم المسجل
+
+// مراقبة حالة تسجيل الدخول وتحديث المستمعات الحية بناءً على الـ UID الخاص بك
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUserUid = user.uid; // تم جلب الـ UID بنجاح
+        console.log("المستخدم المسجل الحالي UID:", currentUserUid);
+        // إعادة تشغيل المستمعات الحية للمجلد الخاص بك بعد التأكد من الهوية
+        initRealtimeListeners();
+    } else {
+        currentUserUid = null;
+        console.warn("لم يتم تسجيل الدخول بعد!");
+    }
+});
 
 // ==========================================
 // أولاً: دوال التصدير
 // ==========================================
 export async function getAllCustomers() {
     try {
-        const snap = await getDocs(collection(db, "customers"));
+        if (!currentUserUid) return [];
+        // القراءة من المسار المحمي الخاص بك: users/$uid/customers
+        const snap = await getDocs(collection(db, "users", currentUserUid, "customers"));
         return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (e) { console.error("خطأ العملاء:", e); return []; }
 }
 
 export async function getAllItems() {
     try {
-        const snap = await getDocs(collection(db, "products"));
+        if (!currentUserUid) return [];
+        // القراءة من المسار المحمي الخاص بك: users/$uid/products
+        const snap = await getDocs(collection(db, "users", currentUserUid, "products"));
         return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (e) { console.error("خطأ الأصناف:", e); return []; }
 }
 
 export async function saveInvoice(invoiceData) {
     try {
+        if (!currentUserUid) throw new Error("يجب تسجيل الدخول أولاً");
         const invoiceId = invoiceData.invoiceNumber || "INV-" + Date.now();
-        await setDoc(doc(db, "orders", invoiceId), {
+        // الحفظ في المسار المحمي الخاص بك: users/$uid/orders/invoiceId
+        await setDoc(doc(db, "users", currentUserUid, "orders", invoiceId), {
             ...invoiceData, timestamp: new Date()
         });
         const local = JSON.parse(localStorage.getItem('altajer_invoices')) || [];
@@ -47,6 +71,10 @@ const MainApp = {
     // ===== العملاء =====
     customer: {
         addOrUpdate: async function() {
+            if (!currentUserUid) {
+                if(typeof showToast==='function') showToast('❌ خطأ: لم يتم التعرف على الحساب، سجل دخولك.', false);
+                return;
+            }
             const id       = (document.getElementById('custId')?.value||'').trim();
             const name     = (document.getElementById('custName')?.value||'').trim();
             const type     = (document.getElementById('custType')?.value||'B2C');
@@ -92,7 +120,8 @@ const MainApp = {
             };
 
             try {
-                await setDoc(doc(db, "customers", id), customerData, { merge: true });
+                // تعديل مسار الحفظ ليكون تحت مجلد المستخدم الفريد
+                await setDoc(doc(db, "users", currentUserUid, "customers", id), customerData, { merge: true });
                 const local = JSON.parse(localStorage.getItem('altajer_customers')) || [];
                 const idx = local.findIndex(c => c.id === id);
                 if (idx > -1) local[idx] = customerData;
@@ -106,6 +135,7 @@ const MainApp = {
         },
 
         delete: async function(id) {
+            if (!currentUserUid) return;
             const custId = id || (document.getElementById('custId')?.value||'').trim();
             if (!custId) {
                 if(typeof showToast==='function') showToast('يرجى إدخال معرّف العميل للحذف.', false);
@@ -113,7 +143,8 @@ const MainApp = {
             }
             if (!confirm('هل أنت متأكد من الحذف؟')) return;
             try {
-                await deleteDoc(doc(db, "customers", custId));
+                // تعديل مسار الحذف ليكون تحت مجلد المستخدم الفريد
+                await deleteDoc(doc(db, "users", currentUserUid, "customers", custId));
                 let local = JSON.parse(localStorage.getItem('altajer_customers')) || [];
                 local = local.filter(c => c.id !== custId);
                 localStorage.setItem('altajer_customers', JSON.stringify(local));
@@ -128,6 +159,10 @@ const MainApp = {
     // ===== المخزن =====
     item: {
         addOrUpdate: async function() {
+            if (!currentUserUid) {
+                if(typeof showToast==='function') showToast('❌ خطأ: سجل دخولك أولاً لإضافة الأصناف.', false);
+                return;
+            }
             const code      = (document.getElementById('itemCode')?.value||'').trim();
             const name      = (document.getElementById('itemName')?.value||'').trim();
             const price     = parseFloat(document.getElementById('itemPrice')?.value)||0;
@@ -163,7 +198,8 @@ const MainApp = {
             }
 
             try {
-                await setDoc(doc(db, "products", code), {
+                // تعديل مسار المخزن ليكون تحت مجلد المستخدم الفريد
+                await setDoc(doc(db, "users", currentUserUid, "products", code), {
                     code, name, category, unit,
                     price: parseFloat(priceInclTax.toFixed(2)),
                     priceExcl: parseFloat(priceExclTax.toFixed(2)),
@@ -180,6 +216,7 @@ const MainApp = {
         },
 
         delete: async function(code) {
+            if (!currentUserUid) return;
             const itemCode = code || (document.getElementById('itemCode')?.value||'').trim();
             if (!itemCode) {
                 if(typeof showToast==='function') showToast('يرجى إدخال الكود للحذف.', false);
@@ -187,7 +224,8 @@ const MainApp = {
             }
             if (!confirm('هل تريد الحذف نهائياً؟')) return;
             try {
-                await deleteDoc(doc(db, "products", itemCode));
+                // تعديل مسار الحذف في المخزن تحت مجلد المستخدم
+                await deleteDoc(doc(db, "users", currentUserUid, "products", itemCode));
                 if(typeof showToast==='function') showToast('✅ تم حذف الصنف بنجاح.', true);
                 if (window.clearItemForm) window.clearItemForm();
             } catch (e) {
@@ -275,9 +313,11 @@ const MainApp = {
         },
 
         onCustomerChange: async function() {
+            if (!currentUserUid) return;
             const id = document.getElementById('cbCustomer')?.value;
             if (id) {
-                const snap = await getDoc(doc(db, "customers", id));
+                // تعديل مسار جلب بيانات عميل محدد
+                const snap = await getDoc(doc(db, "users", currentUserUid, "customers", id));
                 if (snap.exists()) {
                     const d = snap.data();
                     if(document.getElementById('poCustId'))
@@ -305,6 +345,10 @@ const MainApp = {
         },
 
         placeOrder: async function() {
+            if (!currentUserUid) {
+                if(typeof showToast==='function') showToast('السلة تتطلب تسجيل الدخول لتسجيل الفاتورة!', false);
+                return;
+            }
             const settings = JSON.parse(localStorage.getItem('altajer_settings')) || {};
             if (cart.length === 0) {
                 if(typeof showToast==='function') showToast('السلة فارغة!', false);
@@ -347,13 +391,14 @@ const MainApp = {
                     invoiceFooter: settings.invoiceFooter || ""
                 };
 
-                await setDoc(doc(db, "orders", orderId), invoiceData);
+                // تعديل مسار حفظ الفاتورة الجديدة تحت المجلد الخاص بالـ UID
+                await setDoc(doc(db, "users", currentUserUid, "orders", orderId), invoiceData);
 
                 if (typeof window.syncInvoiceWithWafeq === "function")
                     await window.syncInvoiceWithWafeq(invoiceData);
 
                 for (const item of cart) {
-                    const itemRef = doc(db, "products", item.code);
+                    const itemRef = doc(db, "users", currentUserUid, "products", item.code);
                     const itemSnap = await getDoc(itemRef);
                     if (itemSnap.exists()) {
                         const curQty = parseFloat(
@@ -399,6 +444,7 @@ const MainApp = {
 
     // ===== المرتجعات =====
     processReturn: async function() {
+        if (!currentUserUid) return;
         const input = document.getElementById('return-ref');
         const container = document.getElementById('return-details');
         if (!input?.value.trim()) {
@@ -408,7 +454,8 @@ const MainApp = {
         const invoiceId = input.value.trim();
         container.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري...`;
         try {
-            const snap = await getDoc(doc(db, "orders", invoiceId));
+            // تعديل مسار فحص الفاتورة للمرتجع
+            const snap = await getDoc(doc(db, "users", currentUserUid, "orders", invoiceId));
             if (!snap.exists()) {
                 container.innerHTML = `<span style="color:#e74c3c;">الفاتورة غير موجودة.</span>`;
                 return;
@@ -434,9 +481,10 @@ const MainApp = {
     },
 
     executeItemReturn: async function(invoiceId, itemCode, qty, price, itemIndex) {
+        if (!currentUserUid) return;
         if (!confirm("تأكيد الإرجاع؟")) return;
         try {
-            const itemRef = doc(db, "products", itemCode);
+            const itemRef = doc(db, "users", currentUserUid, "products", itemCode);
             const itemSnap = await getDoc(itemRef);
             if (itemSnap.exists()) {
                 const cur = parseFloat(
@@ -446,7 +494,7 @@ const MainApp = {
                     quantity: cur + qty, qty: cur + qty
                 }, { merge: true });
             }
-            const orderRef = doc(db, "orders", invoiceId);
+            const orderRef = doc(db, "users", currentUserUid, "orders", invoiceId);
             const orderSnap = await getDoc(orderRef);
             if (orderSnap.exists()) {
                 let inv = orderSnap.data();
@@ -469,6 +517,10 @@ const MainApp = {
     // ===== السندات =====
     voucher: {
         save: async function() {
+            if (!currentUserUid) {
+                if(typeof showToast==='function') showToast('سجل دخولك لحفظ السندات', false);
+                return;
+            }
             const type   = document.getElementById('voucherType')?.value || 'receipt';
             const amount = parseFloat(document.getElementById('voucherAmount')?.value)||0;
             const party  = (document.getElementById('voucherParty')?.value||'').trim();
@@ -496,7 +548,8 @@ const MainApp = {
             };
 
             try {
-                await setDoc(doc(db, 'vouchers', voucherId), data);
+                // تعديل مسار حفظ السندات تحت مجلد المستخدم الفريد
+                await setDoc(doc(db, 'users', currentUserUid, 'vouchers', voucherId), data);
                 if(typeof showToast==='function') showToast('✅ تم حفظ السند بنجاح', true);
                 if(window.clearVoucherForm) window.clearVoucherForm();
             } catch(e) {
@@ -505,9 +558,11 @@ const MainApp = {
         },
 
         delete: async function(id) {
+            if (!currentUserUid) return;
             if(!confirm('حذف هذا السند نهائياً؟')) return;
             try {
-                await deleteDoc(doc(db, 'vouchers', id));
+                // تعديل مسار حذف السند تحت مجلد المستخدم
+                await deleteDoc(doc(db, 'users', currentUserUid, 'vouchers', id));
                 if(typeof showToast==='function') showToast('✅ تم حذف السند', true);
             } catch(e) {
                 if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
@@ -523,9 +578,11 @@ window.App = MainApp;
 // ثالثاً: المستمعات الحية
 // ==========================================
 function initRealtimeListeners() {
+    // نوقف التشغيل إذا لم يكن الـ UID متوفراً بعد لمنع أخطاء الـ Rules
+    if (!currentUserUid) return;
 
-    // ===== العملاء =====
-    onSnapshot(collection(db, "customers"), (snapshot) => {
+    // ===== العملاء مسمع حي محمي =====
+    onSnapshot(collection(db, "users", currentUserUid, "customers"), (snapshot) => {
         const tbody = document.getElementById('customerTableBody');
         const cbCustomer = document.getElementById('cbCustomer');
         if (tbody) tbody.innerHTML = '';
@@ -565,8 +622,8 @@ function initRealtimeListeners() {
         if (cnt) cnt.innerText = snapshot.size;
     });
 
-    // ===== المنتجات =====
-    onSnapshot(collection(db, "products"), (snapshot) => {
+    // ===== المنتجات مستمع حي محمي =====
+    onSnapshot(collection(db, "users", currentUserUid, "products"), (snapshot) => {
         const tbody = document.getElementById('itemTableBody');
         const cbItem = document.getElementById('cbItem');
         if (tbody) tbody.innerHTML = '';
@@ -612,8 +669,8 @@ function initRealtimeListeners() {
             ? `⚠️ ${lowStockCount} صنف منخفض` : '';
     });
 
-    // ===== الطلبات =====
-    onSnapshot(collection(db, "orders"), (snapshot) => {
+    // ===== الطلبات مستمع حي محمي =====
+    onSnapshot(collection(db, "users", currentUserUid, "orders"), (snapshot) => {
         const list = [];
         snapshot.forEach(d => list.push({ invoiceNumber: d.id, ...d.data() }));
         localStorage.setItem('altajer_invoices', JSON.stringify(list));
@@ -621,8 +678,8 @@ function initRealtimeListeners() {
         if (cnt) cnt.innerText = snapshot.size;
     });
 
-    // ===== السندات =====
-    onSnapshot(collection(db, 'vouchers'), (snapshot) => {
+    // ===== السندات مستمع حي محمي =====
+    onSnapshot(collection(db, "users", currentUserUid, "vouchers"), (snapshot) => {
         const tbody = document.getElementById('vouchersTableBody');
         if(!tbody) return;
         tbody.innerHTML = '';
@@ -670,29 +727,24 @@ function initRealtimeListeners() {
         }
         localStorage.setItem('altajer_vouchers', JSON.stringify(list));
     });
-
-    // ===== خصم يحدث التوتال فوراً =====
-    const discountInput = document.getElementById('poDiscount');
-    if (discountInput) {
-        discountInput.addEventListener('input', () => {
-            if (window.App?.pos) window.App.pos.updateCartTable();
-        });
-    }
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initRealtimeListeners);
-} else {
-    initRealtimeListeners();
+// تعديل طريقة تشغيل المستمعات لتبدأ فقط بعد التحقق من الهوية بنجاح
+const discountInput = document.getElementById('poDiscount');
+if (discountInput) {
+    discountInput.addEventListener('input', () => {
+        if (window.App?.pos) window.App.pos.updateCartTable();
+    });
 }
 
 // ==========================================
 // رابعاً: دوال مساعدة عامة
 // ==========================================
 window.deleteCustomerById = async function(id) {
+    if (!currentUserUid) return;
     if (!confirm(`حذف العميل: ${id}?`)) return;
     try {
-        await deleteDoc(doc(db, "customers", id));
+        await deleteDoc(doc(db, "users", currentUserUid, "customers", id));
         let local = JSON.parse(localStorage.getItem('altajer_customers'))||[];
         local = local.filter(c => c.id !== id);
         localStorage.setItem('altajer_customers', JSON.stringify(local));
@@ -728,9 +780,10 @@ window.loadCustomerToEdit = function(id) {
 };
 
 window.deleteItemById = async function(code) {
+    if (!currentUserUid) return;
     if (!confirm(`حذف الصنف: ${code}?`)) return;
     try {
-        await deleteDoc(doc(db, "products", code));
+        await deleteDoc(doc(db, "users", currentUserUid, "products", code));
         if(typeof showToast==='function') showToast('✅ تم حذف الصنف.', true);
     } catch(e) {
         if(typeof showToast==='function') showToast('خطأ: ' + e.message, false);
@@ -738,8 +791,9 @@ window.deleteItemById = async function(code) {
 };
 
 window.loadItemToEdit = async function(code) {
+    if (!currentUserUid) return;
     try {
-        const snap = await getDoc(doc(db, "products", code));
+        const snap = await getDoc(doc(db, "users", currentUserUid, "products", code));
         if (!snap.exists()) {
             if(typeof showToast==='function') showToast('الصنف غير موجود.', false);
             return;

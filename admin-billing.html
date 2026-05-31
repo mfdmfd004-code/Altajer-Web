@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — لوحة تحكم الأدمن</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing:border-box; font-family:'Cairo',sans-serif; }
+        body {
+            background:linear-gradient(135deg,#0f172a,#1a0a2e);
+            min-height:100vh; color:#fff;
+            padding:20px 10px 50px; margin:0;
+        }
+        .page-title { font-size:18px; font-weight:900; color:#b392ac; display:flex; align-items:center; gap:8px; }
+        .admin-badge {
+            background:linear-gradient(135deg,#b392ac,#7b5ea7);
+            color:white; padding:3px 12px; border-radius:10px; font-size:11px; font-weight:700;
+        }
+        .card-box {
+            background:rgba(255,255,255,0.05); backdrop-filter:blur(10px);
+            border:1px solid rgba(255,255,255,0.1); border-radius:20px;
+            padding:22px 18px; margin-bottom:14px;
+            max-width:700px; margin-left:auto; margin-right:auto;
+        }
+        .section-title {
+            font-size:14px; font-weight:700; color:#b392ac;
+            display:flex; align-items:center; gap:8px;
+            margin-bottom:18px; padding-bottom:10px;
+            border-bottom:1px solid rgba(179,146,172,0.2);
+        }
+        .field-group { margin-bottom:14px; }
+        .field-group label {
+            display:block; font-size:11px; color:rgba(255,255,255,0.5);
+            margin-bottom:5px; font-weight:600;
+        }
+        .field-group input, .field-group select {
+            width:100%; padding:11px 14px;
+            background:rgba(255,255,255,0.07);
+            border:1px solid rgba(255,255,255,0.12);
+            border-radius:10px; color:white; font-size:14px;
+            font-family:'Cairo',sans-serif; transition:0.3s;
+        }
+        .field-group input:focus { outline:none; border-color:#b392ac; }
+        .field-group input::placeholder { color:rgba(255,255,255,0.2); }
+        .bank-divider {
+            border-top:1px dashed rgba(255,255,255,0.1);
+            margin:16px 0; padding-top:16px;
+        }
+        .btn-save {
+            width:100%; padding:13px;
+            background:linear-gradient(135deg,#7b5ea7,#b392ac);
+            color:white; border:none; border-radius:12px;
+            font-size:15px; font-weight:700;
+            cursor:pointer; transition:0.3s;
+            font-family:'Cairo',sans-serif;
+        }
+        .btn-save:hover { transform:translateY(-2px); }
+        .btn-danger {
+            padding:10px 20px; background:#e63946; color:white;
+            border:none; border-radius:10px; cursor:pointer;
+            font-family:'Cairo',sans-serif; font-weight:700; font-size:13px;
+        }
+        .stat-box {
+            background:rgba(0,0,0,0.2); border-radius:12px;
+            padding:14px; text-align:center; border:1px solid rgba(255,255,255,0.06);
+        }
+        .stat-num { font-size:28px; font-weight:900; color:#b392ac; }
+        .stat-label { font-size:11px; color:rgba(255,255,255,0.4); }
+        .table-custom {
+            width:100%; border-collapse:collapse; font-size:12px;
+        }
+        .table-custom th {
+            background:rgba(179,146,172,0.15); color:#b392ac;
+            padding:8px; text-align:center;
+        }
+        .table-custom td { padding:8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .badge-active   { background:#2b9348; color:white; padding:2px 8px; border-radius:8px; font-size:10px; }
+        .badge-pending  { background:#ffb703; color:#000; padding:2px 8px; border-radius:8px; font-size:10px; }
+        .badge-expired  { background:#e63946; color:white; padding:2px 8px; border-radius:8px; font-size:10px; }
+        .toast-box {
+            position:fixed; top:20px; left:50%; transform:translateX(-50%);
+            padding:12px 25px; border-radius:30px; color:white; font-weight:700;
+            font-size:13px; z-index:9999; display:none; max-width:90%;
+        }
+        .access-denied {
+            text-align:center; padding:60px 20px; font-size:16px; color:#e63946;
+        }
+    </style>
+</head>
+<body>
+
+<div id="toastBox" class="toast-box"></div>
+
+<div id="adminContent" style="display:none;">
+
+    <div style="max-width:700px;margin:0 auto 20px;display:flex;align-items:center;justify-content:space-between;padding:0 5px;">
+        <div class="page-title">
+            <i class="fas fa-shield-alt"></i> لوحة تحكم الأدمن
+            <span class="admin-badge">ADMIN</span>
+        </div>
+        <a href="index.html" style="color:rgba(255,255,255,0.4);font-size:13px;text-decoration:none;">
+            <i class="fas fa-home"></i> الرئيسية
+        </a>
+    </div>
+
+    <!-- الإحصائيات -->
+    <div class="card-box">
+        <div class="section-title"><i class="fas fa-chart-bar"></i> إحصائيات الاشتراكات</div>
+        <div class="row g-3">
+            <div class="col-4">
+                <div class="stat-box">
+                    <div class="stat-num" id="statActive">—</div>
+                    <div class="stat-label">اشتراك نشط</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-box">
+                    <div class="stat-num" id="statTrial">—</div>
+                    <div class="stat-label">تجريبي</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-box">
+                    <div class="stat-num" id="statPending">—</div>
+                    <div class="stat-label">تحويل بانتظار التحقق</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- إعدادات البنوك -->
+    <div class="card-box">
+        <div class="section-title">
+            <i class="fas fa-university"></i> إعدادات الحسابات البنكية
+        </div>
+
+        <div class="field-group">
+            <label>الدولة الافتراضية لحسابات التحويل</label>
+            <select id="adminBankCountry">
+                <option value="SA">🇸🇦 المملكة العربية السعودية</option>
+                <option value="AE">🇦🇪 الإمارات</option>
+                <option value="KW">🇰🇼 الكويت</option>
+                <option value="EG">🇪🇬 مصر</option>
+                <option value="OTHER">🌍 أخرى</option>
+            </select>
+        </div>
+
+        <!-- البنك الأول -->
+        <div style="background:rgba(0,0,0,0.2);border-radius:12px;padding:14px;margin-bottom:12px;">
+            <div style="font-size:12px;color:#b392ac;font-weight:700;margin-bottom:10px;">
+                <i class="fas fa-university"></i> البنك الأول
+            </div>
+            <div class="field-group">
+                <label>اسم البنك</label>
+                <input type="text" id="bank1Name" placeholder="مثال: البنك الأهلي السعودي">
+            </div>
+            <div class="field-group">
+                <label>رقم الآيبان (IBAN)</label>
+                <input type="text" id="bank1Iban" placeholder="SA0000000000000000000000"
+                       style="font-family:monospace;" oninput="formatIban(this)">
+            </div>
+            <div class="field-group">
+                <label>اسم صاحب الحساب</label>
+                <input type="text" id="bank1Owner" placeholder="الاسم الرسمي">
+            </div>
+        </div>
+
+        <!-- البنك الثاني -->
+        <div style="background:rgba(0,0,0,0.2);border-radius:12px;padding:14px;margin-bottom:16px;">
+            <div style="font-size:12px;color:#b392ac;font-weight:700;margin-bottom:10px;">
+                <i class="fas fa-university"></i> البنك الثاني
+            </div>
+            <div class="field-group">
+                <label>اسم البنك</label>
+                <input type="text" id="bank2Name" placeholder="مثال: بنك الراجحي">
+            </div>
+            <div class="field-group">
+                <label>رقم الآيبان (IBAN)</label>
+                <input type="text" id="bank2Iban" placeholder="SA0000000000000000000000"
+                       style="font-family:monospace;" oninput="formatIban(this)">
+            </div>
+            <div class="field-group">
+                <label>اسم صاحب الحساب</label>
+                <input type="text" id="bank2Owner" placeholder="الاسم الرسمي">
+            </div>
+        </div>
+
+        <button class="btn-save" onclick="saveBankSettings()">
+            <i class="fas fa-save"></i> حفظ بيانات البنوك
+        </button>
+    </div>
+
+    <!-- التحويلات المعلقة -->
+    <div class="card-box">
+        <div class="section-title">
+            <i class="fas fa-clock"></i> طلبات التحويل البنكي المعلقة
+        </div>
+        <div id="pendingTransfersList">
+            <div style="color:rgba(255,255,255,0.3);text-align:center;padding:20px;font-size:13px;">
+                <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+            </div>
+        </div>
+    </div>
+
+    <!-- تفعيل يدوي -->
+    <div class="card-box">
+        <div class="section-title">
+            <i class="fas fa-user-check"></i> تفعيل اشتراك يدوي
+        </div>
+        <div class="field-group">
+            <label>معرف المستخدم (UID)</label>
+            <input type="text" id="manualUid" placeholder="أدخل UID من Firebase Console">
+        </div>
+        <div class="field-group">
+            <label>الخطة</label>
+            <select id="manualPlan">
+                <option value="monthly">شهري (30 يوم)</option>
+                <option value="yearly">سنوي (365 يوم)</option>
+            </select>
+        </div>
+        <button class="btn-save" onclick="manualActivate()">
+            <i class="fas fa-bolt"></i> تفعيل فوري
+        </button>
+    </div>
+
+</div>
+
+<!-- رسالة رفض الوصول -->
+<div id="accessDenied" class="access-denied" style="display:none;">
+    <i class="fas fa-ban" style="font-size:48px;margin-bottom:16px;display:block;"></i>
+    <strong>غير مسموح بالدخول</strong><br>
+    <small style="color:rgba(255,255,255,0.4);">هذه الصفحة للمشرف فقط</small>
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+
+<script type="module">
+import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc,
+         collection, getDocs, serverTimestamp, deleteDoc }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { activateSubscription } from "./subscription.js";
+
+await new Promise(r => setTimeout(r, 600));
+
+// UID الأدمن — غيّره بـ UID حسابك في Firebase
+const ADMIN_UID = 'RWp5xxVVphaNI2uIl5hMBBC5Ar93';
+
+const auth = getAuth();
+const db   = getFirestore();
+
+onAuthStateChanged(auth, async user => {
+    if (!user || user.uid !== ADMIN_UID) {
+        document.getElementById('accessDenied').style.display = 'block';
+        return;
+    }
+    document.getElementById('adminContent').style.display = 'block';
+    loadBankSettings();
+    loadPendingTransfers();
+    loadStats();
+});
+
+// ===== حفظ بيانات البنوك =====
+window.saveBankSettings = async function() {
+    const data = {
+        country: document.getElementById('adminBankCountry').value,
+        bank1: {
+            name:    document.getElementById('bank1Name').value.trim(),
+            iban:    document.getElementById('bank1Iban').value.trim(),
+            owner:   document.getElementById('bank1Owner').value.trim(),
+            country: document.getElementById('adminBankCountry').value
+        },
+        bank2: {
+            name:    document.getElementById('bank2Name').value.trim(),
+            iban:    document.getElementById('bank2Iban').value.trim(),
+            owner:   document.getElementById('bank2Owner').value.trim(),
+            country: document.getElementById('adminBankCountry').value
+        },
+        updatedAt: serverTimestamp()
+    };
+
+    if (!data.bank1.name || !data.bank1.iban)
+        return showToast('يرجى إدخال بيانات البنك الأول على الأقل', false);
+
+    try {
+        await setDoc(doc(db, 'admin', 'bankAccounts'), data, { merge: true });
+        showToast('✅ تم حفظ بيانات البنوك بنجاح', true);
+    } catch (e) {
+        showToast('❌ خطأ: ' + e.message, false);
+    }
+};
+
+// ===== تحميل بيانات البنوك =====
+async function loadBankSettings() {
+    try {
+        const snap = await getDoc(doc(db, 'admin', 'bankAccounts'));
+        if (!snap.exists()) return;
+        const d = snap.data();
+        if (d.country)      document.getElementById('adminBankCountry').value = d.country;
+        if (d.bank1?.name)  document.getElementById('bank1Name').value  = d.bank1.name;
+        if (d.bank1?.iban)  document.getElementById('bank1Iban').value  = d.bank1.iban;
+        if (d.bank1?.owner) document.getElementById('bank1Owner').value = d.bank1.owner;
+        if (d.bank2?.name)  document.getElementById('bank2Name').value  = d.bank2.name;
+        if (d.bank2?.iban)  document.getElementById('bank2Iban').value  = d.bank2.iban;
+        if (d.bank2?.owner) document.getElementById('bank2Owner').value = d.bank2.owner;
+    } catch (e) { console.warn('Load banks error:', e); }
+}
+
+// ===== التحويلات المعلقة =====
+async function loadPendingTransfers() {
+    const container = document.getElementById('pendingTransfersList');
+    try {
+        const snap = await getDocs(collection(db, 'admin', 'pendingTransfers'));
+        if (snap.empty) {
+            container.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:20px;font-size:13px;">لا توجد طلبات معلقة</div>';
+            return;
+        }
+        let html = '<table class="table-custom"><thead><tr><th>UID</th><th>البريد</th><th>الخطة</th><th>المرجع</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>';
+        snap.forEach(d => {
+            const t = d.data();
+            html += `<tr>
+                <td style="font-size:9px;">${t.uid?.substring(0,12)}...</td>
+                <td>${t.email||'—'}</td>
+                <td>${t.plan||'—'}</td>
+                <td style="font-family:monospace;">${t.transferRef||'—'}</td>
+                <td><span class="badge-pending">معلق</span></td>
+                <td>
+                    <button onclick="approveTransfer('${d.id}','${t.uid}','${t.plan}')"
+                        style="background:#38b000;color:white;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Cairo',sans-serif;">
+                        ✅ قبول
+                    </button>
+                    <button onclick="rejectTransfer('${d.id}')"
+                        style="background:#e63946;color:white;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;margin-right:4px;font-family:'Cairo',sans-serif;">
+                        ❌ رفض
+                    </button>
+                </td>
+            </tr>`;
+        });
+        container.innerHTML = html + '</tbody></table>';
+        document.getElementById('statPending').innerText = snap.size;
+    } catch (e) {
+        container.innerHTML = `<div style="color:#e63946;font-size:12px;">خطأ: ${e.message}</div>`;
+    }
+}
+
+// ===== قبول التحويل =====
+window.approveTransfer = async function(docId, uid, plan) {
+    if (!confirm('تأكيد قبول وتفعيل الاشتراك لهذا المستخدم؟')) return;
+    try {
+        const result = await activateSubscription(uid, plan || 'monthly');
+        if (result.success) {
+            await deleteDoc(doc(db, 'admin', 'pendingTransfers', docId));
+            showToast('✅ تم تفعيل الاشتراك وحذف الطلب', true);
+            loadPendingTransfers();
+        }
+    } catch (e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+// ===== رفض التحويل =====
+window.rejectTransfer = async function(docId) {
+    if (!confirm('تأكيد رفض هذا الطلب؟')) return;
+    try {
+        await deleteDoc(doc(db, 'admin', 'pendingTransfers', docId));
+        showToast('تم رفض الطلب وحذفه', false);
+        loadPendingTransfers();
+    } catch (e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+// ===== تفعيل يدوي =====
+window.manualActivate = async function() {
+    const uid  = document.getElementById('manualUid').value.trim();
+    const plan = document.getElementById('manualPlan').value;
+    if (!uid) return showToast('أدخل UID المستخدم', false);
+    if (!confirm(`تفعيل خطة ${plan} للمستخدم ${uid}؟`)) return;
+    try {
+        const result = await activateSubscription(uid, plan);
+        if (result.success) showToast(`✅ تم التفعيل حتى ${new Date(result.endDate).toLocaleDateString('ar-SA')}`, true);
+    } catch (e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+// ===== إحصائيات =====
+async function loadStats() {
+    // مؤقتاً — لاحقاً يمكن عمل Cloud Function لإحصاء المستخدمين
+    document.getElementById('statActive').innerText  = '—';
+    document.getElementById('statTrial').innerText   = '—';
+}
+
+// ===== تنسيق IBAN =====
+window.formatIban = function(input) {
+    let v = input.value.replace(/\s/g,'').toUpperCase();
+    input.value = v;
+};
+
+// ===== Toast =====
+function showToast(msg, ok = true) {
+    const t = document.getElementById('toastBox');
+    t.innerText = msg;
+    t.style.backgroundColor = ok ? '#2b9348' : '#d90429';
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 4000);
+}
+window.showToast = showToast;
+</script>
+</body>
+</html>

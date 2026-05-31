@@ -7,7 +7,21 @@ import {
 
 // استيراد نظام التحقق لمعرفة المستخدم الحالي
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+// ===== نظام الاشتراكات — أضف هذا بعد imports =====
+import { guardPage } from "./subscription.js";
 
+// تشغيل حماية الصفحة الرئيسية
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const { status } = await guardPage({
+            blockOnExpired:   false,
+            blockInvoiceOnly: true
+        });
+        console.log('Subscription status:', status.status, '- Days left:', status.daysLeft);
+    } catch(e) {
+        console.warn('Guard page error:', e);
+    }
+});
 let cart = [];
 let currentUserUid = null; // هنا سيتم تخزين المعرف الفريد للمستخدم المسجل
 

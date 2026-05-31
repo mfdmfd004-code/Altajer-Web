@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — تجديد الاشتراك</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing:border-box; font-family:'Cairo',sans-serif; }
+        body {
+            background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);
+            min-height:100vh; color:#fff;
+            padding:20px 10px 50px; margin:0;
+        }
+        .page-header {
+            max-width:700px; margin:0 auto 20px;
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .page-title { font-size:18px; font-weight:900; color:#00b4d8; display:flex; align-items:center; gap:8px; }
+        .btn-back {
+            background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
+            color:white; padding:8px 16px; border-radius:10px; font-size:13px;
+            cursor:pointer; text-decoration:none; display:flex; align-items:center; gap:6px;
+        }
+        .card-box {
+            background:rgba(255,255,255,0.05); backdrop-filter:blur(10px);
+            border:1px solid rgba(255,255,255,0.1); border-radius:20px;
+            padding:22px 18px; margin-bottom:14px;
+            max-width:700px; margin-left:auto; margin-right:auto;
+        }
+        .section-title {
+            font-size:14px; font-weight:700; color:#00b4d8;
+            display:flex; align-items:center; gap:8px;
+            margin-bottom:18px; padding-bottom:10px;
+            border-bottom:1px solid rgba(0,180,216,0.2);
+        }
+
+        /* بطاقات الخطط */
+        .plan-card {
+            border:2px solid rgba(255,255,255,0.1);
+            border-radius:14px; padding:16px; cursor:pointer;
+            transition:0.3s; text-align:center; position:relative;
+        }
+        .plan-card:hover   { border-color:#00b4d8; background:rgba(0,180,216,0.06); }
+        .plan-card.selected { border-color:#38b000; background:rgba(56,176,0,0.08); }
+        .plan-badge {
+            position:absolute; top:-10px; right:50%; transform:translateX(50%);
+            background:#38b000; color:white; font-size:10px; font-weight:700;
+            padding:2px 12px; border-radius:10px;
+        }
+        .plan-price { font-size:28px; font-weight:900; color:#00b4d8; }
+        .plan-price span { font-size:13px; color:rgba(255,255,255,0.5); }
+        .plan-label { font-size:14px; font-weight:700; margin-bottom:6px; }
+        .plan-desc  { font-size:11px; color:rgba(255,255,255,0.5); }
+
+        /* الحساب البنكي */
+        .bank-box {
+            background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.08);
+            border-radius:12px; padding:14px; margin-bottom:12px;
+        }
+        .bank-name { font-size:13px; font-weight:700; color:#00b4d8; margin-bottom:6px; }
+        .iban-row {
+            display:flex; align-items:center; justify-content:space-between;
+            background:rgba(255,255,255,0.05); border-radius:8px;
+            padding:8px 12px; font-size:12px; font-family:monospace;
+        }
+        .copy-btn {
+            background:#00b4d8; color:white; border:none;
+            border-radius:6px; padding:4px 10px; font-size:11px;
+            cursor:pointer; font-family:'Cairo',sans-serif;
+        }
+
+        /* طرق الدفع الإلكتروني */
+        .payment-methods { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+        .pm-btn {
+            flex:1; min-width:120px; padding:12px 8px;
+            border:2px solid rgba(255,255,255,0.15);
+            border-radius:12px; background:transparent;
+            color:white; cursor:pointer; font-family:'Cairo',sans-serif;
+            font-size:12px; font-weight:600; transition:0.2s;
+            display:flex; align-items:center; justify-content:center; gap:6px;
+        }
+        .pm-btn:hover   { border-color:#00b4d8; background:rgba(0,180,216,0.08); }
+        .pm-btn.selected { border-color:#38b000; background:rgba(56,176,0,0.1); }
+        .pm-btn img { height:22px; object-fit:contain; }
+
+        /* حقول البطاقة */
+        .field-group { margin-bottom:14px; }
+        .field-group label {
+            display:block; font-size:11px; color:rgba(255,255,255,0.5);
+            margin-bottom:5px; font-weight:600;
+        }
+        .field-group input, .field-group select {
+            width:100%; padding:11px 14px;
+            background:rgba(255,255,255,0.07);
+            border:1px solid rgba(255,255,255,0.12);
+            border-radius:10px; color:white; font-size:14px;
+            font-family:'Cairo',sans-serif; transition:0.3s;
+        }
+        .field-group input:focus { outline:none; border-color:#00b4d8; }
+        .field-group input::placeholder { color:rgba(255,255,255,0.2); }
+
+        /* زر الدفع */
+        .btn-pay {
+            width:100%; padding:15px;
+            background:linear-gradient(135deg,#2b9348,#38b000);
+            color:white; border:none; border-radius:14px;
+            font-size:16px; font-weight:900;
+            font-family:'Cairo',sans-serif; cursor:pointer;
+            box-shadow:0 4px 20px rgba(43,147,72,0.35);
+            transition:0.3s; display:flex; align-items:center;
+            justify-content:center; gap:8px;
+        }
+        .btn-pay:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(43,147,72,0.5); }
+        .btn-pay:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+        /* شريط الحالة */
+        .status-bar {
+            background:rgba(0,0,0,0.3); border-radius:10px;
+            padding:12px 14px; font-size:13px; margin-bottom:14px;
+            display:flex; align-items:center; gap:8px;
+        }
+        .status-active  { border-right:4px solid #38b000; color:#38b000; }
+        .status-trial   { border-right:4px solid #ffb703; color:#ffb703; }
+        .status-expired { border-right:4px solid #e63946; color:#e63946; }
+
+        /* Toast */
+        .toast-box {
+            position:fixed; top:20px; left:50%; transform:translateX(-50%);
+            padding:12px 25px; border-radius:30px; color:white;
+            font-weight:700; font-size:13px; z-index:9999;
+            display:none; text-align:center; max-width:90%;
+            box-shadow:0 5px 20px rgba(0,0,0,0.4);
+        }
+
+        /* مؤشر الأمان */
+        .secure-badge {
+            display:flex; align-items:center; gap:6px;
+            font-size:11px; color:rgba(255,255,255,0.4);
+            justify-content:center; margin-top:10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="toastBox" class="toast-box"></div>
+
+<div class="page-header">
+    <div class="page-title"><i class="fas fa-crown"></i> تجديد الاشتراك</div>
+    <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> رجوع</a>
+</div>
+
+<!-- حالة الاشتراك الحالية -->
+<div class="card-box">
+    <div class="section-title"><i class="fas fa-info-circle"></i> حالة اشتراكك الحالي</div>
+    <div id="currentStatusBar" class="status-bar status-trial">
+        <i class="fas fa-spinner fa-spin"></i> جاري التحقق...
+    </div>
+</div>
+
+<!-- اختيار الخطة -->
+<div class="card-box">
+    <div class="section-title"><i class="fas fa-tags"></i> اختر خطة الاشتراك</div>
+    <div class="row g-3">
+        <div class="col-6">
+            <div class="plan-card" id="plan-monthly" onclick="selectPlan('monthly')">
+                <div class="plan-label">شهري</div>
+                <div class="plan-price">49 <span>ر.س / شهر</span></div>
+                <div class="plan-desc">30 يوماً — مثالي للتجربة</div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="plan-card" id="plan-yearly" onclick="selectPlan('yearly')">
+                <div class="plan-badge">وفر 32%</div>
+                <div class="plan-label">سنوي</div>
+                <div class="plan-price">399 <span>ر.س / سنة</span></div>
+                <div class="plan-desc">365 يوماً — الأفضل قيمة</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- طريقة الدفع -->
+<div class="card-box">
+    <div class="section-title"><i class="fas fa-credit-card"></i> طريقة الدفع</div>
+
+    <div class="payment-methods">
+        <button class="pm-btn" id="pm-card" onclick="selectPaymentMethod('card')">
+            <i class="fab fa-cc-visa" style="color:#1a1f71;font-size:20px;"></i>
+            <i class="fab fa-cc-mastercard" style="color:#eb001b;font-size:20px;"></i>
+            فيزا / ماستر
+        </button>
+        <button class="pm-btn" id="pm-mada" onclick="selectPaymentMethod('mada')">
+            <i class="fas fa-university" style="color:#00b4d8;"></i>
+            مدى (بطاقة صراف)
+        </button>
+        <button class="pm-btn" id="pm-transfer" onclick="selectPaymentMethod('transfer')">
+            <i class="fas fa-exchange-alt" style="color:#38b000;"></i>
+            تحويل بنكي
+        </button>
+        <button class="pm-btn" id="pm-paypal" onclick="selectPaymentMethod('paypal')">
+            <i class="fab fa-paypal" style="color:#003087;"></i>
+            PayPal
+        </button>
+    </div>
+
+    <!-- نموذج البطاقة -->
+    <div id="formCard" style="display:none;">
+        <div class="row g-2">
+            <div class="col-12">
+                <div class="field-group">
+                    <label><i class="fas fa-user"></i> اسم حامل البطاقة</label>
+                    <input type="text" id="cardName" placeholder="الاسم كما هو على البطاقة">
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="field-group">
+                    <label><i class="fas fa-credit-card"></i> رقم البطاقة</label>
+                    <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX"
+                           maxlength="19" oninput="formatCardNumber(this)">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="field-group">
+                    <label>تاريخ الانتهاء</label>
+                    <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5"
+                           oninput="formatExpiry(this)">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="field-group">
+                    <label>CVV</label>
+                    <input type="password" id="cardCvv" placeholder="XXX" maxlength="4">
+                </div>
+            </div>
+        </div>
+        <button class="btn-pay" id="btnPay" onclick="processCardPayment()">
+            <i class="fas fa-lock"></i> ادفع الآن وفعّل الاشتراك
+        </button>
+        <div class="secure-badge">
+            <i class="fas fa-shield-alt" style="color:#38b000;"></i>
+            مدفوعات آمنة ومشفرة — لا نحتفظ ببيانات بطاقتك
+        </div>
+    </div>
+
+    <!-- مدى -->
+    <div id="formMada" style="display:none;">
+        <div class="field-group">
+            <label>رقم البطاقة (مدى)</label>
+            <input type="text" id="madaNumber" placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+        </div>
+        <button class="btn-pay" onclick="processMadaPayment()">
+            <i class="fas fa-lock"></i> ادفع بمدى
+        </button>
+    </div>
+
+    <!-- التحويل البنكي -->
+    <div id="formTransfer" style="display:none;">
+        <p style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:12px;">
+            حول المبلغ لأحد الحسابات أدناه، ثم أرسل إيصال التحويل على واتساب أو البريد لتفعيل الاشتراك يدوياً.
+        </p>
+        <div id="bankAccountsList"></div>
+        <div class="field-group" style="margin-top:14px;">
+            <label>اسم المحول</label>
+            <input type="text" id="transferName" placeholder="اسمك الكامل">
+        </div>
+        <div class="field-group">
+            <label>رقم الإيصال أو مرجع التحويل</label>
+            <input type="text" id="transferRef" placeholder="أدخل رقم المرجع">
+        </div>
+        <button class="btn-pay" style="background:linear-gradient(135deg,#0077b6,#00b4d8);"
+                onclick="submitTransferRequest()">
+            <i class="fas fa-paper-plane"></i> إرسال طلب التفعيل
+        </button>
+    </div>
+
+    <!-- PayPal -->
+    <div id="formPaypal" style="display:none;">
+        <p style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:14px;">
+            ستُحوَّل إلى بوابة PayPal الآمنة لإتمام الدفع.
+        </p>
+        <button class="btn-pay" style="background:linear-gradient(135deg,#003087,#009cde);"
+                onclick="processPaypalPayment()">
+            <i class="fab fa-paypal"></i> الدفع عبر PayPal
+        </button>
+    </div>
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+
+<script type="module">
+import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getSubscription, activateSubscription,
+         checkSubscriptionStatus, PLANS }
+    from "./subscription.js";
+
+await new Promise(r => setTimeout(r, 600));
+
+const auth = getAuth();
+const db   = getFirestore();
+let currentUser, currentSub, selectedPlan = 'monthly', selectedPM = '';
+
+// ===== تهيئة =====
+onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    currentSub  = await getSubscription(user.uid);
+    renderStatusBar(currentSub);
+    loadBankAccounts();
+});
+
+// ===== عرض الحالة =====
+function renderStatusBar(sub) {
+    const bar    = document.getElementById('currentStatusBar');
+    if (!bar || !sub) return;
+    const status = checkSubscriptionStatus(sub);
+    const end    = new Date(sub.subscriptionEndDate).toLocaleDateString('ar-SA');
+
+    if (status.status === 'active') {
+        bar.className = 'status-bar status-active';
+        bar.innerHTML = `<i class="fas fa-check-circle"></i>
+            اشتراك نشط — ينتهي في ${end} (${status.daysLeft} يوم متبقي)`;
+    } else if (status.status === 'trial') {
+        bar.className = 'status-bar status-trial';
+        bar.innerHTML = `<i class="fas fa-clock"></i>
+            فترة تجريبية — تنتهي في ${end} (${status.daysLeft} أيام متبقية)`;
+    } else {
+        bar.className = 'status-bar status-expired';
+        bar.innerHTML = `<i class="fas fa-times-circle"></i>
+            انتهى الاشتراك — آخر تاريخ كان ${end}`;
+    }
+}
+
+// ===== تحميل الحسابات البنكية =====
+function loadBankAccounts() {
+    const list = document.getElementById('bankAccountsList');
+    if (!list) return;
+    // تحميل من Firebase (إعدادات الأدمن)
+    getDoc(doc(db, 'admin', 'bankAccounts')).then(snap => {
+        const data = snap.exists() ? snap.data() : getDefaultBanks();
+        renderBankBoxes(data, list);
+    }).catch(() => renderBankBoxes(getDefaultBanks(), list));
+}
+
+function getDefaultBanks() {
+    return {
+        bank1: { name: 'البنك الأهلي السعودي', iban: 'SA0000000000000000000000', country: 'SA' },
+        bank2: { name: 'بنك الراجحي',          iban: 'SA0000000000000000000000', country: 'SA' }
+    };
+}
+
+function renderBankBoxes(data, container) {
+    container.innerHTML = '';
+    ['bank1','bank2'].forEach(key => {
+        const b = data[key];
+        if (!b || !b.name) return;
+        container.innerHTML += `
+            <div class="bank-box">
+                <div class="bank-name"><i class="fas fa-university"></i> ${b.name}</div>
+                <div class="iban-row">
+                    <span id="iban-${key}">${b.iban}</span>
+                    <button class="copy-btn" onclick="copyIban('${key}')">
+                        <i class="fas fa-copy"></i> نسخ
+                    </button>
+                </div>
+                ${b.country ? `<small style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;display:block;">${b.country}</small>` : ''}
+            </div>`;
+    });
+}
+
+// ===== نسخ IBAN =====
+window.copyIban = function(key) {
+    const el = document.getElementById('iban-' + key);
+    if (!el) return;
+    navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+        showToast('✅ تم نسخ رقم الآيبان', true);
+    }).catch(() => showToast('❌ فشل النسخ', false));
+};
+
+// ===== اختيار الخطة =====
+window.selectPlan = function(plan) {
+    selectedPlan = plan;
+    document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+    const el = document.getElementById('plan-' + plan);
+    if (el) el.classList.add('selected');
+};
+
+// ===== اختيار طريقة الدفع =====
+window.selectPaymentMethod = function(pm) {
+    selectedPM = pm;
+    document.querySelectorAll('.pm-btn').forEach(b => b.classList.remove('selected'));
+    const btn = document.getElementById('pm-' + pm);
+    if (btn) btn.classList.add('selected');
+    ['card','mada','transfer','paypal'].forEach(f => {
+        const el = document.getElementById('form' + f.charAt(0).toUpperCase() + f.slice(1));
+        if (el) el.style.display = f === pm ? 'block' : 'none';
+    });
+};
+
+// ===== دفع البطاقة (محاكاة + جاهز للربط بـ Stripe/Moyasar) =====
+window.processCardPayment = async function() {
+    if (!selectedPlan) return showToast('اختر خطة أولاً', false);
+    const name   = document.getElementById('cardName')?.value.trim();
+    const number = document.getElementById('cardNumber')?.value.replace(/\s/g,'');
+    const expiry = document.getElementById('cardExpiry')?.value.trim();
+    const cvv    = document.getElementById('cardCvv')?.value.trim();
+
+    if (!name || !number || !expiry || !cvv)
+        return showToast('يرجى تعبئة جميع بيانات البطاقة', false);
+    if (number.length < 16)
+        return showToast('رقم البطاقة غير صحيح', false);
+
+    const btn = document.getElementById('btnPay');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة...'; }
+
+    try {
+        // ===================================================
+        // هنا يمكن ربط Stripe أو Moyasar أو HyperPay:
+        // const result = await callPaymentAPI({ name, number, expiry, cvv, plan: selectedPlan });
+        // ===================================================
+
+        // محاكاة نجاح الدفع (للتطوير)
+        await new Promise(r => setTimeout(r, 2000));
+
+        // تفعيل الاشتراك
+        const result = await activateSubscription(currentUser.uid, selectedPlan);
+        if (result.success) {
+            // حفظ سجل الدفع
+            await setDoc(
+                doc(db, 'users', currentUser.uid, 'payments', 'pay-' + Date.now()),
+                {
+                    plan: selectedPlan, method: 'card',
+                    amount: PLANS[selectedPlan].price,
+                    status: 'success',
+                    endDate: result.endDate,
+                    paidAt: serverTimestamp()
+                }
+            );
+            showToast('✅ تم الدفع وتفعيل الاشتراك بنجاح!', true);
+            setTimeout(() => window.location.href = 'index.html', 2000);
+        }
+    } catch (e) {
+        showToast('❌ فشل الدفع: ' + e.message, false);
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock"></i> ادفع الآن وفعّل الاشتراك'; }
+    }
+};
+
+// ===== دفع مدى =====
+window.processMadaPayment = async function() {
+    if (!selectedPlan) return showToast('اختر خطة أولاً', false);
+    showToast('جاري التحويل لبوابة مدى...', true);
+    // ربط بـ Moyasar أو HyperPay لاحقاً
+    setTimeout(() => showToast('⚠️ بوابة مدى قيد الربط — استخدم تحويل بنكي مؤقتاً', false), 2000);
+};
+
+// ===== طلب التحويل البنكي =====
+window.submitTransferRequest = async function() {
+    if (!selectedPlan) return showToast('اختر خطة أولاً', false);
+    const name = document.getElementById('transferName')?.value.trim();
+    const ref  = document.getElementById('transferRef')?.value.trim();
+    if (!name || !ref) return showToast('يرجى إدخال اسمك ورقم الإيصال', false);
+
+    try {
+        await setDoc(
+            doc(db, 'users', currentUser.uid, 'payments', 'transfer-' + Date.now()),
+            {
+                plan: selectedPlan, method: 'bank_transfer',
+                amount: PLANS[selectedPlan].price,
+                status: 'pending_review',
+                transferName: name, transferRef: ref,
+                requestedAt: serverTimestamp()
+            }
+        );
+        // إشعار الأدمن
+        await setDoc(
+            doc(db, 'admin', 'pendingTransfers', currentUser.uid + '-' + Date.now()),
+            {
+                uid: currentUser.uid,
+                email: currentUser.email,
+                plan: selectedPlan,
+                transferRef: ref,
+                transferName: name,
+                requestedAt: serverTimestamp()
+            }
+        );
+        showToast('✅ تم إرسال طلبك — سيُفعَّل خلال 24 ساعة بعد التحقق', true);
+    } catch (e) {
+        showToast('❌ خطأ: ' + e.message, false);
+    }
+};
+
+// ===== PayPal =====
+window.processPaypalPayment = function() {
+    showToast('جاري التحويل لـ PayPal...', true);
+    // window.location.href = 'https://www.paypal.com/...'; // رابطك الفعلي
+    setTimeout(() => showToast('⚠️ PayPal قيد الربط — استخدم تحويل بنكي مؤقتاً', false), 2000);
+};
+
+// ===== تنسيق رقم البطاقة =====
+window.formatCardNumber = function(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,16);
+    input.value = v.replace(/(.{4})/g,'$1 ').trim();
+};
+
+window.formatExpiry = function(input) {
+    let v = input.value.replace(/\D/g,'');
+    if (v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2,4);
+    input.value = v;
+};
+
+// ===== Toast =====
+function showToast(msg, ok = true) {
+    const t = document.getElementById('toastBox');
+    t.innerText = msg;
+    t.style.backgroundColor = ok ? '#2b9348' : '#d90429';
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 4000);
+}
+window.showToast = showToast;
+
+// تحديد شهري افتراضياً
+selectPlan('monthly');
+</script>
+</body>
+</html>

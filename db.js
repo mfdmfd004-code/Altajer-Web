@@ -1,12 +1,5 @@
 // التاجر برو المحاسبي - قاعدة البيانات المركزية
 import { db } from "./firebase-config.js";
-import {
-    collection, getDocs, doc, setDoc,
-    getDoc, deleteDoc, onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-// استيراد نظام التحقق لمعرفة المستخدم الحالي
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 // ===== نظام الاشتراكات — أضف هذا بعد imports =====
 import { guardPage } from "./subscription.js";
 
@@ -22,6 +15,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.warn('Guard page error:', e);
     }
 });
+import {
+    collection, getDocs, doc, setDoc,
+    getDoc, deleteDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// استيراد نظام التحقق لمعرفة المستخدم الحالي
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
 let cart = [];
 let currentUserUid = null; // هنا سيتم تخزين المعرف الفريد للمستخدم المسجل
 

@@ -673,6 +673,35 @@
             if(!user) window.location.href = 'login.html';
         });
     }
+    <script type="module">
+import { getSubscription, checkSubscriptionStatus } from "./subscription.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const ADMIN_UID = 'RWp5xxVVphaNI2uIl5hMBBC5Ar93';
+await new Promise(r => setTimeout(r, 600));
+const auth = getAuth();
+onAuthStateChanged(auth, async user => {
+    if (!user) return;
+    if (user.uid === ADMIN_UID) {
+        const link = document.getElementById('adminLink');
+        if (link) link.style.display = 'block';
+    }
+    const sub    = await getSubscription(user.uid);
+    const status = checkSubscriptionStatus(sub);
+    const bar    = document.getElementById('subStatusInSettings');
+    if (!bar) return;
+    const end = new Date(sub.subscriptionEndDate).toLocaleDateString('ar-SA');
+    if (status.status === 'active') {
+        bar.style.borderRightColor = '#38b000'; bar.style.color = '#38b000';
+        bar.innerHTML = `<i class="fas fa-check-circle"></i> اشتراك نشط — ينتهي ${end}`;
+    } else if (status.status === 'trial') {
+        bar.style.borderRightColor = '#ffb703'; bar.style.color = '#ffb703';
+        bar.innerHTML = `<i class="fas fa-clock"></i> تجريبي — ${status.daysLeft} أيام متبقية`;
+    } else {
+        bar.style.borderRightColor = '#e63946'; bar.style.color = '#e63946';
+        bar.innerHTML = `<i class="fas fa-times-circle"></i> انتهى الاشتراك — جدد الآن`;
+    }
+});
 </script>
 </body>
 </html>

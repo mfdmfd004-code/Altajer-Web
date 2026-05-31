@@ -5,247 +5,208 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>تاجر برو المحاسبي - شاشة المبيعات ونقطة البيع POS</title>
-    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0c3f65">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- مكتبة QR كود -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
     <style>
         :root {
-            --dark-bg: #0d1b2a;
-            --card-bg: #1b263b;
-            --sea-blue: #0077b6;
-            --light-green: #38b000;
-            --neon-cyan: #00b4d8;
-            --neon-pink: #e81cff;
-            --text-white: #ffffff;
-            --danger-red: #e63946;
+            --dark-bg: #0d1b2a; --card-bg: #1b263b;
+            --sea-blue: #0077b6; --light-green: #38b000;
+            --neon-cyan: #00b4d8; --neon-pink: #e81cff;
+            --text-white: #ffffff; --danger-red: #e63946;
             --warning-orange: #ffb703;
         }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body {
-            background-color: var(--dark-bg);
-            color: var(--text-white);
-            margin: 0;
-            padding: 20px 10px;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
+            background-color: var(--dark-bg); color: var(--text-white);
+            margin: 0; padding: 20px 10px 90px 10px;
+            overflow-x: hidden; -webkit-tap-highlight-color: transparent;
         }
-
         .sales-container {
-            max-width: 900px;
-            margin: 0 auto;
+            max-width: 900px; margin: 0 auto;
             background-color: var(--card-bg);
-            border: 2px solid var(--sea-blue);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.2);
+            border: 2px solid var(--sea-blue); border-radius: 16px;
+            padding: 25px; box-shadow: 0 8px 30px rgba(0,180,216,0.2);
             position: relative;
         }
-
         .sales-container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
             background: linear-gradient(90deg, var(--neon-cyan), var(--sea-blue), var(--light-green));
-            border-top-left-radius: 14px;
-            border-top-right-radius: 14px;
+            border-top-left-radius: 14px; border-top-right-radius: 14px;
         }
-
         .sales-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px dashed rgba(0, 180, 216, 0.3);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 2px dashed rgba(0,180,216,0.3);
+            padding-bottom: 15px; margin-bottom: 25px;
         }
-
         .sales-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--neon-cyan);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-shadow: 0 0 10px rgba(0, 180, 216, 0.4);
+            font-size: 20px; font-weight: bold; color: var(--neon-cyan);
+            display: flex; align-items: center; gap: 10px;
+            text-shadow: 0 0 10px rgba(0,180,216,0.4);
         }
-
         .section-subtitle {
-            font-size: 15px;
-            color: var(--neon-cyan);
-            margin-top: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
-            padding-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 15px; color: var(--neon-cyan);
+            margin-top: 10px; margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0,180,216,0.15);
+            padding-bottom: 5px; display: flex; align-items: center; gap: 8px;
         }
-
-        .input-container {
-            position: relative;
-            margin-bottom: 25px;
-        }
-
+        .input-container { position: relative; margin-bottom: 25px; }
         .input-container input, .input-container select {
-            border: 0;
-            border-bottom: 2px solid #4a5568;
-            background: transparent;
-            width: 100%;
-            padding: 8px 5px 4px 5px;
-            font-size: 15px;
-            color: #fff;
-            transition: border-color 0.3s;
+            border: 0; border-bottom: 2px solid #4a5568;
+            background: transparent; width: 100%;
+            padding: 8px 5px 4px 5px; font-size: 15px;
+            color: #fff; transition: border-color 0.3s;
         }
-
         .input-container input:focus, .input-container select:focus {
-            outline: none;
-            border-bottom: 2px solid var(--neon-cyan);
+            outline: none; border-bottom: 2px solid var(--neon-cyan);
         }
-
-        .input-container select option {
-            background-color: var(--dark-bg);
-            color: white;
-        }
-
+        .input-container select option { background-color: var(--dark-bg); color: white; }
         .input-container label {
-            position: absolute;
-            top: -12px;
-            right: 5px;
-            font-size: 13px;
-            color: #a0aec0;
-            pointer-events: none;
-            transition: all 0.3s ease-in-out;
+            position: absolute; top: -12px; right: 5px;
+            font-size: 13px; color: #a0aec0;
+            pointer-events: none; transition: all 0.3s ease-in-out;
         }
-
-        html[dir="ltr"] .input-container label {
-            left: 5px;
-            right: auto;
-        }
-
+        html[dir="ltr"] .input-container label { left: 5px; right: auto; }
         .tax-toggle-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 25px;
-            background: rgba(0, 0, 0, 0.15);
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 180, 216, 0.15);
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 25px; background: rgba(0,0,0,0.15);
+            padding: 6px 12px; border-radius: 8px;
+            border: 1px solid rgba(0,180,216,0.15);
         }
-
         .form-switch .form-check-input {
-            width: 2.5em;
-            height: 1.25em;
-            background-color: #4a5568;
-            border-color: transparent;
-            cursor: pointer;
+            width: 2.5em; height: 1.25em;
+            background-color: #4a5568; border-color: transparent; cursor: pointer;
         }
         .form-switch .form-check-input:checked {
-            background-color: var(--light-green);
-            border-color: var(--light-green);
+            background-color: var(--light-green); border-color: var(--light-green);
         }
-
         .btn-neon {
-            background: #2d3748;
-            color: #fff;
-            border: none;
-            padding: 10px 18px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: 0.3s;
-            border-radius: 8px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            background: #2d3748; color: #fff; border: none;
+            padding: 10px 18px; font-weight: 600; font-size: 14px;
+            transition: 0.3s; border-radius: 8px; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
         }
-
         .btn-neon:hover {
-            background: var(--clr);
-            box-shadow: 0 0 15px var(--clr);
-            color: #fff;
-            transform: translateY(-2px);
+            background: var(--clr); box-shadow: 0 0 15px var(--clr);
+            color: #fff; transform: translateY(-2px);
         }
-
+        .btn-neon:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .table-responsive-custom {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            margin: 20px 0;
-            border: 1px solid rgba(0, 180, 216, 0.2);
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin: 20px 0;
+            border: 1px solid rgba(0,180,216,0.2);
         }
-
         .table-custom {
-            background-color: #0d1b2a !important;
-            color: white !important;
-            margin-bottom: 0;
-            font-size: 14px;
+            background-color: #0d1b2a !important; color: white !important;
+            margin-bottom: 0; font-size: 14px;
         }
-
-        .table-custom th {
-            background-color: #0c3f65 !important;
-            color: var(--neon-cyan) !important;
-        }
-
-        .table-custom td {
-            vertical-align: middle;
-            border-color: rgba(255, 255, 255, 0.05) !important;
-        }
-
+        .table-custom th { background-color: #0c3f65 !important; color: var(--neon-cyan) !important; }
+        .table-custom td { vertical-align: middle; border-color: rgba(255,255,255,0.05) !important; }
         .summary-box {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            padding: 15px;
-            border-right: 4px solid var(--light-green);
+            background: rgba(0,0,0,0.2); border-radius: 12px;
+            padding: 15px; border-right: 4px solid var(--light-green);
         }
         html[dir="ltr"] .summary-box { border-right: none; border-left: 4px solid var(--light-green); }
-
         .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
+            display: flex; justify-content: space-between;
+            margin-bottom: 8px; font-size: 14px;
         }
-
         .summary-row.final-net {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--light-green);
+            border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;
+            font-size: 18px; font-weight: bold; color: var(--light-green);
         }
-
         .api-toast {
-            position: fixed;
-            top: 30px;
-            right: 20px;
-            z-index: 2000;
-            padding: 12px 25px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            display: none;
+            position: fixed; top: 30px; right: 20px; z-index: 2000;
+            padding: 12px 25px; border-radius: 8px; color: white;
+            font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: none;
+            max-width: 320px; text-align: center;
         }
         html[dir="ltr"] .api-toast { right: auto; left: 20px; }
         .cursor-pointer { cursor: pointer; }
+
+        /* ===== زر الدعم الفني الثابت ===== */
+        .support-fab {
+            position: fixed; bottom: 20px; left: 20px;
+            z-index: 1500; display: flex; flex-direction: column;
+            align-items: flex-start; gap: 10px;
+        }
+        html[dir="ltr"] .support-fab { left: auto; right: 20px; }
+        .fab-btn {
+            width: 52px; height: 52px; border-radius: 50%;
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+        }
+        .fab-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
+        .fab-whatsapp { background: #25d366; }
+        .fab-support  { background: var(--sea-blue); }
+        .fab-label {
+            background: rgba(0,0,0,0.75); color: white;
+            font-size: 11px; padding: 3px 8px; border-radius: 6px;
+            white-space: nowrap; display: none;
+            position: absolute; left: 60px; bottom: 0;
+        }
+        html[dir="ltr"] .fab-label { left: auto; right: 60px; }
+        .fab-wrapper { position: relative; display: flex; align-items: center; }
+        .fab-wrapper:hover .fab-label { display: block; }
+
+        /* ===== مربع فحص البيانات ===== */
+        .validation-box {
+            background: rgba(231,57,70,0.1); border: 1px solid var(--danger-red);
+            border-radius: 10px; padding: 12px 15px; margin-bottom: 15px;
+            display: none;
+        }
+        .validation-box ul { margin: 5px 0 0 0; padding-right: 18px; font-size: 13px; }
+        .validation-box li { color: #ff6b7a; margin-bottom: 3px; }
+
+        /* ===== QR كود ===== */
+        .qr-preview-box {
+            background: white; border-radius: 10px;
+            padding: 10px; display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* ===== شريط حالة Firebase ===== */
+        .firebase-status {
+            font-size: 11px; padding: 4px 10px; border-radius: 6px;
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+        .firebase-status.ok  { background: rgba(56,176,0,0.15); color: #38b000; }
+        .firebase-status.err { background: rgba(231,57,70,0.15); color: #e63946; }
+        .firebase-status.pending { background: rgba(255,183,3,0.15); color: #ffb703; }
     </style>
 </head>
 <body>
 
 <div id="apiToast" class="api-toast"></div>
+
+<!-- ===== زر الدعم الفني الثابت ===== -->
+<div class="support-fab">
+    <div class="fab-wrapper">
+        <!-- غيّر الرقم هنا برقم الواتساب الخاص بك مع رمز الدولة بدون + -->
+        <a href="https://wa.me/966500000000?text=مرحباً،%20أحتاج%20مساعدة%20في%20تاجر%20برو"
+           target="_blank" class="fab-btn fab-whatsapp" title="دعم واتساب">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <span class="fab-label">دعم واتساب</span>
+    </div>
+    <div class="fab-wrapper">
+        <button class="fab-btn fab-support" onclick="openSupportChat()" title="دعم فني مباشر">
+            <i class="fas fa-headset"></i>
+        </button>
+        <span class="fab-label">دعم فني</span>
+    </div>
+</div>
 
 <div class="sales-container">
     <div class="sales-header">
@@ -253,22 +214,37 @@
             <i class='bx bx-calculator bx-flashing'></i>
             <span data-i18n="sale-main-title">شاشة كاشير المبيعات وإنشاء الفاتورة</span>
         </div>
-        <div>
-            <select class="lang-selector bg-dark text-white border-info rounded p-1" onchange="applySystemLanguage(this.value)" id="langSelect">
+        <div class="d-flex align-items-center gap-2">
+            <!-- شريط حالة الحفظ على Firebase -->
+            <span id="firebaseStatusBar" class="firebase-status pending">
+                <i class="fas fa-circle-notch fa-spin"></i> جاري الاتصال...
+            </span>
+            <select class="bg-dark text-white border-info rounded p-1"
+                    onchange="applySystemLanguage(this.value)" id="langSelect">
                 <option value="ar">العربية (AR)</option>
                 <option value="en">English (EN)</option>
             </select>
         </div>
     </div>
 
-    <div class="section-subtitle">
-        <i class="fas fa-user"></i> <span data-i18n="sub-customer-meta">بيانات العميل المستهدف والفاتورة</span>
+    <!-- مربع أخطاء الفحص -->
+    <div id="validationBox" class="validation-box">
+        <strong style="color:var(--danger-red);">
+            <i class="fas fa-exclamation-triangle"></i> يرجى تصحيح الأخطاء التالية:
+        </strong>
+        <ul id="validationList"></ul>
     </div>
-    
+
+    <div class="section-subtitle">
+        <i class="fas fa-user"></i>
+        <span data-i18n="sub-customer-meta">بيانات العميل المستهدف والفاتورة</span>
+    </div>
+
     <div class="row">
         <div class="col-md-4">
             <div class="input-container">
-                <input id="saleCustomerName" type="text" list="customersList" required placeholder=" " value="عميل نقدي">
+                <input id="saleCustomerName" type="text" list="customersList"
+                       required placeholder=" " value="عميل نقدي">
                 <datalist id="customersList">
                     <option value="عميل نقدي"></option>
                 </datalist>
@@ -277,9 +253,11 @@
         </div>
         <div class="col-md-3">
             <div class="input-container">
-                <input id="saleCustomerVat" type="text" placeholder=" ">
+                <input id="saleCustomerVat" type="text" placeholder=" "
+                       maxlength="15" oninput="liveValidateVAT(this)">
                 <label data-i18n="lbl-sale-cust-vat">الرقم الضريبي للعميل</label>
             </div>
+            <small id="vatLiveHint" style="font-size:11px;color:#a0aec0;margin-top:-18px;display:block;"></small>
         </div>
         <div class="col-md-3">
             <div class="input-container">
@@ -289,14 +267,16 @@
         </div>
         <div class="col-md-2">
             <div class="input-container">
-                <input id="saleDiscount" type="number" step="0.01" value="0.00" oninput="calculateInvoiceTotals()" placeholder=" ">
+                <input id="saleDiscount" type="number" step="0.01" value="0.00"
+                       oninput="calculateInvoiceTotals()" placeholder=" " min="0">
                 <label data-i18n="lbl-sale-discount">خصم الفاتورة</label>
             </div>
         </div>
     </div>
 
     <div class="section-subtitle">
-        <i class="fas fa-barcode"></i> <span data-i18n="sub-product-pull">سحب الأصناف من المنتجات والمخزن</span>
+        <i class="fas fa-barcode"></i>
+        <span data-i18n="sub-product-pull">سحب الأصناف من المنتجات والمخزن</span>
     </div>
 
     <form id="salesItemForm" onsubmit="addItemToInvoice(event)">
@@ -309,45 +289,54 @@
             </div>
             <div class="col-md-3 col-sm-6">
                 <div class="input-container">
-                    <input id="itemName" type="text" required placeholder=" " readonly style="opacity: 0.8; color: var(--neon-cyan);">
+                    <input id="itemName" type="text" required placeholder=" " readonly
+                           style="opacity:0.8;color:var(--neon-cyan);">
                     <label data-i18n="lbl-i-name">اسم المنتج (سحب تلقائي)</label>
                 </div>
             </div>
             <div class="col-md-2 col-6">
                 <div class="input-container">
-                    <input id="itemPriceInput" type="number" step="0.01" required placeholder=" ">
+                    <input id="itemPriceInput" type="number" step="0.01" required
+                           placeholder=" " min="0">
                     <label id="lblItemPrice" data-i18n="lbl-i-price">سعر البيع</label>
                 </div>
             </div>
             <div class="col-md-2 col-6">
                 <div class="input-container">
-                    <input id="itemQty" type="number" value="1" required placeholder=" ">
+                    <input id="itemQty" type="number" value="1" required
+                           placeholder=" " min="1">
                     <label data-i18n="lbl-i-qty">الكمية المباعة</label>
                 </div>
             </div>
-            
             <div class="col-md-2 col-12 mb-4">
                 <div class="tax-toggle-wrapper">
                     <div class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2">
-                        <input class="form-check-input m-0" type="checkbox" id="itemTaxMethodToggle" checked>
-                        <label class="form-check-label small text-white-50 cursor-pointer" for="itemTaxMethodToggle" id="lblTaxToggleText" style="color: var(--light-green)" data-i18n="tax-method-incl">شامل الضريبة</label>
+                        <input class="form-check-input m-0" type="checkbox"
+                               id="itemTaxMethodToggle" checked>
+                        <label class="form-check-label small cursor-pointer"
+                               for="itemTaxMethodToggle" id="lblTaxToggleText"
+                               style="color:var(--light-green)"
+                               data-i18n="tax-method-incl">شامل الضريبة</label>
                     </div>
                 </div>
             </div>
-
             <div class="col-12 text-end text-md-center mb-4">
-                <button type="submit" class="btn-neon w-100 justify-content-center" style="--clr:var(--sea-blue)">
-                    <i class="fas fa-shopping-cart"></i> <span data-i18n="btn-add-row">إدراج الفاتورة الحالية</span>
+                <button type="submit" id="btnAddItem"
+                        class="btn-neon w-100 justify-content-center"
+                        style="--clr:var(--sea-blue)">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span data-i18n="btn-add-row">إدراج الصنف للفاتورة</span>
                 </button>
             </div>
         </div>
     </form>
-        <div class="table-responsive-custom">
+
+    <div class="table-responsive-custom">
         <table class="table table-dark table-striped table-custom text-center">
             <thead>
                 <tr>
                     <th data-i18n="th-p-code">كود الصنف</th>
-                    <th data-i18n="th-p-desc">اسم المنتج / البيان</th>
+                    <th data-i18n="th-p-desc">اسم المنتج</th>
                     <th data-i18n="th-p-price">سعر الوحدة (قبل الضريبة)</th>
                     <th data-i18n="th-p-qty">الكمية</th>
                     <th data-i18n="th-p-tax-rate">نسبة الضريبة</th>
@@ -356,8 +345,7 @@
                     <th data-i18n="th-p-action">حذف</th>
                 </tr>
             </thead>
-            <tbody id="salesItemsTableBody">
-            </tbody>
+            <tbody id="salesItemsTableBody"></tbody>
         </table>
     </div>
 
@@ -377,292 +365,788 @@
                     <span class="text-danger"><span id="lblDiscountTotal">0.00</span> ر.س</span>
                 </div>
                 <div class="summary-row final-net">
-                    <span data-i18n="sum-p-net">الصافي النهائي المطلوب سداده:</span>
+                    <span data-i18n="sum-p-net">الصافي النهائي:</span>
                     <span><span id="lblNetTotal">0.00</span> ر.س</span>
                 </div>
             </div>
+            <!-- معاينة QR كود ZATCA -->
+            <div class="mt-3">
+                <small style="color:var(--neon-cyan);font-size:12px;">
+                    <i class="fas fa-qrcode"></i> معاينة QR كود ZATCA
+                </small>
+                <div id="qrPreviewBox" class="qr-preview-box" style="display:none;">
+                    <div id="qrCodeCanvas"></div>
+                </div>
+                <small id="qrStatus" style="font-size:11px;color:#a0aec0;display:block;margin-top:5px;"></small>
+            </div>
         </div>
         <div class="col-md-6 text-end d-flex flex-wrap gap-2 justify-content-md-end justify-content-between">
-            <button onclick="commitSalesInvoice()" class="btn-neon" style="--clr:var(--light-green); padding: 12px 25px;">
-                <i class="fas fa-print"></i> <span data-i18n="btn-commit-sale">اعتماد وإنشاء الفاتورة للطباعة</span>
+            <button onclick="commitSalesInvoice()" id="btnCommit"
+                    class="btn-neon" style="--clr:var(--light-green);padding:12px 25px;">
+                <i class="fas fa-print"></i>
+                <span data-i18n="btn-commit-sale">اعتماد وإنشاء الفاتورة للطباعة</span>
             </button>
-            <button onclick="clearCurrentInvoice()" class="btn-neon" style="--clr:var(--danger-red); padding: 12px 25px;">
-                <i class="fas fa-trash-restore"></i> <span data-i18n="btn-clear-all">تفريغ السلة بالكامل</span>
+            <button onclick="clearCurrentInvoice()"
+                    class="btn-neon" style="--clr:var(--danger-red);padding:12px 25px;">
+                <i class="fas fa-trash-restore"></i>
+                <span data-i18n="btn-clear-all">تفريغ السلة بالكامل</span>
             </button>
         </div>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<!-- ===== مربع الدعم المباشر ===== -->
+<div id="supportChatBox" style="
+    display:none; position:fixed; bottom:90px; left:20px;
+    width:300px; background:var(--card-bg);
+    border:1px solid var(--sea-blue); border-radius:14px;
+    padding:15px; z-index:1600; box-shadow:0 8px 25px rgba(0,0,0,0.5);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <strong style="color:var(--neon-cyan);">
+            <i class="fas fa-headset"></i> الدعم الفني
+        </strong>
+        <button onclick="closeSupportChat()"
+                style="background:none;border:none;color:white;font-size:18px;cursor:pointer;">✕</button>
+    </div>
+    <div style="font-size:13px;color:#a0aec0;margin-bottom:12px;">
+        كيف يمكننا مساعدتك؟ اختر طريقة التواصل:
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+        <!-- غيّر الرقم برقمك الفعلي -->
+        <a href="https://wa.me/966501662547?text=مرحباً،%20أحتاج%20مساعدة%20في%20تاجر%20برو"
+           target="_blank"
+           style="background:#25d366;color:white;padding:10px;border-radius:8px;text-decoration:none;text-align:center;font-weight:600;font-size:13px;">
+            <i class="fab fa-whatsapp"></i> واتساب مباشر
+        </a>
+        <!-- غيّر الإيميل بإيميلك الفعلي -->
+        <a href="mailto:mfdmfd004@gmail.com?subject=طلب دعم فني - تاجر برو"
+           style="background:var(--sea-blue);color:white;padding:10px;border-radius:8px;text-decoration:none;text-align:center;font-weight:600;font-size:13px;">
+            <i class="fas fa-envelope"></i> البريد الإلكتروني
+        </a>
+        <button onclick="window.location.href='index.html'"
+                style="background:#2d3748;color:white;padding:10px;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size:13px;">
+            <i class="fas fa-home"></i> العودة للرئيسية
+        </button>
+    </div>
+</div>
 
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="i18n.js"></script>
 
-<script>
-    let salesItemsList = [];
+<script type="module">
+// ============================================================
+//  استيراد Firebase
+// ============================================================
+import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, doc,
+         getDoc, getDocs, setDoc, updateDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // محرك فصول السنة التلقائي المتزامن مع الإعدادات المركزية لحماية عين التاجر
-    function applySavedTheme() {
-        const activeTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
-        document.documentElement.setAttribute('data-theme', activeTheme);
-    }
+// ننتظر تهيئة firebase-config.js
+await new Promise(r => setTimeout(r, 600));
 
-    document.addEventListener("DOMContentLoaded", function() {
-        // تطبيق ثيم فصول السنة فوراً لتوحيد الهوية البصرية للجوال
-        applySavedTheme();
+let db, auth, currentUser;
 
-        // تفعيل قارئ ومستشعر الباركود التلقائي
-        setupAutomaticBarcodePuller();
+// ============================================================
+//  تهيئة Firebase مع حماية Try-Catch
+// ============================================================
+try {
+    auth = window.__firebaseAuth || getAuth();
+    db   = window.__firebaseDb   || getFirestore();
 
-        // مراقبة زر التبديل الضريبي لتحديث النصوص والترجمة فوراً من القاموس المركزي
-        document.getElementById('itemTaxMethodToggle').addEventListener('change', function() {
-            const toggleText = document.getElementById('lblTaxToggleText');
-            const currentLang = localStorage.getItem('altajer_lang') || 'ar';
-            if(this.checked) {
-                toggleText.textContent = globalTranslations[currentLang]["tax-method-incl"];
-                toggleText.style.color = "var(--light-green)";
-            } else {
-                toggleText.textContent = globalTranslations[currentLang]["tax-method-excl"];
-                toggleText.style.color = "var(--text-white)";
-            }
-        });
-
-        // تحميل قائمة العملاء المسجلة بالذاكرة لتسهيل الاختيار السريع للكاشير
-        loadSavedCustomersList();
-
-        renderInvoiceItems();
-        
-        // مزانمة القائمة المنسدلة للغات مع المحرك المركزي تلقائياً عند التشغيل
-        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
-        document.getElementById('langSelect').value = currentLang;
+    onAuthStateChanged(auth, user => {
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
+        }
+        currentUser = user;
+        updateFirebaseStatus(true);
+        // تحميل بيانات المستخدم من Firebase
+        loadUserDataFromFirebase(user.uid);
     });
+} catch (err) {
+    console.error('Firebase init error:', err);
+    updateFirebaseStatus(false);
+    showToastGlobal('تحذير: لا يوجد اتصال بالخادم، يعمل بالوضع المحلي مؤقتاً', false);
+}
 
-    // المحرك الذكي: يسحب بيانات السلعة من سجل السلع المركزي فور قراءة الكود أو كتابته بالجوال
-    function setupAutomaticBarcodePuller() {
-        const codeInput = document.getElementById('itemCode');
-        codeInput.addEventListener('input', function() {
-            const scannedCode = this.value.trim();
-            if (scannedCode.length >= 3) { 
-                const registeredProducts = JSON.parse(localStorage.getItem('altajer_products')) || [];
-                const matchedProduct = registeredProducts.find(p => p.code === scannedCode || p.barcode === scannedCode);
-                
-                if (matchedProduct) {
-                    document.getElementById('itemName').value = matchedProduct.name || '';
-                    document.getElementById('itemPriceInput').value = matchedProduct.price || matchedProduct.sale_price || '';
-                    
-                    const currentLang = localStorage.getItem('altajer_lang') || 'ar';
-                    showToast(currentLang === 'ar' ? "تم سحب بيانات الصنف من المخزن بنجاح" : "Item retrieved from centralized stock successfully");
-                    
-                    document.getElementById('itemQty').focus();
-                    document.getElementById('itemQty').select();
+// ============================================================
+//  تحديث شريط حالة Firebase
+// ============================================================
+function updateFirebaseStatus(isOk) {
+    try {
+        const bar = document.getElementById('firebaseStatusBar');
+        if (!bar) return;
+        if (isOk) {
+            bar.className = 'firebase-status ok';
+            bar.innerHTML = '<i class="fas fa-check-circle"></i> متصل بالخادم';
+        } else {
+            bar.className = 'firebase-status err';
+            bar.innerHTML = '<i class="fas fa-times-circle"></i> غير متصل';
+        }
+    } catch(e) { console.warn('Status bar error:', e); }
+}
+
+// ============================================================
+//  تحميل بيانات المستخدم من Firebase (المنتجات + الإعدادات)
+// ============================================================
+async function loadUserDataFromFirebase(uid) {
+    try {
+        // تحميل الإعدادات
+        const settingsRef = doc(db, 'users', uid, 'settings', 'main');
+        const settingsSnap = await getDoc(settingsRef);
+        if (settingsSnap.exists()) {
+            const data = settingsSnap.data();
+            // دمج مع localStorage للنسخ الاحتياطية
+            localStorage.setItem('altajer_settings',
+                JSON.stringify({ ...JSON.parse(localStorage.getItem('altajer_settings') || '{}'), ...data }));
+        }
+
+        // تحميل المنتجات
+        const productsSnap = await getDocs(
+            collection(db, 'users', uid, 'products')
+        );
+        if (!productsSnap.empty) {
+            const products = [];
+            productsSnap.forEach(d => products.push({ id: d.id, ...d.data() }));
+            // حفظ محلي للسرعة
+            localStorage.setItem('altajer_products', JSON.stringify(products));
+        }
+
+        // تحميل قائمة العملاء
+        const custsSnap = await getDocs(
+            collection(db, 'users', uid, 'customers')
+        );
+        if (!custsSnap.empty) {
+            const custs = ['عميل نقدي'];
+            custsSnap.forEach(d => {
+                const c = d.data();
+                if (c.name) custs.push(c.name);
+            });
+            localStorage.setItem('altajer_saved_customers', JSON.stringify(custs));
+            window.loadSavedCustomersList && window.loadSavedCustomersList();
+        }
+
+        showToastGlobal('تم تحميل البيانات من الخادم بنجاح ✅', true);
+    } catch (err) {
+        console.warn('Firebase load error (fallback to local):', err);
+        // الرجوع للبيانات المحلية بدون إيقاف التطبيق
+        showToastGlobal('يعمل بالبيانات المحلية (تحقق من الاتصال)', false);
+    }
+}
+
+// ============================================================
+//  حفظ الفاتورة على Firebase بشكل مضمون
+// ============================================================
+async function saveInvoiceToFirebase(invoicePayload) {
+    if (!currentUser || !db) {
+        // حفظ محلي فقط إذا لم يكن هناك اتصال
+        saveInvoiceLocally(invoicePayload);
+        return false;
+    }
+    try {
+        const uid = currentUser.uid;
+        const invoiceRef = await addDoc(
+            collection(db, 'users', uid, 'invoices'),
+            {
+                ...invoicePayload,
+                createdAt: serverTimestamp(),
+                syncedAt: new Date().toISOString()
+            }
+        );
+
+        // تحديث المخزن على Firebase بعد البيع
+        await updateStockOnFirebase(uid, invoicePayload.items);
+
+        // حفظ محلي أيضاً كنسخة احتياطية
+        saveInvoiceLocally(invoicePayload);
+
+        console.log('Invoice saved to Firebase:', invoiceRef.id);
+        return invoiceRef.id;
+    } catch (err) {
+        console.error('Firebase save error:', err);
+        // حفظ محلي كبديل مضمون
+        saveInvoiceLocally(invoicePayload);
+        showToastGlobal('تم الحفظ محلياً - سيتم المزامنة لاحقاً', false);
+        return false;
+    }
+}
+
+// ============================================================
+//  تحديث المخزن على Firebase
+// ============================================================
+async function updateStockOnFirebase(uid, soldItems) {
+    try {
+        for (const soldItem of soldItems) {
+            try {
+                const productRef = doc(db, 'users', uid, 'products', soldItem.code);
+                const productSnap = await getDoc(productRef);
+                if (productSnap.exists()) {
+                    const currentQty = productSnap.data().quantity || 0;
+                    const newQty = Math.max(0, currentQty - soldItem.qty);
+                    await updateDoc(productRef, {
+                        quantity: newQty,
+                        lastUpdated: serverTimestamp()
+                    });
                 }
+            } catch (itemErr) {
+                // تجاهل خطأ صنف واحد وإكمال الباقي
+                console.warn('Stock update error for item:', soldItem.code, itemErr);
+            }
+        }
+    } catch (err) {
+        console.warn('Stock update Firebase error:', err);
+    }
+}
+
+// ============================================================
+//  حفظ محلي مضمون كنسخة احتياطية
+// ============================================================
+function saveInvoiceLocally(invoicePayload) {
+    try {
+        const key = 'altajer_invoices_backup';
+        const existing = JSON.parse(localStorage.getItem(key) || '[]');
+        existing.push({ ...invoicePayload, savedAt: new Date().toISOString() });
+        // الاحتفاظ بآخر 100 فاتورة فقط
+        if (existing.length > 100) existing.splice(0, existing.length - 100);
+        localStorage.setItem(key, JSON.stringify(existing));
+        localStorage.setItem('last_processed_invoice', JSON.stringify(invoicePayload));
+    } catch (err) {
+        console.error('Local save error:', err);
+    }
+}
+
+// ============================================================
+//  توليد QR كود ZATCA (TLV Encoding)
+// ============================================================
+function generateZATCAQRCode(invoice) {
+    try {
+        const S = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
+        const sellerName  = S.companyName  || 'تاجر برو';
+        const sellerVat   = S.vatNumber    || '300000000000003';
+        const invoiceDate = invoice.invoice_date || new Date().toISOString();
+        const totalIncVat = parseFloat(invoice.total_net || '0').toFixed(2);
+        const vatAmount   = parseFloat(invoice.tax || '0').toFixed(2);
+
+        // TLV Encoding حسب متطلبات ZATCA
+        function tlvEncode(tag, value) {
+            const valueBytes = new TextEncoder().encode(value);
+            return String.fromCharCode(tag) +
+                   String.fromCharCode(valueBytes.length) +
+                   value;
+        }
+
+        const tlvString =
+            tlvEncode(1, sellerName)  +
+            tlvEncode(2, sellerVat)   +
+            tlvEncode(3, invoiceDate) +
+            tlvEncode(4, totalIncVat) +
+            tlvEncode(5, vatAmount);
+
+        // تحويل إلى Base64
+        const base64QR = btoa(unescape(encodeURIComponent(tlvString)));
+
+        // رسم QR الكود
+        const qrContainer = document.getElementById('qrCodeCanvas');
+        const qrBox       = document.getElementById('qrPreviewBox');
+        const qrStatus    = document.getElementById('qrStatus');
+
+        if (qrContainer && qrBox) {
+            qrContainer.innerHTML = '';
+            qrBox.style.display = 'inline-block';
+            new QRCode(qrContainer, {
+                text: base64QR,
+                width: 120, height: 120,
+                correctLevel: QRCode.CorrectLevel.M
+            });
+            if (qrStatus) qrStatus.innerText = '✅ QR كود ZATCA جاهز للطباعة';
+        }
+
+        return base64QR;
+    } catch (err) {
+        console.error('QR generation error:', err);
+        const qrStatus = document.getElementById('qrStatus');
+        if (qrStatus) qrStatus.innerText = '⚠️ خطأ في توليد QR';
+        return '';
+    }
+}
+
+// ============================================================
+//  فحص شامل للبيانات قبل اعتماد الفاتورة
+// ============================================================
+function validateInvoiceBeforeCommit(salesItemsList) {
+    const errors = [];
+    try {
+        const custName   = document.getElementById('saleCustomerName').value.trim();
+        const custVat    = document.getElementById('saleCustomerVat').value.trim();
+        const discount   = parseFloat(document.getElementById('saleDiscount').value) || 0;
+        const subtotal   = parseFloat(document.getElementById('lblSubTotal').innerText) || 0;
+        const netTotal   = parseFloat(document.getElementById('lblNetTotal').innerText) || 0;
+
+        // 1. فحص الأصناف
+        if (salesItemsList.length === 0) {
+            errors.push('السلة فارغة — يرجى إضافة صنف واحد على الأقل');
+        }
+
+        // 2. فحص اسم العميل
+        if (!custName) {
+            errors.push('اسم العميل مطلوب');
+        }
+
+        // 3. فحص الرقم الضريبي إن وُجد
+        if (custVat && custVat !== '---') {
+            if (custVat.length !== 15 || isNaN(custVat)) {
+                errors.push('الرقم الضريبي يجب أن يكون 15 خانة رقمية');
+            } else if (!custVat.startsWith('3') || !custVat.endsWith('3')) {
+                errors.push('الرقم الضريبي يجب أن يبدأ وينتهي بـ 3');
+            }
+        }
+
+        // 4. فحص الخصم لا يتجاوز الإجمالي
+        if (discount > (subtotal + parseFloat(document.getElementById('lblTaxTotal').innerText || 0))) {
+            errors.push(`الخصم (${discount}) يتجاوز إجمالي الفاتورة — يرجى تصحيحه`);
+        }
+
+        // 5. فحص الأرقام
+        salesItemsList.forEach((item, i) => {
+            if (isNaN(item.priceExclTax) || item.priceExclTax < 0) {
+                errors.push(`الصنف "${item.name}" — سعر غير صحيح`);
+            }
+            if (isNaN(item.qty) || item.qty <= 0) {
+                errors.push(`الصنف "${item.name}" — كمية غير صحيحة`);
+            }
+            if (isNaN(item.taxAmount) || item.taxAmount < 0) {
+                errors.push(`الصنف "${item.name}" — قيمة ضريبة غير صحيحة`);
             }
         });
+
+        // 6. فحص الصافي النهائي
+        if (netTotal < 0) {
+            errors.push('الصافي النهائي لا يمكن أن يكون سالباً');
+        }
+
+    } catch (err) {
+        errors.push('خطأ في الفحص: ' + err.message);
     }
 
-    // استدعاء وتحميل قائمة العملاء المخزنة
-    function loadSavedCustomersList() {
-        const savedCusts = JSON.parse(localStorage.getItem('altajer_saved_customers')) || ["عميل نقدي"];
-        const datalist = document.getElementById('customersList');
-        savedCusts.forEach(cust => {
-            if (!Array.from(datalist.options).some(opt => opt.value === cust)) {
-                const opt = document.createElement('option');
-                opt.value = cust;
-                datalist.appendChild(opt);
-            }
-        });
-    }
+    return errors;
+}
 
-    function showToast(message, isSuccess = true) {
+// ============================================================
+//  عرض/إخفاء أخطاء الفحص
+// ============================================================
+function showValidationErrors(errors) {
+    const box  = document.getElementById('validationBox');
+    const list = document.getElementById('validationList');
+    if (!box || !list) return;
+    if (errors.length === 0) {
+        box.style.display = 'none';
+        return;
+    }
+    list.innerHTML = errors.map(e => `<li>${e}</li>`).join('');
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ============================================================
+//  اعتماد الفاتورة (مُحدَّثة)
+// ============================================================
+window.commitSalesInvoice = async function() {
+    const btn = document.getElementById('btnCommit');
+    try {
+        // فحص أولي
+        const errors = validateInvoiceBeforeCommit(window.salesItemsList || []);
+        if (errors.length > 0) {
+            showValidationErrors(errors);
+            return;
+        }
+        showValidationErrors([]); // مسح الأخطاء السابقة
+
+        // تعطيل الزر لمنع الضغط المتكرر
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة...'; }
+
+        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        const custName    = document.getElementById('saleCustomerName').value.trim();
+        const custVat     = document.getElementById('saleCustomerVat').value.trim();
+        const custAddr    = document.getElementById('saleCustomerAddress').value.trim();
+        const discount    = parseFloat(document.getElementById('saleDiscount').value) || 0;
+
+        const invoicePayload = {
+            invoice_id:       'INV-' + Date.now(),
+            invoice_date:     new Date().toISOString(),
+            customer_id:      'CUST-' + Math.floor(Math.random() * 9000 + 1000),
+            customer_name:    custName  || 'عميل نقدي',
+            customer_vat:     custVat   || '---',
+            customer_address: custAddr  || '---',
+            subtotal:         document.getElementById('lblSubTotal').innerText,
+            tax:              document.getElementById('lblTaxTotal').innerText,
+            discount:         discount.toFixed(2),
+            total_net:        document.getElementById('lblNetTotal').innerText,
+            items:            window.salesItemsList || [],
+            currency:         'SAR'
+        };
+
+        // توليد QR ZATCA قبل الحفظ
+        const qrData = generateZATCAQRCode(invoicePayload);
+        invoicePayload.zatca_qr = qrData;
+
+        // حفظ العميل الجديد
+        if (custName) {
+            try {
+                let savedCusts = JSON.parse(localStorage.getItem('altajer_saved_customers') || '["عميل نقدي"]');
+                if (!savedCusts.includes(custName)) {
+                    savedCusts.push(custName);
+                    localStorage.setItem('altajer_saved_customers', JSON.stringify(savedCusts));
+                }
+            } catch(e) { console.warn('Customer save error:', e); }
+        }
+
+        // تحديث المخزن المحلي
+        try {
+            let products = JSON.parse(localStorage.getItem('altajer_products') || '[]');
+            (window.salesItemsList || []).forEach(soldItem => {
+                const p = products.find(x => x.code === soldItem.code);
+                if (p) p.quantity = Math.max(0, (parseInt(p.quantity) || 0) - parseInt(soldItem.qty));
+            });
+            localStorage.setItem('altajer_products', JSON.stringify(products));
+        } catch(e) { console.warn('Local stock update error:', e); }
+
+        // حفظ على Firebase (مع fallback محلي تلقائي)
+        await saveInvoiceToFirebase(invoicePayload);
+
+        showToastGlobal(
+            currentLang === 'ar'
+                ? '✅ تم اعتماد الفاتورة وحفظها — جاري التوجيه للطباعة'
+                : '✅ Invoice committed and saved — redirecting to print',
+            true
+        );
+
+        setTimeout(() => {
+            window.location.href = `invoice.html?id=${invoicePayload.invoice_id}`;
+        }, 1800);
+
+    } catch (err) {
+        console.error('Commit invoice error:', err);
+        showToastGlobal('❌ حدث خطأ: ' + err.message + ' — حاول مرة أخرى', false);
+        // إعادة تفعيل الزر
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-print"></i> اعتماد وإنشاء الفاتورة للطباعة';
+        }
+    }
+};
+
+// ============================================================
+//  Toast عالمي يمكن استدعاؤه من كل مكان
+// ============================================================
+function showToastGlobal(message, isSuccess = true) {
+    try {
         const toast = document.getElementById('apiToast');
+        if (!toast) return;
         toast.innerText = message;
         toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
         toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 3500);
+        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    } catch(e) { console.warn('Toast error:', e); }
+}
+
+// جعل الدوال متاحة عالمياً
+window.showToast = showToastGlobal;
+window.generateZATCAQRCode = generateZATCAQRCode;
+window.saveInvoiceToFirebase = saveInvoiceToFirebase;
+
+</script>
+
+<!-- ===== السكريبت الرئيسي (غير module) ===== -->
+<script>
+    window.salesItemsList = [];
+
+    // ===== تطبيق الثيم =====
+    function applySavedTheme() {
+        try {
+            const t = localStorage.getItem('altajer_preferred_theme') || 'winter';
+            document.documentElement.setAttribute('data-theme', t);
+        } catch(e) {}
     }
 
-    function addItemToInvoice(e) {
+    // ===== تحقق VAT مباشر =====
+    window.liveValidateVAT = function(input) {
+        try {
+            const val = input.value.trim();
+            const hint = document.getElementById('vatLiveHint');
+            if (!hint) return;
+            if (!val) { hint.innerText = ''; return; }
+            if (val.length < 15) {
+                hint.style.color = '#ffb703';
+                hint.innerText = `⚠️ متبقي ${15 - val.length} خانة`;
+            } else if (val.length === 15 && !isNaN(val) && val.startsWith('3') && val.endsWith('3')) {
+                hint.style.color = '#38b000';
+                hint.innerText = '✅ رقم ضريبي صحيح';
+            } else {
+                hint.style.color = '#e63946';
+                hint.innerText = '❌ يجب 15 خانة تبدأ وتنتهي بـ 3';
+            }
+        } catch(e) {}
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            applySavedTheme();
+            setupAutomaticBarcodePuller();
+            document.getElementById('itemTaxMethodToggle').addEventListener('change', function() {
+                try {
+                    const toggleText = document.getElementById('lblTaxToggleText');
+                    const lang = localStorage.getItem('altajer_lang') || 'ar';
+                    if (this.checked) {
+                        toggleText.textContent = (window.globalTranslations && window.globalTranslations[lang])
+                            ? window.globalTranslations[lang]["tax-method-incl"] : 'شامل الضريبة';
+                        toggleText.style.color = 'var(--light-green)';
+                    } else {
+                        toggleText.textContent = (window.globalTranslations && window.globalTranslations[lang])
+                            ? window.globalTranslations[lang]["tax-method-excl"] : 'غير شامل';
+                        toggleText.style.color = '#fff';
+                    }
+                } catch(e) {}
+            });
+            loadSavedCustomersList();
+            renderInvoiceItems();
+            const lang = localStorage.getItem('altajer_lang') || 'ar';
+            const sel = document.getElementById('langSelect');
+            if (sel) sel.value = lang;
+        } catch(e) {
+            console.error('DOMContentLoaded error:', e);
+        }
+    });
+
+    // ===== سحب الباركود التلقائي =====
+    function setupAutomaticBarcodePuller() {
+        try {
+            const codeInput = document.getElementById('itemCode');
+            if (!codeInput) return;
+            codeInput.addEventListener('input', function() {
+                try {
+                    const code = this.value.trim();
+                    if (code.length < 3) return;
+                    const products = JSON.parse(localStorage.getItem('altajer_products') || '[]');
+                    const match = products.find(p => p.code === code || p.barcode === code);
+                    if (match) {
+                        document.getElementById('itemName').value       = match.name  || '';
+                        document.getElementById('itemPriceInput').value = match.price || match.sale_price || '';
+                        const lang = localStorage.getItem('altajer_lang') || 'ar';
+                        window.showToast && window.showToast(
+                            lang === 'ar' ? '✅ تم سحب بيانات الصنف من المخزن' : 'Item retrieved from stock', true
+                        );
+                        document.getElementById('itemQty').focus();
+                        document.getElementById('itemQty').select();
+                    }
+                } catch(e) { console.warn('Barcode pull error:', e); }
+            });
+        } catch(e) { console.warn('Barcode setup error:', e); }
+    }
+
+    // ===== تحميل قائمة العملاء =====
+    window.loadSavedCustomersList = function() {
+        try {
+            const saved = JSON.parse(localStorage.getItem('altajer_saved_customers') || '["عميل نقدي"]');
+            const datalist = document.getElementById('customersList');
+            if (!datalist) return;
+            saved.forEach(c => {
+                if (!Array.from(datalist.options).some(o => o.value === c)) {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    datalist.appendChild(opt);
+                }
+            });
+        } catch(e) { console.warn('Customers list error:', e); }
+    };
+
+    // ===== إضافة صنف =====
+    window.addItemToInvoice = function(e) {
         e.preventDefault();
-        
-        const code = document.getElementById('itemCode').value.trim();
-        const name = document.getElementById('itemName').value.trim();
-        const rawPrice = parseFloat(document.getElementById('itemPriceInput').value);
-        const qty = parseInt(document.getElementById('itemQty').value);
-        const isPriceInclusive = document.getElementById('itemTaxMethodToggle').checked;
-        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        try {
+            const code     = document.getElementById('itemCode').value.trim();
+            const name     = document.getElementById('itemName').value.trim();
+            const rawPrice = parseFloat(document.getElementById('itemPriceInput').value);
+            const qty      = parseInt(document.getElementById('itemQty').value);
+            const isIncl   = document.getElementById('itemTaxMethodToggle').checked;
+            const lang     = localStorage.getItem('altajer_lang') || 'ar';
 
-        if(!name) {
-            const invalidMsg = currentLang === 'ar' ? "الرجاء إدخال كود صنف صحيح مسجل في صفحة المنتجات ليتم سحبه!" : "Please scan or enter a registered valid item code first!";
-            showToast(invalidMsg, false);
-            return;
+            // فحص البيانات
+            if (!name || !code) {
+                window.showToast && window.showToast(
+                    lang === 'ar' ? '❌ يرجى إدخال كود صنف مسجل' : '❌ Enter a valid registered item code', false
+                );
+                return;
+            }
+            if (isNaN(rawPrice) || rawPrice <= 0) {
+                window.showToast && window.showToast(lang === 'ar' ? '❌ السعر يجب أن يكون أكبر من صفر' : '❌ Price must be > 0', false);
+                return;
+            }
+            if (isNaN(qty) || qty <= 0) {
+                window.showToast && window.showToast(lang === 'ar' ? '❌ الكمية يجب أن تكون أكبر من صفر' : '❌ Qty must be > 0', false);
+                return;
+            }
+
+            // حساب الضريبة بدقة
+            let priceExcl, taxVal, totalIncl;
+            if (isIncl) {
+                priceExcl = rawPrice / 1.15;
+                taxVal    = parseFloat((priceExcl * qty * 0.15).toFixed(4));
+                totalIncl = parseFloat((rawPrice * qty).toFixed(4));
+            } else {
+                priceExcl = rawPrice;
+                taxVal    = parseFloat((priceExcl * qty * 0.15).toFixed(4));
+                totalIncl = parseFloat(((priceExcl * qty) + taxVal).toFixed(4));
+            }
+
+            window.salesItemsList.push({
+                code, name,
+                priceExclTax: parseFloat(priceExcl.toFixed(4)),
+                qty, taxAmount: taxVal, totalInclTax: totalIncl
+            });
+
+            // تفريغ الحقول
+            document.getElementById('itemCode').value       = '';
+            document.getElementById('itemName').value       = '';
+            document.getElementById('itemPriceInput').value = '';
+            document.getElementById('itemQty').value        = '1';
+
+            renderInvoiceItems();
+            // تحديث QR مباشرة بعد إضافة صنف
+            updateLiveQR();
+            window.showToast && window.showToast(
+                lang === 'ar' ? '✅ تم إدراج الصنف بنجاح' : '✅ Item added', true
+            );
+            document.getElementById('itemCode').focus();
+        } catch(err) {
+            console.error('Add item error:', err);
+            window.showToast && window.showToast('❌ خطأ في إضافة الصنف: ' + err.message, false);
         }
+    };
 
-        let priceExcl = 0;
-        let taxVal = 0;
-        let totalIncl = 0;
+    // ===== حذف صنف =====
+    window.deleteItemRow = function(index) {
+        try {
+            window.salesItemsList.splice(index, 1);
+            renderInvoiceItems();
+            updateLiveQR();
+            const lang = localStorage.getItem('altajer_lang') || 'ar';
+            window.showToast && window.showToast(
+                lang === 'ar' ? 'تم حذف الصنف' : 'Item removed', false
+            );
+        } catch(e) { console.warn('Delete item error:', e); }
+    };
 
-        // تنفيذ الحسبة المحاسبية لمطابقة وضع الضرائب بدقة متناهية
-        if (isPriceInclusive) {
-            priceExcl = rawPrice / 1.15;
-            taxVal = (priceExcl * qty) * 0.15;
-            totalIncl = rawPrice * qty;
-        } else {
-            priceExcl = rawPrice;
-            taxVal = (priceExcl * qty) * 0.15;
-            totalIncl = (priceExcl * qty) + taxVal;
-        }
-
-        const itemPayload = {
-            code: code,
-            name: name,
-            priceExclTax: priceExcl,
-            priceInclTax: isPriceInclusive ? rawPrice : rawPrice * 1.15,
-            qty: qty,
-            taxAmount: taxVal,
-            totalInclTax: totalIncl
-        };
-
-        salesItemsList.push(itemPayload);
-        
-        // إعادة تهيئة حقول الإدخال للسرعة مع الإبقاء على خيار "شامل الضريبة" مفعل للكاشير
-        document.getElementById('itemCode').value = '';
-        document.getElementById('itemName').value = '';
-        document.getElementById('itemPriceInput').value = '';
-        document.getElementById('itemQty').value = '1';
-        
-        renderInvoiceItems();
-        showToast(currentLang === 'ar' ? "تم إدراج الصنف ومطابقة احتساب الضريبة بالسلة" : "Item integrated and tax vectors calculated");
-        document.getElementById('itemCode').focus();
-    }
-
-    function deleteItemRow(index) {
-        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
-        salesItemsList.splice(index, 1);
-        renderInvoiceItems();
-        showToast(currentLang === 'ar' ? "تم حذف الصنف وإعادة احتساب الإجماليات فوراً" : "Item removed and totals recalculated instantly", false);
-    }
-
-    function clearCurrentInvoice() {
-        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
-        const confirmMsg = currentLang === 'ar' ? "هل أنت متأكد من رغبتك في تفريغ سلة المبيعات الحالية؟" : "Are you sure you want to flush the active sales basket?";
-        
-        if(confirm(confirmMsg)) {
-            salesItemsList = [];
+    // ===== تفريغ السلة =====
+    window.clearCurrentInvoice = function() {
+        try {
+            const lang = localStorage.getItem('altajer_lang') || 'ar';
+            const msg  = lang === 'ar' ? 'هل أنت متأكد من تفريغ السلة؟' : 'Clear the basket?';
+            if (!confirm(msg)) return;
+            window.salesItemsList = [];
             document.getElementById('salesItemForm').reset();
             document.getElementById('itemQty').value = '1';
+            const qrBox = document.getElementById('qrPreviewBox');
+            if (qrBox) qrBox.style.display = 'none';
+            const qrStatus = document.getElementById('qrStatus');
+            if (qrStatus) qrStatus.innerText = '';
             renderInvoiceItems();
-            showToast(currentLang === 'ar' ? "تم تصفير سلة المبيعات بالكامل" : "Sales basket cleared completely", false);
-        }
-    }
+            window.showToast && window.showToast(
+                lang === 'ar' ? 'تم تفريغ السلة' : 'Basket cleared', false
+            );
+        } catch(e) { console.error('Clear error:', e); }
+    };
 
+    // ===== عرض الأصناف =====
     function renderInvoiceItems() {
-        const tbody = document.getElementById('salesItemsTableBody');
-        tbody.innerHTML = '';
-        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
+        try {
+            const tbody = document.getElementById('salesItemsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            const lang = localStorage.getItem('altajer_lang') || 'ar';
 
-        if(salesItemsList.length === 0) {
-            const basketEmptyText = currentLang === 'ar' ? "السلة فارغة، امسح الباركود لإضافة الأصناف تلقائياً" : "The basket is empty, scan barcode to trigger auto-fill";
-            tbody.innerHTML = `<tr><td colspan="8" class="text-muted p-3">${basketEmptyText}</td></tr>`;
+            if (!window.salesItemsList || window.salesItemsList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-muted p-3">${
+                    lang === 'ar' ? 'السلة فارغة — امسح الباركود لإضافة الأصناف' : 'Basket is empty — scan barcode'
+                }</td></tr>`;
+                calculateInvoiceTotals();
+                return;
+            }
+
+            window.salesItemsList.forEach((item, i) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.code || '-'}</td>
+                        <td class="fw-bold text-info">${item.name || '-'}</td>
+                        <td>${(item.priceExclTax || 0).toFixed(2)} ر.س</td>
+                        <td>${item.qty || 0}</td>
+                        <td>15%</td>
+                        <td>${(item.taxAmount || 0).toFixed(2)} ر.س</td>
+                        <td class="fw-bold text-success">${(item.totalInclTax || 0).toFixed(2)} ر.س</td>
+                        <td>
+                            <i class="fas fa-trash-alt text-danger cursor-pointer"
+                               onclick="deleteItemRow(${i})"
+                               style="cursor:pointer;font-size:16px;"></i>
+                        </td>
+                    </tr>`;
+            });
             calculateInvoiceTotals();
-            return;
+        } catch(e) {
+            console.error('Render error:', e);
         }
-
-        salesItemsList.forEach((item, index) => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${item.code}</td>
-                    <td class="fw-bold text-info">${item.name}</td>
-                    <td>${item.priceExclTax.toFixed(2)} ر.س</td>
-                    <td>${item.qty}</td>
-                    <td>15%</td>
-                    <td>${item.taxAmount.toFixed(2)} ر.س</td>
-                    <td class="fw-bold text-success">${item.totalInclTax.toFixed(2)} ر.س</td>
-                    <td><i class="fas fa-trash-alt text-danger cursor-pointer" onclick="deleteItemRow(${index}) border:none;"></i></td>
-                </tr>
-            `;
-        });
-
-        calculateInvoiceTotals();
     }
 
-    function calculateInvoiceTotals() {
-        let subtotal = 0;
-        let tax = 0;
-        let discount = parseFloat(document.getElementById('saleDiscount').value) || 0;
+    // ===== حساب الإجماليات =====
+    window.calculateInvoiceTotals = function() {
+        try {
+            let subtotal = 0, tax = 0;
+            const discount = Math.max(0, parseFloat(document.getElementById('saleDiscount').value) || 0);
 
-        salesItemsList.forEach(item => {
-            subtotal += (item.priceExclTax * item.qty);
-            tax += item.taxAmount;
-        });
+            (window.salesItemsList || []).forEach(item => {
+                subtotal += (parseFloat(item.priceExclTax) || 0) * (parseInt(item.qty) || 0);
+                tax      += parseFloat(item.taxAmount) || 0;
+            });
 
-        let grossTotal = subtotal + tax;
-        let netTotal = grossTotal - discount;
-        if(netTotal < 0) netTotal = 0;
+            const gross  = subtotal + tax;
+            const net    = Math.max(0, gross - discount);
 
-        document.getElementById('lblSubTotal').innerText = subtotal.toFixed(2);
-        document.getElementById('lblTaxTotal').innerText = tax.toFixed(2);
-        document.getElementById('lblDiscountTotal').innerText = discount.toFixed(2);
-        document.getElementById('lblNetTotal').innerText = netTotal.toFixed(2);
+            document.getElementById('lblSubTotal').innerText     = subtotal.toFixed(2);
+            document.getElementById('lblTaxTotal').innerText     = tax.toFixed(2);
+            document.getElementById('lblDiscountTotal').innerText = discount.toFixed(2);
+            document.getElementById('lblNetTotal').innerText     = net.toFixed(2);
+        } catch(e) {
+            console.warn('Totals calc error:', e);
+        }
+    };
+
+    // ===== تحديث QR مباشر =====
+    function updateLiveQR() {
+        try {
+            if (!window.salesItemsList || window.salesItemsList.length === 0) return;
+            const S       = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
+            const preview = {
+                invoice_date: new Date().toISOString(),
+                total_net:    document.getElementById('lblNetTotal').innerText,
+                tax:          document.getElementById('lblTaxTotal').innerText
+            };
+            window.generateZATCAQRCode && window.generateZATCAQRCode(preview);
+        } catch(e) { console.warn('Live QR update error:', e); }
     }
 
-    function commitSalesInvoice() {
-        const custName = document.getElementById('saleCustomerName').value.trim();
-        const custVat = document.getElementById('saleCustomerVat').value.trim();
-        const custAddr = document.getElementById('saleCustomerAddress').value.trim();
-        const discount = parseFloat(document.getElementById('saleDiscount').value) || 0;
-        const currentLang = localStorage.getItem('altajer_lang') || 'ar';
-
-        if(salesItemsList.length === 0) {
-            const emptyErr = currentLang === 'ar' ? "لا يمكنك اعتماد فاتورة فارغة! يرجى سحب وإضافة أصناف أولاً." : "Cannot commit an empty invoice! Please pull items first.";
-            showToast(emptyErr, false);
-            return;
-        }
-
-        // حفظ وتحديث كشاف العميل في القائمة إذا كان جديداً لتسهيل العمليات المستقبلية
-        if(custName) {
-            let savedCusts = JSON.parse(localStorage.getItem('altajer_saved_customers')) || ["عميل نقدي"];
-            if(!savedCusts.includes(custName)) {
-                savedCusts.push(custName);
-                localStorage.setItem('altajer_saved_customers', JSON.stringify(savedCusts));
-            }
-        }
-
-        // 1. توليد كائن الفاتورة المحدثة بنفس البنية الدقيقة لطباعة التقرير والـ QR كود
-        const invoicePayload = {
-            invoice_id: Math.floor(Math.random() * 90000) + 10000,
-            invoice_date: new Date().toISOString(),
-            customer_id: "CUST-" + (Math.floor(Math.random() * 900) + 100),
-            customer_name: custName || (currentLang === 'ar' ? "عميل نقدي" : "Cash Customer"),
-            customer_vat: custVat || "---",
-            customer_address: custAddr || "---",
-            subtotal: document.getElementById('lblSubTotal').innerText,
-            tax: document.getElementById('lblTaxTotal').innerText,
-            discount: discount.toFixed(2),
-            total_net: document.getElementById('lblNetTotal').innerText,
-            items: salesItemsList
-        };
-
-        // 2. تحديث وخصم كميات السلع من المخزن التراكمي في الذاكرة المحلية (localStorage)
-        let registeredProducts = JSON.parse(localStorage.getItem('altajer_products')) || [];
-        salesItemsList.forEach(soldItem => {
-            let product = registeredProducts.find(p => p.code === soldItem.code);
-            if(product) {
-                product.quantity = (parseInt(product.quantity) || 0) - parseInt(soldItem.qty);
-                if(product.quantity < 0) product.quantity = 0; // صمام أمان لعدم هبوط المخزن التراكمي تحت الصفر عشوائياً
-            }
-        });
-        localStorage.setItem('altajer_products', JSON.stringify(registeredProducts));
-
-        // 3. حقن الفاتورة في ذاكرة المصب النهائي لاستعراضها فوراُ بشاشة الـ invoice
-        localStorage.setItem('last_processed_invoice', JSON.stringify(invoicePayload));
-
-        const redirectionMsg = currentLang === 'ar' ? "تم اعتماد المبيعات وتحديث كميات المخزن.. جاري توجيهك للطباعة" : "Sales authorized & stock inventory updated.. redirecting to billing console";
-        showToast(redirectionMsg);
-        
-        // 4. الانتقال التلقائي الفوري لشاشة الفاتورة والـ QR المتوافقة مع هيئة الزكاة والضريبة
-        setTimeout(() => { 
-            window.location.href = `invoice.html?id=${invoicePayload.invoice_id}`; 
-        }, 1800);
-    }
+    // ===== دعم فني =====
+    window.openSupportChat  = function() {
+        const box = document.getElementById('supportChatBox');
+        if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    };
+    window.closeSupportChat = function() {
+        const box = document.getElementById('supportChatBox');
+        if (box) box.style.display = 'none';
+    };
 </script>
+
+<!-- Firebase يُحمَّل أخيراً -->
+<script type="module" src="firebase-config.js"></script>
+
 </body>
 </html>

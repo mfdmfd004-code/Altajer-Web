@@ -21,8 +21,8 @@ const FLOAT_VISIBLE_MS  = 60000; // دقيقة واحدة
 // الخطط
 export const PLANS = {
     trial:   { label: 'تجريبي',  days: TRIAL_DAYS, price: 0    },
-    monthly: { label: 'شهري',    days: 30,          price: 49   },
-    yearly:  { label: 'سنوي',    days: 365,         price: 399  }
+    monthly: { label: 'شهري',    days: 30,          price: 49,99   },
+    yearly:  { label: 'سنوي',    days: 365,         price: 500  }
 };
 
 // ============================================================

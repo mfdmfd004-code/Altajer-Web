@@ -332,10 +332,10 @@ export async function notifyAdminNewUser(userEmail, userName, country) {
         });
 
         // إرسال إيميل عبر EmailJS (مجاني حتى 200 إيميل/شهر)
-        // بعد تسجيلك في emailjs.com ضع بياناتك هنا:
-        const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
-        const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
-        const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
+        // بعد تسجيلك في emailjs.com وضع بياناتك هنا:
+        const EMAILJS_SERVICE_ID  = 'service_ogo1oah';
+        const EMAILJS_TEMPLATE_ID = 'template_ca7k80l';
+        const EMAILJS_PUBLIC_KEY  = 'HSUdjmzBSJr41GPF-';
 
         if (EMAILJS_SERVICE_ID !== 'YOUR_SERVICE_ID') {
             await fetch('https://api.emailjs.com/api/v1.0/email/send', {

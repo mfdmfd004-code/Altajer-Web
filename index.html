@@ -1071,5 +1071,74 @@
     <i class="fas fa-crown"></i>
     <span id="subBtnLabel">الاشتراك</span>
 </a>
+    <!-- زر الدعم الثابت -->
+<style>
+.support-fab {
+    position:fixed; bottom:75px; left:16px; z-index:9998;
+    display:flex; flex-direction:column; align-items:flex-start; gap:8px;
+}
+.fab-main {
+    width:50px; height:50px; border-radius:50%;
+    background:linear-gradient(135deg,#0077b6,#00b4d8);
+    border:none; color:white; font-size:19px;
+    cursor:pointer; box-shadow:0 4px 15px rgba(0,119,182,0.5);
+    display:flex; align-items:center; justify-content:center; transition:0.3s;
+}
+.fab-main:hover { transform:scale(1.1); }
+.support-menu {
+    display:none; flex-direction:column; gap:8px;
+    background:rgba(15,23,42,0.97);
+    border:1px solid rgba(0,180,216,0.3);
+    border-radius:14px; padding:14px;
+    min-width:220px; box-shadow:0 8px 25px rgba(0,0,0,0.6);
+    margin-bottom:8px;
+}
+.support-menu.show { display:flex; }
+.support-menu-title {
+    font-size:12px; color:#00b4d8; font-weight:700;
+    margin-bottom:4px; display:flex; align-items:center; gap:6px;
+    font-family:'Segoe UI',sans-serif;
+}
+.support-item {
+    display:flex; align-items:center; gap:10px;
+    padding:9px 12px; border-radius:10px;
+    text-decoration:none; color:white; font-size:13px; font-weight:600;
+    transition:0.2s; font-family:'Segoe UI',sans-serif;
+}
+.support-item:hover { background:rgba(255,255,255,0.08); }
+.support-item i { font-size:15px; width:20px; text-align:center; }
+</style>
+
+<div class="support-fab">
+    <div class="support-menu" id="supportMenuMain">
+        <div class="support-menu-title">
+            <i class="fas fa-headset"></i> تواصل معنا
+        </div>
+        <a href="https://wa.me/966501662547?text=مرحباً،%20أحتاج%20مساعدة%20في%20تاجر%20برو"
+           target="_blank" class="support-item">
+            <i class="fab fa-whatsapp" style="color:#25d366;"></i> واتساب مباشر
+        </a>
+        <a href="tel:+966501662547" class="support-item">
+            <i class="fas fa-phone" style="color:#ffb703;"></i> 00966501662547
+        </a>
+        <a href="mailto:mfdmfd004@gmail.com?subject=استفسار تاجر برو"
+           class="support-item">
+            <i class="fas fa-envelope" style="color:#00b4d8;"></i> mfdmfd004@gmail.com
+        </a>
+    </div>
+    <button class="fab-main" onclick="toggleSupportMain()" title="الدعم الفني">
+        <i class="fas fa-headset" id="fabIconMain"></i>
+    </button>
+</div>
+
+<script>
+function toggleSupportMain() {
+    const menu = document.getElementById('supportMenuMain');
+    const icon = document.getElementById('fabIconMain');
+    menu.classList.toggle('show');
+    icon.className = menu.classList.contains('show')
+        ? 'fas fa-times' : 'fas fa-headset';
+}
+</script>
 </body>
 </html>

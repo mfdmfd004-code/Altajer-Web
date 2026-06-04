@@ -174,6 +174,26 @@
             <small id="userDisplayName" style="font-size:10px;color:var(--neon-cyan);display:block;"></small>
         </div>
     </div>
+    <!-- الساعة والتاريخ في الهيدر -->
+    <div id="headerClock" style="
+        text-align:left;
+        line-height:1.2;
+        margin-right:auto;
+        padding:0 10px;">
+        <div id="headerTime" style="
+            font-size:15px;
+            font-weight:bold;
+            color:var(--neon-cyan);
+            letter-spacing:1px;
+            font-family:'Segoe UI',monospace;">
+            00:00:00
+        </div>
+        <div id="headerDate" style="
+            font-size:10px;
+            color:var(--text-muted);
+            margin-top:1px;">
+        </div>
+    </div>
     <div class="d-flex align-items-center gap-2">
         <select id="themeSelector" class="form-select form-select-sm bg-transparent text-white" style="width:95px;font-size:11px;" onchange="changeTheme(this.value)">
             <option value="winter" style="color:#000;">Winter ❄️</option>
@@ -209,7 +229,10 @@
 <!-- ===== قسم الرئيسية ===== -->
 <div id="view-0" class="view-section show">
     <div class="container-fluid">
-        <div class="row g-2 mb-3">
+        </div><!-- نهاية dashboard-grid -->
+
+        <!-- إحصائيات في الأسفل -->
+        <div class="row g-2 mt-2 mb-3">
             <div class="col-6">
                 <div class="stat-card">
                     <small class="text-muted d-block mb-1" data-i18n="stat-orders">إجمالي طلبات الشهر</small>
@@ -223,15 +246,13 @@
                 </div>
             </div>
         </div>
-        <div class="p-3 mb-3 rounded d-flex justify-content-between align-items-center"
-             style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--neon-cyan);">
-            <div>
-                <div id="digitalClock" style="font-size:22px;font-weight:bold;color:var(--neon-cyan);letter-spacing:1px;">00:00:00</div>
-                <div id="digitalDate" style="font-size:11px;color:var(--text-muted);margin-top:2px;"></div>
-            </div>
-            <button class="btn btn-sm btn-info text-white fw-bold px-3 py-2" onclick="switchView(3)"
-                    style="border-radius:20px;font-size:12px;">
-                <i class="fas fa-bolt me-1"></i><span data-i18n="fast-inv-btn">فاتورة جديدة</span>
+        <div class="p-3 mb-3 rounded d-flex justify-content-center align-items-center"
+     style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--neon-cyan);">
+    <button class="btn btn-sm btn-info text-white fw-bold px-4 py-2" onclick="switchView(3)"
+            style="border-radius:20px;font-size:13px;">
+        <i class="fas fa-bolt me-1"></i><span data-i18n="fast-inv-btn">فاتورة جديدة ⚡</span>
+    </button>
+</div>
             </button>
         </div>
         <div class="dashboard-grid">
@@ -762,17 +783,27 @@
 
     // ===== الساعة =====
     function updateDigitalClock() {
-        const now = new Date();
-        const h = String(now.getHours()).padStart(2,'0');
-        const m = String(now.getMinutes()).padStart(2,'0');
-        const s = String(now.getSeconds()).padStart(2,'0');
-        const el = document.getElementById('digitalClock');
-        if(el) el.innerText = `${h}:${m}:${s}`;
-        const de = document.getElementById('digitalDate');
-        if(de) de.innerText = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
-    }
-    setInterval(updateDigitalClock, 1000);
-    updateDigitalClock();
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    const timeStr = `${h}:${m}:${s}`;
+    const dateStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+
+    // الساعة في الهيدر الجديد
+    const ht = document.getElementById('headerTime');
+    if(ht) ht.innerText = timeStr;
+    const hd = document.getElementById('headerDate');
+    if(hd) hd.innerText = dateStr;
+
+    // للتوافق مع أي مكان آخر يستخدمها
+    const el = document.getElementById('digitalClock');
+    if(el) el.innerText = timeStr;
+    const de = document.getElementById('digitalDate');
+    if(de) de.innerText = dateStr;
+}
+setInterval(updateDigitalClock, 1000);
+updateDigitalClock();
 
     // ===== نوع العميل ZATCA =====
     window.setCustType = function(type) {

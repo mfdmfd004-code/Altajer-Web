@@ -1,4 +1,4 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="winter">
 <head>
     <meta charset="UTF-8">
@@ -58,13 +58,19 @@
         }
         .nav-btn i { font-size: 18px; margin-bottom: 3px; }
         .nav-btn.active-nav, .nav-btn:hover { color: var(--neon-cyan); transform: translateY(-2px); }
-        .view-section { display: none; padding: 15px 5px; }
-        .view-section.show { display: block; animation: fadeIn 0.3s ease-in-out; }
+
+        /* ===== المفتاح الرئيسي لإظهار/إخفاء الأقسام ===== */
+        .view-section { display: none !important; padding: 15px 5px; }
+        .view-section.show { display: block !important; animation: fadeIn 0.3s ease-in-out; }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 5px; }
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 12px; padding: 5px;
+        }
         .menu-item {
             background: var(--card-bg); border-radius: 12px; padding: 15px 10px;
             text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
@@ -161,11 +167,47 @@
             color: var(--text-white); font-size: 13px; box-sizing: border-box;
         }
         .field-group select { background: var(--card-bg); }
+
+        /* زر الدعم */
+        .support-fab {
+            position:fixed; bottom:130px; left:16px; z-index:9998;
+            display:flex; flex-direction:column; align-items:flex-start; gap:8px;
+        }
+        .fab-main {
+            width:50px; height:50px; border-radius:50%;
+            background:linear-gradient(135deg,#0077b6,#00b4d8);
+            border:none; color:white; font-size:19px;
+            cursor:pointer; box-shadow:0 4px 15px rgba(0,119,182,0.5);
+            display:flex; align-items:center; justify-content:center; transition:0.3s;
+        }
+        .fab-main:hover { transform:scale(1.1); }
+        .support-menu {
+            display:none; flex-direction:column; gap:8px;
+            background:rgba(15,23,42,0.97);
+            border:1px solid rgba(0,180,216,0.3);
+            border-radius:14px; padding:14px;
+            min-width:220px; box-shadow:0 8px 25px rgba(0,0,0,0.6);
+            margin-bottom:8px;
+        }
+        .support-menu.show { display:flex; }
+        .support-menu-title {
+            font-size:12px; color:#00b4d8; font-weight:700;
+            margin-bottom:4px; display:flex; align-items:center; gap:6px;
+        }
+        .support-item {
+            display:flex; align-items:center; gap:10px;
+            padding:9px 12px; border-radius:10px;
+            text-decoration:none; color:white; font-size:13px; font-weight:600;
+            transition:0.2s;
+        }
+        .support-item:hover { background:rgba(255,255,255,0.08); }
+        .support-item i { font-size:15px; width:20px; text-align:center; }
     </style>
 </head>
 <body>
 <div id="apiToast"></div>
 
+<!-- ===== الهيدر ===== -->
 <nav class="top-navbar d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center gap-2">
         <img src="https://cdn-icons-png.flaticon.com/512/3222/3222675.png" width="28" alt="logo">
@@ -174,43 +216,29 @@
             <small id="userDisplayName" style="font-size:10px;color:var(--neon-cyan);display:block;"></small>
         </div>
     </div>
-    <!-- الساعة والتاريخ في الهيدر -->
-    <div id="headerClock" style="
-        text-align:left;
-        line-height:1.2;
-        margin-right:auto;
-        padding:0 10px;">
-        <div id="headerTime" style="
-            font-size:15px;
-            font-weight:bold;
-            color:var(--neon-cyan);
-            letter-spacing:1px;
-            font-family:'Segoe UI',monospace;">
-            00:00:00
-        </div>
-        <div id="headerDate" style="
-            font-size:10px;
-            color:var(--text-muted);
-            margin-top:1px;">
-        </div>
+    <!-- الساعة في الهيدر -->
+    <div style="text-align:center;line-height:1.2;padding:0 8px;">
+        <div id="headerTime" style="font-size:14px;font-weight:bold;color:var(--neon-cyan);letter-spacing:1px;font-family:monospace;">00:00:00</div>
+        <div id="headerDate" style="font-size:10px;color:var(--text-muted);margin-top:1px;"></div>
     </div>
     <div class="d-flex align-items-center gap-2">
-        <select id="themeSelector" class="form-select form-select-sm bg-transparent text-white" style="width:95px;font-size:11px;" onchange="changeTheme(this.value)">
+        <select id="themeSelector" class="form-select form-select-sm bg-transparent text-white" style="width:85px;font-size:10px;" onchange="changeTheme(this.value)">
             <option value="winter" style="color:#000;">Winter ❄️</option>
             <option value="classic" style="color:#000;">Classic 🌙</option>
             <option value="emerald" style="color:#000;">Emerald 🔋</option>
             <option value="sunset" style="color:#000;">Sunset 🌇</option>
             <option value="luxury" style="color:#000;">Luxury ✨</option>
         </select>
-        <button onclick="changeLanguage('ar')" class="btn btn-sm text-white p-0 fw-bold">AR</button>
-        <span class="text-muted"></span>
-        <button onclick="changeLanguage('en')" class="btn btn-sm text-white p-0 fw-bold">EN</button>
-        <a href="settings.html" style="color:white;font-size:18px;margin-right:8px;">
+        <button onclick="changeLanguage('ar')" class="btn btn-sm text-white p-0 fw-bold" style="font-size:11px;">AR</button>
+        <span class="text-muted">|</span>
+        <button onclick="changeLanguage('en')" class="btn btn-sm text-white p-0 fw-bold" style="font-size:11px;">EN</button>
+        <a href="settings.html" style="color:white;font-size:16px;margin-right:4px;">
             <i class="fas fa-cogs"></i>
         </a>
     </div>
 </nav>
 
+<!-- ===== شريط التنقل السفلي ===== -->
 <div class="bottom-nav">
     <button class="nav-btn active-nav" onclick="switchView(0)">
         <i class="fas fa-th-large"></i><span data-i18n="nav-dashboard">الرئيسية</span>
@@ -229,32 +257,17 @@
 <!-- ===== قسم الرئيسية ===== -->
 <div id="view-0" class="view-section show">
     <div class="container-fluid">
-        </div><!-- نهاية dashboard-grid -->
 
-        <!-- إحصائيات في الأسفل -->
-        <div class="row g-2 mt-2 mb-3">
-            <div class="col-6">
-                <div class="stat-card">
-                    <small class="text-muted d-block mb-1" data-i18n="stat-orders">إجمالي طلبات الشهر</small>
-                    <h4 id="orderCount" class="m-0 text-success fw-bold">0</h4>
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="stat-card" style="border-right-color:var(--neon-cyan);">
-                    <small class="text-muted d-block mb-1" data-i18n="stat-customers">العملاء المسجلين</small>
-                    <h4 id="customerCount" class="m-0 text-info fw-bold">0</h4>
-                </div>
-            </div>
-        </div>
+        <!-- شريط فاتورة جديدة -->
         <div class="p-3 mb-3 rounded d-flex justify-content-center align-items-center"
-     style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--neon-cyan);">
-    <button class="btn btn-sm btn-info text-white fw-bold px-4 py-2" onclick="switchView(3)"
-            style="border-radius:20px;font-size:13px;">
-        <i class="fas fa-bolt me-1"></i><span data-i18n="fast-inv-btn">فاتورة جديدة ⚡</span>
-    </button>
-</div>
+             style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--neon-cyan);">
+            <button class="btn btn-info text-white fw-bold px-4 py-2" onclick="switchView(3)"
+                    style="border-radius:20px;font-size:13px;">
+                <i class="fas fa-bolt me-1"></i><span data-i18n="fast-inv-btn">⚡ فاتورة جديدة ⚡</span>
             </button>
         </div>
+
+        <!-- شبكة الأيقونات -->
         <div class="dashboard-grid">
             <div class="menu-item" onclick="switchView(3)">
                 <i class="fas fa-file-invoice-dollar"></i><span data-i18n="m-invoice">فاتورة مبيعات</span>
@@ -293,10 +306,29 @@
                 <i class="fas fa-file-alt"></i><span data-i18n="m-receipts">السندات المالية</span>
             </div>
         </div>
-        <div class="mt-4 p-3 rounded" style="background:var(--card-bg);">
+
+        <!-- إحصائيات في الأسفل -->
+        <div class="row g-2 mt-3 mb-3">
+            <div class="col-6">
+                <div class="stat-card">
+                    <small class="text-muted d-block mb-1" data-i18n="stat-orders">إجمالي طلبات الشهر</small>
+                    <h4 id="orderCount" class="m-0 text-success fw-bold">0</h4>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="stat-card" style="border-right-color:var(--neon-cyan);">
+                    <small class="text-muted d-block mb-1" data-i18n="stat-customers">العملاء المسجلين</small>
+                    <h4 id="customerCount" class="m-0 text-info fw-bold">0</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- الرسم البياني -->
+        <div class="mt-2 p-3 rounded" style="background:var(--card-bg);">
             <h6 class="mb-3 text-muted text-center" style="font-size:13px;">مخطط مبيعات ومخزون تاجر برو</h6>
             <div style="max-width:260px;margin:0 auto;"><canvas id="myChart"></canvas></div>
         </div>
+
     </div>
 </div>
 
@@ -414,7 +446,7 @@
                     <table class="table table-dark table-hover table-dark-custom text-center">
                         <thead>
                             <tr>
-                                <th>المعرّف</th><th>النوع</th><th>الاسم</th>
+                                <th>المعرّد</th><th>النوع</th><th>الاسم</th>
                                 <th>الرقم الضريبي</th><th>التواصل</th><th>المدينة</th><th>إجراء</th>
                             </tr>
                         </thead>
@@ -649,13 +681,11 @@
                         <div class="field-group">
                             <label>نوع السند *</label>
                             <div style="display:flex;gap:8px;">
-                                <button type="button" id="btnReceipt"
-                                    onclick="setVoucherType('receipt')"
+                                <button type="button" id="btnReceipt" onclick="setVoucherType('receipt')"
                                     style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--light-green);background:var(--light-green);color:white;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;">
                                     <i class="fas fa-arrow-down"></i> قبض
                                 </button>
-                                <button type="button" id="btnPayment"
-                                    onclick="setVoucherType('payment')"
+                                <button type="button" id="btnPayment" onclick="setVoucherType('payment')"
                                     style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--text-muted);background:transparent;color:var(--text-muted);cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;">
                                     <i class="fas fa-arrow-up"></i> صرف
                                 </button>
@@ -744,89 +774,65 @@
 
 <script>
     // ===== الثيم =====
-    function changeTheme(themeName) {
-        document.documentElement.setAttribute('data-theme', themeName);
-        localStorage.setItem('altajer_preferred_theme', themeName);
+    function changeTheme(t) {
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem('altajer_preferred_theme', t);
         const sel = document.getElementById('themeSelector');
-        if(sel) sel.value = themeName;
+        if(sel) sel.value = t;
     }
-    const savedTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
-    changeTheme(savedTheme);
+    changeTheme(localStorage.getItem('altajer_preferred_theme') || 'winter');
 
-    // ===== التنقل بين الأقسام =====
+    // ===== التنقل — الإصلاح الرئيسي =====
     function switchView(index) {
-    const navBtns = document.querySelectorAll('.nav-btn');
-    navBtns.forEach(b => b.classList.remove('active-nav'));
-
-    // إخفاء كل الأقسام بالـ ID مباشرة
-    [0,1,2,3,4,5].forEach(i => {
-        const s = document.getElementById('view-' + i);
-        if(s) s.classList.remove('show');
-    });
-
-    // تفعيل الزر المطلوب
-    if(index < navBtns.length) navBtns[index].classList.add('active-nav');
-
-    // إظهار القسم المطلوب فقط
-    const target = document.getElementById('view-' + index);
-    if(target) {
-        target.classList.add('show');
-        // التأكد من إخفاء الباقي
-        [0,1,2,3,4,5].forEach(i => {
-            if(i !== index) {
-                const s = document.getElementById('view-' + i);
-                if(s) s.classList.remove('show');
-            }
-        });
-    }
-    window.scrollTo(0, 0);
-    }
+        // إخفاء كل الأقسام
+        for(let i = 0; i <= 5; i++) {
+            const s = document.getElementById('view-' + i);
+            if(s) { s.classList.remove('show'); }
+        }
+        // إزالة active من كل الأزرار
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav'));
+        // إظهار القسم المطلوب
+        const target = document.getElementById('view-' + index);
+        if(target) target.classList.add('show');
+        // تفعيل الزر
+        const btns = document.querySelectorAll('.nav-btn');
+        if(btns[index]) btns[index].classList.add('active-nav');
+        window.scrollTo(0, 0);
     }
 
     // ===== Toast =====
-    function showToast(message, isSuccess = true) {
-        const toast = document.getElementById('apiToast');
-        toast.innerText = message;
-        toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    function showToast(msg, ok = true) {
+        const t = document.getElementById('apiToast');
+        t.innerText = msg;
+        t.style.backgroundColor = ok ? 'var(--light-green)' : 'var(--danger-red)';
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 4000);
     }
 
-    // ===== باركود تلقائي =====
+    // ===== الساعة — الإصلاح =====
+    function updateDigitalClock() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2,'0');
+        const m = String(now.getMinutes()).padStart(2,'0');
+        const s = String(now.getSeconds()).padStart(2,'0');
+        const time = `${h}:${m}:${s}`;
+        const date = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+        const ht = document.getElementById('headerTime');
+        const hd = document.getElementById('headerDate');
+        if(ht) ht.innerText = time;
+        if(hd) hd.innerText = date;
+    }
+    setInterval(updateDigitalClock, 1000);
+    updateDigitalClock();
+
+    // ===== باركود =====
     function generateAutomatedBarcode() {
         const code = "628" + Math.floor(100000 + Math.random() * 900000);
         document.getElementById('itemCode').value = code;
-        showToast("تم توليد باركود: " + code, true);
+        showToast("تم توليد باركود: " + code);
     }
 
-    // ===== الساعة =====
-function updateDigitalClock() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getHours() >= 12 ? now.getMinutes() : now.getMinutes()).padStart(2, '0'); // دقيقة
-    const s = String(now.getSeconds()).padStart(2, '0');
-    
-    const timeStr = `${h}:${m}:${s}`;
-    const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
-
-    // الساعة في الهيدر الجديد
-    const ht = document.getElementById('headerTime');
-    if(ht) ht.innerText = timeStr;
-    const hd = document.getElementById('headerDate');
-    if(hd) hd.innerText = dateStr;
-
-    // للتوافق مع أي مكان آخر يستخدمها
-    const el = document.getElementById('digitalClock');
-    if(el) el.innerText = timeStr;
-    const de = document.getElementById('digitalDate');
-    if(de) de.innerText = dateStr;
-}
-
-setInterval(updateDigitalClock, 1000);
-updateDigitalClock();
-
-
-    // ===== نوع العميل ZATCA =====
+    // ===== نوع العميل =====
     window.setCustType = function(type) {
         document.getElementById('custType').value = type;
         ['B2C','B2B','GOV'].forEach(t => {
@@ -835,130 +841,69 @@ updateDigitalClock();
         });
     };
 
-    // ===== تحقق الرقم الضريبي =====
     window.validateVatInput = function(input) {
         const val = input.value.trim();
         const hint = document.getElementById('vatHintMain');
         if(!hint) return;
-        if(val.length === 0) {
-            hint.style.color = 'var(--text-muted)';
-            hint.innerText = 'يبدأ وينتهي بـ 3 — مثال: 300000000000003';
-            return;
-        }
-        if(val.length === 15 && val.startsWith('3') && val.endsWith('3') && !isNaN(val)) {
-            hint.style.color = '#38b000';
-            hint.innerText = '✅ رقم ضريبي صحيح ومتوافق مع ZATCA';
+        if(!val) { hint.style.color='var(--text-muted)'; hint.innerText='يبدأ وينتهي بـ 3'; return; }
+        if(val.length===15 && val.startsWith('3') && val.endsWith('3') && !isNaN(val)) {
+            hint.style.color='#38b000'; hint.innerText='✅ رقم ضريبي صحيح';
         } else {
-            hint.style.color = 'var(--danger-red)';
-            const rem = 15 - val.length;
-            hint.innerText = rem > 0 ? `❌ متبقي ${rem} خانة` : '❌ يجب أن يبدأ وينتهي بـ 3';
+            hint.style.color='var(--danger-red)';
+            hint.innerText = (15-val.length)>0 ? `❌ متبقي ${15-val.length} خانة` : '❌ يجب أن يبدأ وينتهي بـ 3';
         }
     };
 
-    // ===== تفريغ نموذج العميل =====
     window.clearCustForm = function() {
-        const form = document.getElementById('customerForm');
-        if(form) form.reset();
-        document.getElementById('custType').value = 'B2C';
-        window.setCustType('B2C');
-        const id = document.getElementById('custId');
-        if(id) id.disabled = false;
-        const lbl = document.getElementById('lblCustBtn');
-        if(lbl) lbl.innerText = 'حفظ العميل';
-        const hint = document.getElementById('vatHintMain');
-        if(hint) {
-            hint.style.color = 'var(--text-muted)';
-            hint.innerText = 'يبدأ وينتهي بـ 3 — مثال: 300000000000003';
-        }
+        const f = document.getElementById('customerForm'); if(f) f.reset();
+        document.getElementById('custType').value='B2C'; window.setCustType('B2C');
+        const id=document.getElementById('custId'); if(id) id.disabled=false;
+        const lbl=document.getElementById('lblCustBtn'); if(lbl) lbl.innerText='حفظ العميل';
     };
-
     window.deleteCurrentCustomer = function() {
-        const id = document.getElementById('custId')?.value.trim();
-        if(!id) return showToast('اختر عميلاً أولاً', false);
-        if(window.App && window.App.customer) window.App.customer.delete(id);
+        const id=document.getElementById('custId')?.value.trim();
+        if(!id) return showToast('اختر عميلاً أولاً',false);
+        if(window.App?.customer) window.App.customer.delete(id);
     };
-
     window.clearItemForm = function() {
-        const form = document.getElementById('itemForm');
-        if(form) form.reset();
-        showToast('تم تفريغ النموذج', true);
+        const f=document.getElementById('itemForm'); if(f) f.reset();
+        showToast('تم تفريغ النموذج');
     };
-
     window.deleteCurrentItem = function() {
-        const code = document.getElementById('itemCode')?.value.trim();
-        if(!code) return showToast('اختر صنفاً أولاً', false);
-        if(window.App && window.App.item) window.App.item.delete(code);
+        const c=document.getElementById('itemCode')?.value.trim();
+        if(!c) return showToast('اختر صنفاً أولاً',false);
+        if(window.App?.item) window.App.item.delete(c);
     };
-
     window.handleCustomerSubmit = function(e) {
         e.preventDefault();
-        const vat = document.getElementById('custVat').value.trim();
-        const type = document.getElementById('custType').value;
-        if(vat !== '') {
-            if(vat.length !== 15 || isNaN(vat))
-                return showToast('❌ الرقم الضريبي يجب أن يكون 15 خانة رقمية!', false);
-            if(!vat.startsWith('3') || !vat.endsWith('3'))
-                return showToast('❌ الرقم الضريبي يجب أن يبدأ وينتهي بـ 3!', false);
-        }
-        if((type === 'B2B' || type === 'GOV') && vat === '')
-            return showToast('⚠️ الرقم الضريبي إلزامي لعملاء B2B والجهات الحكومية!', false);
-        if(window.App && window.App.customer) window.App.customer.addOrUpdate();
+        const vat=document.getElementById('custVat').value.trim();
+        const type=document.getElementById('custType').value;
+        if(vat&&(vat.length!==15||isNaN(vat))) return showToast('❌ الرقم الضريبي 15 خانة!',false);
+        if(vat&&(!vat.startsWith('3')||!vat.endsWith('3'))) return showToast('❌ يبدأ وينتهي بـ 3!',false);
+        if((type==='B2B'||type==='GOV')&&!vat) return showToast('⚠️ الرقم الضريبي إلزامي!',false);
+        if(window.App?.customer) window.App.customer.addOrUpdate();
     };
-
     window.handleItemSubmit = function(e) {
         e.preventDefault();
-        if(window.App && window.App.item) window.App.item.addOrUpdate();
+        if(window.App?.item) window.App.item.addOrUpdate();
     };
-
-    window.addItemToCart = function() {
-        if(window.App && window.App.pos) window.App.pos.addToCart();
-    };
-    window.removeCartItem = function(index) {
-        if(window.App && window.App.pos) window.App.pos.removeItem(index);
-    };
-    window.commitInvoiceToAPI = function() {
-        if(window.App && window.App.pos) window.App.pos.placeOrder();
-    };
-    window.onPosCustomerChange = function() {
-        if(window.App && window.App.pos && window.App.pos.onCustomerChange)
-            window.App.pos.onCustomerChange();
-    };
-    window.onPosItemChange = function() {
-        if(window.App && window.App.pos && window.App.pos.onItemChange)
-            window.App.pos.onItemChange();
-    };
+    window.addItemToCart    = function() { if(window.App?.pos) window.App.pos.addToCart(); };
+    window.removeCartItem   = function(i){ if(window.App?.pos) window.App.pos.removeItem(i); };
+    window.commitInvoiceToAPI = function() { if(window.App?.pos) window.App.pos.placeOrder(); };
+    window.onPosCustomerChange = function() { if(window.App?.pos?.onCustomerChange) window.App.pos.onCustomerChange(); };
+    window.onPosItemChange  = function() { if(window.App?.pos?.onItemChange) window.App.pos.onItemChange(); };
 
     // ===== الترجمة =====
     const translations = {
-        ar: {
-            "app-title":"تاجر برو المحاسبي","nav-dashboard":"الرئيسية",
-            "nav-customers":"العملاء","nav-items":"المخزن","nav-pos":"الكاشير",
-            "fast-inv-btn":"فاتورة جديدة","stat-orders":"إجمالي الطلبات",
-            "stat-customers":"العملاء المسجلين","m-invoice":"فاتورة مبيعات",
-            "m-products":"المستودع","m-purchases":"المشتريات","m-returns":"المرتجعات",
-            "m-profits":"الأرباح","m-vat":"الإقرار الضريبي","m-inventory":"الجرد الدوري",
-            "m-expenses":"المصاريف","m-vouchers":"السندات","m-settings":"الإعدادات",
-            "m-employees":"الموظفين","m-support":"الدعم الفني","m-receipts":"السندات المالية"
-        },
-        en: {
-            "app-title":"Altajer Pro","nav-dashboard":"Dashboard",
-            "nav-customers":"Customers","nav-items":"Inventory","nav-pos":"POS",
-            "fast-inv-btn":"New Invoice","stat-orders":"Monthly Orders",
-            "stat-customers":"Registered Customers","m-invoice":"Sales Invoice",
-            "m-products":"Warehouse","m-purchases":"Purchases","m-returns":"Returns",
-            "m-profits":"Profits","m-vat":"VAT Filing","m-inventory":"Inventory Count",
-            "m-expenses":"Expenses","m-vouchers":"Vouchers","m-settings":"Settings",
-            "m-employees":"Employees","m-support":"Support","m-receipts":"Financial Receipts"
-        }
+        ar: { "app-title":"تاجر برو المحاسبي","nav-dashboard":"الرئيسية","nav-customers":"العملاء","nav-items":"المخزن","nav-pos":"الكاشير","fast-inv-btn":"فاتورة جديدة","stat-orders":"إجمالي الطلبات","stat-customers":"العملاء المسجلين","m-invoice":"فاتورة مبيعات","m-products":"المستودع","m-purchases":"المشتريات","m-returns":"المرتجعات","m-profits":"الأرباح","m-vat":"الإقرار الضريبي","m-inventory":"الجرد الدوري","m-expenses":"المصاريف","m-vouchers":"السندات","m-settings":"الإعدادات","m-employees":"الموظفين","m-receipts":"السندات المالية" },
+        en: { "app-title":"Altajer Pro","nav-dashboard":"Dashboard","nav-customers":"Customers","nav-items":"Inventory","nav-pos":"POS","fast-inv-btn":"New Invoice","stat-orders":"Monthly Orders","stat-customers":"Registered Customers","m-invoice":"Sales Invoice","m-products":"Warehouse","m-purchases":"Purchases","m-returns":"Returns","m-profits":"Profits","m-vat":"VAT Filing","m-inventory":"Inventory Count","m-expenses":"Expenses","m-vouchers":"Vouchers","m-settings":"Settings","m-employees":"Employees","m-receipts":"Financial Receipts" }
     };
-
     window.changeLanguage = function(lang) {
         document.documentElement.lang = lang;
-        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.dir = lang==='ar'?'rtl':'ltr';
         document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if(translations[lang] && translations[lang][key])
-                el.textContent = translations[lang][key];
+            const k=el.getAttribute('data-i18n');
+            if(translations[lang]?.[k]) el.textContent=translations[lang][k];
         });
     };
 
@@ -967,229 +912,104 @@ updateDigitalClock();
     if(ctxChart) {
         new Chart(ctxChart.getContext('2d'), {
             type: 'doughnut',
-            data: {
-                labels: ['المبيعات','المخزون','الأرباح'],
-                datasets: [{
-                    data: [18500, 6200, 4800],
-                    backgroundColor: ['#0077b6','#38b000','#00b4d8'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { labels: { color: 'var(--text-white)', font: { size: 13 } } } }
-            }
+            data: { labels:['المبيعات','المخزون','الأرباح'], datasets:[{ data:[18500,6200,4800], backgroundColor:['#0077b6','#38b000','#00b4d8'], borderWidth:0 }] },
+            options: { responsive:true, plugins:{ legend:{ labels:{ color:'var(--text-white)', font:{size:13} } } } }
         });
     }
 
     // ===== السندات =====
     window.setVoucherType = function(type) {
         document.getElementById('voucherType').value = type;
-        const btnR = document.getElementById('btnReceipt');
-        const btnP = document.getElementById('btnPayment');
-        if(type === 'receipt') {
-            btnR.style.background = 'var(--light-green)';
-            btnR.style.borderColor = 'var(--light-green)';
-            btnR.style.color = 'white';
-            btnP.style.background = 'transparent';
-            btnP.style.borderColor = 'var(--text-muted)';
-            btnP.style.color = 'var(--text-muted)';
+        const btnR=document.getElementById('btnReceipt'), btnP=document.getElementById('btnPayment');
+        if(type==='receipt') {
+            btnR.style.cssText='flex:1;padding:10px;border-radius:8px;border:2px solid var(--light-green);background:var(--light-green);color:white;cursor:pointer;font-weight:700;font-size:13px;';
+            btnP.style.cssText='flex:1;padding:10px;border-radius:8px;border:2px solid var(--text-muted);background:transparent;color:var(--text-muted);cursor:pointer;font-weight:700;font-size:13px;';
         } else {
-            btnP.style.background = 'var(--danger-red)';
-            btnP.style.borderColor = 'var(--danger-red)';
-            btnP.style.color = 'white';
-            btnR.style.background = 'transparent';
-            btnR.style.borderColor = 'var(--text-muted)';
-            btnR.style.color = 'var(--text-muted)';
+            btnP.style.cssText='flex:1;padding:10px;border-radius:8px;border:2px solid var(--danger-red);background:var(--danger-red);color:white;cursor:pointer;font-weight:700;font-size:13px;';
+            btnR.style.cssText='flex:1;padding:10px;border-radius:8px;border:2px solid var(--text-muted);background:transparent;color:var(--text-muted);cursor:pointer;font-weight:700;font-size:13px;';
         }
     };
-
     window.clearVoucherForm = function() {
-        const form = document.getElementById('voucherForm');
-        if(form) form.reset();
+        const f=document.getElementById('voucherForm'); if(f) f.reset();
         window.setVoucherType('receipt');
-        const dateEl = document.getElementById('voucherDate');
-        if(dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+        const d=document.getElementById('voucherDate'); if(d) d.value=new Date().toISOString().split('T')[0];
     };
-
     window.handleVoucherSubmit = function(e) {
         e.preventDefault();
-        if(window.App && window.App.voucher) window.App.voucher.save();
+        if(window.App?.voucher) window.App.voucher.save();
     };
-
     window.printVoucher = function(id) {
-        const list = JSON.parse(localStorage.getItem('altajer_vouchers') || '[]');
-        const v = list.find(x => x.id === id);
-        if(!v) return showToast('السند غير موجود', false);
-        const S = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
-        const CUR_MAP = { SAR:'ر.س', AED:'د.إ', USD:'$', GBP:'£', EUR:'€', OTHER:'' };
-        const C = CUR_MAP[S.currency] || S.currency || 'ر.س';
-        const color = v.type === 'receipt' ? '#2b9348' : '#d90429';
-        const label = v.type === 'receipt' ? 'سند قبض' : 'سند صرف';
-        const win = window.open('', '_blank');
-        win.document.write(`<!DOCTYPE html>
-        <html lang="ar" dir="rtl">
-        <head>
-            <meta charset="UTF-8">
-            <title>${label}</title>
-            <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-            <style>
-                * { font-family:'Cairo',sans-serif; box-sizing:border-box; }
-                body { margin:20px; color:#1a1a2e; }
-                .voucher { max-width:400px; margin:0 auto; border:2px solid ${color}; border-radius:12px; padding:20px; }
-                .header { text-align:center; border-bottom:1px dashed #ccc; padding-bottom:12px; margin-bottom:16px; }
-                .badge { background:${color}; color:white; padding:4px 20px; border-radius:20px; font-size:14px; font-weight:900; }
-                .company { font-size:18px; font-weight:900; margin-top:10px; }
-                .row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #f0f0f0; font-size:13px; }
-                .amount { text-align:center; font-size:28px; font-weight:900; color:${color}; margin:16px 0; }
-                .sig-row { display:flex; justify-content:space-between; margin-top:30px; }
-                .sig-box { text-align:center; width:45%; border-top:1px solid #333; padding-top:5px; font-size:11px; }
-                .footer { text-align:center; font-size:11px; color:#777; margin-top:16px; }
-                @media print { body { margin:0; } }
-            </style>
-        </head>
-        <body>
-            <div class="voucher">
-                <div class="header">
-                    <span class="badge">${label}</span>
-                    <div class="company">${S.companyName||'تاجر برو'}</div>
-                    ${S.phone?`<div style="font-size:12px;color:#555;">${S.phone}</div>`:''}
-                </div>
-                <div class="amount">${parseFloat(v.amount).toFixed(2)} ${C}</div>
-                <div class="row"><span>رقم السند:</span><span>${v.id}</span></div>
-                <div class="row"><span>التاريخ:</span><span>${v.date}</span></div>
-                <div class="row"><span>${v.type==='receipt'?'استلمنا من:':'صرفنا لـ:'}</span><span>${v.party}</span></div>
-                <div class="row"><span>طريقة الدفع:</span><span>${v.method}</span></div>
-                ${v.note?`<div class="row"><span>ملاحظة:</span><span>${v.note}</span></div>`:''}
-                <div class="sig-row">
-                    <div class="sig-box">المستلم</div>
-                    <div class="sig-box">المحاسب</div>
-                </div>
-                <div class="footer">تاجر برو المحاسبي</div>
-            </div>
-            <script>window.onload=function(){window.print();}<\/script>
-        </body>
-        </html>`);
+        const list=JSON.parse(localStorage.getItem('altajer_vouchers')||'[]');
+        const v=list.find(x=>x.id===id);
+        if(!v) return showToast('السند غير موجود',false);
+        const S=JSON.parse(localStorage.getItem('altajer_settings')||'{}');
+        const C={'SAR':'ر.س','AED':'د.إ','USD':'$','GBP':'£','EUR':'€'}[S.currency]||'ر.س';
+        const color=v.type==='receipt'?'#2b9348':'#d90429';
+        const label=v.type==='receipt'?'سند قبض':'سند صرف';
+        const win=window.open('','_blank');
+        win.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>${label}</title><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>*{font-family:'Cairo',sans-serif;box-sizing:border-box;}body{margin:20px;color:#1a1a2e;}.voucher{max-width:400px;margin:0 auto;border:2px solid ${color};border-radius:12px;padding:20px;}.header{text-align:center;border-bottom:1px dashed #ccc;padding-bottom:12px;margin-bottom:16px;}.badge{background:${color};color:white;padding:4px 20px;border-radius:20px;font-size:14px;font-weight:900;}.company{font-size:18px;font-weight:900;margin-top:10px;}.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px;}.amount{text-align:center;font-size:28px;font-weight:900;color:${color};margin:16px 0;}.sig-row{display:flex;justify-content:space-between;margin-top:30px;}.sig-box{text-align:center;width:45%;border-top:1px solid #333;padding-top:5px;font-size:11px;}.footer{text-align:center;font-size:11px;color:#777;margin-top:16px;}@media print{body{margin:0;}}</style></head><body><div class="voucher"><div class="header"><span class="badge">${label}</span><div class="company">${S.companyName||'تاجر برو'}</div>${S.phone?`<div style="font-size:12px;color:#555;">${S.phone}</div>`:''}</div><div class="amount">${parseFloat(v.amount).toFixed(2)} ${C}</div><div class="row"><span>رقم السند:</span><span>${v.id}</span></div><div class="row"><span>التاريخ:</span><span>${v.date}</span></div><div class="row"><span>${v.type==='receipt'?'استلمنا من:':'صرفنا لـ:'}</span><span>${v.party}</span></div><div class="row"><span>طريقة الدفع:</span><span>${v.method}</span></div>${v.note?`<div class="row"><span>ملاحظة:</span><span>${v.note}</span></div>`:''}<div class="sig-row"><div class="sig-box">المستلم</div><div class="sig-box">المحاسب</div></div><div class="footer">تاجر برو المحاسبي</div></div><script>window.onload=function(){window.print();}<\/script></body></html>`);
         win.document.close();
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-        const dateEl = document.getElementById('voucherDate');
-        if(dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+        const d=document.getElementById('voucherDate');
+        if(d) d.value=new Date().toISOString().split('T')[0];
     });
 </script>
 
-<!-- ✅ Firebase وdb يجب أن يكونا type="module" -->
+<!-- Firebase -->
 <script type="module" src="firebase-config.js"></script>
 <script type="module" src="db.js"></script>
 <script src="wafeq-service.js" defer></script>
 
-<!-- ✅ حماية الصفحة — منفصلة في module خاص بها -->
+<!-- حماية الصفحة -->
 <script type="module">
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    
-    // ننتظر قليلاً حتى يتهيأ Firebase من firebase-config.js
     setTimeout(() => {
         const auth = getAuth();
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-            } else {
-                const nameEl = document.getElementById('userDisplayName');
-                if(nameEl) nameEl.innerText = user.displayName || user.email;
-            }
+        onAuthStateChanged(auth, user => {
+            if (!user) { window.location.href='login.html'; return; }
+            const el=document.getElementById('userDisplayName');
+            if(el) el.innerText = user.displayName || user.email;
         });
     }, 500);
 </script>
-<!-- زر الاشتراك الثابت -->
-<a href="billing.html" style="
-    position:fixed;
-    bottom:70px;
-    left:16px;
-    z-index:1000;
-    background:linear-gradient(135deg,#f59e0b,#d97706);
-    color:white;
-    border-radius:50px;
-    padding:10px 18px;
-    font-size:12px;
-    font-weight:700;
-    font-family:'Segoe UI',sans-serif;
-    text-decoration:none;
-    display:flex;
-    align-items:center;
-    gap:6px;
-    box-shadow:0 4px 15px rgba(245,158,11,0.4);
-    border:2px solid rgba(255,255,255,0.3);">
-    <i class="fas fa-crown"></i>
-    <span id="subBtnLabel">الاشتراك</span>
-</a>
-    <!-- زر الدعم الثابت -->
-<style>
-.support-fab {
-    position:fixed; bottom:130px; left:16px; z-index:9998;
-    display:flex; flex-direction:column; align-items:flex-start; gap:8px;
-}
-.fab-main {
-    width:50px; height:50px; border-radius:50%;
-    background:linear-gradient(135deg,#0077b6,#00b4d8);
-    border:none; color:white; font-size:19px;
-    cursor:pointer; box-shadow:0 4px 15px rgba(0,119,182,0.5);
-    display:flex; align-items:center; justify-content:center; transition:0.3s;
-}
-.fab-main:hover { transform:scale(1.1); }
-.support-menu {
-    display:none; flex-direction:column; gap:8px;
-    background:rgba(15,23,42,0.97);
-    border:1px solid rgba(0,180,216,0.3);
-    border-radius:14px; padding:14px;
-    min-width:220px; box-shadow:0 8px 25px rgba(0,0,0,0.6);
-    margin-bottom:8px;
-}
-.support-menu.show { display:flex; }
-.support-menu-title {
-    font-size:12px; color:#00b4d8; font-weight:700;
-    margin-bottom:4px; display:flex; align-items:center; gap:6px;
-    font-family:'Segoe UI',sans-serif;
-}
-.support-item {
-    display:flex; align-items:center; gap:10px;
-    padding:9px 12px; border-radius:10px;
-    text-decoration:none; color:white; font-size:13px; font-weight:600;
-    transition:0.2s; font-family:'Segoe UI',sans-serif;
-}
-.support-item:hover { background:rgba(255,255,255,0.08); }
-.support-item i { font-size:15px; width:20px; text-align:center; }
-</style>
 
+<!-- التحديث التلقائي كل 5 دقائق -->
+<script>
+    setTimeout(() => window.location.reload(), 5 * 60 * 1000);
+</script>
+
+<!-- زر الاشتراك -->
+<a href="billing.html" style="position:fixed;bottom:70px;left:16px;z-index:1000;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border-radius:50px;padding:10px 18px;font-size:12px;font-weight:700;font-family:'Segoe UI',sans-serif;text-decoration:none;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(245,158,11,0.4);border:2px solid rgba(255,255,255,0.3);">
+    <i class="fas fa-crown"></i><span>الاشتراك</span>
+</a>
+
+<!-- زر الدعم -->
 <div class="support-fab">
     <div class="support-menu" id="supportMenuMain">
-        <div class="support-menu-title">
-            <i class="fas fa-headset"></i> تواصل معنا
-        </div>
-        <a href="https://wa.me/966501662547?text=مرحباً،%20أحتاج%20مساعدة%20في%20تاجر%20برو"
-           target="_blank" class="support-item">
+        <div class="support-menu-title"><i class="fas fa-headset"></i> تواصل معنا</div>
+        <a href="https://wa.me/966501662547?text=مرحباً،%20أحتاج%20مساعدة%20في%20تاجر%20برو" target="_blank" class="support-item">
             <i class="fab fa-whatsapp" style="color:#25d366;"></i> واتساب مباشر
         </a>
         <a href="tel:+966501662547" class="support-item">
             <i class="fas fa-phone" style="color:#ffb703;"></i> 00966501662547
         </a>
-        <a href="mailto:mfdmfd004@gmail.com?subject=استفسار تاجر برو"
-           class="support-item">
+        <a href="mailto:mfdmfd004@gmail.com?subject=استفسار تاجر برو" class="support-item">
             <i class="fas fa-envelope" style="color:#00b4d8;"></i> mfdmfd004@gmail.com
         </a>
     </div>
-    <button class="fab-main" onclick="toggleSupportMain()" title="الدعم الفني">
+    <button class="fab-main" onclick="toggleSupportMain()">
         <i class="fas fa-headset" id="fabIconMain"></i>
     </button>
 </div>
 
 <script>
 function toggleSupportMain() {
-    const menu = document.getElementById('supportMenuMain');
-    const icon = document.getElementById('fabIconMain');
-    menu.classList.toggle('show');
-    icon.className = menu.classList.contains('show')
-        ? 'fas fa-times' : 'fas fa-headset';
+    const m=document.getElementById('supportMenuMain');
+    const i=document.getElementById('fabIconMain');
+    m.classList.toggle('show');
+    i.className=m.classList.contains('show')?'fas fa-times':'fas fa-headset';
 }
 </script>
 </body>

@@ -755,14 +755,32 @@
 
     // ===== التنقل بين الأقسام =====
     function switchView(index) {
-        const navBtns = document.querySelectorAll('.nav-btn');
-        const sections = document.querySelectorAll('.view-section');
-        navBtns.forEach(b => b.classList.remove('active-nav'));
-        sections.forEach(s => s.classList.remove('show'));
-        if(index < navBtns.length) navBtns[index].classList.add('active-nav');
-        const target = document.getElementById('view-' + index);
-        if(target) target.classList.add('show');
-        window.scrollTo(0, 0);
+    const navBtns = document.querySelectorAll('.nav-btn');
+    navBtns.forEach(b => b.classList.remove('active-nav'));
+
+    // إخفاء كل الأقسام بالـ ID مباشرة
+    [0,1,2,3,4,5].forEach(i => {
+        const s = document.getElementById('view-' + i);
+        if(s) s.classList.remove('show');
+    });
+
+    // تفعيل الزر المطلوب
+    if(index < navBtns.length) navBtns[index].classList.add('active-nav');
+
+    // إظهار القسم المطلوب فقط
+    const target = document.getElementById('view-' + index);
+    if(target) {
+        target.classList.add('show');
+        // التأكد من إخفاء الباقي
+        [0,1,2,3,4,5].forEach(i => {
+            if(i !== index) {
+                const s = document.getElementById('view-' + i);
+                if(s) s.classList.remove('show');
+            }
+        });
+    }
+    window.scrollTo(0, 0);
+    }
     }
 
     // ===== Toast =====

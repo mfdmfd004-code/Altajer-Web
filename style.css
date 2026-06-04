@@ -72,3 +72,6 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
     #invoice-table td:nth-of-type(3):before { content: "الكمية"; }
     #invoice-table td:nth-of-type(4):before { content: "الإجمالي"; }
 }
+
+.view-section { display: none; padding: 15px 5px; }
+.view-section.show { display: block; animation: fadeIn 0.3s ease-in-out; }

@@ -303,8 +303,11 @@
                 <i class="fas fa-user-tie"></i><span data-i18n="m-employees">الموظفين</span>
             </div>
             <div class="menu-item" onclick="window.location.href='receipts.html'">
-                <i class="fas fa-file-alt"></i><span data-i18n="m-receipts">السندات المالية</span>
-            </div>
+    <i class="fas fa-file-alt"></i><span data-i18n="m-receipts">السندات المالية</span>
+</div>
+<div class="menu-item" onclick="switchView(5)">
+    <i class="fas fa-user-clock"></i><span>كشف الحساب</span>
+</div>
         </div>
 
         <!-- إحصائيات في الأسفل -->
@@ -586,9 +589,17 @@
             <div class="col-md-4">
                 <div class="p-3 rounded h-100" style="background:var(--card-bg);">
                     <h6 class="mb-3 border-bottom pb-2 text-info">الأصناف</h6>
-                    <select id="cbItem" class="form-select bg-transparent text-white mb-3" onchange="onPosItemChange()">
-                        <option value="" selected>اختر الصنف</option>
-                    </select>
+                    <input type="text" id="itemSearchBar"
+    placeholder="🔍 ابحث باسم المنتج أو الباركود..."
+    oninput="filterItemsList(this.value)"
+    style="width:100%;padding:10px;background:rgba(255,255,255,0.07);
+    border:1px solid var(--text-muted);border-radius:8px;
+    color:var(--text-white);font-size:13px;margin-bottom:8px;
+    outline:none;box-sizing:border-box;">
+<select id="cbItem" class="form-select bg-transparent text-white mb-3" onchange="onPosItemChange()" size="4"
+    style="height:auto;min-height:80px;">
+    <option value="" selected>اختر الصنف</option>
+</select>
                     <div class="row">
                         <div class="col-6">
                             <div class="input-container m-0">
@@ -767,7 +778,157 @@
         </div>
     </div>
 </div>
+<!-- ===== قسم كشف الحساب ===== -->
+<div id="view-5" class="view-section">
+    <div class="container-fluid">
 
+        <!-- رأس القسم -->
+        <div class="p-3 mb-3 rounded" style="background:var(--card-bg);border-right:4px solid var(--neon-cyan);">
+            <h5 style="color:var(--neon-cyan);margin:0;display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-user-clock"></i> كشف حساب عميل
+            </h5>
+        </div>
+
+        <!-- فلاتر البحث -->
+        <div class="p-3 mb-3 rounded" style="background:var(--card-bg);">
+            <div class="row g-2">
+                <div class="col-12">
+                    <div class="field-group">
+                        <label><i class="fas fa-user"></i> اختر العميل</label>
+                        <select id="stmtCustomerSelect"
+                            onchange="onStmtCustomerChange()"
+                            style="width:100%;padding:10px;background:var(--card-bg);
+                            border:1px solid var(--text-muted);border-radius:8px;
+                            color:var(--text-white);font-size:13px;">
+                            <option value="">-- اختر العميل --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="field-group">
+                        <label><i class="fas fa-calendar"></i> الفترة الزمنية</label>
+                        <select id="stmtPeriod" onchange="onStmtPeriodChange()"
+                            style="width:100%;padding:10px;background:var(--card-bg);
+                            border:1px solid var(--text-muted);border-radius:8px;
+                            color:var(--text-white);font-size:13px;">
+                            <option value="day">يومي</option>
+                            <option value="week">أسبوعي</option>
+                            <option value="month" selected>شهري</option>
+                            <option value="3months">3 شهور</option>
+                            <option value="6months">6 شهور</option>
+                            <option value="year">سنوي</option>
+                            <option value="custom">تاريخ مخصص</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="field-group">
+                        <label>&nbsp;</label>
+                        <button onclick="loadCustomerStatement()"
+                            class="btn-neon w-100" style="--clr:var(--neon-cyan);padding:10px;">
+                            <i class="fas fa-search"></i> عرض الكشف
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تواريخ مخصصة -->
+            <div id="customDateRange" style="display:none;" class="row g-2 mt-1">
+                <div class="col-6">
+                    <div class="field-group">
+                        <label>من تاريخ</label>
+                        <input type="date" id="stmtDateFrom"
+                            style="width:100%;padding:10px;background:transparent;
+                            border:1px solid var(--text-muted);border-radius:8px;
+                            color:var(--text-white);font-size:13px;">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="field-group">
+                        <label>إلى تاريخ</label>
+                        <input type="date" id="stmtDateTo"
+                            style="width:100%;padding:10px;background:transparent;
+                            border:1px solid var(--text-muted);border-radius:8px;
+                            color:var(--text-white);font-size:13px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- رأس ورقة الكشف -->
+        <div id="stmtHeader" style="display:none;" class="p-3 mb-2 rounded text-center"
+            style="background:var(--card-bg);">
+            <h6 id="stmtCustomerName" style="color:var(--neon-cyan);font-weight:700;font-size:15px;margin:0;"></h6>
+            <small id="stmtPeriodLabel" style="color:var(--text-muted);font-size:11px;"></small>
+        </div>
+
+        <!-- ملخص سريع -->
+        <div id="stmtSummary" style="display:none;" class="row g-2 mb-2">
+            <div class="col-4">
+                <div class="p-2 rounded text-center" style="background:var(--card-bg);border-right:3px solid var(--light-green);">
+                    <small class="d-block" style="font-size:10px;color:var(--text-muted);">إجمالي المبيعات</small>
+                    <strong id="stmtTotalSales" style="color:var(--light-green);font-size:13px;">0.00</strong>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-2 rounded text-center" style="background:var(--card-bg);border-right:3px solid var(--danger-red);">
+                    <small class="d-block" style="font-size:10px;color:var(--text-muted);">إجمالي المرتجعات</small>
+                    <strong id="stmtTotalReturns" style="color:var(--danger-red);font-size:13px;">0.00</strong>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-2 rounded text-center" style="background:var(--card-bg);border-right:3px solid var(--neon-cyan);">
+                    <small class="d-block" style="font-size:10px;color:var(--text-muted);">صافي الرصيد</small>
+                    <strong id="stmtNetBalance" style="color:var(--neon-cyan);font-size:13px;">0.00</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- جدول الكشف -->
+        <div id="stmtTableContainer" class="table-responsive-custom" style="display:none;">
+            <table class="table table-dark table-hover table-dark-custom text-center">
+                <thead>
+                    <tr>
+                        <th style="font-size:11px;">التاريخ والوقت</th>
+                        <th style="font-size:11px;">رقم الفاتورة</th>
+                        <th style="font-size:11px;">البيان</th>
+                        <th style="font-size:11px;color:#38b000;">مدين</th>
+                        <th style="font-size:11px;color:#d90429;">دائن</th>
+                        <th style="font-size:11px;">الرصيد</th>
+                    </tr>
+                </thead>
+                <tbody id="stmtTableBody"></tbody>
+                <tfoot>
+                    <tr style="background:rgba(0,180,216,0.1);">
+                        <td colspan="3" style="font-weight:700;color:var(--neon-cyan);font-size:12px;">الإجمالي</td>
+                        <td id="stmtFooterDebit" style="font-weight:700;color:#38b000;font-size:12px;">0.00</td>
+                        <td id="stmtFooterCredit" style="font-weight:700;color:#d90429;font-size:12px;">0.00</td>
+                        <td id="stmtFooterBalance" style="font-weight:700;color:var(--neon-cyan);font-size:12px;">0.00</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- أزرار الطباعة والتصدير -->
+        <div id="stmtActions" style="display:none;" class="d-flex gap-2 mt-3">
+            <button onclick="printCustomerStatement()"
+                class="btn-neon flex-1" style="--clr:var(--light-green);flex:1;padding:10px;">
+                <i class="fas fa-print"></i> طباعة الكشف
+            </button>
+            <button onclick="exportStatementPDF()"
+                class="btn-neon flex-1" style="--clr:var(--danger-red);flex:1;padding:10px;">
+                <i class="fas fa-file-pdf"></i> تصدير PDF
+            </button>
+        </div>
+
+        <!-- رسالة لا توجد بيانات -->
+        <div id="stmtNoData" style="display:none;text-align:center;padding:30px;color:var(--text-muted);">
+            <i class="fas fa-inbox" style="font-size:40px;margin-bottom:10px;display:block;"></i>
+            لا توجد حركات لهذا العميل في الفترة المحددة
+        </div>
+
+    </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -1011,6 +1172,258 @@ function toggleSupportMain() {
     m.classList.toggle('show');
     i.className=m.classList.contains('show')?'fas fa-times':'fas fa-headset';
 }
+    // ============================================================
+// كشف حساب العميل
+// ============================================================
+
+// تحميل العملاء في قائمة كشف الحساب
+function loadStmtCustomers() {
+    const sel = document.getElementById('stmtCustomerSelect');
+    if(!sel) return;
+    const custs = JSON.parse(localStorage.getItem('altajer_customers') || '[]');
+    sel.innerHTML = '<option value="">-- اختر العميل --</option>';
+    custs.forEach(c => {
+        sel.innerHTML += `<option value="${c.id}">${c.name} (${c.id})</option>`;
+    });
+}
+
+function onStmtCustomerChange() {
+    // مسح النتائج عند تغيير العميل
+    document.getElementById('stmtHeader').style.display = 'none';
+    document.getElementById('stmtSummary').style.display = 'none';
+    document.getElementById('stmtTableContainer').style.display = 'none';
+    document.getElementById('stmtActions').style.display = 'none';
+    document.getElementById('stmtNoData').style.display = 'none';
+}
+
+function onStmtPeriodChange() {
+    const period = document.getElementById('stmtPeriod').value;
+    const customRange = document.getElementById('customDateRange');
+    if(customRange) customRange.style.display = period === 'custom' ? 'flex' : 'none';
+}
+
+function getDateRange(period) {
+    const now = new Date();
+    let from, to = new Date(now);
+    to.setHours(23,59,59,999);
+
+    switch(period) {
+        case 'day':
+            from = new Date(now); from.setHours(0,0,0,0);
+            break;
+        case 'week':
+            from = new Date(now); from.setDate(now.getDate()-7); from.setHours(0,0,0,0);
+            break;
+        case 'month':
+            from = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+        case '3months':
+            from = new Date(now); from.setMonth(now.getMonth()-3); from.setHours(0,0,0,0);
+            break;
+        case '6months':
+            from = new Date(now); from.setMonth(now.getMonth()-6); from.setHours(0,0,0,0);
+            break;
+        case 'year':
+            from = new Date(now.getFullYear(), 0, 1);
+            break;
+        case 'custom':
+            const fromVal = document.getElementById('stmtDateFrom').value;
+            const toVal   = document.getElementById('stmtDateTo').value;
+            from = fromVal ? new Date(fromVal) : new Date(now.getFullYear(), 0, 1);
+            to   = toVal   ? new Date(toVal + 'T23:59:59') : to;
+            break;
+        default:
+            from = new Date(now.getFullYear(), now.getMonth(), 1);
+    }
+    return { from, to };
+}
+
+function loadCustomerStatement() {
+    const custId   = document.getElementById('stmtCustomerSelect').value;
+    const period   = document.getElementById('stmtPeriod').value;
+
+    if(!custId) { showToast('يرجى اختيار عميل أولاً', false); return; }
+
+    const custs = JSON.parse(localStorage.getItem('altajer_customers') || '[]');
+    const cust  = custs.find(c => c.id === custId);
+    if(!cust)  { showToast('العميل غير موجود', false); return; }
+
+    const { from, to } = getDateRange(period);
+    const invoices = JSON.parse(localStorage.getItem('altajer_invoices') || '[]');
+
+    // فلترة فواتير العميل في الفترة
+    const custInvoices = invoices.filter(inv => {
+        const custMatch = inv.customer === cust.name ||
+                         inv.customer === cust.id ||
+                         inv.customerId === custId;
+        const invDate = new Date(inv.timestamp || inv.date);
+        return custMatch && invDate >= from && invDate <= to;
+    });
+
+    // بناء الجدول
+    const tbody = document.getElementById('stmtTableBody');
+    tbody.innerHTML = '';
+
+    let totalDebit = 0, totalCredit = 0, runningBalance = 0;
+    const rows = [];
+
+    custInvoices.forEach(inv => {
+        const amount = parseFloat(inv.total || 0);
+        const date   = new Date(inv.timestamp || inv.date);
+        const dateStr = `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+        rows.push({ date, dateStr, invNum: inv.invoiceNumber || inv.id, type: 'مبيعات', debit: amount, credit: 0 });
+        totalDebit += amount;
+    });
+
+    // ترتيب حسب التاريخ
+    rows.sort((a,b) => a.date - b.date);
+
+    if(rows.length === 0) {
+        document.getElementById('stmtNoData').style.display = 'block';
+        document.getElementById('stmtTableContainer').style.display = 'none';
+        document.getElementById('stmtSummary').style.display = 'none';
+        document.getElementById('stmtHeader').style.display = 'none';
+        document.getElementById('stmtActions').style.display = 'none';
+        return;
+    }
+
+    rows.forEach(row => {
+        runningBalance += row.debit - row.credit;
+        const balColor = runningBalance >= 0 ? '#38b000' : '#d90429';
+        const debitStr = row.debit > 0 ? `<span style="color:#38b000;font-weight:700;">${row.debit.toFixed(2)}</span>` : '—';
+        const creditStr= row.credit > 0 ? `<span style="color:#d90429;font-weight:700;">${row.credit.toFixed(2)}</span>` : '—';
+        tbody.innerHTML += `<tr>
+            <td style="font-size:10px;">${row.dateStr}</td>
+            <td style="font-size:11px;color:var(--neon-cyan);">${row.invNum}</td>
+            <td style="font-size:11px;">${row.type}</td>
+            <td>${debitStr}</td>
+            <td>${creditStr}</td>
+            <td style="font-weight:700;color:${balColor};font-size:12px;">${runningBalance.toFixed(2)}</td>
+        </tr>`;
+    });
+
+    // تحديث الملخص
+    const periodLabels = { day:'اليوم', week:'الأسبوع', month:'هذا الشهر', '3months':'3 شهور', '6months':'6 شهور', year:'هذا العام', custom:'فترة مخصصة' };
+    document.getElementById('stmtCustomerName').innerText = `كشف حساب: ${cust.name}`;
+    document.getElementById('stmtPeriodLabel').innerText   = `الفترة: ${periodLabels[period]}`;
+    document.getElementById('stmtTotalSales').innerText    = totalDebit.toFixed(2) + ' ر.س';
+    document.getElementById('stmtTotalReturns').innerText  = totalCredit.toFixed(2) + ' ر.س';
+    document.getElementById('stmtNetBalance').innerText    = (totalDebit - totalCredit).toFixed(2) + ' ر.س';
+    document.getElementById('stmtFooterDebit').innerText   = totalDebit.toFixed(2);
+    document.getElementById('stmtFooterCredit').innerText  = totalCredit.toFixed(2);
+    document.getElementById('stmtFooterBalance').innerText = runningBalance.toFixed(2);
+
+    // إظهار الأقسام
+    document.getElementById('stmtHeader').style.display         = 'block';
+    document.getElementById('stmtSummary').style.display        = 'flex';
+    document.getElementById('stmtTableContainer').style.display = 'block';
+    document.getElementById('stmtActions').style.display        = 'flex';
+    document.getElementById('stmtNoData').style.display         = 'none';
+}
+
+// طباعة كشف الحساب
+function printCustomerStatement() {
+    const custName = document.getElementById('stmtCustomerName').innerText;
+    const period   = document.getElementById('stmtPeriodLabel').innerText;
+    const S = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
+    const tbody = document.getElementById('stmtTableBody').innerHTML;
+    const totalSales = document.getElementById('stmtTotalSales').innerText;
+    const netBalance = document.getElementById('stmtNetBalance').innerText;
+
+    const win = window.open('', '_blank');
+    win.document.write(`<!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>كشف حساب</title>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+        <style>
+            * { font-family:'Cairo',sans-serif; box-sizing:border-box; }
+            body { margin:20px; color:#1a1a2e; font-size:12px; }
+            .header { text-align:center; border-bottom:2px solid #0077b6; padding-bottom:12px; margin-bottom:16px; }
+            .company { font-size:18px; font-weight:900; color:#0077b6; }
+            .stmt-title { font-size:14px; font-weight:700; margin-top:6px; }
+            .period { font-size:11px; color:#666; }
+            table { width:100%; border-collapse:collapse; margin-top:14px; }
+            th { background:#0077b6; color:white; padding:8px; text-align:center; font-size:11px; }
+            td { border:1px solid #eee; padding:6px; text-align:center; font-size:11px; }
+            .summary { display:flex; gap:15px; margin:14px 0; }
+            .sum-box { flex:1; border:1px solid #ddd; border-radius:8px; padding:10px; text-align:center; }
+            .sum-label { font-size:10px; color:#666; }
+            .sum-val { font-size:14px; font-weight:900; }
+            .footer { text-align:center; margin-top:20px; font-size:10px; color:#999; }
+            @media print { body { margin:0; } }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="company">${S.companyName || 'تاجر برو'}</div>
+            <div class="stmt-title">${custName}</div>
+            <div class="period">${period}</div>
+        </div>
+        <div class="summary">
+            <div class="sum-box"><div class="sum-label">إجمالي المبيعات</div><div class="sum-val" style="color:#2b9348;">${totalSales}</div></div>
+            <div class="sum-box"><div class="sum-label">صافي الرصيد</div><div class="sum-val" style="color:#0077b6;">${netBalance}</div></div>
+        </div>
+        <table>
+            <thead><tr><th>التاريخ والوقت</th><th>رقم الفاتورة</th><th>البيان</th><th>مدين</th><th>دائن</th><th>الرصيد</th></tr></thead>
+            <tbody>${tbody.replace(/style="[^"]*"/g, '')}</tbody>
+        </table>
+        <div class="footer">تاجر برو المحاسبي — ${new Date().toLocaleDateString('ar-SA')}</div>
+        <script>window.onload=function(){window.print();}<\/script>
+    </body>
+    </html>`);
+    win.document.close();
+}
+
+function exportStatementPDF() {
+    showToast('جاري فتح نافذة الطباعة — اختر "حفظ كـ PDF"', true);
+    setTimeout(() => printCustomerStatement(), 500);
+}
+
+// تحميل العملاء عند فتح قسم كشف الحساب
+const origSwitchView = switchView;
+window.switchView = function(index) {
+    origSwitchView(index);
+    if(index === 5) loadStmtCustomers();
+};
+
+// ============================================================
+// البحث السريع عن المنتجات في الكاشير
+// ============================================================
+window.filterItemsList = function(query) {
+    const select = document.getElementById('cbItem');
+    if(!select) return;
+    const q = query.trim().toLowerCase();
+    const options = select.querySelectorAll('option');
+
+    options.forEach(opt => {
+        if(!opt.value) return; // خيار "اختر الصنف"
+        const text = opt.text.toLowerCase();
+        opt.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+
+    // إذا كانت هناك نتيجة واحدة فقط — اخترها تلقائياً
+    const visible = [...options].filter(o => o.value && o.style.display !== 'none');
+    if(visible.length === 1) {
+        select.value = visible[0].value;
+        window.onPosItemChange();
+        // إذا كان باركود — انتقل للكمية مباشرة
+        if(/^\d{6,}$/.test(query)) {
+            const qtyInput = document.getElementById('poQtyBought');
+            if(qtyInput) { qtyInput.focus(); qtyInput.select(); }
+        }
+    }
+
+    // مسح الاختيار إذا كان حقل البحث فارغاً
+    if(!q) {
+        select.value = '';
+        const nameEl = document.getElementById('poItemName');
+        const qtyEl  = document.getElementById('poQtyOnHand');
+        if(nameEl) nameEl.value = '';
+        if(qtyEl)  qtyEl.value  = '';
+    }
+};
 </script>
 </body>
 </html>

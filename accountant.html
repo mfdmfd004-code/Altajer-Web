@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — المحاسب</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing:border-box; font-family:'Cairo',sans-serif; }
+        :root {
+            --main-bg:#f4f7f6; --card-bg:#ffffff; --neon-cyan:#0077b6;
+            --light-green:#2b9348; --danger-red:#d90429;
+            --text-white:#222; --text-muted:#666;
+        }
+        [data-theme="classic"]{ --main-bg:#1a1a2e; --card-bg:#16213e; --neon-cyan:#e94560; --light-green:#0f91a1; --text-white:#fff; --text-muted:#aaa; }
+        [data-theme="emerald"]{ --main-bg:#0b1d12; --card-bg:#143622; --neon-cyan:#52b788; --light-green:#74c69d; --text-white:#f7fff7; --text-muted:#aaa; }
+        [data-theme="sunset"] { --main-bg:#2b1b17; --card-bg:#3e2723; --neon-cyan:#ffb74d; --light-green:#ff8a65; --text-white:#fff3e0; --text-muted:#bbb; }
+        [data-theme="luxury"] { --main-bg:#121212; --card-bg:#1a1a1a; --neon-cyan:#b392ac; --light-green:#e8c547; --text-white:#e0e0e0; --text-muted:#999; }
+
+        body { background:var(--main-bg); color:var(--text-white); margin:0; padding-bottom:30px; }
+
+        .top-bar {
+            background:var(--card-bg); padding:14px 16px;
+            box-shadow:0 2px 12px rgba(0,0,0,0.08);
+            position:sticky; top:0; z-index:100;
+            display:flex; align-items:center; gap:12px;
+        }
+        .back-btn {
+            color:var(--text-muted); font-size:20px;
+            text-decoration:none; transition:0.2s;
+        }
+        .back-btn:hover { color:var(--neon-cyan); }
+        .top-bar-title {
+            font-size:17px; font-weight:900; color:var(--neon-cyan); margin:0;
+            display:flex; align-items:center; gap:8px;
+        }
+
+        .page-content { padding:20px 14px; }
+
+        /* بطاقة القسم الرئيسية */
+        .section-card {
+            background:var(--card-bg);
+            border-radius:18px;
+            border:1px solid rgba(0,119,182,0.12);
+            box-shadow:0 4px 16px rgba(0,0,0,0.06);
+            margin-bottom:18px;
+            overflow:hidden;
+        }
+        .section-header {
+            padding:16px 18px 12px;
+            border-bottom:1px solid rgba(0,0,0,0.06);
+            display:flex; align-items:center; gap:10px;
+        }
+        .section-icon {
+            width:42px; height:42px; border-radius:12px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:19px; color:white;
+        }
+        .section-header h6 { margin:0; font-weight:800; font-size:15px; color:var(--text-white); }
+        .section-header small { color:var(--text-muted); font-size:11px; }
+
+        /* الأيقونات الفرعية */
+        .sub-grid {
+            display:grid; grid-template-columns:repeat(3,1fr);
+            gap:0;
+        }
+        .sub-item {
+            padding:18px 10px; text-align:center; cursor:pointer;
+            border-left:1px solid rgba(0,0,0,0.05);
+            transition:0.2s; text-decoration:none; display:block;
+        }
+        .sub-item:first-child { border-left:none; }
+        .sub-item:hover { background:rgba(0,119,182,0.05); }
+        .sub-icon {
+            width:50px; height:50px; border-radius:14px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:22px; margin:0 auto 10px; color:white;
+        }
+        .sub-item span {
+            display:block; font-size:11px; font-weight:700;
+            color:var(--text-white); line-height:1.4;
+        }
+        .sub-item small {
+            display:block; font-size:10px; color:var(--text-muted);
+            margin-top:3px; line-height:1.3;
+        }
+        .badge-new {
+            background:#ef233c; color:white; font-size:9px;
+            border-radius:8px; padding:1px 5px; margin-top:3px;
+            display:inline-block; font-weight:700;
+        }
+        .badge-soon {
+            background:#ffb703; color:#333; font-size:9px;
+            border-radius:8px; padding:1px 5px; margin-top:3px;
+            display:inline-block; font-weight:700;
+        }
+
+        /* مودال القيود */
+        .modal-overlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,0.6); z-index:999;
+            align-items:flex-end; justify-content:center;
+        }
+        .modal-overlay.show { display:flex; }
+        .modal-sheet {
+            background:var(--card-bg); width:100%; max-width:480px;
+            border-radius:20px 20px 0 0; padding:20px 16px 30px;
+            animation:slideUp 0.3s ease;
+            max-height:85vh; overflow-y:auto;
+        }
+        @keyframes slideUp {
+            from { transform:translateY(100%); opacity:0; }
+            to   { transform:translateY(0);   opacity:1; }
+        }
+        .modal-handle {
+            width:40px; height:4px; background:rgba(0,0,0,0.15);
+            border-radius:10px; margin:0 auto 16px;
+        }
+        .modal-title {
+            font-size:16px; font-weight:900; color:var(--neon-cyan);
+            margin-bottom:16px; display:flex; align-items:center; gap:8px;
+        }
+        .field-lbl { font-size:11px; color:var(--neon-cyan); font-weight:700; margin-bottom:4px; display:block; }
+        .field-inp {
+            width:100%; padding:10px 12px; background:transparent;
+            border:1px solid var(--text-muted); border-radius:8px;
+            color:var(--text-white); font-size:13px; font-family:'Cairo',sans-serif;
+            margin-bottom:12px; box-sizing:border-box;
+        }
+        .field-inp:focus { outline:none; border-color:var(--neon-cyan); }
+        select.field-inp { background:var(--card-bg); }
+        .btn-primary-modal {
+            width:100%; padding:13px; border:none; border-radius:12px;
+            background:linear-gradient(135deg,var(--neon-cyan),#00b4d8);
+            color:white; font-size:14px; font-weight:700;
+            font-family:'Cairo',sans-serif; cursor:pointer; margin-top:6px;
+        }
+        .btn-cancel-modal {
+            width:100%; padding:11px; border:1px solid var(--text-muted);
+            border-radius:12px; background:transparent; color:var(--text-muted);
+            font-size:13px; font-family:'Cairo',sans-serif; cursor:pointer; margin-top:8px;
+        }
+
+        /* جدول شجرة الحسابات */
+        .account-row {
+            padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.05);
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .account-row:last-child { border-bottom:none; }
+        .account-code { font-size:11px; color:var(--neon-cyan); font-family:monospace; }
+        .account-name { font-size:13px; font-weight:700; }
+        .account-type { font-size:10px; color:var(--text-muted); background:rgba(0,0,0,0.05); border-radius:6px; padding:2px 7px; }
+
+        /* جدول الضرائب */
+        .tax-row {
+            padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.05);
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .tax-row:last-child { border-bottom:none; }
+        .tax-badge {
+            font-size:11px; font-weight:700; border-radius:8px;
+            padding:3px 10px; color:white;
+        }
+
+        /* القيود */
+        .entry-row {
+            padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.05);
+        }
+        .entry-row:last-child { border-bottom:none; }
+        .entry-ref { font-size:11px; color:var(--neon-cyan); font-family:monospace; }
+        .entry-date { font-size:10px; color:var(--text-muted); }
+        .entry-lines { font-size:12px; margin-top:6px; }
+
+        #toastAcc {
+            position:fixed; top:20px; left:50%; transform:translateX(-50%);
+            padding:11px 22px; border-radius:30px; color:white; font-weight:700;
+            font-size:13px; z-index:9999; display:none; max-width:90%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="toastAcc"></div>
+
+<!-- شريط العنوان -->
+<div class="top-bar">
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i></a>
+    <h1 class="top-bar-title">
+        <i class="fas fa-calculator"></i> المحاسب
+    </h1>
+</div>
+
+<div class="page-content">
+
+    <!-- ===== القسم 1: القيود اليدوية ===== -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon" style="background:linear-gradient(135deg,#0077b6,#00b4d8);">
+                <i class="fas fa-book"></i>
+            </div>
+            <div>
+                <h6>القيود اليدوية</h6>
+                <small>إنشاء وعرض القيود المحاسبية</small>
+            </div>
+        </div>
+        <div class="sub-grid">
+            <a class="sub-item" onclick="openNewEntryModal()">
+                <div class="sub-icon" style="background:linear-gradient(135deg,#0077b6,#00b4d8);">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <span>قيد جديد</span>
+                <small>إنشاء قيد يدوي</small>
+            </a>
+            <a class="sub-item" onclick="showSection('entries')">
+                <div class="sub-icon" style="background:linear-gradient(135deg,#2b9348,#38b000);">
+                    <i class="fas fa-list-alt"></i>
+                </div>
+                <span>عرض القيود</span>
+                <small>جميع القيود المسجلة</small>
+            </a>
+            <a class="sub-item" onclick="showToastAcc('قريباً: تصدير القيود PDF','#ffb703')">
+                <div class="sub-icon" style="background:linear-gradient(135deg,#ffb703,#f59e0b);">
+                    <i class="fas fa-file-export"></i>
+                </div>
+                <span>تصدير</span>
+                <small>PDF / Excel</small>
+                <span class="badge-soon">قريباً</span>
+            </a>
+        </div>
+        <!-- منطقة العرض الديناميكية -->
+        <div id="section-entries" style="display:none;">
+            <div style="padding:12px 16px;border-top:1px solid rgba(0,0,0,0.06);">
+                <div id="entriesListWrap">
+                    <div style="text-align:center;padding:25px;color:var(--text-muted);">
+                        <i class="fas fa-book" style="font-size:36px;opacity:0.2;display:block;margin-bottom:8px;"></i>
+                        لا توجد قيود مسجلة بعد
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== القسم 2: شجرة الحسابات ===== -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
+                <i class="fas fa-sitemap"></i>
+            </div>
+            <div>
+                <h6>شجرة الحسابات</h6>
+                <small>دليل الحسابات المحاسبية</small>
+            </div>
+        </div>
+        <div class="sub-grid">
+            <a class="sub-item" onclick="showSection('accounts')">
+                <div class="sub-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
+                    <i class="fas fa-tree"></i>
+                </div>
+                <span>عرض الشجرة</span>
+                <small>جميع الحسابات</small>
+            </a>
+            <a class="sub-item" onclick="openNewAccountModal()">
+                <div class="sub-icon" style="background:linear-gradient(135deg,#2b9348,#38b000);">
+                    <i class="fas fa-folder-plus"></i>
+                </div>
+                <span>حساب جديد</span>
+                <small>إضافة حساب</small>
+            </a>
+            <a class="sub-item" onclick="showToastAcc('قريباً: تقرير الميزانية','#6366f1')">
+                <div class="sub-icon" style="background:linear-gradient(135deg,#0077b6,#00b4d8);">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <span>الميزانية</span>
+                <small>تقرير المركز المالي</small>
+                <span class="badge-soon">قريباً</span>
+            </a>
+        </div>
+        <!-- منطقة العرض -->
+        <div id="section-accounts" style="display:none;">
+            <div style="padding:12px 16px;border-top:1px solid rgba(0,0,0,0.06);" id="accountsListWrap">
+                <!-- يتم تعبئتها من JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== القسم 3: الضرائب ===== -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon" style="background:linear-gradient(135deg,#d90429,#ef233c);">
+                <i class="fas fa-percent"></i>
+            </div>
+            <div>
+                <h6>الضرائب</h6>
+                <small>معدلات ضريبة القيمة المضافة</small>
+            </div>
+        </div>
+        <div class="sub-grid">
+            <a class="sub-item" onclick="showSection('taxes')">
+                <div class="sub-icon" style="background:linear-gradient(135deg,#d90429,#ef233c);">
+                    <i class="fas fa-table"></i>
+                </div>
+                <span>جدول الضرائب</span>
+                <small>أنواع الضريبة</small>
+            </a>
+            <a class="sub-item" onclick="showSection('vat15')">
+                <div class="sub-icon" style="background:linear-gradient(135deg,#ffb703,#f59e0b);">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <span>ضريبة 15%</span>
+                <small>المعيار السعودي</small>
+            </a>
+            <a class="sub-item" onclick="window.location.href='vat-filing.html'">
+                <div class="sub-icon" style="background:linear-gradient(135deg,#2b9348,#38b000);">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <span>الإقرار الضريبي</span>
+                <small>رفع الإقرار</small>
+            </a>
+        </div>
+        <!-- جدول الضرائب -->
+        <div id="section-taxes" style="display:none;">
+            <div style="border-top:1px solid rgba(0,0,0,0.06);">
+                <div class="tax-row">
+                    <div>
+                        <div style="font-size:13px;font-weight:700;">ضريبة القيمة المضافة على المبيعات</div>
+                        <div style="font-size:10px;color:var(--text-muted);">VAT on Sales — مبيعات</div>
+                    </div>
+                    <span class="tax-badge" style="background:#d90429;">15%</span>
+                </div>
+                <div class="tax-row">
+                    <div>
+                        <div style="font-size:13px;font-weight:700;">ضريبة القيمة المضافة على المشتريات</div>
+                        <div style="font-size:10px;color:var(--text-muted);">VAT on Purchases — مشتريات</div>
+                    </div>
+                    <span class="tax-badge" style="background:#0077b6;">15%</span>
+                </div>
+                <div class="tax-row">
+                    <div>
+                        <div style="font-size:13px;font-weight:700;">معفى من الضريبة</div>
+                        <div style="font-size:10px;color:var(--text-muted);">Exempt — مبيعات</div>
+                    </div>
+                    <span class="tax-badge" style="background:#2b9348;">0%</span>
+                </div>
+                <div class="tax-row">
+                    <div>
+                        <div style="font-size:13px;font-weight:700;">نسبة صفر</div>
+                        <div style="font-size:10px;color:var(--text-muted);">Zero-Rated Exports — صادرات</div>
+                    </div>
+                    <span class="tax-badge" style="background:#666;">0%</span>
+                </div>
+                <div class="tax-row">
+                    <div>
+                        <div style="font-size:13px;font-weight:700;">احتساب عكسي</div>
+                        <div style="font-size:10px;color:var(--text-muted);">Reverse Charge — مشتريات</div>
+                    </div>
+                    <span class="tax-badge" style="background:#6366f1;">15%</span>
+                </div>
+                <div class="tax-row">
+                    <div>
+                        <div style="font-size:13px;font-weight:700;">خارج نطاق الضريبة</div>
+                        <div style="font-size:10px;color:var(--text-muted);">Out of Scope</div>
+                    </div>
+                    <span class="tax-badge" style="background:#aaa;">—</span>
+                </div>
+            </div>
+        </div>
+        <!-- VAT 15% -->
+        <div id="section-vat15" style="display:none;">
+            <div style="padding:16px;border-top:1px solid rgba(0,0,0,0.06);">
+                <div style="background:rgba(217,4,41,0.08);border:1px solid rgba(217,4,41,0.2);border-radius:12px;padding:14px;text-align:center;">
+                    <div style="font-size:36px;font-weight:900;color:#d90429;">15%</div>
+                    <div style="font-size:13px;color:var(--text-muted);">ضريبة القيمة المضافة المعيارية في المملكة العربية السعودية</div>
+                </div>
+                <div style="margin-top:14px;">
+                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-weight:700;">حاسبة الضريبة السريعة:</div>
+                    <input type="number" id="vatCalcInput" placeholder="أدخل المبلغ قبل الضريبة"
+                        oninput="calcVat()"
+                        style="width:100%;padding:10px;background:transparent;border:1px solid var(--text-muted);border-radius:8px;color:var(--text-white);font-size:13px;font-family:'Cairo',sans-serif;box-sizing:border-box;">
+                    <div id="vatCalcResult" style="margin-top:10px;display:none;background:rgba(0,119,182,0.08);border-radius:10px;padding:12px;">
+                        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                            <span>المبلغ قبل الضريبة:</span>
+                            <strong id="vatBase" style="color:var(--text-white);">0.00 ر.س</strong>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                            <span>مبلغ الضريبة 15%:</span>
+                            <strong id="vatAmount" style="color:#d90429;">0.00 ر.س</strong>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;border-top:1px dashed rgba(0,0,0,0.1);padding-top:6px;margin-top:4px;">
+                            <span>الإجمالي شامل الضريبة:</span>
+                            <strong id="vatTotal" style="color:var(--neon-cyan);">0.00 ر.س</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== مودال: قيد محاسبي جديد ===== -->
+<div class="modal-overlay" id="entryModal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title"><i class="fas fa-book"></i> قيد محاسبي جديد</div>
+
+        <label class="field-lbl">التاريخ *</label>
+        <input type="date" id="entryDate" class="field-inp">
+
+        <label class="field-lbl">المرجع / الوصف *</label>
+        <input type="text" id="entryRef" class="field-inp" placeholder="مثال: فاتورة مبيعات، مصروف إيجار...">
+
+        <label class="field-lbl">الحساب المدين *</label>
+        <select id="entryDebitAcc" class="field-inp">
+            <option value="">-- اختر الحساب --</option>
+        </select>
+
+        <label class="field-lbl">الحساب الدائن *</label>
+        <select id="entryCreditAcc" class="field-inp">
+            <option value="">-- اختر الحساب --</option>
+        </select>
+
+        <label class="field-lbl">المبلغ *</label>
+        <input type="number" id="entryAmount" class="field-inp" step="0.01" min="0" placeholder="0.00">
+
+        <label class="field-lbl">ملاحظات</label>
+        <input type="text" id="entryNotes" class="field-inp" placeholder="ملاحظة اختيارية">
+
+        <button class="btn-primary-modal" onclick="saveEntry()">
+            <i class="fas fa-save"></i> حفظ القيد
+        </button>
+        <button class="btn-cancel-modal" onclick="closeModal('entryModal')">إلغاء</button>
+    </div>
+</div>
+
+<!-- ===== مودال: حساب جديد ===== -->
+<div class="modal-overlay" id="accountModal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title"><i class="fas fa-folder-plus"></i> إضافة حساب جديد</div>
+
+        <label class="field-lbl">رمز الحساب *</label>
+        <input type="text" id="accCode" class="field-inp" placeholder="مثال: 1010">
+
+        <label class="field-lbl">اسم الحساب *</label>
+        <input type="text" id="accName" class="field-inp" placeholder="مثال: نقدية، عملاء، مصروفات...">
+
+        <label class="field-lbl">نوع الحساب *</label>
+        <select id="accType" class="field-inp">
+            <option value="">-- اختر النوع --</option>
+            <option value="أصول">أصول</option>
+            <option value="خصوم">خصوم</option>
+            <option value="حقوق ملكية">حقوق ملكية</option>
+            <option value="إيرادات">إيرادات</option>
+            <option value="مصروفات">مصروفات</option>
+        </select>
+
+        <label class="field-lbl">طبيعة الحساب</label>
+        <select id="accNature" class="field-inp">
+            <option value="مدين">مدين</option>
+            <option value="دائن">دائن</option>
+        </select>
+
+        <button class="btn-primary-modal" onclick="saveAccount()">
+            <i class="fas fa-save"></i> إضافة الحساب
+        </button>
+        <button class="btn-cancel-modal" onclick="closeModal('accountModal')">إلغاء</button>
+    </div>
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module">
+import { db } from './firebase-config.js';
+import { collection, doc, setDoc, onSnapshot, deleteDoc }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getAuth, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+// ===== تهيئة =====
+let uid = null;
+let allAccounts = [];
+let allEntries  = [];
+
+// الحسابات الافتراضية
+const DEFAULT_ACCOUNTS = [
+    { code:'1010', name:'النقدية',             type:'أصول',       nature:'مدين' },
+    { code:'1020', name:'البنك',               type:'أصول',       nature:'مدين' },
+    { code:'1100', name:'العملاء / المدينون',  type:'أصول',       nature:'مدين' },
+    { code:'1200', name:'المخزون',             type:'أصول',       nature:'مدين' },
+    { code:'2010', name:'الموردون / الدائنون', type:'خصوم',       nature:'دائن' },
+    { code:'2100', name:'ضريبة القيمة المضافة',type:'خصوم',       nature:'دائن' },
+    { code:'3010', name:'رأس المال',           type:'حقوق ملكية', nature:'دائن' },
+    { code:'3100', name:'الأرباح المحتجزة',    type:'حقوق ملكية', nature:'دائن' },
+    { code:'4010', name:'إيرادات المبيعات',    type:'إيرادات',    nature:'دائن' },
+    { code:'4100', name:'إيرادات أخرى',        type:'إيرادات',    nature:'دائن' },
+    { code:'5010', name:'تكلفة البضاعة المباعة',type:'مصروفات',   nature:'مدين' },
+    { code:'5100', name:'مصروفات الإيجار',     type:'مصروفات',    nature:'مدين' },
+    { code:'5200', name:'مصروفات الرواتب',     type:'مصروفات',    nature:'مدين' },
+    { code:'5300', name:'مصروفات عامة',        type:'مصروفات',    nature:'مدين' },
+];
+
+const auth = getAuth();
+onAuthStateChanged(auth, user => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    uid = user.uid;
+    applyTheme();
+    listenAccounts();
+    listenEntries();
+    // ضبط تاريخ اليوم
+    const d = document.getElementById('entryDate');
+    if(d) d.value = new Date().toISOString().split('T')[0];
+});
+
+function applyTheme() {
+    const t = localStorage.getItem('altajer_preferred_theme') || 'winter';
+    document.documentElement.setAttribute('data-theme', t);
+}
+
+// ===== Toast =====
+window.showToastAcc = function(msg, color = '#2b9348') {
+    const t = document.getElementById('toastAcc');
+    t.innerText = msg; t.style.backgroundColor = color;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+};
+
+// ===== إظهار أقسام داخلية =====
+const sectionIds = ['entries','accounts','taxes','vat15'];
+window.showSection = function(id) {
+    sectionIds.forEach(s => {
+        const el = document.getElementById('section-' + s);
+        if (el) el.style.display = (s === id && el.style.display === 'none') ? 'block' : 'none';
+    });
+    if (id === 'accounts') renderAccounts();
+    if (id === 'entries')  renderEntries();
+};
+
+// ===== حاسبة الضريبة =====
+window.calcVat = function() {
+    const base = parseFloat(document.getElementById('vatCalcInput').value) || 0;
+    const result = document.getElementById('vatCalcResult');
+    if (base > 0) {
+        const vat   = base * 0.15;
+        const total = base + vat;
+        document.getElementById('vatBase').innerText   = base.toFixed(2)  + ' ر.س';
+        document.getElementById('vatAmount').innerText = vat.toFixed(2)   + ' ر.س';
+        document.getElementById('vatTotal').innerText  = total.toFixed(2) + ' ر.س';
+        result.style.display = 'block';
+    } else {
+        result.style.display = 'none';
+    }
+};
+
+// ===== المودالات =====
+window.openNewEntryModal = function() {
+    populateAccountSelects();
+    document.getElementById('entryModal').classList.add('show');
+};
+window.openNewAccountModal = function() {
+    document.getElementById('accountModal').classList.add('show');
+};
+window.closeModal = function(id) {
+    document.getElementById(id).classList.remove('show');
+};
+// إغلاق بالضغط على الخلفية
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('show');
+    });
+});
+
+function populateAccountSelects() {
+    const accounts = allAccounts.length > 0 ? allAccounts : DEFAULT_ACCOUNTS;
+    ['entryDebitAcc','entryCreditAcc'].forEach(id => {
+        const sel = document.getElementById(id);
+        sel.innerHTML = '<option value="">-- اختر الحساب --</option>';
+        accounts.forEach(a => {
+            sel.innerHTML += `<option value="${a.code}">${a.code} — ${a.name}</option>`;
+        });
+    });
+}
+
+// ===== حفظ قيد =====
+window.saveEntry = async function() {
+    if (!uid) return;
+    const date   = document.getElementById('entryDate').value;
+    const ref    = document.getElementById('entryRef').value.trim();
+    const debit  = document.getElementById('entryDebitAcc').value;
+    const credit = document.getElementById('entryCreditAcc').value;
+    const amount = parseFloat(document.getElementById('entryAmount').value) || 0;
+    const notes  = document.getElementById('entryNotes').value.trim();
+
+    if (!date || !ref || !debit || !credit || amount <= 0) {
+        showToastAcc('يرجى تعبئة جميع الحقول الإلزامية', '#d90429'); return;
+    }
+    if (debit === credit) {
+        showToastAcc('الحساب المدين والدائن لا يمكن أن يكونا نفس الحساب', '#d90429'); return;
+    }
+
+    const entryId = 'JE-' + Date.now();
+    try {
+        await setDoc(doc(db, 'users', uid, 'journalEntries', entryId), {
+            id: entryId, date, ref, debit, credit, amount, notes,
+            createdAt: new Date().toISOString()
+        });
+        showToastAcc('✅ تم حفظ القيد بنجاح');
+        closeModal('entryModal');
+        // مسح الحقول
+        ['entryRef','entryDebitAcc','entryCreditAcc','entryAmount','entryNotes']
+            .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    } catch(e) {
+        showToastAcc('❌ خطأ: ' + e.message, '#d90429');
+    }
+};
+
+// ===== حفظ حساب =====
+window.saveAccount = async function() {
+    if (!uid) return;
+    const code   = document.getElementById('accCode').value.trim();
+    const name   = document.getElementById('accName').value.trim();
+    const type   = document.getElementById('accType').value;
+    const nature = document.getElementById('accNature').value;
+
+    if (!code || !name || !type) {
+        showToastAcc('يرجى تعبئة جميع الحقول', '#d90429'); return;
+    }
+    try {
+        await setDoc(doc(db, 'users', uid, 'chartOfAccounts', code), {
+            code, name, type, nature,
+            createdAt: new Date().toISOString()
+        });
+        showToastAcc('✅ تم إضافة الحساب');
+        closeModal('accountModal');
+        ['accCode','accName','accType'].forEach(id => {
+            const el=document.getElementById(id); if(el) el.value='';
+        });
+    } catch(e) {
+        showToastAcc('❌ خطأ: ' + e.message, '#d90429');
+    }
+};
+
+// ===== استماع للحسابات =====
+function listenAccounts() {
+    onSnapshot(collection(db, 'users', uid, 'chartOfAccounts'), snap => {
+        allAccounts = [];
+        snap.forEach(d => allAccounts.push(d.data()));
+        allAccounts.sort((a,b) => a.code.localeCompare(b.code));
+    });
+}
+
+// ===== استماع للقيود =====
+function listenEntries() {
+    onSnapshot(collection(db, 'users', uid, 'journalEntries'), snap => {
+        allEntries = [];
+        snap.forEach(d => allEntries.push(d.data()));
+        allEntries.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+    });
+}
+
+// ===== عرض الحسابات =====
+function renderAccounts() {
+    const wrap = document.getElementById('accountsListWrap');
+    const accounts = allAccounts.length > 0 ? allAccounts : DEFAULT_ACCOUNTS;
+    const typeColors = {
+        'أصول':'#0077b6','خصوم':'#d90429',
+        'حقوق ملكية':'#6366f1','إيرادات':'#2b9348','مصروفات':'#ffb703'
+    };
+    if (accounts.length === 0) {
+        wrap.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">لا توجد حسابات</div>';
+        return;
+    }
+    wrap.innerHTML = accounts.map(a => `
+        <div class="account-row">
+            <div>
+                <div class="account-code">${a.code}</div>
+                <div class="account-name">${a.name}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                <span class="account-type" style="background:${typeColors[a.type]||'#666'};color:white;">
+                    ${a.type}
+                </span>
+                <span style="font-size:10px;color:var(--text-muted);">${a.nature||''}</span>
+            </div>
+        </div>`).join('');
+}
+
+// ===== عرض القيود =====
+function renderEntries() {
+    const wrap = document.getElementById('entriesListWrap');
+    if (allEntries.length === 0) {
+        wrap.innerHTML = `<div style="text-align:center;padding:25px;color:var(--text-muted);">
+            <i class="fas fa-book" style="font-size:36px;opacity:0.2;display:block;margin-bottom:8px;"></i>
+            لا توجد قيود مسجلة بعد</div>`;
+        return;
+    }
+    const accounts = allAccounts.length > 0 ? allAccounts : DEFAULT_ACCOUNTS;
+    const getAccName = code => accounts.find(a => a.code === code)?.name || code;
+    wrap.innerHTML = allEntries.map(e => `
+        <div class="entry-row">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span class="entry-ref">${e.id}</span>
+                <span class="entry-date">${e.date}</span>
+            </div>
+            <div style="font-size:13px;font-weight:700;margin:4px 0;">${e.ref}</div>
+            <div class="entry-lines">
+                <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed rgba(0,0,0,0.08);">
+                    <span style="color:#2b9348;"><i class="fas fa-arrow-right" style="font-size:9px;"></i> مدين: ${getAccName(e.debit)}</span>
+                    <strong style="color:#2b9348;">${parseFloat(e.amount).toFixed(2)} ر.س</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:4px 0;">
+                    <span style="color:#d90429;padding-right:14px;"><i class="fas fa-arrow-left" style="font-size:9px;"></i> دائن: ${getAccName(e.credit)}</span>
+                    <strong style="color:#d90429;">${parseFloat(e.amount).toFixed(2)} ر.س</strong>
+                </div>
+            </div>
+            ${e.notes ? `<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">📝 ${e.notes}</div>` : ''}
+        </div>`).join('');
+}
+
+</script>
+</body>
+</html>

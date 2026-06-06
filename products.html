@@ -232,15 +232,13 @@
                 <input type="number" id="prodQty" class="field-inp" min="0" placeholder="0">
             </div>
             <!-- السعر قبل الضريبة -->
-            <div class="col-6">
+                        <div class="col-6">
                 <label class="field-lbl">السعر قبل الضريبة *</label>
-                <input type="number" id="prodPriceEx" class="field-inp" step="0.01" min="0"
-                    placeholder="0.00" oninput="calcPrices()">
+                <input type="number" id="prodPriceEx" class="field-inp" step="0.01" min="0" placeholder="0.00" oninput="calcPrices('ex')">
             </div>
-            <!-- السعر بعد الضريبة -->
             <div class="col-6">
-                <label class="field-lbl">السعر شامل الضريبة 15%</label>
-                <input type="number" id="prodPriceInc" class="field-inp" readonly placeholder="0.00">
+                <label class="field-lbl">السعر شامل الضريبة 15% *</label>
+                <input type="number" id="prodPriceInc" class="field-inp" step="0.01" min="0" placeholder="0.00" oninput="calcPrices('inc')">
             </div>
             <!-- ملاحظات -->
             <div class="col-12">
@@ -353,10 +351,20 @@ window.genBarcode = function() {
 };
 
 // ===== حساب الأسعار تلقائياً =====
-window.calcPrices = function() {
-    const ex  = parseFloat(document.getElementById('prodPriceEx').value) || 0;
-    const inc = ex * 1.15;
-    document.getElementById('prodPriceInc').value = inc > 0 ? inc.toFixed(2) : '';
+window.calcPrices = function(type) {
+    const priceExInput = document.getElementById("prodPriceEx");
+    const priceIncInput = document.getElementById("prodPriceInc");
+    
+    let priceEx = parseFloat(priceExInput.value) || 0;
+    let priceInc = parseFloat(priceIncInput.value) || 0;
+
+    if (type === 'ex') {
+        let calculatedInc = priceEx * 1.15;
+        priceIncInput.value = calculatedInc > 0 ? calculatedInc.toFixed(2) : '';
+    } else if (type === 'inc') {
+        let calculatedEx = priceInc / 1.15;
+        priceExInput.value = calculatedEx > 0 ? calculatedEx.toFixed(2) : '';
+    }
 };
 
 // ===== إظهار/إخفاء النموذج =====

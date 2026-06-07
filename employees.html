@@ -415,8 +415,11 @@
         };
 
         set(ref(db, `altajer_employees/${payload.id}`), payload)
-        .then(() => {
-            showToast("تم حفظ ملف الموظف وتأمينه في قاعدة البيانات السحابية.");
+                        // حذف الموظف من سحابة المستخدم الخاصة بشكل آمن
+                await deleteDoc(doc(db, 'users', currentUid, 'employees', id));
+                
+                showToast("تم حذف ملف الموظف وتأمينه في قاعدة البيانات السحابية.");
+doc(db, 'users', currentUid, 'employees', id)
             document.getElementById('employeeForm').reset();
             dateField.value = new Date().toISOString().split('T')[0];
             idField.focus();

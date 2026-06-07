@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تاجر برو - ملخص الإقرار الضريبي</title>
-    
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -58,7 +58,7 @@
             align-items: center;
         }
 
-        .form-group-custom input[type="month"] {
+        .form-group-custom select {
             flex: 1;
             background: var(--dark-bg);
             border: 1px solid var(--sea-blue);
@@ -67,6 +67,12 @@
             border-radius: 6px;
             outline: none;
             font-size: 14px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .form-group-custom select option {
+            background: #1b263b;
+            color: white;
         }
 
         .accounting-table-responsive {
@@ -132,12 +138,19 @@
             margin-top: 15px;
         }
 
+        .status-msg {
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
         @media print {
             body { background: white !important; color: black !important; }
             .tax-card { border: none !important; box-shadow: none !important; background: white !important; width: 100%; }
             .table-custom th { background-color: #f1f5f9 !important; color: black !important; border-bottom: 1px solid #000; }
             .table-custom td { color: black !important; border-color: #cbd5e1 !important; }
-            .actions-wrapper, .form-group-custom { display: none !important; }
+            .actions-wrapper, .form-group-custom, .status-msg { display: none !important; }
         }
     </style>
 </head>
@@ -145,13 +158,17 @@
 
 <div class="tax-card">
     <h2><i class="fas fa-percent"></i> ملخص الإقرار الضريبي (VAT 15%)</h2>
-    
+
     <div class="form-group-custom">
-        <input type="month" id="vatPeriod" value="2026-05">
+        <select id="vatPeriod" onchange="calculateVAT()">
+            <!-- تُعبأ تلقائياً بالسكريبت -->
+        </select>
         <button class="btn-neon-action" style="--clr: var(--neon-cyan)" onclick="calculateVAT()">
             <i class="fas fa-sync-alt"></i> تحديث البيانات
         </button>
     </div>
+
+    <div class="status-msg" id="statusMsg">جاري تحميل البيانات...</div>
 
     <div class="accounting-table-responsive">
         <table class="table-custom">
@@ -191,46 +208,120 @@
     </div>
 </div>
 
-<script src="app.js"></script>
+<!-- Firebase -->
+<script type="module">
+import { db } from './firebase-config.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
-<script>
-    // تشغيل الحساب تلقائياً فور فتح الشاشة بناءً على البيانات المحفوظة
-    document.addEventListener("DOMContentLoaded", function() {
-        calculateVAT();
-    });
-
-    function calculateVAT() {
-        let totalSalesExcl = 0;
-        let totalSalesTax = 0;
-        
-        // قراءة الفاتورة الأخيرة المصنعة من محرك الكاشير الأصلي لبرنامجك
-        const lastInvoice = JSON.parse(localStorage.getItem('last_processed_invoice'));
-        if (lastInvoice) {
-            totalSalesExcl = parseFloat(lastInvoice.subtotal || 0);
-            totalSalesTax = parseFloat(lastInvoice.tax || 0);
-        }
-
-        // قراءة مشتريات المستودع
-        let totalPurchasesExcl = 0;
-        let totalPurchasesTax = 0;
-
-        // دمج الحسابات اللحظية وضخها بالجدول
-        document.getElementById('salesAmount').innerText = totalSalesExcl.toFixed(2);
-        document.getElementById('salesVat').innerText = totalSalesTax.toFixed(2);
-        document.getElementById('purchasesAmount').innerText = totalPurchasesExcl.toFixed(2);
-        document.getElementById('purchasesVat').innerText = totalPurchasesTax.toFixed(2);
-
-        const netTaxPayable = totalSalesTax - totalPurchasesTax;
-        const netVatElement = document.getElementById('netVat');
-        
-        netVatElement.innerText = netTaxPayable.toFixed(2) + " ر.س";
-        
-        if (netTaxPayable < 0) {
-            netVatElement.style.color = "var(--warning-orange)";
-        } else {
-            netVatElement.style.color = "var(--light-green)";
-        }
+// ===== بناء قائمة الأشهر (12 شهراً للخلف) =====
+function buildMonthOptions() {
+    const sel = document.getElementById('vatPeriod');
+    const now = new Date();
+    const monthNames = [
+        'يناير','فبراير','مارس','أبريل','مايو','يونيو',
+        'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'
+    ];
+    sel.innerHTML = '';
+    for (let i = 0; i < 12; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const label = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        if (i === 0) opt.selected = true;
+        sel.appendChild(opt);
     }
+}
+
+// ===== الحساب الرئيسي =====
+async function calculateVAT() {
+    const statusMsg = document.getElementById('statusMsg');
+    statusMsg.innerText = 'جاري تحميل البيانات من Firebase...';
+
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const uid = user.uid;
+        const period = document.getElementById('vatPeriod').value; // مثال: "2026-05"
+        const [year, month] = period.split('-').map(Number);
+
+        // نطاق الفترة
+        const startDate = new Date(year, month - 1, 1);
+        const endDate   = new Date(year, month, 1);
+
+        let totalSalesExcl  = 0;
+        let totalSalesTax   = 0;
+        let invoiceCount    = 0;
+
+        try {
+            // جلب كل الفواتير من Firebase
+            const snap = await getDocs(collection(db, 'users', uid, 'orders'));
+
+            snap.forEach(docSnap => {
+                const inv = docSnap.data();
+
+                // تحديد تاريخ الفاتورة
+                let invDate = null;
+                if (inv.timestamp) {
+                    invDate = inv.timestamp.toDate ? inv.timestamp.toDate() : new Date(inv.timestamp);
+                } else if (inv.date) {
+                    invDate = new Date(inv.date);
+                }
+
+                // فلترة حسب الشهر المختار
+                if (!invDate || invDate < startDate || invDate >= endDate) return;
+
+                const subtotal = parseFloat(inv.subtotal || 0);
+                const tax      = parseFloat(inv.tax || 0);
+                const total    = parseFloat(inv.total || 0);
+
+                // إذا كانت الضريبة صفر نحسبها من الإجمالي
+                if (tax > 0) {
+                    totalSalesExcl += subtotal;
+                    totalSalesTax  += tax;
+                } else if (total > 0) {
+                    const calcTax  = total * 0.15 / 1.15;
+                    const calcExcl = total - calcTax;
+                    totalSalesExcl += calcExcl;
+                    totalSalesTax  += calcTax;
+                }
+                invoiceCount++;
+            });
+
+            // تحديث الجدول
+            document.getElementById('salesAmount').innerText    = totalSalesExcl.toFixed(2);
+            document.getElementById('salesVat').innerText       = totalSalesTax.toFixed(2);
+            document.getElementById('purchasesAmount').innerText = '0.00';
+            document.getElementById('purchasesVat').innerText   = '0.00';
+
+            const netTax = totalSalesTax;
+            const netVatEl = document.getElementById('netVat');
+            netVatEl.innerText = netTax.toFixed(2) + ' ر.س';
+            netVatEl.style.color = netTax >= 0 ? 'var(--light-green)' : 'var(--warning-orange)';
+
+            statusMsg.innerText = `✅ تم تحميل ${invoiceCount} فاتورة للفترة المحددة`;
+
+        } catch (e) {
+            statusMsg.innerText = '❌ خطأ في جلب البيانات: ' + e.message;
+            console.error('VAT calc error:', e);
+        }
+    });
+}
+
+// ===== تشغيل عند فتح الصفحة =====
+buildMonthOptions();
+calculateVAT();
+
+// تعريف الدالة عالمياً لزر تحديث البيانات
+window.calculateVAT = calculateVAT;
 </script>
+
 </body>
 </html>

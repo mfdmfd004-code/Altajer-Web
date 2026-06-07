@@ -173,14 +173,7 @@
             </div>
             <div class="col-12">
                 <label class="field-lbl">عدد الملصقات للطباعة</label>
-                <select id="labelCount" class="field-inp" onchange="buildLabelsGrid()">
-                    <option value="1">ملصق واحد</option>
-                    <option value="2">2 ملصقات</option>
-                    <option value="4" selected>4 ملصقات</option>
-                    <option value="6">6 ملصقات</option>
-                    <option value="8">8 ملصقات</option>
-                    <option value="12">12 ملصق</option>
-                </select>
+                <input type="number" id="labelCount" class="field-inp" min="1" value="4" oninput="buildLabelsGrid()">
             </div>
         </div>
     </div>

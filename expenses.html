@@ -324,7 +324,7 @@
     // تشغيل المزامنة وتعيين تاريخ اليوم تلقائياً لتسهيل العمل من الجوال
     document.addEventListener("DOMContentLoaded", function() {
         const dateInput = document.getElementById('expDate');
-        if (dateInput) {
+        if (dateInput) { let currentUid = null;
             const today = new Date().toISOString().split('T')[0];
             dateInput.value = today;
         }
@@ -339,16 +339,15 @@
         toast.style.backgroundColor = isSuccess ? 'var(--light-green)' : 'var(--danger-red)';
         toast.style.display = 'block';
         setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    const auth = getAuth();
+onAuthStateChanged(auth, user => {
+    if (!user) { 
+        window.location.href = 'login.html'; 
+        return; 
     }
-
-    // جلب المصاريف بشكل حي ومستمر من قاعدة البيانات
-    function syncExpensesFromFirebase() {
-        const expensesRef = ref(db, 'altajer_expenses');
-        onValue(expensesRef, (snapshot) => {
-            const data = snapshot.val();
-            const expensesList = [];
-            
-            if (data) {
+    currentUid = user.uid;
+    syncExpensesFromFirebase();
+});
                 Object.keys(data).forEach(key => {
                     expensesList.push(data[key]);
                 });
@@ -410,7 +409,8 @@
             created_at: new Date().toISOString()
         };
 
-        set(ref(db, `altajer_expenses/${payload.id}`), payload)
+                await addDoc(collection(db, 'users', currentUid, 'expenses'), payload);
+
         .then(() => {
             showToast("تم إثبات القيد وترحيل المصروف لقاعدة البيانات السحابية.");
             document.getElementById('expenseForm').reset();
@@ -423,7 +423,7 @@
     // حذف وإلغاء قيد المصروف من السحابة
     function deleteExpense(id) {
         if (confirm("تحذير مالي: هل أنت متأكد من رغبتك في حذف قيد هذا المصروف نهائياً؟ سيؤثر هذا على صافي تقارير الأرباح.")) {
-            remove(ref(db, `altajer_expenses/${id}`))
+                    const q = query(collection(db, 'users', currentUid, 'expenses'));
             .then(() => {
                 showToast("تم شطب قيد المصروف وتحديث الحسابات السحابية.", false);
             })

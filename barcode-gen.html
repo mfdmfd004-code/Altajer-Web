@@ -2,23 +2,483 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>الباركود - التاجر برو</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — طباعة ملصقات الباركود</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <style>
+        * { box-sizing:border-box; font-family:'Cairo',sans-serif; }
+        :root {
+            --main-bg:#0f172a; --card-bg:rgba(255,255,255,0.06);
+            --neon:#00b4d8; --green:#2b9348; --red:#d90429; --muted:rgba(255,255,255,0.4);
+        }
+        body { background:linear-gradient(135deg,#0f172a,#1e3a5f); min-height:100vh; color:white; padding:0 0 40px 0; }
+
+        .top-bar {
+            background:rgba(255,255,255,0.05); backdrop-filter:blur(10px);
+            padding:13px 16px; display:flex; align-items:center; gap:12px;
+            border-bottom:1px solid rgba(255,255,255,0.08); position:sticky; top:0; z-index:100;
+        }
+        .top-bar h6 { margin:0; font-size:16px; font-weight:900; color:var(--neon); }
+        .back-btn { color:var(--muted); font-size:18px; text-decoration:none; }
+
+        .page-body { padding:14px 12px; }
+
+        .card-section {
+            background:var(--card-bg); border:1px solid rgba(255,255,255,0.08);
+            border-radius:16px; padding:18px; margin-bottom:14px;
+            backdrop-filter:blur(8px);
+        }
+        .sec-title {
+            font-size:13px; font-weight:800; color:var(--neon);
+            display:flex; align-items:center; gap:7px;
+            margin-bottom:14px; padding-bottom:10px;
+            border-bottom:1px solid rgba(0,180,216,0.15);
+        }
+        .field-lbl { font-size:11px; color:var(--muted); font-weight:600; margin-bottom:4px; display:block; }
+        .field-inp {
+            width:100%; padding:10px 12px; background:rgba(255,255,255,0.07);
+            border:1px solid rgba(255,255,255,0.12); border-radius:8px;
+            color:white; font-size:13px; font-family:'Cairo',sans-serif; box-sizing:border-box;
+        }
+        .field-inp:focus { outline:none; border-color:var(--neon); }
+        select.field-inp { background:#1e3a5f; }
+
+        /* ===== منطقة الملصق ===== */
+        .label-preview {
+            background:white; color:#1a1a2e;
+            border-radius:10px; padding:12px 14px;
+            margin:14px auto; max-width:320px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.3);
+            font-family:'Cairo',sans-serif;
+        }
+        .label-company {
+            font-size:13px; font-weight:900; color:#0077b6;
+            text-align:center; margin-bottom:4px;
+        }
+        .label-product-name {
+            font-size:14px; font-weight:900; text-align:center;
+            color:#1a1a2e; margin-bottom:6px; line-height:1.3;
+        }
+        .label-meta {
+            display:grid; grid-template-columns:1fr 1fr; gap:4px;
+            font-size:10px; color:#555; margin-bottom:8px;
+        }
+        .label-meta-item { display:flex; flex-direction:column; }
+        .label-meta-item .lbl-key { font-size:9px; color:#aaa; }
+        .label-meta-item .lbl-val { font-size:11px; font-weight:700; color:#333; }
+        .label-price-box {
+            background:#0077b6; color:white; border-radius:8px;
+            padding:8px 12px; display:flex; justify-content:space-between;
+            align-items:center; margin-bottom:8px;
+        }
+        .label-price-box .price-unit { font-size:10px; opacity:0.85; }
+        .label-price-box .price-total {
+            font-size:20px; font-weight:900;
+            border:2px solid white; padding:3px 10px; border-radius:6px;
+        }
+        .label-price-box .price-total-label { font-size:9px; text-align:center; display:block; }
+        .barcode-area { text-align:center; }
+        .barcode-area svg { max-width:100%; }
+        .barcode-num { font-size:10px; color:#555; text-align:center; margin-top:2px; font-family:monospace; }
+
+        /* الملصقات المتعددة */
+        .labels-grid {
+            display:grid; grid-template-columns:repeat(2,1fr);
+            gap:10px; margin-top:14px;
+        }
+        .label-mini {
+            background:white; border-radius:8px; padding:8px;
+            font-family:'Cairo',sans-serif; color:#1a1a2e;
+            box-shadow:0 2px 8px rgba(0,0,0,0.2);
+        }
+        .label-mini .mn-name { font-size:10px; font-weight:900; text-align:center; margin-bottom:4px; }
+        .label-mini .mn-price { background:#0077b6; color:white; border-radius:4px; padding:3px 6px; font-size:12px; font-weight:900; text-align:center; margin-bottom:4px; }
+        .label-mini .mn-dates { font-size:8px; color:#666; display:flex; justify-content:space-between; margin-bottom:4px; }
+        .label-mini .mn-weight { font-size:9px; color:#333; text-align:center; margin-bottom:4px; }
+
+        /* أزرار */
+        .btn-print {
+            width:100%; padding:13px; border:none; border-radius:12px;
+            background:linear-gradient(135deg,var(--green),#38b000);
+            color:white; font-size:14px; font-weight:700;
+            font-family:'Cairo',sans-serif; cursor:pointer; margin-bottom:8px;
+        }
+        .btn-gen {
+            width:100%; padding:11px; border:1px solid var(--neon);
+            border-radius:12px; background:transparent; color:var(--neon);
+            font-size:13px; font-weight:700; font-family:'Cairo',sans-serif; cursor:pointer;
+        }
+
+        #toast {
+            position:fixed; top:20px; left:50%; transform:translateX(-50%);
+            padding:11px 22px; border-radius:30px; color:white; font-weight:700;
+            font-size:13px; z-index:9999; display:none; max-width:90%;
+        }
+
+        /* طباعة */
+        @media print {
+            body { background:white !important; padding:0; }
+            .top-bar, .card-section, #printExclude { display:none !important; }
+            .label-preview { box-shadow:none; border:1px solid #ddd; margin:0 auto; }
+            .labels-grid { break-inside:avoid; }
+        }
+    </style>
 </head>
 <body>
-    <div class="card">
-        <h2><i class="fas fa-barcode"></i> توليد باركود المنتجات</h2>
-        <div class="form-group">
-            <select id="p-select" class="form-control">
-                <!-- تسحب المنتجات من Firebase هنا -->
-            </select>
+
+<div id="toast"></div>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i></a>
+    <h6><i class="fas fa-barcode"></i> طباعة ملصقات الباركود</h6>
+</div>
+
+<div class="page-body">
+
+    <!-- اختيار المنتج -->
+    <div class="card-section" id="printExclude">
+        <div class="sec-title"><i class="fas fa-search"></i> اختر المنتج</div>
+
+        <label class="field-lbl">البحث أو اختيار المنتج</label>
+        <input type="text" id="productSearch" class="field-inp"
+            placeholder="ابحث بالاسم أو الباركود..."
+            oninput="searchProducts(this.value)" style="margin-bottom:8px;">
+        <select id="productSelect" class="field-inp" onchange="onProductSelect()">
+            <option value="">-- اختر المنتج --</option>
+        </select>
+
+        <div class="row g-2 mt-2">
+            <div class="col-6">
+                <label class="field-lbl">الوزن الصافي (كيلو)</label>
+                <input type="number" id="netWeight" class="field-inp"
+                    step="0.001" min="0" placeholder="مثال: 0.810"
+                    oninput="updateLabel()">
+            </div>
+            <div class="col-6">
+                <label class="field-lbl">سعر الكيلو (ر.س)</label>
+                <input type="number" id="pricePerKg" class="field-inp"
+                    step="0.01" min="0" placeholder="مثال: 8.00"
+                    oninput="calcTotalAndUpdate()">
+            </div>
+            <div class="col-6">
+                <label class="field-lbl">تاريخ التعبئة</label>
+                <input type="date" id="packedDate" class="field-inp" oninput="updateLabel()">
+            </div>
+            <div class="col-6">
+                <label class="field-lbl">تاريخ الصلاحية</label>
+<input type="date" id="validDate" class="field-inp" oninput="updateLabel()">
+            </div>
+            <div class="col-12">
+                <label class="field-lbl">عدد الملصقات للطباعة</label>
+                <select id="labelCount" class="field-inp" onchange="buildLabelsGrid()">
+                    <option value="1">ملصق واحد</option>
+                    <option value="2">2 ملصقات</option>
+                    <option value="4" selected>4 ملصقات</option>
+                    <option value="6">6 ملصقات</option>
+                    <option value="8">8 ملصقات</option>
+                    <option value="12">12 ملصق</option>
+                </select>
+            </div>
         </div>
-        <div style="text-align:center; background:white; padding:20px;">
-            <svg id="barcode-output"></svg>
-        </div>
-        <button class="btn-main" onclick="window.print()">طباعة الملصق</button>
     </div>
-    <script type="module" src="app.js"></script>
+
+    <!-- معاينة الملصق الكبير -->
+    <div class="card-section" id="printExclude2" style="padding-bottom:6px;">
+        <div class="sec-title"><i class="fas fa-eye"></i> معاينة الملصق</div>
+    </div>
+
+    <div id="labelPreviewArea">
+        <div class="label-preview" id="mainLabel">
+            <div class="label-company" id="lblCompany">تاجر برو</div>
+            <div class="label-product-name" id="lblName">اسم المنتج</div>
+            <div class="label-meta">
+                <div class="label-meta-item">
+                    <span class="lbl-key">Net Wt</span>
+                    <span class="lbl-val" id="lblNetWt">— kg</span>
+                </div>
+                <div class="label-meta-item">
+                    <span class="lbl-key">Unit Price</span>
+                    <span class="lbl-val" id="lblUnitPrice">— SAR/kg</span>
+                </div>
+                <div class="label-meta-item">
+                    <span class="lbl-key">Packed Date</span>
+                    <span class="lbl-val" id="lblPackedDate">—</span>
+                </div>
+                <div class="label-meta-item">
+                    <span class="lbl-key">Valid Date</span>
+                    <span class="lbl-val" id="lblValidDate">—</span>
+                </div>
+            </div>
+            <div class="label-price-box">
+                <div>
+                    <div class="price-unit" id="lblPriceUnit">— SAR/kg</div>
+                    <div style="font-size:10px;opacity:0.7;">Uint Price</div>
+                </div>
+                <div style="text-align:center;">
+                    <div class="price-total" id="lblTotalPrice">0.00</div>
+                    <span class="price-total-label">TOTAL PRICE</span>
+                </div>
+            </div>
+            <div class="barcode-area">
+                <svg id="barcodeOutput"></svg>
+                <div class="barcode-num" id="lblBarcodeNum"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- شبكة الملصقات للطباعة -->
+    <div id="labelsGrid" class="labels-grid" style="display:none;"></div>
+
+    <!-- أزرار -->
+    <div id="printExclude3" style="padding:0 0 10px 0;">
+        <button class="btn-print" onclick="printLabels()">
+            <i class="fas fa-print"></i> طباعة الملصقات
+        </button>
+        <button class="btn-gen" onclick="regenerateBarcode()">
+            <i class="fas fa-sync"></i> توليد باركود جديد
+        </button>
+    </div>
+
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module">
+import { db } from './firebase-config.js';
+import { collection, onSnapshot, doc, setDoc }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getAuth, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+let uid = null;
+let allProducts = [];
+let currentProduct = null;
+
+const auth = getAuth();
+onAuthStateChanged(auth, user => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    uid = user.uid;
+    applyTheme();
+    loadCompanyName();
+    listenProducts();
+    setDefaultDates();
+});
+
+function applyTheme() {
+    const t = localStorage.getItem('altajer_preferred_theme') || 'winter';
+    // ثيم الباركود دائماً داكن لأن الملصق يحتاج خلفية بيضاء
+}
+
+function loadCompanyName() {
+    const S = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
+    const name = S.companyName || 'تاجر برو';
+    document.getElementById('lblCompany').innerText = name;
+}
+
+function setDefaultDates() {
+    const today = new Date();
+    const valid = new Date(today);
+    valid.setMonth(today.getMonth() + 4); // صلاحية 4 أشهر افتراضية
+
+    document.getElementById('packedDate').value = today.toISOString().split('T')[0];
+    document.getElementById('validDate').value  = valid.toISOString().split('T')[0];
+    updateLabel();
+}
+
+function listenProducts() {
+    onSnapshot(collection(db, 'users', uid, 'products'), snap => {
+        allProducts = [];
+        snap.forEach(d => allProducts.push({ id:d.id, ...d.data() }));
+        allProducts.sort((a,b) => (a.name||'').localeCompare(b.name||''));
+        populateSelect(allProducts);
+    });
+}
+
+function populateSelect(list) {
+    const sel = document.getElementById('productSelect');
+    const currentVal = sel.value;
+    sel.innerHTML = '<option value="">-- اختر المنتج --</option>';
+    list.forEach(p => {
+        sel.innerHTML += `<option value="${p.id}"
+            data-price="${p.priceExcl || p.price || 0}"
+            data-barcode="${p.barcode || p.code || p.id}">
+            ${p.name}${p.type ? ' — ' + p.type : ''}
+        </option>`;
+    });
+    if (currentVal) sel.value = currentVal;
+}
+
+// ===== بحث =====
+window.searchProducts = function(q) {
+    if (!q.trim()) { populateSelect(allProducts); return; }
+    const lower = q.toLowerCase();
+    const filtered = allProducts.filter(p =>
+        (p.name||'').toLowerCase().includes(lower) ||
+        (p.barcode||'').includes(q) ||
+        (p.code||'').includes(q)
+    );
+    populateSelect(filtered);
+};
+
+// ===== اختيار منتج =====
+window.onProductSelect = function() {
+    const sel = document.getElementById('productSelect');
+    const opt = sel.selectedOptions[0];
+    if (!sel.value) return;
+
+    currentProduct = allProducts.find(p => p.id === sel.value);
+    if (!currentProduct) return;
+
+    // تعبئة الحقول
+    const pricePerKg = parseFloat(opt.dataset.price) || 0;
+    document.getElementById('pricePerKg').value    = pricePerKg;
+    document.getElementById('lblBarcodeNum').innerText = opt.dataset.barcode;
+
+    updateLabel();
+    showToast('✅ تم تحميل: ' + currentProduct.name);
+};
+
+// ===== تحديث الملصق =====
+window.updateLabel = function() {
+    const name      = currentProduct?.name || 'اسم المنتج';
+    const barcode   = currentProduct?.barcode || currentProduct?.code || currentProduct?.id || '6280000000000';
+    const netWt     = parseFloat(document.getElementById('netWeight').value) || 0;
+    const unitPrice = parseFloat(document.getElementById('pricePerKg').value) || 0;
+    const packed    = document.getElementById('packedDate').value;
+    const valid     = document.getElementById('validDate').value;
+    const total     = (netWt * unitPrice).toFixed(2);
+
+    // تحويل التاريخ لصيغة DD-MM-YY
+    const fmtDate = (d) => {
+        if (!d) return '—';
+        const parts = d.split('-');
+        return `${parts[2]}-${parts[1]}-${parts[0].slice(2)}`;
+    };
+
+    document.getElementById('lblName').innerText      = name;
+    document.getElementById('lblNetWt').innerText     = netWt > 0 ? netWt.toFixed(3) + 'kg' : '— kg';
+    document.getElementById('lblUnitPrice').innerText = unitPrice > 0 ? unitPrice.toFixed(2) + ' SAR/kg' : '— SAR/kg';
+    document.getElementById('lblPriceUnit').innerText = unitPrice > 0 ? unitPrice.toFixed(2) + ' SAR/kg' : '— SAR/kg';
+    document.getElementById('lblPackedDate').innerText = fmtDate(packed);
+    document.getElementById('lblValidDate').innerText  = fmtDate(valid);
+    document.getElementById('lblTotalPrice').innerText = total;
+    document.getElementById('lblBarcodeNum').innerText = barcode;
+
+    // رسم الباركود
+    try {
+        JsBarcode('#barcodeOutput', barcode, {
+            format:      'CODE128',
+            width:       2,
+            height:      50,
+            displayValue: false,
+            margin:      4,
+            background:  '#ffffff',
+            lineColor:   '#000000'
+        });
+    } catch(e) {
+        console.warn('Barcode error:', e);
+    }
+
+    buildLabelsGrid();
+};
+
+window.calcTotalAndUpdate = updateLabel;
+
+// ===== بناء شبكة الملصقات =====
+window.buildLabelsGrid = function() {
+    const count = parseInt(document.getElementById('labelCount').value) || 4;
+    if (!currentProduct) return;
+
+    const name      = currentProduct.name || '';
+    const barcode   = currentProduct.barcode || currentProduct.code || currentProduct.id || '';
+    const netWt     = parseFloat(document.getElementById('netWeight').value) || 0;
+    const unitPrice = parseFloat(document.getElementById('pricePerKg').value) || 0;
+    const packed    = document.getElementById('packedDate').value;
+    const valid     = document.getElementById('validDate').value;
+    const total     = (netWt * unitPrice).toFixed(2);
+    const S         = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
+    const company   = S.companyName || 'تاجر برو';
+
+    const fmtDate = (d) => {
+        if (!d) return '—';
+        const p = d.split('-');
+        return `${p[2]}-${p[1]}-${p[0].slice(2)}`;
+    };
+
+    const grid = document.getElementById('labelsGrid');
+    grid.style.display = count > 1 ? 'grid' : 'none';
+    if (count <= 1) return;
+
+    grid.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const svgId = `bc-mini-${i}`;
+        grid.innerHTML += `
+        <div class="label-mini" id="lbl-mini-${i}">
+            <div style="font-size:9px;font-weight:900;color:#0077b6;text-align:center;margin-bottom:2px;">${company}</div>
+            <div class="mn-name">${name}</div>
+            <div class="mn-dates">
+                <span>Pack: ${fmtDate(packed)}</span>
+                <span>Valid: ${fmtDate(valid)}</span>
+            </div>
+            <div class="mn-weight">${netWt>0?netWt.toFixed(3)+'kg':''} ${unitPrice>0?'| '+unitPrice.toFixed(2)+' SAR/kg':''}</div>
+            <div class="mn-price">${total} SAR — TOTAL PRICE</div>
+            <div style="text-align:center;">
+                <svg id="${svgId}"></svg>
+                <div style="font-size:8px;color:#555;font-family:monospace;">${barcode}</div>
+            </div>
+        </div>`;
+    }
+
+    // رسم الباركود لكل ملصق
+    setTimeout(() => {
+        for (let i = 0; i < count; i++) {
+            try {
+                JsBarcode(`#bc-mini-${i}`, barcode, {
+                    format:'CODE128', width:1.5, height:35,
+                    displayValue:false, margin:2,
+                    background:'#ffffff', lineColor:'#000000'
+                });
+            } catch(e) {}
+        }
+    }, 100);
+};
+
+// ===== طباعة =====
+window.printLabels = function() {
+    if (!currentProduct) {
+        showToast('❌ اختر منتجاً أولاً', '#d90429');
+        return;
+    }
+    window.print();
+};
+
+// ===== توليد باركود جديد =====
+window.regenerateBarcode = async function() {
+    if (!currentProduct || !uid) return;
+    const newBarcode = '628' + Math.floor(100000 + Math.random() * 900000);
+    currentProduct.barcode = newBarcode;
+    // حفظ في Firebase
+    try {
+        await setDoc(
+            doc(db, 'users', uid, 'products', currentProduct.id),
+            { barcode: newBarcode, code: newBarcode },
+            { merge: true }
+        );
+        showToast('✅ تم توليد باركود جديد: ' + newBarcode);
+        updateLabel();
+    } catch(e) {
+        showToast('❌ خطأ: ' + e.message, '#d90429');
+    }
+};
+
+function showToast(msg, color = '#2b9348') {
+    const t = document.getElementById('toast');
+    t.innerText = msg; t.style.backgroundColor = color;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+</script>
 </body>
 </html>

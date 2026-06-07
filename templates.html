@@ -921,6 +921,8 @@ window.printQuote = function() {
     const clientName   = clientSel.selectedOptions[0]?.text || 'عميل مباشر';
     const S            = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
     const issuedBy     = document.getElementById('qIssuedBy').value || S.companyName || 'تاجر برو';
+    const savedLogo  = localStorage.getItem('altajer_logo')  || '';
+    const savedStamp = localStorage.getItem('altajer_stamp') || '';
     const date         = document.getElementById('qDate').value;
     const validUntil   = document.getElementById('qValidUntil').value;
     const ref          = document.getElementById('qRef').value;
@@ -987,7 +989,8 @@ window.printQuote = function() {
     <body>
         <div class="header">
             <div>
-                <div class="company-name">${issuedBy}</div>
+                ${savedLogo ? `<img src="${savedLogo}" style="max-height:60px;max-width:180px;object-fit:contain;margin-bottom:6px;display:block;">` : ''}
+<div class="company-name">${issuedBy}</div>
                 <div class="company-info">${S.vatNumber ? 'الرقم الضريبي: ' + S.vatNumber : ''}</div>
                 <div class="company-info">${S.phone || ''}</div>
             </div>
@@ -1041,14 +1044,16 @@ window.printQuote = function() {
         ${notes ? `<div class="notes-section"><div class="notes-title">ملاحظات:</div>${notes}</div>` : ''}
         ${terms ? `<div class="notes-section"><div class="notes-title">الشروط والأحكام:</div>${terms}</div>` : ''}
 
-        <div class="signature-section">
-            <div class="sig-box">توقيع المورد</div>
-            <div class="sig-box">توقيع العميل وختمه</div>
-        </div>
+                    <div class="signature-section">
+                <div class="sig-box">توقيع المورد</div>
+                <div class="sig-box">توقيع العميل والختم</div>
+            </div>
+            
+            ${savedStamp ? `<div style="text-align:left; margin-top:10px; padding-left:20px;"><img src="${savedStamp}" style="max-height:70px; max-width:150px; object-fit:contain; opacity:0.85;"></div>` : ''}
 
-        <div class="footer">
-            ${issuedBy} — تم الإنشاء بواسطة تاجر برو المحاسبي — ${new Date().toLocaleDateString('ar-SA')}
-        </div>
+            <div class="footer">
+                <p>${issuedBy} - تم الإنشاء بواسطة تاجر برو المحاسبي (${new Date().toLocaleDateString('ar-SA')})</p>
+            </div>
         <script>window.onload=function(){window.print();}<\/script>
     </body>
     </html>`);

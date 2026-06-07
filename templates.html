@@ -326,8 +326,8 @@
                     </table>
                     <div class="total-row" style="color:#d90429;font-weight:900;margin-top:4px;"><span>الإجمالي:</span><span>-115.00</span></div>
                 </div>
-                <button class="use-btn" style="background:#d90429;" onclick="event.stopPropagation();showToastTpl('قريباً: إشعار دائن','#d90429')">
-                    <i class="fas fa-pen"></i> استخدم
+                <button class="use-btn" style="background:#d90429;" onclick="event.stopPropagation();showCreateCreditNote()">
+    <i class="fas fa-pen"></i> استخدم
                 </button>
             </div>
             <div class="template-info">
@@ -335,7 +335,7 @@
                     <div class="template-name">إشعار دائن — Credit Note</div>
                     <small style="color:var(--text-muted);font-size:11px;">إشعارات المرتجعات</small>
                 </div>
-                <span class="template-badge" style="background:#ffb703;color:#333;">قريباً</span>
+                <span class="template-badge" style="background:#ffb703;color:#333;">متاح ✓</span>
             </div>
         </div>
 
@@ -351,16 +351,16 @@
                     </table>
                     <div style="margin-top:6px;font-size:6px;color:#2b9348;font-weight:700;">✓ تم التسليم بنجاح</div>
                 </div>
-                <button class="use-btn" style="background:#ffb703;color:#333;" onclick="event.stopPropagation();showToastTpl('قريباً: إشعار تسليم','#ffb703')">
-                    <i class="fas fa-pen"></i> استخدم
-                </button>
+                <button class="use-btn" style="background:#ffb703;color:#333;" onclick="event.stopPropagation();showCreateDelivery()">
+    <i class="fas fa-pen"></i> استخدم
+</button>
             </div>
             <div class="template-info">
                 <div>
                     <div class="template-name">إشعار تسليم — Delivery Note</div>
                     <small style="color:var(--text-muted);font-size:11px;">مستندات التسليم</small>
                 </div>
-                <span class="template-badge" style="background:#ffb703;color:#333;">قريباً</span>
+                <span class="template-badge" style="background:#d90429;">متاح ✓</span>
             </div>
         </div>
 
@@ -631,21 +631,125 @@ window.addQuoteItem = function(name = '', qty = 1, price = 0, disc = 0) {
     const row = document.createElement('tr');
     row.id = `qrow-${idx}`;
     row.innerHTML = `
-        <td>
-            <input type="text" placeholder="الوصف أو ابحث..." value="${name}"
-                oninput="updateItem(${idx},'name',this.value);searchProduct(${idx},this.value)"
-                list="prodList-${idx}" style="min-width:130px;">
-            <datalist id="prodList-${idx}"></datalist>
+        <td style="position:relative;min-width:160px;">
+            <input type="text"
+                id="qname-${idx}"
+                placeholder="اكتب اسم المنتج أو الباركود..."
+                value="${name}"
+                autocomplete="off"
+                oninput="liveSearchProduct(${idx}, this.value)"
+                onfocus="showDropdown(${idx})"
+                style="width:100%;padding:6px 8px;background:transparent;
+                border:1px solid var(--text-muted);border-radius:6px;
+                color:var(--text-white);font-size:12px;font-family:'Cairo',sans-serif;
+                box-sizing:border-box;">
+            <div id="qdrop-${idx}"
+                style="display:none;position:absolute;top:100%;right:0;left:0;
+                background:var(--card-bg);border:1px solid var(--neon-cyan);
+                border-radius:8px;z-index:500;max-height:180px;overflow-y:auto;
+                box-shadow:0 8px 20px rgba(0,0,0,0.15);">
+            </div>
         </td>
-        <td><input type="number" min="1" value="${qty}" oninput="updateItem(${idx},'qty',this.value);recalcRow(${idx})" style="width:60px;"></td>
-        <td><input type="number" min="0" step="0.01" value="${price}" oninput="updateItem(${idx},'price',this.value);recalcRow(${idx})" style="width:80px;"></td>
-        <td><input type="number" min="0" max="100" value="${disc}" oninput="updateItem(${idx},'disc',this.value);recalcRow(${idx})" style="width:55px;"></td>
-        <td id="qrow-total-${idx}" style="font-weight:700;color:var(--light-green);">0.00</td>
-        <td><button class="btn-del-item" onclick="removeItem(${idx})"><i class="fas fa-times"></i></button></td>`;
+        <td><input type="number" id="qqty-${idx}" min="1" value="${qty}"
+            oninput="updateItem(${idx},'qty',this.value);recalcRow(${idx})"
+            style="width:55px;padding:5px;background:transparent;border:1px solid var(--text-muted);border-radius:6px;color:var(--text-white);text-align:center;"></td>
+        <td><input type="number" id="qprice-${idx}" min="0" step="0.01" value="${price || ''}"
+            placeholder="0.00"
+            oninput="updateItem(${idx},'price',this.value);recalcRow(${idx})"
+            style="width:80px;padding:5px;background:transparent;border:1px solid var(--text-muted);border-radius:6px;color:var(--text-white);text-align:center;"></td>
+        <td><input type="number" id="qdisc-${idx}" min="0" max="100" value="${disc}"
+            oninput="updateItem(${idx},'disc',this.value);recalcRow(${idx})"
+            style="width:50px;padding:5px;background:transparent;border:1px solid var(--text-muted);border-radius:6px;color:var(--text-white);text-align:center;"></td>
+        <td id="qrow-total-${idx}" style="font-weight:700;color:var(--light-green);font-size:12px;">0.00</td>
+        <td><button class="btn-del-item" onclick="removeItem(${idx})">
+            <i class="fas fa-times"></i></button></td>`;
     tbody.appendChild(row);
-    recalcRow(idx);
+    if (name) recalcRow(idx);
 };
 
+// ===== بحث فوري مع Dropdown =====
+window.liveSearchProduct = function(idx, query) {
+    updateItem(idx, 'name', query);
+    const drop = document.getElementById(`qdrop-${idx}`);
+    if (!drop) return;
+
+    if (!query || query.trim().length === 0) {
+        drop.style.display = 'none';
+        return;
+    }
+
+    const q = query.trim().toLowerCase();
+    const matches = allProducts.filter(p =>
+        (p.name    || '').toLowerCase().includes(q) ||
+        (p.barcode || '').toLowerCase().includes(q) ||
+        (p.code    || '').toLowerCase().includes(q) ||
+        (p.type    || '').toLowerCase().includes(q)
+    ).slice(0, 10);
+
+    if (matches.length === 0) {
+        drop.innerHTML = `<div style="padding:10px 12px;font-size:12px;color:var(--text-muted);text-align:center;">
+            لا توجد نتائج — سيُضاف كبند يدوي</div>`;
+        drop.style.display = 'block';
+        return;
+    }
+
+    drop.innerHTML = matches.map(p => {
+        const priceInc = parseFloat(p.price || p.priceInc || 0).toFixed(2);
+        const qty      = p.qty ?? p.quantity ?? 0;
+        const qtyColor = qty === 0 ? '#d90429' : qty <= 5 ? '#ffb703' : '#2b9348';
+        return `<div onclick="selectProduct(${idx}, '${(p.name||'').replace(/'/g,"\\'")}', ${priceInc}, '${p.barcode||p.code||''}')"
+            style="padding:10px 12px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,0.05);
+            transition:0.15s;display:flex;justify-content:space-between;align-items:center;"
+            onmouseover="this.style.background='rgba(0,119,182,0.08)'"
+            onmouseout="this.style.background='transparent'">
+            <div>
+                <div style="font-size:13px;font-weight:700;color:var(--text-white);">${p.name}</div>
+                <div style="font-size:10px;color:var(--text-muted);">
+                    ${p.barcode ? '🔢 ' + p.barcode : ''}
+                    ${p.type ? ' | ' + p.type : ''}
+                </div>
+            </div>
+            <div style="text-align:left;">
+                <div style="font-size:13px;font-weight:700;color:#0077b6;">${priceInc} ر.س</div>
+                <div style="font-size:10px;color:${qtyColor};">متوفر: ${qty}</div>
+            </div>
+        </div>`;
+    }).join('');
+
+    drop.style.display = 'block';
+};
+
+window.selectProduct = function(idx, name, price, barcode) {
+    // تعبئة الحقول
+    const nameInput  = document.getElementById(`qname-${idx}`);
+    const priceInput = document.getElementById(`qprice-${idx}`);
+    if (nameInput)  nameInput.value  = name;
+    if (priceInput) priceInput.value = price;
+
+    quoteItems[idx].name  = name;
+    quoteItems[idx].price = price;
+
+    // إخفاء الـ Dropdown
+    const drop = document.getElementById(`qdrop-${idx}`);
+    if (drop) drop.style.display = 'none';
+
+    recalcRow(idx);
+    showToastTpl(`✅ تم إضافة: ${name}`, '#2b9348');
+};
+
+window.showDropdown = function(idx) {
+    const input = document.getElementById(`qname-${idx}`);
+    if (input && input.value.trim()) {
+        liveSearchProduct(idx, input.value);
+    }
+};
+
+// إغلاق الـ Dropdown عند الضغط خارجه
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('[id^="qdrop-"]') && !e.target.closest('[id^="qname-"]')) {
+        document.querySelectorAll('[id^="qdrop-"]').forEach(d => d.style.display = 'none');
+    }
+});
 window.searchProduct = function(idx, query) {
     if (!query) return;
     const datalist = document.getElementById(`prodList-${idx}`);
@@ -969,7 +1073,29 @@ window.printSavedQuote = function(id) {
 window.convertToInvoice = function(id) {
     showToastTpl('سيتم تطوير هذه الميزة قريباً 🔧', '#ffb703');
 };
+// ===== إشعار دائن =====
+window.showCreateCreditNote = function() {
+    document.getElementById('tab-all').style.display    = 'none';
+    document.querySelector('.btn-create').style.display = 'none';
+    document.getElementById('createForm').style.display = 'block';
+    // تغيير العنوان
+    document.querySelector('.form-section-title span') &&
+        (document.querySelector('#createForm .form-section-title').innerHTML =
+        '<i class="fas fa-minus-circle" style="color:#d90429;"></i> إشعار دائن — Credit Note');
+    document.getElementById('quoteNumber').innerText = `CN-${String(quoteCounter).padStart(6,'0')}`;
+    window.scrollTo(0,0);
+    showToastTpl('إشعار دائن: أضف المنتجات المرتجعة', '#d90429');
+};
 
+// ===== إشعار تسليم =====
+window.showCreateDelivery = function() {
+    document.getElementById('tab-all').style.display    = 'none';
+    document.querySelector('.btn-create').style.display = 'none';
+    document.getElementById('createForm').style.display = 'block';
+    document.getElementById('quoteNumber').innerText = `DN-${String(quoteCounter).padStart(6,'0')}`;
+    window.scrollTo(0,0);
+    showToastTpl('إشعار تسليم: أضف المنتجات المسلّمة', '#ffb703');
+};
 </script>
 </body>
 </html>

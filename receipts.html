@@ -367,7 +367,7 @@
 
     // دالة المزامنة لجلب السندات حياً وتحديث حركة الخزينة
     function syncReceiptsFromFirebase() {
-        const receiptsRef = ref(db, 'altajer_receipts');
+        const receiptsRef = ref(db, `users/${currentUid}/receipts`);
         onValue(receiptsRef, (snapshot) => {
             const data = snapshot.val();
             const receiptsList = [];
@@ -443,7 +443,7 @@
         };
 
         // حفظ وتأمين السند في فرع الحسابات الرئيسي بالسحابة
-        set(ref(db, `altajer_receipts/${payload.id}`), payload)
+        set(ref(db, `users/${currentUid}/receipts/${payload.id}`), payload)
         .then(() => {
             showToast(`تم ترحيل سند الـ ${payload.type} بنجاح إلى قاعدة البيانات السحابية.`);
             document.getElementById('receiptForm').reset();
@@ -457,7 +457,7 @@
     // حذف وإلغاء ترحيل السند المالي من السحابة
     function deleteReceipt(id) {
         if (confirm("تحذير محاسبي: هل أنت متأكد من رغبتك في حذف هذا السند نهائياً؟ سيؤثر هذا على إجمالي تقارير الخزينة.")) {
-            remove(ref(db, `altajer_receipts/${id}`))
+            remove(ref(db, `users/${currentUid}/receipts/${id}`))
             .then(() => {
                 showToast("تم إلغاء السند وتحديث الخزينة سحابياً.", false);
             })

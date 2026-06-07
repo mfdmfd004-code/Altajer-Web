@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — القوالب</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing:border-box; font-family:'Cairo',sans-serif; }
+        :root {
+            --main-bg:#f4f7f6; --card-bg:#ffffff; --neon-cyan:#0077b6;
+            --light-green:#2b9348; --danger-red:#d90429;
+            --text-white:#222; --text-muted:#666;
+        }
+        [data-theme="classic"]{ --main-bg:#1a1a2e; --card-bg:#16213e; --neon-cyan:#e94560; --text-white:#fff; --text-muted:#aaa; }
+        [data-theme="emerald"]{ --main-bg:#0b1d12; --card-bg:#143622; --neon-cyan:#52b788; --text-white:#f7fff7; --text-muted:#aaa; }
+        [data-theme="sunset"] { --main-bg:#2b1b17; --card-bg:#3e2723; --neon-cyan:#ffb74d; --text-white:#fff3e0; --text-muted:#bbb; }
+        [data-theme="luxury"] { --main-bg:#121212; --card-bg:#1a1a1a; --neon-cyan:#b392ac; --text-white:#e0e0e0; --text-muted:#999; }
+
+        body { background:var(--main-bg); color:var(--text-white); margin:0; padding-bottom:40px; }
+
+        .top-bar {
+            background:var(--card-bg); padding:13px 16px;
+            box-shadow:0 2px 12px rgba(0,0,0,0.08);
+            position:sticky; top:0; z-index:200;
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .top-bar-title { font-size:17px; font-weight:900; color:var(--neon-cyan); margin:0; display:flex; align-items:center; gap:8px; }
+        .back-btn { color:var(--text-muted); font-size:20px; text-decoration:none; }
+
+        /* تبويبات */
+        .tabs-bar {
+            background:var(--card-bg); border-bottom:1px solid rgba(0,0,0,0.06);
+            display:flex; overflow-x:auto; gap:0; padding:0 10px;
+            position:sticky; top:53px; z-index:100;
+        }
+        .tabs-bar::-webkit-scrollbar { display:none; }
+        .tab-item {
+            padding:11px 14px; font-size:12px; font-weight:700;
+            color:var(--text-muted); cursor:pointer; white-space:nowrap;
+            border-bottom:2px solid transparent; transition:0.2s;
+        }
+        .tab-item.active { color:var(--neon-cyan); border-bottom-color:var(--neon-cyan); }
+
+        .page-content { padding:16px 12px; }
+
+        /* زر إنشاء جديد */
+        .btn-create {
+            background:linear-gradient(135deg,var(--neon-cyan),#00b4d8);
+            color:white; border:none; border-radius:12px;
+            padding:12px 20px; font-size:13px; font-weight:700;
+            font-family:'Cairo',sans-serif; cursor:pointer;
+            display:flex; align-items:center; gap:8px;
+            box-shadow:0 4px 15px rgba(0,119,182,0.3);
+            width:100%; justify-content:center; margin-bottom:16px;
+        }
+
+        /* بطاقة القالب */
+        .template-card {
+            background:var(--card-bg); border-radius:14px;
+            border:1px solid rgba(0,0,0,0.06);
+            box-shadow:0 3px 10px rgba(0,0,0,0.05);
+            margin-bottom:14px; overflow:hidden;
+        }
+        .template-preview {
+            background:linear-gradient(135deg,#f8f9fa,#e9ecef);
+            padding:16px; min-height:120px;
+            display:flex; align-items:center; justify-content:center;
+            position:relative; cursor:pointer;
+        }
+        .preview-mini {
+            background:white; border-radius:6px; padding:10px;
+            width:160px; box-shadow:0 2px 8px rgba(0,0,0,0.1);
+            font-size:7px; color:#333; line-height:1.4;
+        }
+        .preview-mini .co-name { font-size:9px; font-weight:900; color:#0077b6; margin-bottom:4px; }
+        .preview-mini .doc-title { font-size:11px; font-weight:900; text-align:center; color:#333; margin-bottom:6px; }
+        .preview-mini table { width:100%; border-collapse:collapse; }
+        .preview-mini th { background:#0077b6; color:white; padding:2px 3px; font-size:6px; }
+        .preview-mini td { border:1px solid #eee; padding:2px 3px; font-size:6px; }
+        .preview-mini .total-row { display:flex; justify-content:space-between; margin-top:4px; font-size:7px; font-weight:700; }
+        .use-btn {
+            position:absolute; bottom:10px; right:10px;
+            background:var(--neon-cyan); color:white; border:none;
+            border-radius:8px; padding:5px 12px; font-size:11px;
+            font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif;
+        }
+        .template-info {
+            padding:12px 14px; display:flex;
+            align-items:center; justify-content:space-between;
+        }
+        .template-name { font-size:14px; font-weight:800; color:var(--text-white); }
+        .template-badge {
+            font-size:10px; padding:3px 10px; border-radius:8px;
+            color:white; font-weight:700;
+        }
+
+        /* نموذج عرض السعر */
+        .form-section {
+            background:var(--card-bg); border-radius:14px;
+            border:1px solid rgba(0,0,0,0.06); padding:16px;
+            margin-bottom:14px;
+        }
+        .form-section-title {
+            font-size:13px; font-weight:800; color:var(--neon-cyan);
+            display:flex; align-items:center; gap:7px;
+            margin-bottom:14px; padding-bottom:10px;
+            border-bottom:1px solid rgba(0,0,0,0.06);
+        }
+        .field-lbl { font-size:11px; color:var(--neon-cyan); font-weight:700; margin-bottom:4px; display:block; }
+        .field-inp {
+            width:100%; padding:10px 12px; background:transparent;
+            border:1px solid var(--text-muted); border-radius:8px;
+            color:var(--text-white); font-size:13px;
+            font-family:'Cairo',sans-serif; box-sizing:border-box; transition:0.2s;
+        }
+        .field-inp:focus { outline:none; border-color:var(--neon-cyan); }
+        select.field-inp { background:var(--card-bg); }
+
+        /* جدول البنود */
+        .items-table { width:100%; border-collapse:collapse; margin-top:10px; }
+        .items-table th {
+            background:var(--neon-cyan); color:white;
+            padding:8px 6px; font-size:11px; text-align:center;
+        }
+        .items-table td {
+            border:1px solid rgba(0,0,0,0.08); padding:6px;
+            font-size:12px; text-align:center; color:var(--text-white);
+        }
+        .items-table input {
+            background:transparent; border:none; color:var(--text-white);
+            font-size:12px; font-family:'Cairo',sans-serif;
+            width:100%; text-align:center; outline:none;
+        }
+        .btn-add-item {
+            background:rgba(0,119,182,0.1); color:var(--neon-cyan);
+            border:1px dashed var(--neon-cyan); border-radius:8px;
+            padding:9px; font-size:12px; font-weight:700;
+            font-family:'Cairo',sans-serif; cursor:pointer; width:100%;
+            margin-top:10px;
+        }
+        .btn-del-item {
+            background:rgba(217,4,41,0.1); color:var(--danger-red);
+            border:none; border-radius:4px; padding:3px 7px;
+            font-size:11px; cursor:pointer;
+        }
+
+        /* الإجماليات */
+        .totals-box {
+            background:rgba(0,119,182,0.06); border-radius:10px;
+            padding:14px; margin-top:12px;
+        }
+        .total-row {
+            display:flex; justify-content:space-between;
+            padding:5px 0; font-size:13px;
+        }
+        .total-row.grand {
+            border-top:2px solid rgba(0,119,182,0.2);
+            margin-top:6px; padding-top:8px;
+            font-weight:900; font-size:15px; color:var(--neon-cyan);
+        }
+
+        /* أزرار الإجراءات */
+        .action-btns { display:flex; gap:10px; margin-top:14px; }
+        .btn-save-quote {
+            flex:2; padding:13px; border:none; border-radius:12px;
+            background:linear-gradient(135deg,var(--light-green),#38b000);
+            color:white; font-size:14px; font-weight:700;
+            font-family:'Cairo',sans-serif; cursor:pointer;
+        }
+        .btn-print-quote {
+            flex:1; padding:13px; border:1px solid var(--neon-cyan);
+            border-radius:12px; background:transparent; color:var(--neon-cyan);
+            font-size:13px; font-weight:700; font-family:'Cairo',sans-serif; cursor:pointer;
+        }
+        .btn-pdf-quote {
+            flex:1; padding:13px; border:1px solid var(--danger-red);
+            border-radius:12px; background:transparent; color:var(--danger-red);
+            font-size:13px; font-weight:700; font-family:'Cairo',sans-serif; cursor:pointer;
+        }
+
+        /* صفحات العروض المحفوظة */
+        .quote-card {
+            background:var(--card-bg); border-radius:12px;
+            border:1px solid rgba(0,0,0,0.06); padding:14px;
+            margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04);
+        }
+        .quote-num { font-size:12px; color:var(--neon-cyan); font-family:monospace; }
+        .quote-client { font-size:14px; font-weight:800; }
+        .quote-date { font-size:11px; color:var(--text-muted); }
+        .quote-total { font-size:16px; font-weight:900; color:var(--light-green); }
+        .status-badge {
+            font-size:10px; padding:3px 10px; border-radius:8px;
+            color:white; font-weight:700; display:inline-block;
+        }
+
+        #toastTpl {
+            position:fixed; top:20px; left:50%; transform:translateX(-50%);
+            padding:11px 22px; border-radius:30px; color:white; font-weight:700;
+            font-size:13px; z-index:9999; display:none; max-width:90%; text-align:center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="toastTpl"></div>
+
+<!-- شريط العنوان -->
+<div class="top-bar">
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i></a>
+    <h1 class="top-bar-title"><i class="fas fa-layer-group"></i> القوالب والمستندات</h1>
+    <div style="width:30px;"></div>
+</div>
+
+<!-- تبويبات -->
+<div class="tabs-bar">
+    <div class="tab-item active" onclick="switchTab('all')">الكل</div>
+    <div class="tab-item" onclick="switchTab('quote')">عرض سعر</div>
+    <div class="tab-item" onclick="switchTab('invoice')">فاتورة</div>
+    <div class="tab-item" onclick="switchTab('purchase')">أمر شراء</div>
+    <div class="tab-item" onclick="switchTab('credit')">إشعار دائن</div>
+    <div class="tab-item" onclick="switchTab('delivery')">إشعار تسليم</div>
+    <div class="tab-item" onclick="switchTab('saved')">المحفوظات</div>
+</div>
+
+<div class="page-content">
+
+    <!-- ===== زر إنشاء جديد ===== -->
+    <button class="btn-create" onclick="showCreateForm()">
+        <i class="fas fa-plus-circle"></i> إنشاء عرض سعر جديد
+    </button>
+
+    <!-- ===== قسم القوالب (الكل) ===== -->
+    <div id="tab-all">
+
+        <!-- عرض السعر -->
+        <div class="template-card" id="tpl-quote">
+            <div class="template-preview" onclick="showCreateForm()">
+                <div class="preview-mini">
+                    <div class="co-name">تاجر برو</div>
+                    <div class="doc-title">عرض سعر — Quote</div>
+                    <table>
+                        <tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>
+                        <tr><td>منتج 1</td><td>2</td><td>100</td><td>200</td></tr>
+                        <tr><td>منتج 2</td><td>1</td><td>150</td><td>150</td></tr>
+                    </table>
+                    <div class="total-row"><span>المجموع:</span><span>350.00</span></div>
+                    <div class="total-row"><span>الضريبة 15%:</span><span>52.50</span></div>
+                    <div class="total-row" style="font-weight:900;color:#0077b6;"><span>الإجمالي:</span><span>402.50</span></div>
+                </div>
+                <button class="use-btn" onclick="event.stopPropagation();showCreateForm()">
+                    <i class="fas fa-pen"></i> استخدم
+                </button>
+            </div>
+            <div class="template-info">
+                <div>
+                    <div class="template-name">عرض سعر — Quote</div>
+                    <small style="color:var(--text-muted);font-size:11px;">إرسال عروض أسعار للعملاء</small>
+                </div>
+                <span class="template-badge" style="background:#0077b6;">إفتراضي ✓</span>
+            </div>
+        </div>
+
+        <!-- فاتورة -->
+        <div class="template-card">
+            <div class="template-preview" onclick="showToastTpl('سيتم توجيهك لقسم الكاشير لإنشاء فاتورة','#2b9348');setTimeout(()=>window.location.href='index.html',1500)">
+                <div class="preview-mini">
+                    <div class="co-name">تاجر برو</div>
+                    <div class="doc-title">فاتورة — Invoice</div>
+                    <table>
+                        <tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>
+                        <tr><td>منتج 1</td><td>3</td><td>100</td><td>300</td></tr>
+                    </table>
+                    <div class="total-row" style="font-weight:900;color:#0077b6;margin-top:4px;"><span>الإجمالي:</span><span>345.00</span></div>
+                    <div style="margin-top:6px;text-align:center;font-size:6px;border:1px solid #ddd;padding:2px;">QR Code</div>
+                </div>
+                <button class="use-btn" style="background:#2b9348;">
+                    <i class="fas fa-pen"></i> استخدم
+                </button>
+            </div>
+            <div class="template-info">
+                <div>
+                    <div class="template-name">فاتورة مبيعات — Invoice</div>
+                    <small style="color:var(--text-muted);font-size:11px;">فواتير مع QR كود ZATCA</small>
+                </div>
+                <span class="template-badge" style="background:#2b9348;">إفتراضي ✓</span>
+            </div>
+        </div>
+
+        <!-- أمر شراء -->
+        <div class="template-card">
+            <div class="template-preview" onclick="window.location.href='purchases.html'">
+                <div class="preview-mini">
+                    <div class="co-name">تاجر برو</div>
+                    <div class="doc-title">أمر شراء — Purchase Order</div>
+                    <table>
+                        <tr><th>الصنف</th><th>الكمية</th><th>السعر</th></tr>
+                        <tr><td>مادة 1</td><td>50</td><td>20</td></tr>
+                    </table>
+                    <div class="total-row" style="font-weight:900;color:#6366f1;margin-top:4px;"><span>الإجمالي:</span><span>1,150.00</span></div>
+                </div>
+                <button class="use-btn" style="background:#6366f1;">
+                    <i class="fas fa-pen"></i> استخدم
+                </button>
+            </div>
+            <div class="template-info">
+                <div>
+                    <div class="template-name">أمر شراء — Purchase Order</div>
+                    <small style="color:var(--text-muted);font-size:11px;">طلبيات الموردين</small>
+                </div>
+                <span class="template-badge" style="background:#6366f1;">إفتراضي ✓</span>
+            </div>
+        </div>
+
+        <!-- إشعار دائن -->
+        <div class="template-card">
+            <div class="template-preview">
+                <div class="preview-mini">
+                    <div class="co-name">تاجر برو</div>
+                    <div class="doc-title">إشعار دائن — Credit Note</div>
+                    <table>
+                        <tr><th>الصنف</th><th>الكمية</th><th>المرتجع</th></tr>
+                        <tr><td>منتج مرتجع</td><td>1</td><td>115</td></tr>
+                    </table>
+                    <div class="total-row" style="color:#d90429;font-weight:900;margin-top:4px;"><span>الإجمالي:</span><span>-115.00</span></div>
+                </div>
+                <button class="use-btn" style="background:#d90429;" onclick="event.stopPropagation();showToastTpl('قريباً: إشعار دائن','#d90429')">
+                    <i class="fas fa-pen"></i> استخدم
+                </button>
+            </div>
+            <div class="template-info">
+                <div>
+                    <div class="template-name">إشعار دائن — Credit Note</div>
+                    <small style="color:var(--text-muted);font-size:11px;">إشعارات المرتجعات</small>
+                </div>
+                <span class="template-badge" style="background:#ffb703;color:#333;">قريباً</span>
+            </div>
+        </div>
+
+        <!-- إشعار تسليم -->
+        <div class="template-card">
+            <div class="template-preview">
+                <div class="preview-mini">
+                    <div class="co-name">تاجر برو</div>
+                    <div class="doc-title">إشعار تسليم — Delivery Note</div>
+                    <table>
+                        <tr><th>الصنف</th><th>الكمية</th><th>الحالة</th></tr>
+                        <tr><td>منتج 1</td><td>5</td><td>تم التسليم</td></tr>
+                    </table>
+                    <div style="margin-top:6px;font-size:6px;color:#2b9348;font-weight:700;">✓ تم التسليم بنجاح</div>
+                </div>
+                <button class="use-btn" style="background:#ffb703;color:#333;" onclick="event.stopPropagation();showToastTpl('قريباً: إشعار تسليم','#ffb703')">
+                    <i class="fas fa-pen"></i> استخدم
+                </button>
+            </div>
+            <div class="template-info">
+                <div>
+                    <div class="template-name">إشعار تسليم — Delivery Note</div>
+                    <small style="color:var(--text-muted);font-size:11px;">مستندات التسليم</small>
+                </div>
+                <span class="template-badge" style="background:#ffb703;color:#333;">قريباً</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== نموذج إنشاء عرض سعر ===== -->
+    <div id="createForm" style="display:none;">
+
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-file-invoice-dollar"></i>
+                عرض سعر جديد
+                <span id="quoteNumber" style="font-size:11px;color:var(--text-muted);margin-right:auto;">QUO-000001</span>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="field-lbl">جهة الإصدار</label>
+                    <input type="text" id="qIssuedBy" class="field-inp" placeholder="اسم شركتك">
+                </div>
+                <div class="col-6">
+                    <label class="field-lbl">التاريخ *</label>
+                    <input type="date" id="qDate" class="field-inp">
+                </div>
+                <div class="col-6">
+                    <label class="field-lbl">اسم العميل *</label>
+                    <select id="qClient" class="field-inp">
+                        <option value="">-- اختر العميل --</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label class="field-lbl">صالح حتى</label>
+                    <input type="date" id="qValidUntil" class="field-inp">
+                </div>
+                <div class="col-12">
+                    <label class="field-lbl">رقم المرجع</label>
+                    <input type="text" id="qRef" class="field-inp" placeholder="رقم مرجعي (اختياري)">
+                </div>
+            </div>
+        </div>
+
+        <!-- بنود عرض السعر -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-list"></i> بنود عرض السعر
+            </div>
+
+            <div style="overflow-x:auto;">
+                <table class="items-table" id="quoteItemsTable">
+                    <thead>
+                        <tr>
+                            <th style="min-width:140px;">الوصف / الصنف</th>
+                            <th style="min-width:70px;">الكمية</th>
+                            <th style="min-width:90px;">السعر</th>
+                            <th style="min-width:60px;">خصم%</th>
+                            <th style="min-width:90px;">الإجمالي</th>
+                            <th style="min-width:40px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="quoteItemsBody">
+                        <!-- بنود ديناميكية -->
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn-add-item" onclick="addQuoteItem()">
+                <i class="fas fa-plus"></i> أضف بند
+            </button>
+        </div>
+
+        <!-- الإجماليات -->
+        <div class="form-section">
+            <div class="form-section-title"><i class="fas fa-calculator"></i> الإجماليات</div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <label class="field-lbl">العملة</label>
+                    <select id="qCurrency" class="field-inp">
+                        <option value="SAR">ريال سعودي SAR</option>
+                        <option value="AED">درهم إماراتي AED</option>
+                        <option value="USD">دولار USD</option>
+                        <option value="EUR">يورو EUR</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label class="field-lbl">الضريبة</label>
+                    <select id="qTaxType" class="field-inp" onchange="recalcTotals()">
+                        <option value="15">ضريبة القيمة المضافة 15%</option>
+                        <option value="0">معفى من الضريبة 0%</option>
+                        <option value="zero">نسبة صفر (صادرات)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="totals-box">
+                <div class="total-row">
+                    <span>المجموع الفرعي:</span>
+                    <strong id="qSubtotal">0.00 ر.س</strong>
+                </div>
+                <div class="total-row">
+                    <span>إجمالي الخصم:</span>
+                    <strong id="qDiscount" style="color:var(--danger-red);">0.00 ر.س</strong>
+                </div>
+                <div class="total-row">
+                    <span id="qTaxLabel">ضريبة القيمة المضافة 15%:</span>
+                    <strong id="qTax" style="color:#ffb703;">0.00 ر.س</strong>
+                </div>
+                <div class="total-row grand">
+                    <span>الإجمالي الشامل:</span>
+                    <strong id="qGrand">0.00 ر.س</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- ملاحظات وشروط -->
+        <div class="form-section">
+            <div class="form-section-title"><i class="fas fa-sticky-note"></i> ملاحظات وشروط</div>
+            <label class="field-lbl">ملاحظات للعميل</label>
+            <textarea id="qNotes" class="field-inp" rows="3"
+                placeholder="مثال: الأسعار سارية لمدة 30 يوماً..."
+                style="resize:none;margin-bottom:10px;"></textarea>
+            <label class="field-lbl">الشروط والأحكام</label>
+            <textarea id="qTerms" class="field-inp" rows="2"
+                placeholder="شروط الدفع والتسليم..."
+                style="resize:none;"></textarea>
+        </div>
+
+        <!-- أزرار الإجراءات -->
+        <div class="action-btns">
+            <button class="btn-save-quote" onclick="saveQuote()">
+                <i class="fas fa-save"></i> حفظ عرض السعر
+            </button>
+        </div>
+        <div class="action-btns mt-2">
+            <button class="btn-print-quote" onclick="printQuote()">
+                <i class="fas fa-print"></i> طباعة
+            </button>
+            <button class="btn-pdf-quote" onclick="printQuote()">
+                <i class="fas fa-file-pdf"></i> PDF
+            </button>
+        </div>
+        <button onclick="showTab('all')" style="width:100%;margin-top:10px;padding:11px;background:transparent;border:1px solid var(--text-muted);border-radius:10px;color:var(--text-muted);font-family:'Cairo',sans-serif;font-size:13px;cursor:pointer;">
+            إلغاء والرجوع
+        </button>
+    </div>
+
+    <!-- ===== المحفوظات ===== -->
+    <div id="tab-saved" style="display:none;">
+        <div id="savedQuotesList">
+            <div style="text-align:center;padding:30px;color:var(--text-muted);">
+                <i class="fas fa-folder-open" style="font-size:40px;opacity:0.2;display:block;margin-bottom:8px;"></i>
+                لا توجد عروض أسعار محفوظة بعد
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module">
+import { db } from './firebase-config.js';
+import { collection, doc, setDoc, onSnapshot, query, orderBy }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getAuth, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+let uid = null;
+let allCustomers = [];
+let allProducts  = [];
+let quoteItems   = [];
+let savedQuotes  = [];
+let quoteCounter = 1;
+
+const auth = getAuth();
+onAuthStateChanged(auth, user => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    uid = user.uid;
+    applyTheme();
+    loadInitData();
+    listenQuotes();
+    // تاريخ اليوم + صالح حتى (30 يوم)
+    const today = new Date();
+    const valid = new Date(today); valid.setDate(today.getDate() + 30);
+    document.getElementById('qDate').value        = today.toISOString().split('T')[0];
+    document.getElementById('qValidUntil').value  = valid.toISOString().split('T')[0];
+    // اسم الشركة من الإعدادات
+    const S = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
+    document.getElementById('qIssuedBy').value = S.companyName || 'تاجر برو';
+    // إضافة بند أول فارغ
+    addQuoteItem();
+});
+
+function applyTheme() {
+    const t = localStorage.getItem('altajer_preferred_theme') || 'winter';
+    document.documentElement.setAttribute('data-theme', t);
+}
+
+// ===== تحميل البيانات =====
+async function loadInitData() {
+    // عملاء
+    onSnapshot(collection(db, 'users', uid, 'customers'), snap => {
+        allCustomers = [];
+        snap.forEach(d => allCustomers.push(d.data()));
+        populateClients();
+    });
+    // منتجات
+    onSnapshot(collection(db, 'users', uid, 'products'), snap => {
+        allProducts = [];
+        snap.forEach(d => allProducts.push(d.data()));
+    });
+}
+
+function populateClients() {
+    const sel = document.getElementById('qClient');
+    sel.innerHTML = '<option value="">-- اختر العميل --</option>';
+    allCustomers.forEach(c => {
+        sel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    });
+}
+
+// ===== Toast =====
+window.showToastTpl = function(msg, color = '#2b9348') {
+    const t = document.getElementById('toastTpl');
+    t.innerText = msg; t.style.backgroundColor = color;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+};
+
+// ===== التبويبات =====
+window.switchTab = function(tab) {
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    showTab(tab);
+};
+window.showTab = function(tab) {
+    document.getElementById('tab-all').style.display    = 'none';
+    document.getElementById('createForm').style.display = 'none';
+    document.getElementById('tab-saved').style.display  = 'none';
+    document.getElementById('btn-create-area') && (document.getElementById('btn-create-area').style.display = 'none');
+
+    if (tab === 'all') {
+        document.getElementById('tab-all').style.display = 'block';
+        document.querySelector('.btn-create').style.display = 'flex';
+    } else if (tab === 'saved') {
+        document.getElementById('tab-saved').style.display = 'block';
+        renderSavedQuotes();
+    } else if (tab === 'quote') {
+        showCreateForm();
+    } else {
+        document.getElementById('tab-all').style.display = 'block';
+    }
+};
+
+window.showCreateForm = function() {
+    document.getElementById('tab-all').style.display    = 'none';
+    document.getElementById('tab-saved').style.display  = 'none';
+    document.querySelector('.btn-create').style.display = 'none';
+    document.getElementById('createForm').style.display = 'block';
+    document.getElementById('quoteNumber').innerText    = `QUO-${String(quoteCounter).padStart(6,'0')}`;
+    window.scrollTo(0, 0);
+};
+
+// ===== إدارة البنود =====
+window.addQuoteItem = function(name = '', qty = 1, price = 0, disc = 0) {
+    const idx = quoteItems.length;
+    quoteItems.push({ name, qty, price, disc });
+
+    const tbody = document.getElementById('quoteItemsBody');
+    const row = document.createElement('tr');
+    row.id = `qrow-${idx}`;
+    row.innerHTML = `
+        <td>
+            <input type="text" placeholder="الوصف أو ابحث..." value="${name}"
+                oninput="updateItem(${idx},'name',this.value);searchProduct(${idx},this.value)"
+                list="prodList-${idx}" style="min-width:130px;">
+            <datalist id="prodList-${idx}"></datalist>
+        </td>
+        <td><input type="number" min="1" value="${qty}" oninput="updateItem(${idx},'qty',this.value);recalcRow(${idx})" style="width:60px;"></td>
+        <td><input type="number" min="0" step="0.01" value="${price}" oninput="updateItem(${idx},'price',this.value);recalcRow(${idx})" style="width:80px;"></td>
+        <td><input type="number" min="0" max="100" value="${disc}" oninput="updateItem(${idx},'disc',this.value);recalcRow(${idx})" style="width:55px;"></td>
+        <td id="qrow-total-${idx}" style="font-weight:700;color:var(--light-green);">0.00</td>
+        <td><button class="btn-del-item" onclick="removeItem(${idx})"><i class="fas fa-times"></i></button></td>`;
+    tbody.appendChild(row);
+    recalcRow(idx);
+};
+
+window.searchProduct = function(idx, query) {
+    if (!query) return;
+    const datalist = document.getElementById(`prodList-${idx}`);
+    datalist.innerHTML = '';
+    allProducts.filter(p =>
+        (p.name||'').toLowerCase().includes(query.toLowerCase()) ||
+        (p.barcode||'').includes(query)
+    ).slice(0, 8).forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.name;
+        opt.setAttribute('data-price', p.price || 0);
+        datalist.appendChild(opt);
+    });
+    // اختيار تلقائي عند مطابقة تامة
+    const match = allProducts.find(p => p.name === query || p.barcode === query);
+    if (match) {
+        quoteItems[idx].price = match.price || 0;
+        const priceInput = document.querySelector(`#qrow-${idx} input[type="number"]:nth-of-type(2)`);
+        if (priceInput) priceInput.value = match.price || 0;
+        recalcRow(idx);
+    }
+};
+
+window.updateItem = function(idx, field, val) {
+    if (!quoteItems[idx]) return;
+    quoteItems[idx][field] = field === 'name' ? val : parseFloat(val) || 0;
+};
+
+window.recalcRow = function(idx) {
+    if (!quoteItems[idx]) return;
+    const { qty, price, disc } = quoteItems[idx];
+    const discAmt = price * qty * (disc / 100);
+    const total   = (price * qty) - discAmt;
+    const el = document.getElementById(`qrow-total-${idx}`);
+    if (el) el.innerText = total.toFixed(2);
+    recalcTotals();
+};
+
+window.removeItem = function(idx) {
+    const row = document.getElementById(`qrow-${idx}`);
+    if (row) row.remove();
+    quoteItems[idx] = null;
+    recalcTotals();
+};
+
+window.recalcTotals = function() {
+    let subtotal = 0, discountTotal = 0;
+    quoteItems.forEach((item, idx) => {
+        if (!item) return;
+        const { qty, price, disc } = item;
+        const discAmt = price * qty * (disc / 100);
+        subtotal     += price * qty;
+        discountTotal += discAmt;
+    });
+    const net      = subtotal - discountTotal;
+    const taxType  = document.getElementById('qTaxType').value;
+    const taxRate  = taxType === '15' ? 0.15 : 0;
+    const taxAmt   = net * taxRate;
+    const grand    = net + taxAmt;
+    const C = { SAR:'ر.س', AED:'د.إ', USD:'$', EUR:'€' }[document.getElementById('qCurrency')?.value || 'SAR'] || 'ر.س';
+
+    document.getElementById('qSubtotal').innerText  = subtotal.toFixed(2) + ' ' + C;
+    document.getElementById('qDiscount').innerText  = discountTotal.toFixed(2) + ' ' + C;
+    document.getElementById('qTax').innerText       = taxAmt.toFixed(2) + ' ' + C;
+    document.getElementById('qGrand').innerText     = grand.toFixed(2) + ' ' + C;
+    document.getElementById('qTaxLabel').innerText  = taxType === '15' ? 'ضريبة القيمة المضافة 15%:' : 'الضريبة:';
+};
+
+// ===== حفظ عرض السعر =====
+window.saveQuote = async function() {
+    if (!uid) return;
+    const clientId = document.getElementById('qClient').value;
+    const date     = document.getElementById('qDate').value;
+    if (!date) { showToastTpl('يرجى اختيار التاريخ', '#d90429'); return; }
+
+    const validItems = quoteItems.filter(i => i && i.name);
+    if (validItems.length === 0) { showToastTpl('يرجى إضافة بند واحد على الأقل', '#d90429'); return; }
+
+    const client    = allCustomers.find(c => c.id === clientId);
+    const quoteId   = `QUO-${String(quoteCounter).padStart(6,'0')}-${Date.now()}`;
+    const grandText = document.getElementById('qGrand').innerText;
+
+    const data = {
+        id:         quoteId,
+        quoteNum:   `QUO-${String(quoteCounter).padStart(6,'0')}`,
+        clientId,
+        clientName: client?.name || 'عميل مباشر',
+        issuedBy:   document.getElementById('qIssuedBy').value,
+        date,
+        validUntil: document.getElementById('qValidUntil').value,
+        ref:        document.getElementById('qRef').value,
+        currency:   document.getElementById('qCurrency').value,
+        taxType:    document.getElementById('qTaxType').value,
+        notes:      document.getElementById('qNotes').value,
+        terms:      document.getElementById('qTerms').value,
+        items:      validItems,
+        subtotal:   document.getElementById('qSubtotal').innerText,
+        discount:   document.getElementById('qDiscount').innerText,
+        tax:        document.getElementById('qTax').innerText,
+        grand:      grandText,
+        status:     'مفتوح',
+        createdAt:  new Date().toISOString()
+    };
+
+    try {
+        await setDoc(doc(db, 'users', uid, 'quotes', quoteId), data);
+        quoteCounter++;
+        showToastTpl('✅ تم حفظ عرض السعر بنجاح');
+        setTimeout(() => {
+            showTab('all');
+            document.querySelector('.btn-create').style.display = 'flex';
+            document.getElementById('tab-all').style.display = 'block';
+        }, 1500);
+    } catch(e) {
+        showToastTpl('❌ خطأ: ' + e.message, '#d90429');
+    }
+};
+
+// ===== استماع للعروض المحفوظة =====
+function listenQuotes() {
+    onSnapshot(collection(db, 'users', uid, 'quotes'), snap => {
+        savedQuotes = [];
+        snap.forEach(d => savedQuotes.push(d.data()));
+        savedQuotes.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+        quoteCounter = savedQuotes.length + 1;
+        document.getElementById('quoteNumber').innerText = `QUO-${String(quoteCounter).padStart(6,'0')}`;
+    });
+}
+
+// ===== عرض المحفوظات =====
+function renderSavedQuotes() {
+    const wrap = document.getElementById('savedQuotesList');
+    if (savedQuotes.length === 0) {
+        wrap.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted);">
+            <i class="fas fa-folder-open" style="font-size:40px;opacity:0.2;display:block;margin-bottom:8px;"></i>
+            لا توجد عروض أسعار محفوظة بعد</div>`;
+        return;
+    }
+    const statusColors = { 'مفتوح':'#0077b6','مقبول':'#2b9348','مرفوض':'#d90429','منتهي':'#666' };
+    wrap.innerHTML = savedQuotes.map(q => `
+        <div class="quote-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                <div>
+                    <div class="quote-num">${q.quoteNum || q.id}</div>
+                    <div class="quote-client">${q.clientName || 'عميل مباشر'}</div>
+                    <div class="quote-date">${q.date} — صالح حتى: ${q.validUntil || '—'}</div>
+                </div>
+                <div style="text-align:left;">
+                    <div class="quote-total">${q.grand}</div>
+                    <span class="status-badge" style="background:${statusColors[q.status]||'#666'};">${q.status}</span>
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+                <button onclick="printSavedQuote('${q.id}')"
+                    style="flex:1;padding:8px;background:rgba(0,119,182,0.1);color:var(--neon-cyan);border:none;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Cairo',sans-serif;">
+                    <i class="fas fa-print"></i> طباعة
+                </button>
+                <button onclick="convertToInvoice('${q.id}')"
+                    style="flex:1;padding:8px;background:rgba(43,147,72,0.1);color:#2b9348;border:none;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Cairo',sans-serif;">
+                    <i class="fas fa-file-invoice"></i> تحويل لفاتورة
+                </button>
+            </div>
+        </div>`).join('');
+}
+
+// ===== طباعة عرض السعر =====
+window.printQuote = function() {
+    const clientSel    = document.getElementById('qClient');
+    const clientName   = clientSel.selectedOptions[0]?.text || 'عميل مباشر';
+    const S            = JSON.parse(localStorage.getItem('altajer_settings') || '{}');
+    const issuedBy     = document.getElementById('qIssuedBy').value || S.companyName || 'تاجر برو';
+    const date         = document.getElementById('qDate').value;
+    const validUntil   = document.getElementById('qValidUntil').value;
+    const ref          = document.getElementById('qRef').value;
+    const currency     = document.getElementById('qCurrency').value;
+    const notes        = document.getElementById('qNotes').value;
+    const terms        = document.getElementById('qTerms').value;
+    const subtotal     = document.getElementById('qSubtotal').innerText;
+    const discount     = document.getElementById('qDiscount').innerText;
+    const tax          = document.getElementById('qTax').innerText;
+    const grand        = document.getElementById('qGrand').innerText;
+    const quoteNum     = document.getElementById('quoteNumber').innerText;
+
+    const validItems = quoteItems.filter(i => i && i.name);
+
+    const itemsHTML = validItems.map((item, i) => {
+        const discAmt = item.price * item.qty * (item.disc / 100);
+        const total   = (item.price * item.qty) - discAmt;
+        return `<tr>
+            <td>${i+1}</td>
+            <td style="text-align:right;">${item.name}</td>
+            <td>${item.qty}</td>
+            <td>${parseFloat(item.price).toFixed(2)}</td>
+            <td>${item.disc > 0 ? item.disc + '%' : '—'}</td>
+            <td style="font-weight:700;">${total.toFixed(2)}</td>
+        </tr>`;
+    }).join('');
+
+    const win = window.open('', '_blank');
+    win.document.write(`<!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>عرض سعر — ${quoteNum}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+        <style>
+            * { font-family:'Cairo',sans-serif; box-sizing:border-box; }
+            body { margin:0; padding:20px; color:#1a1a2e; font-size:12px; }
+            .header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #0077b6; padding-bottom:16px; margin-bottom:16px; }
+            .company-name { font-size:22px; font-weight:900; color:#0077b6; }
+            .company-info { font-size:11px; color:#666; margin-top:4px; }
+            .doc-title { font-size:24px; font-weight:900; color:#333; text-align:left; }
+            .doc-num { font-size:13px; color:#0077b6; font-weight:700; }
+            .meta-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+            .meta-box { background:#f8f9fa; border-radius:8px; padding:12px; }
+            .meta-label { font-size:10px; color:#999; margin-bottom:3px; }
+            .meta-val { font-size:13px; font-weight:700; color:#333; }
+            table { width:100%; border-collapse:collapse; margin-bottom:16px; }
+            thead tr { background:#0077b6; color:white; }
+            th { padding:10px 8px; font-size:11px; text-align:center; }
+            td { border:1px solid #eee; padding:8px; text-align:center; font-size:11px; }
+            tr:nth-child(even) { background:#f9f9f9; }
+            .totals-section { display:flex; justify-content:flex-end; margin-bottom:16px; }
+            .totals-box { width:240px; }
+            .totals-row { display:flex; justify-content:space-between; padding:5px 0; font-size:12px; }
+            .totals-row.grand { border-top:2px solid #0077b6; margin-top:6px; padding-top:8px; font-size:15px; font-weight:900; color:#0077b6; }
+            .notes-section { background:#f8f9fa; border-radius:8px; padding:12px; margin-bottom:12px; font-size:11px; }
+            .notes-title { font-weight:900; color:#0077b6; margin-bottom:6px; }
+            .signature-section { display:flex; justify-content:space-between; margin-top:30px; }
+            .sig-box { width:200px; text-align:center; border-top:1px solid #333; padding-top:8px; font-size:11px; color:#666; }
+            .footer { text-align:center; font-size:10px; color:#aaa; margin-top:20px; border-top:1px solid #eee; padding-top:10px; }
+            @media print { body { padding:10px; } }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div>
+                <div class="company-name">${issuedBy}</div>
+                <div class="company-info">${S.vatNumber ? 'الرقم الضريبي: ' + S.vatNumber : ''}</div>
+                <div class="company-info">${S.phone || ''}</div>
+            </div>
+            <div style="text-align:left;">
+                <div class="doc-title">عرض سعر</div>
+                <div class="doc-num"># ${quoteNum}</div>
+                ${ref ? `<div style="font-size:11px;color:#666;">مرجع: ${ref}</div>` : ''}
+            </div>
+        </div>
+
+        <div class="meta-grid">
+            <div class="meta-box">
+                <div class="meta-label">مقدم لـ</div>
+                <div class="meta-val">${clientName}</div>
+            </div>
+            <div class="meta-box">
+                <div class="meta-label">التاريخ</div>
+                <div class="meta-val">${date}</div>
+            </div>
+            <div class="meta-box">
+                <div class="meta-label">العملة</div>
+                <div class="meta-val">${currency}</div>
+            </div>
+            <div class="meta-box">
+                <div class="meta-label">صالح حتى</div>
+                <div class="meta-val">${validUntil || '—'}</div>
+            </div>
+        </div>
+
+        <table>
+            <thead><tr>
+                <th>#</th>
+                <th style="text-align:right;">الوصف</th>
+                <th>الكمية</th>
+                <th>سعر الوحدة</th>
+                <th>الخصم</th>
+                <th>الإجمالي</th>
+            </tr></thead>
+            <tbody>${itemsHTML}</tbody>
+        </table>
+
+        <div class="totals-section">
+            <div class="totals-box">
+                <div class="totals-row"><span>المجموع الفرعي:</span><span>${subtotal}</span></div>
+                <div class="totals-row"><span>الخصم:</span><span style="color:#d90429;">${discount}</span></div>
+                <div class="totals-row"><span>الضريبة:</span><span style="color:#f59e0b;">${tax}</span></div>
+                <div class="totals-row grand"><span>الإجمالي:</span><span>${grand}</span></div>
+            </div>
+        </div>
+
+        ${notes ? `<div class="notes-section"><div class="notes-title">ملاحظات:</div>${notes}</div>` : ''}
+        ${terms ? `<div class="notes-section"><div class="notes-title">الشروط والأحكام:</div>${terms}</div>` : ''}
+
+        <div class="signature-section">
+            <div class="sig-box">توقيع المورد</div>
+            <div class="sig-box">توقيع العميل وختمه</div>
+        </div>
+
+        <div class="footer">
+            ${issuedBy} — تم الإنشاء بواسطة تاجر برو المحاسبي — ${new Date().toLocaleDateString('ar-SA')}
+        </div>
+        <script>window.onload=function(){window.print();}<\/script>
+    </body>
+    </html>`);
+    win.document.close();
+};
+
+window.printSavedQuote = function(id) {
+    const q = savedQuotes.find(x => x.id === id);
+    if (!q) return;
+    quoteItems = q.items || [];
+    document.getElementById('qClient').value      = q.clientId || '';
+    document.getElementById('qIssuedBy').value    = q.issuedBy || '';
+    document.getElementById('qDate').value        = q.date || '';
+    document.getElementById('qValidUntil').value  = q.validUntil || '';
+    document.getElementById('qCurrency').value    = q.currency || 'SAR';
+    document.getElementById('qNotes').value       = q.notes || '';
+    document.getElementById('qTerms').value       = q.terms || '';
+    document.getElementById('quoteNumber').innerText = q.quoteNum || q.id;
+    printQuote();
+};
+
+window.convertToInvoice = function(id) {
+    showToastTpl('سيتم تطوير هذه الميزة قريباً 🔧', '#ffb703');
+};
+
+</script>
+</body>
+</html>

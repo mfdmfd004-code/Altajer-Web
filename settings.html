@@ -8,6 +8,70 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap">
     <style>
+          /* ===== رفع الشعار والختم ===== */
+.logo-upload-area {
+    border: 2px dashed rgba(0,180,216,0.4);
+    border-radius: 14px; padding: 20px;
+    text-align: center; cursor: pointer;
+    transition: 0.3s; position: relative;
+    background: rgba(0,180,216,0.04);
+    margin-bottom: 14px;
+}
+.logo-upload-area:hover {
+    border-color: #00b4d8;
+    background: rgba(0,180,216,0.08);
+}
+.logo-preview {
+    width: 100%; max-height: 120px;
+    object-fit: contain; border-radius: 8px;
+    display: none; margin-bottom: 8px;
+}
+.logo-placeholder {
+    font-size: 36px; color: rgba(0,180,216,0.4);
+    margin-bottom: 8px; display: block;
+}
+.logo-upload-label {
+    font-size: 12px; color: rgba(255,255,255,0.5);
+    display: block; margin-top: 4px;
+}
+.logo-upload-hint {
+    font-size: 10px; color: rgba(255,255,255,0.3);
+    margin-top: 4px;
+}
+.logo-actions {
+    display: flex; gap: 8px; margin-top: 10px;
+    justify-content: center;
+}
+.btn-logo-action {
+    padding: 6px 14px; border-radius: 8px;
+    font-size: 11px; font-weight: 700;
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer; border: none; transition: 0.2s;
+}
+.btn-upload-logo {
+    background: rgba(0,180,216,0.2);
+    color: #00b4d8;
+    border: 1px solid rgba(0,180,216,0.4) !important;
+}
+.btn-remove-logo {
+    background: rgba(217,4,41,0.15);
+    color: #ef233c;
+    border: 1px solid rgba(217,4,41,0.3) !important;
+    display: none;
+}
+.stamp-preview-wrap {
+    display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap;
+}
+.preview-badge {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 10px;
+    text-align: center; flex: 1; min-width: 120px;
+}
+.preview-badge small {
+    display: block; font-size: 10px;
+    color: rgba(255,255,255,0.4); margin-bottom: 6px;
+}
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
 
         body {
@@ -231,7 +295,79 @@
         <i class="fas fa-arrow-right"></i> الرئيسية
     </a>
 </div>
+<!-- ===== بطاقة: الشعار والختم ===== -->
+<div class="settings-card">
+    <div class="section-title">
+        <i class="fas fa-image"></i> الشعار والختم
+    </div>
 
+    <!-- الشعار -->
+    <div style="margin-bottom:20px;">
+        <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:8px;">
+            <i class="fas fa-store"></i> شعار المؤسسة (Logo)
+        </label>
+        <div class="logo-upload-area" onclick="document.getElementById('logoFileInput').click()">
+            <img id="logoPreview" class="logo-preview" alt="الشعار">
+            <i class="fas fa-cloud-upload-alt logo-placeholder" id="logoIcon"></i>
+            <span class="logo-upload-label">انقر لرفع الشعار</span>
+            <span class="logo-upload-hint">PNG أو JPG — يظهر في أعلى الفواتير وعروض الأسعار</span>
+        </div>
+        <input type="file" id="logoFileInput" accept="image/*" style="display:none"
+            onchange="handleLogoUpload(this, 'logo')">
+        <div class="logo-actions">
+            <button class="btn-logo-action btn-upload-logo"
+                onclick="document.getElementById('logoFileInput').click()">
+                <i class="fas fa-upload"></i> رفع شعار
+            </button>
+            <button class="btn-logo-action btn-remove-logo" id="btnRemoveLogo"
+                onclick="removeLogo('logo')">
+                <i class="fas fa-trash"></i> حذف الشعار
+            </button>
+        </div>
+    </div>
+
+    <!-- الختم -->
+    <div style="margin-bottom:14px;">
+        <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:8px;">
+            <i class="fas fa-stamp"></i> ختم المؤسسة / التوقيع (Stamp)
+        </label>
+        <div class="logo-upload-area" onclick="document.getElementById('stampFileInput').click()">
+            <img id="stampPreview" class="logo-preview" alt="الختم">
+            <i class="fas fa-stamp logo-placeholder" id="stampIcon"></i>
+            <span class="logo-upload-label">انقر لرفع الختم أو التوقيع</span>
+            <span class="logo-upload-hint">PNG شفاف (افضل) — يظهر في أسفل الفواتير والوثائق</span>
+        </div>
+        <input type="file" id="stampFileInput" accept="image/*" style="display:none"
+            onchange="handleLogoUpload(this, 'stamp')">
+        <div class="logo-actions">
+            <button class="btn-logo-action btn-upload-logo"
+                onclick="document.getElementById('stampFileInput').click()">
+                <i class="fas fa-upload"></i> رفع الختم
+            </button>
+            <button class="btn-logo-action btn-remove-logo" id="btnRemoveStamp"
+                onclick="removeLogo('stamp')">
+                <i class="fas fa-trash"></i> حذف الختم
+            </button>
+        </div>
+    </div>
+
+    <!-- معاينة -->
+    <div id="previewStrip" style="display:none;">
+        <div style="font-size:11px;color:rgba(0,180,216,0.8);margin-bottom:8px;font-weight:700;">
+            <i class="fas fa-eye"></i> معاينة على الفاتورة:
+        </div>
+        <div class="stamp-preview-wrap">
+            <div class="preview-badge">
+                <small>أعلى الفاتورة</small>
+                <img id="logoPreviewSmall" style="max-height:50px;max-width:100%;object-fit:contain;" alt="">
+            </div>
+            <div class="preview-badge">
+                <small>أسفل الفاتورة</small>
+                <img id="stampPreviewSmall" style="max-height:50px;max-width:100%;object-fit:contain;opacity:0.8;" alt="">
+            </div>
+        </div>
+    </div>
+</div>
 <!-- ===== بطاقة: بيانات المؤسسة ===== -->
 <div class="settings-card">
     <div class="section-title">
@@ -485,7 +621,113 @@
 <script type="module" src="firebase-config.js"></script>
 <script>
     const ADMIN_UID = 'RWp5xxVVphaNI2uIl5hMBBC5Ar93';
+// ===== رفع الشعار والختم =====
+function handleLogoUpload(input, type) {
+    const file = input.files[0];
+    if (!file) return;
 
+    // التحقق من الحجم (أقصى 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        showToast('❌ حجم الملف كبير جداً — الحد الأقصى 2MB', false);
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64 = e.target.result;
+
+        if (type === 'logo') {
+            const preview = document.getElementById('logoPreview');
+            const icon    = document.getElementById('logoIcon');
+            const btnRem  = document.getElementById('btnRemoveLogo');
+            const small   = document.getElementById('logoPreviewSmall');
+
+            preview.src          = base64;
+            preview.style.display = 'block';
+            icon.style.display   = 'none';
+            btnRem.style.display = 'inline-block';
+            if (small) { small.src = base64; small.style.display = 'block'; }
+
+            // حفظ مؤقت في localStorage
+            localStorage.setItem('altajer_logo', base64);
+
+        } else if (type === 'stamp') {
+            const preview = document.getElementById('stampPreview');
+            const icon    = document.getElementById('stampIcon');
+            const btnRem  = document.getElementById('btnRemoveStamp');
+            const small   = document.getElementById('stampPreviewSmall');
+
+            preview.src          = base64;
+            preview.style.display = 'block';
+            icon.style.display   = 'none';
+            btnRem.style.display = 'inline-block';
+            if (small) { small.src = base64; small.style.display = 'block'; }
+
+            localStorage.setItem('altajer_stamp', base64);
+        }
+
+        // إظهار شريط المعاينة
+        checkPreviewStrip();
+        showToast('✅ تم رفع ' + (type === 'logo' ? 'الشعار' : 'الختم') + ' — اضغط حفظ لتثبيته');
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeLogo(type) {
+    if (!confirm('حذف ' + (type === 'logo' ? 'الشعار' : 'الختم') + '؟')) return;
+
+    if (type === 'logo') {
+        document.getElementById('logoPreview').style.display  = 'none';
+        document.getElementById('logoPreview').src            = '';
+        document.getElementById('logoIcon').style.display     = 'block';
+        document.getElementById('btnRemoveLogo').style.display = 'none';
+        const small = document.getElementById('logoPreviewSmall');
+        if (small) { small.src = ''; small.style.display = 'none'; }
+        localStorage.removeItem('altajer_logo');
+    } else {
+        document.getElementById('stampPreview').style.display   = 'none';
+        document.getElementById('stampPreview').src             = '';
+        document.getElementById('stampIcon').style.display      = 'block';
+        document.getElementById('btnRemoveStamp').style.display = 'none';
+        const small = document.getElementById('stampPreviewSmall');
+        if (small) { small.src = ''; small.style.display = 'none'; }
+        localStorage.removeItem('altajer_stamp');
+    }
+    checkPreviewStrip();
+    showToast('✅ تم الحذف');
+}
+
+function checkPreviewStrip() {
+    const hasLogo  = localStorage.getItem('altajer_logo');
+    const hasStamp = localStorage.getItem('altajer_stamp');
+    const strip    = document.getElementById('previewStrip');
+    if (strip) strip.style.display = (hasLogo || hasStamp) ? 'block' : 'none';
+}
+
+function loadSavedLogoStamp() {
+    const logo  = localStorage.getItem('altajer_logo');
+    const stamp = localStorage.getItem('altajer_stamp');
+
+    if (logo) {
+        const prev  = document.getElementById('logoPreview');
+        const icon  = document.getElementById('logoIcon');
+        const btn   = document.getElementById('btnRemoveLogo');
+        const small = document.getElementById('logoPreviewSmall');
+        prev.src = logo; prev.style.display = 'block';
+        icon.style.display = 'none'; btn.style.display = 'inline-block';
+        if (small) { small.src = logo; small.style.display = 'block'; }
+    }
+    if (stamp) {
+        const prev  = document.getElementById('stampPreview');
+        const icon  = document.getElementById('stampIcon');
+        const btn   = document.getElementById('btnRemoveStamp');
+        const small = document.getElementById('stampPreviewSmall');
+        prev.src = stamp; prev.style.display = 'block';
+        icon.style.display = 'none'; btn.style.display = 'inline-block';
+        if (small) { small.src = stamp; small.style.display = 'block'; }
+    }
+    checkPreviewStrip();
+}
     // ===== Toast =====
     function showToast(msg, ok = true) {
         const t = document.getElementById('toast');
@@ -527,15 +769,26 @@
         document.getElementById('taxFields').style.display = enabled ? 'block' : 'none';
     }
 
-    // ===== نسبة ضريبة مخصصة =====
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('taxRate').addEventListener('change', function() {
-            document.getElementById('customTaxField').style.display =
-                this.value === 'custom' ? 'block' : 'none';
+    // ===== نسبة ضريبة مخصصة وتحميل الإعدادات =====
+document.addEventListener('DOMContentLoaded', () => {
+    // تحميل الشعار والختم المحفوظين
+    loadSavedLogoStamp();
+
+    // مراقبة تغيير نسبة الضريبة لإظهار الحقل المخصص
+    const taxRateField = document.getElementById('taxRate');
+    if (taxRateField) {
+        taxRateField.addEventListener('change', function() {
+            const customTaxField = document.getElementById('customTaxField');
+            if (customTaxField) {
+                customTaxField.style.display = this.value === 'custom' ? 'block' : 'none';
+            }
         });
-        loadSettings();
-        checkAuth();
-    });
+    }
+
+    // تشغيل بقية دوال الإعدادات والصلاحيات
+    loadSettings();
+    checkAuth();
+});
 
     // ===== تحقق الرقم الضريبي =====
     function validateVat(input) {

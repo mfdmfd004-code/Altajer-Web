@@ -46,13 +46,14 @@
         .field-inp:focus { outline:none; border-color:var(--neon); }
         select.field-inp { background:#1e3a5f; }
 
-        /* ===== منطقة الملصق ===== */
+        /* ===== منطقة الملصق الكبيرة ===== */
         .label-preview {
             background:white; color:#1a1a2e;
-            border-radius:10px; padding:12px 14px;
-            margin:14px auto; max-width:320px;
+            border-radius:10px; padding:14px;
+            margin:14px auto; width: 320px; min-height: 200px;
             box-shadow:0 4px 20px rgba(0,0,0,0.3);
             font-family:'Cairo',sans-serif;
+            box-sizing: border-box;
         }
         .label-company {
             font-size:13px; font-weight:900; color:#0077b6;
@@ -81,23 +82,29 @@
         }
         .label-price-box .price-total-label { font-size:9px; text-align:center; display:block; }
         .barcode-area { text-align:center; }
-        .barcode-area svg { max-width:100%; }
+        .barcode-area svg { max-width:100%; height: auto; }
         .barcode-num { font-size:10px; color:#555; text-align:center; margin-top:2px; font-family:monospace; }
 
-        /* الملصقات المتعددة */
+        /* ===== تعديل حاوية الملصقات المتعددة لتنزل بشكل طولي متسلسل للرول ===== */
         .labels-grid {
-            display:grid; grid-template-columns:repeat(2,1fr);
-            gap:10px; margin-top:14px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 14px;
+            align-items: center;
+            width: 100%;
         }
         .label-mini {
-            background:white; border-radius:8px; padding:8px;
+            background:white; border-radius:10px; padding:14px;
             font-family:'Cairo',sans-serif; color:#1a1a2e;
-            box-shadow:0 2px 8px rgba(0,0,0,0.2);
+            box-shadow:0 4px 20px rgba(0,0,0,0.3);
+            width: 320px; min-height: 200px;
+            box-sizing: border-box;
         }
-        .label-mini .mn-name { font-size:10px; font-weight:900; text-align:center; margin-bottom:4px; }
-        .label-mini .mn-price { background:#0077b6; color:white; border-radius:4px; padding:3px 6px; font-size:12px; font-weight:900; text-align:center; margin-bottom:4px; }
-        .label-mini .mn-dates { font-size:8px; color:#666; display:flex; justify-content:space-between; margin-bottom:4px; }
-        .label-mini .mn-weight { font-size:9px; color:#333; text-align:center; margin-bottom:4px; }
+        .label-mini .mn-name { font-size:14px; font-weight:900; text-align:center; margin-bottom:6px; }
+        .label-mini .mn-price { background:#0077b6; color:white; border-radius:6px; padding:6px 10px; font-size:16px; font-weight:900; text-align:center; margin-bottom:6px; }
+        .label-mini .mn-dates { font-size:10px; color:#555; display:flex; justify-content:space-between; margin-bottom:6px; }
+        .label-mini .mn-weight { font-size:11px; color:#333; text-align:center; margin-bottom:6px; font-weight: 700; }
 
         /* أزرار */
         .btn-print {
@@ -118,12 +125,12 @@
             font-size:13px; z-index:9999; display:none; max-width:90%;
         }
 
-        /* طباعة */
+        /* الطباعة المتسلسلة الممتدة للرول */
         @media print {
-            body { background:white !important; padding:0; }
-            .top-bar, .card-section, #printExclude { display:none !important; }
-            .label-preview { box-shadow:none; border:1px solid #ddd; margin:0 auto; }
-            .labels-grid { break-inside:avoid; }
+            body { background:white !important; padding:0; margin: 0; }
+            .top-bar, .card-section, #printExclude, #printExclude2, #printExclude3, #labelPreviewArea, #toast { display:none !important; }
+            .labels-grid { display: flex !important; flex-direction: column !important; gap: 0 !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+            .label-mini { box-shadow:none !important; border:none !important; margin:0 auto !important; padding: 12px !important; width: 320px !important; page-break-after: always !important; break-inside: avoid !important; }
         }
     </style>
 </head>
@@ -169,7 +176,7 @@
             </div>
             <div class="col-6">
                 <label class="field-lbl">تاريخ الصلاحية</label>
-<input type="date" id="validDate" class="field-inp" oninput="updateLabel()">
+                <input type="date" id="validDate" class="field-inp" oninput="updateLabel()">
             </div>
             <div class="col-12">
                 <label class="field-lbl">عدد الملصقات للطباعة</label>
@@ -180,7 +187,7 @@
 
     <!-- معاينة الملصق الكبير -->
     <div class="card-section" id="printExclude2" style="padding-bottom:6px;">
-        <div class="sec-title"><i class="fas fa-eye"></i> معاينة الملصق</div>
+        <div class="sec-title"><i class="fas fa-eye"></i> معاينة الملصق الرئيسي وطابور الطباعة الطولي</div>
     </div>
 
     <div id="labelPreviewArea">
@@ -208,7 +215,7 @@
             <div class="label-price-box">
                 <div>
                     <div class="price-unit" id="lblPriceUnit">— SAR/kg</div>
-                    <div style="font-size:10px;opacity:0.7;">Uint Price</div>
+                    <div style="font-size:10px;opacity:0.7;">Unit Price</div>
                 </div>
                 <div style="text-align:center;">
                     <div class="price-total" id="lblTotalPrice">0.00</div>
@@ -222,13 +229,13 @@
         </div>
     </div>
 
-    <!-- شبكة الملصقات للطباعة -->
+    <!-- شبكة الملصقات المتسلسلة طولياً للرول -->
     <div id="labelsGrid" class="labels-grid" style="display:none;"></div>
 
     <!-- أزرار -->
-    <div id="printExclude3" style="padding:0 0 10px 0;">
+    <div id="printExclude3" style="padding:10px 0 10px 0;">
         <button class="btn-print" onclick="printLabels()">
-            <i class="fas fa-print"></i> طباعة الملصقات
+            <i class="fas fa-print"></i> طباعة الملصقات المتسلسلة
         </button>
         <button class="btn-gen" onclick="regenerateBarcode()">
             <i class="fas fa-sync"></i> توليد باركود جديد
@@ -261,7 +268,6 @@ onAuthStateChanged(auth, user => {
 
 function applyTheme() {
     const t = localStorage.getItem('altajer_preferred_theme') || 'winter';
-    // ثيم الباركود دائماً داكن لأن الملصق يحتاج خلفية بيضاء
 }
 
 function loadCompanyName() {
@@ -273,7 +279,7 @@ function loadCompanyName() {
 function setDefaultDates() {
     const today = new Date();
     const valid = new Date(today);
-    valid.setMonth(today.getMonth() + 4); // صلاحية 4 أشهر افتراضية
+    valid.setMonth(today.getMonth() + 4); 
 
     document.getElementById('packedDate').value = today.toISOString().split('T')[0];
     document.getElementById('validDate').value  = valid.toISOString().split('T')[0];
@@ -303,7 +309,6 @@ function populateSelect(list) {
     if (currentVal) sel.value = currentVal;
 }
 
-// ===== بحث =====
 window.searchProducts = function(q) {
     if (!q.trim()) { populateSelect(allProducts); return; }
     const lower = q.toLowerCase();
@@ -315,7 +320,6 @@ window.searchProducts = function(q) {
     populateSelect(filtered);
 };
 
-// ===== اختيار منتج =====
 window.onProductSelect = function() {
     const sel = document.getElementById('productSelect');
     const opt = sel.selectedOptions[0];
@@ -324,7 +328,6 @@ window.onProductSelect = function() {
     currentProduct = allProducts.find(p => p.id === sel.value);
     if (!currentProduct) return;
 
-    // تعبئة الحقول
     const pricePerKg = parseFloat(opt.dataset.price) || 0;
     document.getElementById('pricePerKg').value    = pricePerKg;
     document.getElementById('lblBarcodeNum').innerText = opt.dataset.barcode;
@@ -333,7 +336,6 @@ window.onProductSelect = function() {
     showToast('✅ تم تحميل: ' + currentProduct.name);
 };
 
-// ===== تحديث الملصق =====
 window.updateLabel = function() {
     const name      = currentProduct?.name || 'اسم المنتج';
     const barcode   = currentProduct?.barcode || currentProduct?.code || currentProduct?.id || '6280000000000';
@@ -343,7 +345,6 @@ window.updateLabel = function() {
     const valid     = document.getElementById('validDate').value;
     const total     = (netWt * unitPrice).toFixed(2);
 
-    // تحويل التاريخ لصيغة DD-MM-YY
     const fmtDate = (d) => {
         if (!d) return '—';
         const parts = d.split('-');
@@ -359,7 +360,6 @@ window.updateLabel = function() {
     document.getElementById('lblTotalPrice').innerText = total;
     document.getElementById('lblBarcodeNum').innerText = barcode;
 
-    // رسم الباركود
     try {
         JsBarcode('#barcodeOutput', barcode, {
             format:      'CODE128',
@@ -379,7 +379,6 @@ window.updateLabel = function() {
 
 window.calcTotalAndUpdate = updateLabel;
 
-// ===== بناء شبكة الملصقات =====
 window.buildLabelsGrid = function() {
     const count = parseInt(document.getElementById('labelCount').value) || 4;
     if (!currentProduct) return;
@@ -401,7 +400,9 @@ window.buildLabelsGrid = function() {
     };
 
     const grid = document.getElementById('labelsGrid');
-    grid.style.display = count > 1 ? 'grid' : 'none';
+    
+    // تعديل العرض ليكون بلوك متسلسل طولي دائماً بدلاً من الشبكة العرضية
+    grid.style.display = count > 1 ? 'flex' : 'none';
     if (count <= 1) return;
 
     grid.innerHTML = '';
@@ -409,7 +410,7 @@ window.buildLabelsGrid = function() {
         const svgId = `bc-mini-${i}`;
         grid.innerHTML += `
         <div class="label-mini" id="lbl-mini-${i}">
-            <div style="font-size:9px;font-weight:900;color:#0077b6;text-align:center;margin-bottom:2px;">${company}</div>
+            <div style="font-size:10px;font-weight:900;color:#0077b6;text-align:center;margin-bottom:2px;">${company}</div>
             <div class="mn-name">${name}</div>
             <div class="mn-dates">
                 <span>Pack: ${fmtDate(packed)}</span>
@@ -417,19 +418,18 @@ window.buildLabelsGrid = function() {
             </div>
             <div class="mn-weight">${netWt>0?netWt.toFixed(3)+'kg':''} ${unitPrice>0?'| '+unitPrice.toFixed(2)+' SAR/kg':''}</div>
             <div class="mn-price">${total} SAR — TOTAL PRICE</div>
-            <div style="text-align:center;">
+            <div style="text-align:center; margin-top: 4px;">
                 <svg id="${svgId}"></svg>
-                <div style="font-size:8px;color:#555;font-family:monospace;">${barcode}</div>
+                <div style="font-size:9px;color:#555;font-family:monospace;margin-top:2px;">${barcode}</div>
             </div>
         </div>`;
     }
 
-    // رسم الباركود لكل ملصق
     setTimeout(() => {
         for (let i = 0; i < count; i++) {
             try {
                 JsBarcode(`#bc-mini-${i}`, barcode, {
-                    format:'CODE128', width:1.5, height:35,
+                    format:'CODE128', width:1.8, height:40,
                     displayValue:false, margin:2,
                     background:'#ffffff', lineColor:'#000000'
                 });
@@ -438,7 +438,6 @@ window.buildLabelsGrid = function() {
     }, 100);
 };
 
-// ===== طباعة =====
 window.printLabels = function() {
     if (!currentProduct) {
         showToast('❌ اختر منتجاً أولاً', '#d90429');
@@ -447,12 +446,10 @@ window.printLabels = function() {
     window.print();
 };
 
-// ===== توليد باركود جديد =====
 window.regenerateBarcode = async function() {
     if (!currentProduct || !uid) return;
     const newBarcode = '628' + Math.floor(100000 + Math.random() * 900000);
     currentProduct.barcode = newBarcode;
-    // حفظ في Firebase
     try {
         await setDoc(
             doc(db, 'users', uid, 'products', currentProduct.id),

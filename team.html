@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — إدارة الفريق</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;font-family:'Cairo',sans-serif;}
+        body{background:linear-gradient(135deg,#0f172a,#1e3a5f);min-height:100vh;color:#fff;padding:0 0 80px;margin:0;}
+        .top-header{background:rgba(0,0,0,0.35);backdrop-filter:blur(12px);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,0.08);}
+        .page-title{font-size:16px;font-weight:900;color:#00b4d8;display:flex;align-items:center;gap:8px;}
+        .btn-back{background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.15);color:white;padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:5px;}
+        .wrap{max-width:720px;margin:0 auto;padding:16px 14px;}
+        .card-box{background:rgba(255,255,255,0.04);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:20px 16px;margin-bottom:14px;}
+        .section-title{font-size:14px;font-weight:700;color:#00b4d8;display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(0,180,216,0.15);}
+        .plan-limit-bar{background:rgba(0,180,216,0.08);border:1px solid rgba(0,180,216,0.2);border-radius:12px;padding:14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+        .limit-label{font-size:12px;color:rgba(255,255,255,0.6);}
+        .limit-count{font-size:22px;font-weight:900;color:#00b4d8;}
+        .limit-sub{font-size:10px;color:rgba(255,255,255,0.4);}
+        .field-group{margin-bottom:14px;}
+        .field-group label{display:block;font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:5px;font-weight:600;}
+        .field-group input,.field-group select{width:100%;padding:12px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:white;font-size:14px;font-family:'Cairo',sans-serif;transition:0.3s;}
+        .field-group input:focus,.field-group select:focus{outline:none;border-color:#00b4d8;}
+        .field-group input::placeholder{color:rgba(255,255,255,0.2);}
+        .field-group select option{background:#1e293b;color:white;}
+        .btn-invite{width:100%;padding:13px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:0.3s;font-family:'Cairo',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;}
+        .btn-invite:hover{transform:translateY(-2px);}
+        .btn-invite:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+        /* Member Cards */
+        .member-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+        .member-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0077b6,#00b4d8);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;flex-shrink:0;}
+        .member-info{flex:1;min-width:0;}
+        .member-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .member-email{font-size:11px;color:rgba(255,255,255,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .member-role{font-size:10px;padding:2px 8px;border-radius:6px;display:inline-block;margin-top:3px;}
+        .role-owner{background:rgba(255,183,3,0.2);color:#ffb703;}
+        .role-admin{background:rgba(230,57,70,0.2);color:#ff6b6b;}
+        .role-editor{background:rgba(0,180,216,0.2);color:#00b4d8;}
+        .role-viewer{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);}
+        .member-actions{display:flex;gap:6px;flex-shrink:0;}
+        .btn-sm-action{padding:6px 10px;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-family:'Cairo',sans-serif;font-weight:600;}
+        .btn-remove{background:rgba(230,57,70,0.2);color:#e63946;}
+        .btn-remove:hover{background:#e63946;color:white;}
+        .btn-role{background:rgba(0,180,216,0.15);color:#00b4d8;}
+        .btn-role:hover{background:#00b4d8;color:white;}
+
+        /* Pending invites */
+        .invite-card{background:rgba(255,183,3,0.06);border:1px solid rgba(255,183,3,0.2);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+        .invite-email{font-size:12px;color:rgba(255,255,255,0.7);flex:1;overflow:hidden;text-overflow:ellipsis;}
+        .invite-status{font-size:10px;color:#ffb703;white-space:nowrap;}
+        .btn-revoke{background:rgba(230,57,70,0.15);color:#e63946;border:none;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:'Cairo',sans-serif;}
+
+        /* Role change modal */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:99999;backdrop-filter:blur(4px);}
+        .modal-box{background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:26px 22px;max-width:340px;width:90%;}
+        .modal-title{font-size:15px;font-weight:900;color:#00b4d8;margin-bottom:16px;}
+        .role-option{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;cursor:pointer;transition:0.2s;margin-bottom:8px;border:2px solid transparent;}
+        .role-option:hover{background:rgba(255,255,255,0.05);}
+        .role-option.selected{border-color:#00b4d8;background:rgba(0,180,216,0.08);}
+        .role-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+        .role-text-name{font-size:13px;font-weight:700;}
+        .role-text-desc{font-size:11px;color:rgba(255,255,255,0.4);}
+        .btn-modal-save{width:100%;padding:12px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px;}
+        .btn-modal-cancel{width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);border-radius:12px;font-family:'Cairo',sans-serif;font-size:13px;cursor:pointer;margin-top:8px;}
+
+        /* Permissions matrix */
+        .perm-table{width:100%;border-collapse:collapse;font-size:11px;}
+        .perm-table th{background:rgba(0,0,0,0.2);color:rgba(255,255,255,0.6);padding:8px;text-align:center;font-weight:600;}
+        .perm-table th:first-child{text-align:right;}
+        .perm-table td{padding:8px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);}
+        .perm-table td:first-child{text-align:right;color:rgba(255,255,255,0.7);}
+        .p-yes{color:#38b000;font-size:14px;}
+        .p-no{color:rgba(255,255,255,0.15);font-size:14px;}
+
+        .toast-box{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 26px;border-radius:30px;color:white;font-weight:700;font-size:13px;z-index:99999;display:none;text-align:center;max-width:90%;box-shadow:0 5px 20px rgba(0,0,0,0.4);}
+        .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-left:8px;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        .empty-state{text-align:center;padding:30px 20px;color:rgba(255,255,255,0.3);}
+        .empty-state i{font-size:36px;margin-bottom:10px;display:block;}
+        .upgrade-note{background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.3);border-radius:12px;padding:14px;margin-bottom:14px;font-size:12px;color:rgba(255,255,255,0.7);text-align:center;}
+    </style>
+</head>
+<body>
+<div id="toastBox" class="toast-box"></div>
+
+<!-- Modal تغيير الدور -->
+<div id="roleModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-title"><i class="fas fa-user-cog"></i> تغيير صلاحية العضو</div>
+        <div id="roleOptions">
+            <div class="role-option" data-role="admin" onclick="selectRole('admin')">
+                <div class="role-icon" style="background:rgba(230,57,70,0.15);">👑</div>
+                <div><div class="role-text-name">مسؤول</div><div class="role-text-desc">كل الصلاحيات عدا حذف الحساب</div></div>
+            </div>
+            <div class="role-option" data-role="editor" onclick="selectRole('editor')">
+                <div class="role-icon" style="background:rgba(0,180,216,0.15);">✏️</div>
+                <div><div class="role-text-name">محرر</div><div class="role-text-desc">إضافة وتعديل — لا يستطيع الحذف</div></div>
+            </div>
+            <div class="role-option" data-role="viewer" onclick="selectRole('viewer')">
+                <div class="role-icon" style="background:rgba(255,255,255,0.08);">👁️</div>
+                <div><div class="role-text-name">مشاهد</div><div class="role-text-desc">عرض فقط — لا يستطيع التعديل</div></div>
+            </div>
+        </div>
+        <button class="btn-modal-save" onclick="saveRoleChange()">حفظ الصلاحية</button>
+        <button class="btn-modal-cancel" onclick="closeRoleModal()">إلغاء</button>
+    </div>
+</div>
+
+<div class="top-header">
+    <div class="page-title"><i class="fas fa-users"></i> إدارة الفريق</div>
+    <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> رجوع</a>
+</div>
+
+<div class="wrap">
+
+    <!-- حد الخطة -->
+    <div class="card-box">
+        <div class="section-title"><i class="fas fa-chart-pie"></i> سعة الفريق في خطتك</div>
+        <div class="plan-limit-bar">
+            <div>
+                <div class="limit-label">المستخدمون الحاليون</div>
+                <div class="limit-sub" id="planLimitSub">جاري التحميل...</div>
+            </div>
+            <div style="text-align:center;">
+                <div class="limit-count"><span id="currentMembersCount">—</span> / <span id="maxMembersCount">—</span></div>
+                <div class="limit-sub">مستخدم</div>
+            </div>
+        </div>
+        <div id="upgradeNote" class="upgrade-note" style="display:none;">
+            🔒 وصلت للحد الأقصى في خطتك الحالية.
+            <br><a href="billing.html" style="color:#ff6b35;font-weight:700;">ارقِّ خطتك للإضافة المزيد</a>
+        </div>
+    </div>
+
+    <!-- دعوة عضو جديد -->
+    <div class="card-box" id="inviteSection">
+        <div class="section-title"><i class="fas fa-user-plus"></i> دعوة عضو جديد</div>
+        <div class="field-group">
+            <label><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
+            <input type="email" id="inviteEmail" placeholder="name@company.com">
+        </div>
+        <div class="field-group">
+            <label><i class="fas fa-shield-alt"></i> الصلاحية</label>
+            <select id="inviteRole">
+                <option value="admin">👑 مسؤول — كل الصلاحيات</option>
+                <option value="editor" selected>✏️ محرر — إضافة وتعديل</option>
+                <option value="viewer">👁️ مشاهد — عرض فقط</option>
+            </select>
+        </div>
+        <button class="btn-invite" id="btnInvite" onclick="sendInvite()">
+            <i class="fas fa-paper-plane"></i> إرسال الدعوة
+        </button>
+    </div>
+
+    <!-- أعضاء الفريق الحاليون -->
+    <div class="card-box">
+        <div class="section-title">
+            <i class="fas fa-users"></i> أعضاء الفريق
+            <button onclick="loadMembers()" style="margin-right:auto;background:rgba(255,255,255,0.08);border:none;color:white;padding:4px 10px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'Cairo',sans-serif;">
+                <i class="fas fa-sync"></i> تحديث
+            </button>
+        </div>
+        <div id="membersList">
+            <div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:12px;">
+                <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+            </div>
+        </div>
+    </div>
+
+    <!-- الدعوات المعلقة -->
+    <div class="card-box">
+        <div class="section-title"><i class="fas fa-clock"></i> الدعوات المعلقة (لم تُقبل بعد)</div>
+        <div id="pendingInvitesList">
+            <div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:12px;">
+                <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+            </div>
+        </div>
+    </div>
+
+    <!-- جدول الصلاحيات -->
+    <div class="card-box">
+        <div class="section-title"><i class="fas fa-table"></i> جدول الصلاحيات</div>
+        <div style="overflow-x:auto;">
+        <table class="perm-table">
+            <thead>
+                <tr>
+                    <th style="min-width:140px;">العملية</th>
+                    <th>مالك</th>
+                    <th>مسؤول</th>
+                    <th>محرر</th>
+                    <th>مشاهد</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>عرض الفواتير</td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td></tr>
+                <tr><td>إنشاء فاتورة</td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-no">—</span></td></tr>
+                <tr><td>تعديل فاتورة</td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-no">—</span></td></tr>
+                <tr><td>حذف فاتورة</td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-no">—</span></td><td><span class="p-no">—</span></td></tr>
+                <tr><td>إدارة المنتجات</td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-no">—</span></td></tr>
+                <tr><td>إدارة العملاء</td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td></tr>
+                <tr><td>عرض التقارير</td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td></tr>
+                <tr><td>دعوة أعضاء</td><td><span class="p-yes">✓</span></td><td><span class="p-yes">✓</span></td><td><span class="p-no">—</span></td><td><span class="p-no">—</span></td></tr>
+                <tr><td>إدارة الاشتراك</td><td><span class="p-yes">✓</span></td><td><span class="p-no">—</span></td><td><span class="p-no">—</span></td><td><span class="p-no">—</span></td></tr>
+                <tr><td>حذف الحساب</td><td><span class="p-yes">✓</span></td><td><span class="p-no">—</span></td><td><span class="p-no">—</span></td><td><span class="p-no">—</span></td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module">
+import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import {
+    getFirestore, doc, getDoc, setDoc, deleteDoc,
+    collection, getDocs, query, where, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getSubscription, checkSubscriptionStatus, PLANS }
+    from "./subscription.js";
+
+const auth = getAuth();
+const db   = getFirestore();
+let currentUser, currentSub, ownerUid;
+let editingMemberUid = null, selectedNewRole = null;
+
+// حدود المستخدمين حسب الخطة
+const MAX_USERS = { trial:1, starter:2, plus:5, premium:20, monthly:2, yearly:2 };
+
+onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+
+    // تحقق: هل هذا المستخدم هو المالك أم عضو مدعو؟
+    const ownerSnap = await getDoc(doc(db, 'users', user.uid, 'teamInfo', 'meta'));
+    if (ownerSnap.exists() && ownerSnap.data().ownerUid) {
+        // هذا عضو مدعو — نحمّل بيانات المالك
+        ownerUid = ownerSnap.data().ownerUid;
+        currentSub = await getSubscription(ownerUid);
+    } else {
+        // هذا المالك
+        ownerUid   = user.uid;
+        currentSub = await getSubscription(user.uid);
+    }
+
+    renderPlanLimit();
+    loadMembers();
+    loadPendingInvites();
+});
+
+// ============================================================
+// عرض حد الخطة
+// ============================================================
+function renderPlanLimit() {
+    const plan   = currentSub?.plan || 'trial';
+    const maxU   = MAX_USERS[plan] || 1;
+    const sub    = document.getElementById('planLimitSub');
+    const maxEl  = document.getElementById('maxMembersCount');
+    if (sub)  sub.textContent  = `خطة ${PLANS[plan]?.label || plan}`;
+    if (maxEl) maxEl.textContent = maxU;
+}
+
+// ============================================================
+// تحميل الأعضاء
+// ============================================================
+window.loadMembers = async function() {
+    const container = document.getElementById('membersList');
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:12px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>';
+    try {
+        const snap = await getDocs(collection(db, 'users', ownerUid, 'teamMembers'));
+        const members = [];
+
+        // إضافة المالك دائماً في الأول
+        const ownerProfile = await getDoc(doc(db, 'users', ownerUid));
+        const ownerData    = ownerProfile.exists() ? ownerProfile.data() : {};
+        members.push({
+            uid:   ownerUid,
+            email: auth.currentUser?.email || ownerData.email || '—',
+            name:  ownerData.companyName || ownerData.displayName || 'المالك',
+            role:  'owner',
+            isOwner: true
+        });
+
+        snap.forEach(d => {
+            const data = d.data();
+            if (data.status === 'active') {
+                members.push({ uid: d.id, ...data, isOwner: false });
+            }
+        });
+
+        // تحديث العداد
+        const countEl = document.getElementById('currentMembersCount');
+        if (countEl) countEl.textContent = members.length;
+
+        // فحص إذا وصلنا للحد
+        const plan = currentSub?.plan || 'trial';
+        const maxU = MAX_USERS[plan] || 1;
+        const upgradeNote = document.getElementById('upgradeNote');
+        const inviteSection = document.getElementById('inviteSection');
+        if (members.length >= maxU) {
+            if (upgradeNote) upgradeNote.style.display = 'block';
+            if (inviteSection) inviteSection.style.display = 'none';
+        } else {
+            if (upgradeNote) upgradeNote.style.display = 'none';
+            if (inviteSection) inviteSection.style.display = 'block';
+        }
+
+        if (members.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i>لا يوجد أعضاء بعد</div>';
+            return;
+        }
+
+        container.innerHTML = members.map(m => renderMemberCard(m)).join('');
+
+    } catch(e) {
+        container.innerHTML = `<div style="color:#e63946;font-size:12px;text-align:center;">خطأ: ${e.message}</div>`;
+    }
+};
+
+function renderMemberCard(m) {
+    const roleLabels = { owner:'مالك', admin:'مسؤول', editor:'محرر', viewer:'مشاهد' };
+    const roleClasses = { owner:'role-owner', admin:'role-admin', editor:'role-editor', viewer:'role-viewer' };
+    const initials = (m.name||m.email||'U').charAt(0).toUpperCase();
+    const isMe = m.uid === currentUser.uid;
+
+    return `
+    <div class="member-card" id="member-${m.uid}">
+        <div class="member-avatar">${initials}</div>
+        <div class="member-info">
+            <div class="member-name">${m.name||'—'} ${isMe?'<small style="color:#00b4d8;font-size:10px;">(أنت)</small>':''}</div>
+            <div class="member-email">${m.email||'—'}</div>
+            <span class="member-role ${roleClasses[m.role]||'role-viewer'}">${roleLabels[m.role]||m.role}</span>
+        </div>
+        <div class="member-actions">
+            ${!m.isOwner && ownerUid===currentUser.uid ? `
+                <button class="btn-sm-action btn-role" onclick="openRoleModal('${m.uid}','${m.role}')">
+                    <i class="fas fa-user-cog"></i>
+                </button>
+                <button class="btn-sm-action btn-remove" onclick="removeMember('${m.uid}','${m.email}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            ` : ''}
+        </div>
+    </div>`;
+}
+
+// ============================================================
+// إرسال الدعوة
+// ============================================================
+window.sendInvite = async function() {
+    const email = document.getElementById('inviteEmail')?.value.trim().toLowerCase();
+    const role  = document.getElementById('inviteRole')?.value;
+    if (!email) return showToast('أدخل البريد الإلكتروني', false);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showToast('البريد الإلكتروني غير صحيح', false);
+    if (ownerUid !== currentUser.uid) return showToast('فقط المالك يستطيع دعوة أعضاء', false);
+
+    // فحص حد الخطة
+    const plan = currentSub?.plan || 'trial';
+    const maxU = MAX_USERS[plan] || 1;
+    const snap = await getDocs(collection(db, 'users', ownerUid, 'teamMembers'));
+    const activeCount = snap.docs.filter(d => d.data().status === 'active').length + 1; // +1 للمالك
+    if (activeCount >= maxU) {
+        return showToast(`❌ وصلت للحد الأقصى (${maxU} مستخدمين) في خطتك`, false);
+    }
+
+    // فحص إذا مدعو مسبقاً
+    const existingInvite = await getDocs(
+        query(collection(db, 'users', ownerUid, 'teamInvites'), where('email','==',email))
+    );
+    if (!existingInvite.empty) return showToast('هذا البريد مدعو مسبقاً', false);
+
+    const btn = document.getElementById('btnInvite');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
+
+    try {
+        const inviteId    = 'inv-' + Date.now();
+        const inviteToken = btoa(ownerUid + ':' + inviteId + ':' + Date.now());
+        const inviteLink  = `${window.location.origin}/accept-invite.html?token=${inviteToken}`;
+
+        // حفظ الدعوة في Firestore
+        await setDoc(doc(db, 'users', ownerUid, 'teamInvites', inviteId), {
+            email, role,
+            inviteId, inviteToken,
+            status:    'pending',
+            invitedBy: currentUser.email,
+            invitedAt: serverTimestamp(),
+            expiresAt: new Date(Date.now() + 7 * 86400000).toISOString() // تنتهي بعد 7 أيام
+        });
+
+        // حفظ في مجموعة عامة للبحث عند قبول الدعوة
+        await setDoc(doc(db, 'teamInvites', inviteToken), {
+            ownerUid, email, role, inviteId,
+            status:    'pending',
+            invitedAt: serverTimestamp()
+        });
+
+        // إرسال إيميل عبر EmailJS
+        await sendInviteEmail(email, inviteLink, role);
+
+        document.getElementById('inviteEmail').value = '';
+        showToast(`✅ تم إرسال الدعوة إلى ${email}`, true);
+        loadPendingInvites();
+
+    } catch(e) {
+        showToast('❌ خطأ: ' + e.message, false);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الدعوة';
+    }
+};
+
+// إرسال الإيميل عبر EmailJS
+async function sendInviteEmail(toEmail, inviteLink, role) {
+    const roleNames = { admin:'مسؤول', editor:'محرر', viewer:'مشاهد' };
+    try {
+        await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                service_id:  'service_ogo1oah',
+                template_id: 'template_ca7k80l',
+                user_id:     'HSUdjmzBSJr41GPF-',
+                template_params: {
+                    to_email:    toEmail,
+                    user_name:   'مرحباً',
+                    user_email:  toEmail,
+                    country:     'دعوة فريق تاجر برو',
+                    date:        new Date().toLocaleString('ar-SA'),
+                    // نص الدعوة
+                    message: `تمت دعوتك للانضمام كـ ${roleNames[role]||role} في تاجر برو.\nرابط القبول: ${inviteLink}\nالرابط صالح 7 أيام.`
+                }
+            })
+        });
+    } catch(e) { console.warn('EmailJS invite error:', e); }
+}
+
+// ============================================================
+// الدعوات المعلقة
+// ============================================================
+window.loadPendingInvites = async function() {
+    const container = document.getElementById('pendingInvitesList');
+    try {
+        const snap = await getDocs(collection(db, 'users', ownerUid, 'teamInvites'));
+        const pending = snap.docs.filter(d => d.data().status === 'pending');
+        if (pending.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-envelope-open"></i>لا توجد دعوات معلقة</div>';
+            return;
+        }
+        container.innerHTML = pending.map(d => {
+            const t = d.data();
+            const exp = t.expiresAt ? new Date(t.expiresAt).toLocaleDateString('ar-SA') : '—';
+            return `
+            <div class="invite-card">
+                <div>
+                    <div class="invite-email">${t.email}</div>
+                    <small style="color:rgba(255,255,255,0.3);font-size:10px;">تنتهي: ${exp} — صلاحية: ${t.role}</small>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
+                    <span class="invite-status">⏳ معلقة</span>
+                    ${ownerUid===currentUser.uid ? `<button class="btn-revoke" onclick="revokeInvite('${d.id}','${t.email}')">إلغاء</button>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        container.innerHTML = `<div style="color:#e63946;font-size:12px;text-align:center;">خطأ: ${e.message}</div>`;
+    }
+};
+
+window.revokeInvite = async function(inviteId, email) {
+    if (!confirm(`إلغاء دعوة ${email}؟`)) return;
+    try {
+        // حذف من مجموعة المالك
+        const snap = await getDocs(collection(db, 'users', ownerUid, 'teamInvites'));
+        const invDoc = snap.docs.find(d => d.id === inviteId);
+        if (invDoc) {
+            const token = invDoc.data().inviteToken;
+            await deleteDoc(doc(db, 'users', ownerUid, 'teamInvites', inviteId));
+            // حذف من المجموعة العامة
+            if (token) await deleteDoc(doc(db, 'teamInvites', token)).catch(()=>{});
+        }
+        showToast('تم إلغاء الدعوة', false);
+        loadPendingInvites();
+    } catch(e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+// ============================================================
+// حذف عضو
+// ============================================================
+window.removeMember = async function(uid, email) {
+    if (ownerUid !== currentUser.uid) return showToast('فقط المالك يستطيع حذف الأعضاء', false);
+    if (!confirm(`حذف ${email} من الفريق؟`)) return;
+    try {
+        await deleteDoc(doc(db, 'users', ownerUid, 'teamMembers', uid));
+        // إزالة ربط العضو بالمالك
+        await deleteDoc(doc(db, 'users', uid, 'teamInfo', 'meta')).catch(()=>{});
+        showToast('✅ تم حذف العضو من الفريق', true);
+        loadMembers();
+    } catch(e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+// ============================================================
+// تغيير الدور
+// ============================================================
+window.openRoleModal = function(uid, currentRole) {
+    editingMemberUid = uid;
+    selectedNewRole  = currentRole;
+    document.querySelectorAll('.role-option').forEach(o =>
+        o.classList.toggle('selected', o.dataset.role === currentRole)
+    );
+    document.getElementById('roleModal').style.display = 'flex';
+};
+
+window.closeRoleModal = function() {
+    document.getElementById('roleModal').style.display = 'none';
+    editingMemberUid = null; selectedNewRole = null;
+};
+
+window.selectRole = function(role) {
+    selectedNewRole = role;
+    document.querySelectorAll('.role-option').forEach(o =>
+        o.classList.toggle('selected', o.dataset.role === role)
+    );
+};
+
+window.saveRoleChange = async function() {
+    if (!editingMemberUid || !selectedNewRole) return;
+    try {
+        await setDoc(doc(db, 'users', ownerUid, 'teamMembers', editingMemberUid),
+            { role: selectedNewRole, updatedAt: serverTimestamp() }, { merge: true }
+        );
+        showToast('✅ تم تغيير الصلاحية', true);
+        closeRoleModal();
+        loadMembers();
+    } catch(e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+// Toast
+function showToast(msg, ok=true) {
+    const t = document.getElementById('toastBox');
+    t.innerText = msg; t.style.backgroundColor = ok ? '#2b9348' : '#d90429';
+    t.style.display = 'block'; setTimeout(() => t.style.display='none', 4000);
+}
+window.showToast = showToast;
+</script>
+</body>
+</html>

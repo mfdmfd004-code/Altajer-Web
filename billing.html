@@ -8,268 +8,115 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing:border-box; font-family:'Cairo',sans-serif; }
-        body {
-            background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);
-            min-height:100vh; color:#fff;
-            padding:0 0 60px; margin:0;
-        }
+        *{box-sizing:border-box;font-family:'Cairo',sans-serif;}
+        body{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);min-height:100vh;color:#fff;padding:0 0 80px;margin:0;}
 
-        /* ===== Header ===== */
-        .top-header {
-            background:rgba(0,0,0,0.3); backdrop-filter:blur(10px);
-            padding:12px 16px; display:flex; align-items:center;
-            justify-content:space-between; position:sticky; top:0; z-index:100;
-            border-bottom:1px solid rgba(255,255,255,0.08);
-        }
-        .page-title { font-size:16px; font-weight:900; color:#00b4d8; display:flex; align-items:center; gap:8px; }
-        .btn-back {
-            background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
-            color:white; padding:7px 14px; border-radius:10px; font-size:12px;
-            cursor:pointer; text-decoration:none; display:flex; align-items:center; gap:5px;
-        }
+        /* Header */
+        .top-header{background:rgba(0,0,0,0.35);backdrop-filter:blur(12px);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,0.08);}
+        .page-title{font-size:16px;font-weight:900;color:#00b4d8;display:flex;align-items:center;gap:8px;}
+        .btn-back{background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.15);color:white;padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:5px;}
 
-        /* ===== Status Bar ===== */
-        .status-wrap { max-width:780px; margin:16px auto 0; padding:0 12px; }
-        .status-bar {
-            border-radius:12px; padding:12px 16px; font-size:13px;
-            display:flex; align-items:center; gap:8px;
-        }
-        .status-active  { background:rgba(43,147,72,0.15);  border-right:4px solid #38b000; color:#38b000; }
-        .status-trial   { background:rgba(255,183,3,0.12);  border-right:4px solid #ffb703; color:#ffb703; }
-        .status-expired { background:rgba(230,57,70,0.12);  border-right:4px solid #e63946; color:#e63946; }
+        /* Status */
+        .sw{max-width:800px;margin:16px auto 0;padding:0 14px;}
+        .status-bar{border-radius:12px;padding:12px 16px;font-size:13px;display:flex;align-items:center;gap:8px;}
+        .status-active{background:rgba(43,147,72,0.15);border-right:4px solid #38b000;color:#38b000;}
+        .status-trial{background:rgba(255,183,3,0.12);border-right:4px solid #ffb703;color:#ffb703;}
+        .status-expired{background:rgba(230,57,70,0.12);border-right:4px solid #e63946;color:#e63946;}
 
-        /* ===== Period Toggle ===== */
-        .period-wrap {
-            max-width:780px; margin:20px auto 0; padding:0 12px;
-            display:flex; justify-content:center;
-        }
-        .period-toggle {
-            background:rgba(255,255,255,0.07); border-radius:30px;
-            padding:4px; display:flex; gap:0; position:relative;
-        }
-        .period-btn {
-            padding:9px 22px; border:none; background:transparent;
-            color:rgba(255,255,255,0.5); border-radius:26px;
-            font-family:'Cairo',sans-serif; font-size:13px; font-weight:700;
-            cursor:pointer; transition:0.3s; position:relative; z-index:1;
-        }
-        .period-btn.active { color:white; }
-        .period-slider {
-            position:absolute; top:4px; height:calc(100% - 8px);
-            background:linear-gradient(135deg,#0077b6,#00b4d8);
-            border-radius:22px; transition:0.3s; z-index:0;
-            box-shadow:0 3px 10px rgba(0,119,182,0.4);
-        }
-        .save-badge {
-            background:#e63946; color:white; font-size:9px; font-weight:700;
-            padding:2px 7px; border-radius:8px; margin-right:5px;
-        }
+        /* Period Toggle */
+        .period-wrap{max-width:800px;margin:20px auto 0;padding:0 14px;display:flex;justify-content:center;}
+        .period-toggle{background:rgba(255,255,255,0.07);border-radius:30px;padding:4px;display:flex;position:relative;width:100%;max-width:360px;}
+        .period-btn{flex:1;padding:10px 8px;border:none;background:transparent;color:rgba(255,255,255,0.5);border-radius:26px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:0.3s;position:relative;z-index:1;text-align:center;}
+        .period-btn.active{color:white;}
+        .period-slider{position:absolute;top:4px;height:calc(100% - 8px);background:linear-gradient(135deg,#0077b6,#00b4d8);border-radius:22px;transition:0.35s cubic-bezier(.4,0,.2,1);z-index:0;box-shadow:0 3px 10px rgba(0,119,182,0.4);width:50%;}
+        .save-badge{background:#e63946;color:white;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;margin-right:4px;vertical-align:middle;}
 
-        /* ===== Plans Grid ===== */
-        .plans-wrap { max-width:780px; margin:20px auto 0; padding:0 12px; }
-        .plans-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-        @media(max-width:600px) { .plans-grid { grid-template-columns:1fr; } }
-
-        .plan-card {
-            border:2px solid rgba(255,255,255,0.1);
-            border-radius:18px; padding:20px 14px;
-            position:relative; transition:0.3s; cursor:pointer;
-            background:rgba(255,255,255,0.03);
-            display:flex; flex-direction:column;
-        }
-        .plan-card:hover { border-color:rgba(0,180,216,0.5); transform:translateY(-3px); }
-        .plan-card.recommended {
-            border-color:#ff6b35;
-            background:rgba(255,107,53,0.06);
-            box-shadow:0 0 30px rgba(255,107,53,0.15);
-        }
-        .plan-card.selected {
-            border-color:#38b000;
-            background:rgba(56,176,0,0.08);
-        }
-        .plan-ribbon {
-            position:absolute; top:-1px; right:50%; transform:translateX(50%);
-            background:linear-gradient(135deg,#ff6b35,#f7c59f);
-            color:white; font-size:10px; font-weight:900;
-            padding:3px 14px; border-radius:0 0 10px 10px;
-            white-space:nowrap; letter-spacing:0.5px;
-        }
-        .plan-name { font-size:18px; font-weight:900; margin-bottom:4px; margin-top:8px; }
-        .plan-name-ar { font-size:11px; color:rgba(255,255,255,0.4); margin-bottom:12px; }
-        .plan-price-wrap { margin-bottom:4px; }
-        .plan-price-old {
-            font-size:14px; color:rgba(255,255,255,0.3);
-            text-decoration:line-through; display:block; height:18px;
-        }
-        .plan-price {
-            font-size:32px; font-weight:900; color:#00b4d8;
-            display:flex; align-items:baseline; gap:4px;
-        }
-        .plan-price .currency { font-size:16px; font-weight:700; }
-        .plan-price .period   { font-size:12px; color:rgba(255,255,255,0.4); font-weight:400; }
-        .plan-price-yearly    { font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:14px; }
-
-        .plan-features { list-style:none; padding:0; margin:0 0 16px; flex:1; }
-        .plan-features li {
-            font-size:12px; padding:5px 0;
-            border-bottom:1px solid rgba(255,255,255,0.05);
-            display:flex; align-items:center; gap:6px;
-        }
-        .plan-features li:last-child { border:none; }
-        .plan-features li .ico-yes { color:#38b000; }
-        .plan-features li .ico-no  { color:rgba(255,255,255,0.2); }
-
-        .btn-select {
-            width:100%; padding:12px;
-            border:2px solid #00b4d8; border-radius:12px;
-            background:transparent; color:#00b4d8;
-            font-family:'Cairo',sans-serif; font-size:13px; font-weight:700;
-            cursor:pointer; transition:0.3s;
-        }
-        .btn-select:hover,
-        .plan-card.selected .btn-select,
-        .plan-card.recommended .btn-select {
-            background:linear-gradient(135deg,#0077b6,#00b4d8);
-            color:white; border-color:transparent;
-        }
-
-        /* ===== Payment Section ===== */
-        .payment-wrap { max-width:780px; margin:20px auto 0; padding:0 12px; }
-        .card-box {
-            background:rgba(255,255,255,0.04); backdrop-filter:blur(10px);
-            border:1px solid rgba(255,255,255,0.08); border-radius:18px;
-            padding:20px 16px; margin-bottom:14px;
-        }
-        .section-title {
-            font-size:14px; font-weight:700; color:#00b4d8;
-            display:flex; align-items:center; gap:8px;
-            margin-bottom:16px; padding-bottom:10px;
-            border-bottom:1px solid rgba(0,180,216,0.15);
-        }
-
-        /* طرق الدفع */
-        .payment-methods { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:16px; }
-        @media(min-width:500px) { .payment-methods { grid-template-columns:repeat(4,1fr); } }
-        .pm-btn {
-            padding:12px 8px; border:2px solid rgba(255,255,255,0.12);
-            border-radius:12px; background:transparent; color:white;
-            cursor:pointer; font-family:'Cairo',sans-serif;
-            font-size:11px; font-weight:600; transition:0.2s;
-            display:flex; flex-direction:column; align-items:center; gap:5px;
-        }
-        .pm-btn i { font-size:20px; }
-        .pm-btn:hover { border-color:#00b4d8; background:rgba(0,180,216,0.08); }
-        .pm-btn.selected { border-color:#38b000; background:rgba(56,176,0,0.1); }
-
-        /* Stripe */
-        #stripe-element-wrap { display:none; }
-        #stripe-card-element {
-            background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15);
-            border-radius:10px; padding:14px; margin-bottom:14px;
-        }
-        #stripe-error { color:#e63946; font-size:12px; margin-bottom:10px; min-height:18px; }
-
-        /* حقول النموذج */
-        .field-group { margin-bottom:14px; }
-        .field-group label { display:block; font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:5px; font-weight:600; }
-        .field-group input {
-            width:100%; padding:11px 14px;
-            background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
-            border-radius:10px; color:white; font-size:14px; font-family:'Cairo',sans-serif;
-            transition:0.3s;
-        }
-        .field-group input:focus { outline:none; border-color:#00b4d8; }
-        .field-group input::placeholder { color:rgba(255,255,255,0.2); }
-
-        /* بنوك */
-        .bank-box {
-            background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.07);
-            border-radius:12px; padding:14px; margin-bottom:10px;
-        }
-        .bank-name { font-size:13px; font-weight:700; color:#00b4d8; margin-bottom:8px; }
-        .iban-row {
-            display:flex; align-items:center; justify-content:space-between;
-            background:rgba(255,255,255,0.05); border-radius:8px;
-            padding:8px 12px; font-size:12px; font-family:monospace;
-        }
-        .copy-btn {
-            background:#00b4d8; color:white; border:none;
-            border-radius:6px; padding:4px 10px; font-size:11px; cursor:pointer;
-            font-family:'Cairo',sans-serif;
-        }
-
-        /* زر الدفع */
-        .btn-pay {
-            width:100%; padding:15px;
-            background:linear-gradient(135deg,#2b9348,#38b000);
-            color:white; border:none; border-radius:14px;
-            font-size:15px; font-weight:900; font-family:'Cairo',sans-serif;
-            cursor:pointer; transition:0.3s;
-            box-shadow:0 4px 20px rgba(43,147,72,0.3);
-            display:flex; align-items:center; justify-content:center; gap:8px;
-        }
-        .btn-pay:hover { transform:translateY(-2px); }
-        .btn-pay:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
-        .secure-badge {
-            display:flex; align-items:center; gap:6px; font-size:11px;
-            color:rgba(255,255,255,0.3); justify-content:center; margin-top:10px;
-        }
-
-        /* Order Summary */
-        .order-summary {
-            background:rgba(0,180,216,0.07); border:1px solid rgba(0,180,216,0.2);
-            border-radius:12px; padding:14px; margin-bottom:14px;
-        }
-        .order-row { display:flex; justify-content:space-between; font-size:13px; padding:4px 0; }
-        .order-total { font-size:16px; font-weight:900; color:#00b4d8; padding-top:8px; border-top:1px solid rgba(0,180,216,0.2); margin-top:6px; }
+        /* Plans */
+        .plans-wrap{max-width:800px;margin:20px auto 0;padding:0 14px;}
+        .plan-card{border:2px solid rgba(255,255,255,0.1);border-radius:18px;padding:22px 16px;position:relative;transition:0.3s;background:rgba(255,255,255,0.03);display:flex;flex-direction:column;margin-bottom:14px;}
+        .plan-card:hover{border-color:rgba(0,180,216,0.4);transform:translateY(-2px);}
+        .plan-card.recommended{border-color:#ff6b35;background:rgba(255,107,53,0.05);box-shadow:0 0 28px rgba(255,107,53,0.12);}
+        .plan-card.selected{border-color:#38b000;background:rgba(56,176,0,0.07);}
+        .plan-ribbon{position:absolute;top:-1px;right:50%;transform:translateX(50%);background:linear-gradient(135deg,#ff6b35,#f7c59f);color:white;font-size:10px;font-weight:900;padding:3px 16px;border-radius:0 0 10px 10px;white-space:nowrap;}
+        .plan-name{font-size:20px;font-weight:900;margin-bottom:2px;margin-top:6px;}
+        .plan-name-ar{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:14px;}
+        .plan-price-old{font-size:14px;color:rgba(255,255,255,0.3);text-decoration:line-through;display:block;min-height:20px;margin-bottom:2px;}
+        .plan-price{font-size:36px;font-weight:900;color:#00b4d8;display:flex;align-items:baseline;gap:5px;line-height:1.1;}
+        .plan-price .currency{font-size:16px;font-weight:700;}
+        .plan-price .period{font-size:12px;color:rgba(255,255,255,0.4);font-weight:400;}
+        .plan-price-yearly{font-size:11px;color:rgba(255,255,255,0.35);margin-top:4px;margin-bottom:16px;min-height:18px;}
+        .plan-features{list-style:none;padding:0;margin:0 0 18px;flex:1;}
+        .plan-features li{font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:7px;}
+        .plan-features li:last-child{border:none;}
+        .ico-yes{color:#38b000;font-size:13px;}
+        .ico-no{color:rgba(255,255,255,0.2);font-size:13px;}
+        .btn-select{width:100%;padding:13px;border:2px solid #00b4d8;border-radius:12px;background:transparent;color:#00b4d8;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:0.3s;}
+        .btn-select:hover,.plan-card.selected .btn-select{background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border-color:transparent;}
 
         /* Trust badges */
-        .trust-wrap {
-            max-width:780px; margin:20px auto 0; padding:0 12px;
-            display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
-        }
-        @media(min-width:500px) { .trust-wrap { grid-template-columns:repeat(4,1fr); } }
-        .trust-item {
-            text-align:center; padding:14px 8px;
-            background:rgba(255,255,255,0.03); border-radius:12px;
-            border:1px solid rgba(255,255,255,0.06);
-        }
-        .trust-item i { font-size:22px; color:#00b4d8; display:block; margin-bottom:6px; }
-        .trust-item span { font-size:10px; color:rgba(255,255,255,0.4); }
+        .trust-grid{max-width:800px;margin:22px auto 0;padding:0 14px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+        .trust-item{text-align:center;padding:18px 10px;background:rgba(255,255,255,0.04);border-radius:14px;border:1px solid rgba(255,255,255,0.08);}
+        .trust-emoji{font-size:30px;margin-bottom:7px;}
+        .trust-label{font-size:11px;color:rgba(255,255,255,0.5);line-height:1.4;}
+
+        /* Payment */
+        .pay-wrap{max-width:800px;margin:20px auto 0;padding:0 14px;}
+        .card-box{background:rgba(255,255,255,0.04);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:20px 16px;margin-bottom:14px;}
+        .section-title{font-size:14px;font-weight:700;color:#00b4d8;display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(0,180,216,0.15);}
+        .order-box{background:rgba(0,180,216,0.07);border:1px solid rgba(0,180,216,0.2);border-radius:12px;padding:14px;margin-bottom:14px;}
+        .order-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;}
+        .order-total{font-size:17px;font-weight:900;color:#00b4d8;padding-top:10px;border-top:1px solid rgba(0,180,216,0.2);margin-top:8px;}
+
+        /* Payment methods */
+        .pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+        .pm-btn{padding:14px 8px;border:2px solid rgba(255,255,255,0.12);border-radius:12px;background:transparent;color:white;cursor:pointer;font-family:'Cairo',sans-serif;font-size:11px;font-weight:600;transition:0.2s;display:flex;flex-direction:column;align-items:center;gap:6px;}
+        .pm-btn i,.pm-emoji{font-size:22px;}
+        .pm-btn:hover{border-color:#00b4d8;background:rgba(0,180,216,0.07);}
+        .pm-btn.selected{border-color:#38b000;background:rgba(56,176,0,0.09);}
+
+        /* Form fields */
+        .field-group{margin-bottom:14px;}
+        .field-group label{display:block;font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:5px;font-weight:600;}
+        .field-group input{width:100%;padding:12px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:white;font-size:14px;font-family:'Cairo',sans-serif;transition:0.3s;}
+        .field-group input:focus{outline:none;border-color:#00b4d8;}
+        .field-group input::placeholder{color:rgba(255,255,255,0.2);}
+
+        /* Bank boxes */
+        .bank-box{background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;margin-bottom:10px;}
+        .bank-name{font-size:13px;font-weight:700;color:#00b4d8;margin-bottom:8px;}
+        .iban-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);border-radius:8px;padding:9px 12px;font-size:12px;}
+        .copy-btn{background:#00b4d8;color:white;border:none;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;font-family:'Cairo',sans-serif;white-space:nowrap;margin-right:8px;}
+
+        /* Pay button */
+        .btn-pay{width:100%;padding:15px;background:linear-gradient(135deg,#2b9348,#38b000);color:white;border:none;border-radius:14px;font-size:15px;font-weight:900;font-family:'Cairo',sans-serif;cursor:pointer;transition:0.3s;box-shadow:0 4px 20px rgba(43,147,72,0.3);display:flex;align-items:center;justify-content:center;gap:8px;}
+        .btn-pay:hover{transform:translateY(-2px);}
+        .btn-pay:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+        .secure-note{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.3);justify-content:center;margin-top:10px;}
+        .info-note{background:rgba(255,183,3,0.1);border:1px solid rgba(255,183,3,0.3);border-radius:10px;padding:12px;font-size:12px;color:#ffb703;margin-bottom:14px;}
+
+        /* Compare table */
+        .compare-wrap{max-width:800px;margin:20px auto 0;padding:0 14px;}
+        .compare-tabs{display:flex;gap:8px;margin-bottom:14px;}
+        .compare-tab{padding:7px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.5);font-family:'Cairo',sans-serif;font-size:12px;cursor:pointer;transition:0.2s;}
+        .compare-tab.active{background:rgba(0,180,216,0.15);border-color:#00b4d8;color:white;}
+        .tbl-wrap{overflow-x:auto;}
+        .compare-table{width:100%;border-collapse:collapse;font-size:12px;min-width:420px;}
+        .compare-table th{background:rgba(0,180,216,0.1);color:#00b4d8;padding:10px 8px;text-align:center;}
+        .compare-table th:first-child{text-align:right;}
+        .compare-table td{padding:8px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.05);}
+        .compare-table td:first-child{text-align:right;color:rgba(255,255,255,0.7);}
+        .ck-yes{color:#38b000;font-size:15px;}
+        .ck-no{color:rgba(255,255,255,0.15);font-size:15px;}
 
         /* Toast */
-        .toast-box {
-            position:fixed; top:20px; left:50%; transform:translateX(-50%);
-            padding:12px 25px; border-radius:30px; color:white;
-            font-weight:700; font-size:13px; z-index:99999;
-            display:none; text-align:center; max-width:90%;
-            box-shadow:0 5px 20px rgba(0,0,0,0.4);
-        }
+        .toast-box{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 26px;border-radius:30px;color:white;font-weight:700;font-size:13px;z-index:99999;display:none;text-align:center;max-width:90%;box-shadow:0 5px 20px rgba(0,0,0,0.4);}
 
-        /* Feature comparison table */
-        .compare-wrap { max-width:780px; margin:20px auto 0; padding:0 12px; }
-        .compare-table { width:100%; border-collapse:collapse; font-size:11px; }
-        .compare-table th { background:rgba(0,180,216,0.1); color:#00b4d8; padding:10px 8px; text-align:center; }
-        .compare-table th:first-child { text-align:right; }
-        .compare-table td { padding:8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.05); }
-        .compare-table td:first-child { text-align:right; color:rgba(255,255,255,0.7); }
-        .compare-table tr:hover td { background:rgba(255,255,255,0.02); }
-        .check-yes { color:#38b000; font-size:14px; }
-        .check-no  { color:rgba(255,255,255,0.15); font-size:14px; }
-
-        /* Tab switcher للمقارنة */
-        .compare-tabs { display:flex; gap:8px; margin-bottom:14px; }
-        .compare-tab {
-            padding:7px 16px; border-radius:20px; border:1px solid rgba(255,255,255,0.15);
-            background:transparent; color:rgba(255,255,255,0.5); font-family:'Cairo',sans-serif;
-            font-size:12px; cursor:pointer; transition:0.2s;
-        }
-        .compare-tab.active { background:rgba(0,180,216,0.15); border-color:#00b4d8; color:white; }
+        /* Stripe */
+        #stripe-card-element{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:14px;margin-bottom:10px;}
+        #stripe-error{color:#e63946;font-size:12px;margin-bottom:8px;min-height:18px;}
     </style>
 </head>
 <body>
-
 <div id="toastBox" class="toast-box"></div>
 
 <!-- Header -->
@@ -278,17 +125,17 @@
     <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> رجوع</a>
 </div>
 
-<!-- Status Bar -->
-<div class="status-wrap">
+<!-- Status -->
+<div class="sw">
     <div id="currentStatusBar" class="status-bar status-trial">
-        <i class="fas fa-spinner fa-spin"></i> جاري التحقق من اشتراكك...
+        <i class="fas fa-spinner fa-spin"></i> جاري التحقق...
     </div>
 </div>
 
 <!-- Period Toggle -->
 <div class="period-wrap">
     <div class="period-toggle" id="periodToggle">
-        <div class="period-slider" id="periodSlider" style="width:50%;right:0;"></div>
+        <div class="period-slider" id="periodSlider"></div>
         <button class="period-btn active" id="btnMonthly" onclick="setPeriod('monthly')">اشتراك شهري</button>
         <button class="period-btn" id="btnYearly" onclick="setPeriod('yearly')">
             اشتراك سنوي <span class="save-badge">وفر 20%</span>
@@ -296,189 +143,143 @@
     </div>
 </div>
 
-<!-- Plans Grid -->
+<!-- Plans -->
 <div class="plans-wrap">
-    <div class="plans-grid" id="plansGrid">
 
-        <!-- Starter -->
-        <div class="plan-card" id="card-starter" onclick="selectPlan('starter')">
-            <div class="plan-name">Starter</div>
-            <div class="plan-name-ar">للأعمال الصغيرة</div>
-            <div class="plan-price-wrap">
-                <span class="plan-price-old" id="old-starter"></span>
-                <div class="plan-price">
-                    <span class="currency">﷼</span>
-                    <span id="price-starter">99</span>
-                    <span class="period">/ شهر</span>
-                </div>
-            </div>
-            <div class="plan-price-yearly" id="yearly-starter">أو 1,190 ﷼ / سنة</div>
-            <ul class="plan-features">
-                <li><i class="fas fa-check ico-yes"></i> أنشئ وأرسل فواتير</li>
-                <li><i class="fas fa-check ico-yes"></i> عروض أسعار</li>
-                <li><i class="fas fa-check ico-yes"></i> تتبع المصروفات</li>
-                <li><i class="fas fa-check ico-yes"></i> مطابقة الحسابات</li>
-                <li><i class="fas fa-check ico-yes"></i> إقرارات ضريبية</li>
-                <li><i class="fas fa-check ico-yes"></i> 2 مستخدم • 20 مسح/شهر</li>
-                <li><i class="fas fa-times ico-no"></i> موردون وأوامر شراء</li>
-                <li><i class="fas fa-times ico-no"></i> كشف رواتب</li>
-            </ul>
-            <button class="btn-select">متابعة مع Starter</button>
+    <!-- Starter -->
+    <div class="plan-card" id="card-starter" onclick="selectPlan('starter')">
+        <div class="plan-name">Starter</div>
+        <div class="plan-name-ar">للأعمال الصغيرة</div>
+        <span class="plan-price-old" id="old-starter"></span>
+        <div class="plan-price">
+            <span class="currency">﷼</span>
+            <span id="price-starter">99</span>
+            <span class="period" id="period-starter">/ شهر</span>
         </div>
-
-        <!-- Plus — موصى به -->
-        <div class="plan-card recommended" id="card-plus" onclick="selectPlan('plus')">
-            <div class="plan-ribbon">⚡ موصى به</div>
-            <div class="plan-name" style="color:#ff6b35;">Plus</div>
-            <div class="plan-name-ar">للشركات المتوسطة</div>
-            <div class="plan-price-wrap">
-                <span class="plan-price-old" id="old-plus"></span>
-                <div class="plan-price" style="color:#ff6b35;">
-                    <span class="currency">﷼</span>
-                    <span id="price-plus">119</span>
-                    <span class="period">/ شهر</span>
-                </div>
-            </div>
-            <div class="plan-price-yearly" id="yearly-plus">أو 1,430 ﷼ / سنة</div>
-            <ul class="plan-features">
-                <li><i class="fas fa-check ico-yes"></i> جميع ميزات Starter</li>
-                <li><i class="fas fa-check ico-yes"></i> فواتير موردين وأوامر شراء</li>
-                <li><i class="fas fa-check ico-yes"></i> مراكز التكلفة</li>
-                <li><i class="fas fa-check ico-yes"></i> تتبع ربحية المشاريع</li>
-                <li><i class="fas fa-check ico-yes"></i> فواتير مجدولة</li>
-                <li><i class="fas fa-check ico-yes"></i> 5 مستخدمين • 100 مسح/شهر</li>
-                <li><i class="fas fa-times ico-no"></i> كشف رواتب</li>
-                <li><i class="fas fa-times ico-no"></i> مستودعات متعددة</li>
-            </ul>
-            <button class="btn-select" style="background:linear-gradient(135deg,#ff6b35,#f7c59f);color:white;border:none;">متابعة مع Plus</button>
-        </div>
-
-        <!-- Premium -->
-        <div class="plan-card" id="card-premium" onclick="selectPlan('premium')">
-            <div class="plan-name" style="color:#ffd700;">Premium</div>
-            <div class="plan-name-ar">للمنشآت الكبيرة</div>
-            <div class="plan-price-wrap">
-                <span class="plan-price-old" id="old-premium"></span>
-                <div class="plan-price" style="color:#ffd700;">
-                    <span class="currency">﷼</span>
-                    <span id="price-premium">199</span>
-                    <span class="period">/ شهر</span>
-                </div>
-            </div>
-            <div class="plan-price-yearly" id="yearly-premium">أو 2,390 ﷼ / سنة</div>
-            <ul class="plan-features">
-                <li><i class="fas fa-check ico-yes"></i> جميع ميزات Plus</li>
-                <li><i class="fas fa-check ico-yes"></i> كشف الرواتب ومصروفات الموظفين</li>
-                <li><i class="fas fa-check ico-yes"></i> مستودعات متعددة</li>
-                <li><i class="fas fa-check ico-yes"></i> وحدة البيانات المالية</li>
-                <li><i class="fas fa-check ico-yes"></i> إدارة الأصول الثابتة</li>
-                <li><i class="fas fa-check ico-yes"></i> 20 مستخدم • 500 مسح/شهر</li>
-                <li><i class="fas fa-check ico-yes"></i> +3 تكاملات (فودكس، ستراب...)</li>
-                <li><i class="fas fa-check ico-yes"></i> مسح بالذكاء الاصطناعي</li>
-            </ul>
-            <button class="btn-select">متابعة مع Premium</button>
-        </div>
-
+        <div class="plan-price-yearly" id="yearly-starter">أو 1,190 ﷼ / سنة</div>
+        <ul class="plan-features">
+            <li><i class="fas fa-check ico-yes"></i> أنشئ وأرسل فواتير</li>
+            <li><i class="fas fa-check ico-yes"></i> عروض أسعار</li>
+            <li><i class="fas fa-check ico-yes"></i> تتبع المصروفات</li>
+            <li><i class="fas fa-check ico-yes"></i> مطابقة الحسابات</li>
+            <li><i class="fas fa-check ico-yes"></i> إقرارات ضريبية</li>
+            <li><i class="fas fa-check ico-yes"></i> 2 مستخدم • 20 مسح/شهر</li>
+            <li><i class="fas fa-times ico-no"></i> موردون وأوامر شراء</li>
+            <li><i class="fas fa-times ico-no"></i> كشف رواتب</li>
+        </ul>
+        <button class="btn-select">متابعة مع Starter</button>
     </div>
+
+    <!-- Plus -->
+    <div class="plan-card recommended" id="card-plus" onclick="selectPlan('plus')">
+        <div class="plan-ribbon">⚡ موصى به</div>
+        <div class="plan-name" style="color:#ff6b35;">Plus</div>
+        <div class="plan-name-ar">للشركات المتوسطة</div>
+        <span class="plan-price-old" id="old-plus"></span>
+        <div class="plan-price" style="color:#ff6b35;">
+            <span class="currency">﷼</span>
+            <span id="price-plus">119</span>
+            <span class="period" id="period-plus">/ شهر</span>
+        </div>
+        <div class="plan-price-yearly" id="yearly-plus">أو 1,430 ﷼ / سنة</div>
+        <ul class="plan-features">
+            <li><i class="fas fa-check ico-yes"></i> جميع ميزات Starter</li>
+            <li><i class="fas fa-check ico-yes"></i> فواتير موردين وأوامر شراء</li>
+            <li><i class="fas fa-check ico-yes"></i> مراكز التكلفة</li>
+            <li><i class="fas fa-check ico-yes"></i> تتبع ربحية المشاريع</li>
+            <li><i class="fas fa-check ico-yes"></i> فواتير مجدولة</li>
+            <li><i class="fas fa-check ico-yes"></i> 5 مستخدمين • 100 مسح/شهر</li>
+            <li><i class="fas fa-times ico-no"></i> كشف رواتب</li>
+            <li><i class="fas fa-times ico-no"></i> مستودعات متعددة</li>
+        </ul>
+        <button class="btn-select" style="background:linear-gradient(135deg,#ff6b35,#f7c59f);color:white;border:none;">متابعة مع Plus</button>
+    </div>
+
+    <!-- Premium -->
+    <div class="plan-card" id="card-premium" onclick="selectPlan('premium')">
+        <div class="plan-name" style="color:#ffd700;">Premium</div>
+        <div class="plan-name-ar">للمنشآت الكبيرة</div>
+        <span class="plan-price-old" id="old-premium"></span>
+        <div class="plan-price" style="color:#ffd700;">
+            <span class="currency">﷼</span>
+            <span id="price-premium">199</span>
+            <span class="period" id="period-premium">/ شهر</span>
+        </div>
+        <div class="plan-price-yearly" id="yearly-premium">أو 2,390 ﷼ / سنة</div>
+        <ul class="plan-features">
+            <li><i class="fas fa-check ico-yes"></i> جميع ميزات Plus</li>
+            <li><i class="fas fa-check ico-yes"></i> كشف الرواتب ومصروفات الموظفين</li>
+            <li><i class="fas fa-check ico-yes"></i> مستودعات متعددة</li>
+            <li><i class="fas fa-check ico-yes"></i> وحدة البيانات المالية</li>
+            <li><i class="fas fa-check ico-yes"></i> إدارة الأصول الثابتة</li>
+            <li><i class="fas fa-check ico-yes"></i> 20 مستخدم • 500 مسح/شهر</li>
+            <li><i class="fas fa-check ico-yes"></i> +3 تكاملات (فودكس، ستراب...)</li>
+            <li><i class="fas fa-check ico-yes"></i> مسح بالذكاء الاصطناعي</li>
+        </ul>
+        <button class="btn-select">متابعة مع Premium</button>
+    </div>
+
 </div>
 
 <!-- Trust Badges -->
-<div class="trust-wrap" style="max-width:780px;margin:20px auto 0;padding:0 12px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
-    <div style="text-align:center;padding:16px 8px;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
-        <div style="font-size:28px;margin-bottom:6px;">🔒</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.5);">بيانات محمية ومشفرة</div>
-    </div>
-    <div style="text-align:center;padding:16px 8px;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
-        <div style="font-size:28px;margin-bottom:6px;">↩️</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.5);">ضمان استرجاع 14 يوم</div>
-    </div>
-    <div style="text-align:center;padding:16px 8px;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
-        <div style="font-size:28px;margin-bottom:6px;">🎧</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.5);">دعم 24 ساعة</div>
-    </div>
-    <div style="text-align:center;padding:16px 8px;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
-        <div style="font-size:28px;margin-bottom:6px;">📄</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.5);">متوافق ZATCA المرحلة 2</div>
-    </div>
-</div>
+<div class="trust-grid">
     <div class="trust-item">
-        <i class="fas fa-file-invoice"></i>
-        <span>متوافق ZATCA المرحلة 2</span>
+        <div class="trust-emoji">🔒</div>
+        <div class="trust-label">بيانات محمية ومشفرة</div>
+    </div>
+    <div class="trust-item">
+        <div class="trust-emoji">↩️</div>
+        <div class="trust-label">ضمان استرجاع 14 يوم</div>
+    </div>
+    <div class="trust-item">
+        <div class="trust-emoji">🎧</div>
+        <div class="trust-label">دعم فني 24 ساعة</div>
+    </div>
+    <div class="trust-item">
+        <div class="trust-emoji">📄</div>
+        <div class="trust-label">متوافق ZATCA المرحلة 2</div>
     </div>
 </div>
 
-<!-- Payment Section (تظهر بعد اختيار الخطة) -->
-<div class="payment-wrap" id="paymentSection" style="display:none;">
+<!-- Payment Section -->
+<div class="pay-wrap" id="paymentSection" style="display:none;">
 
     <!-- Order Summary -->
     <div class="card-box">
         <div class="section-title"><i class="fas fa-receipt"></i> ملخص الطلب</div>
-        <div class="order-summary">
-            <div class="order-row">
-                <span>الخطة</span>
-                <span id="summaryPlan">—</span>
-            </div>
-            <div class="order-row">
-                <span>الفترة</span>
-                <span id="summaryPeriod">—</span>
-            </div>
-            <div class="order-row order-total">
-                <span>الإجمالي</span>
-                <span id="summaryTotal">—</span>
-            </div>
+        <div class="order-box">
+            <div class="order-row"><span>الخطة</span><span id="summaryPlan">—</span></div>
+            <div class="order-row"><span>الفترة</span><span id="summaryPeriod">—</span></div>
+            <div class="order-row order-total"><span>الإجمالي</span><span id="summaryTotal">—</span></div>
         </div>
     </div>
 
-    <!-- اختيار طريقة الدفع -->
+    <!-- Payment Methods -->
     <div class="card-box">
         <div class="section-title"><i class="fas fa-credit-card"></i> طريقة الدفع</div>
-
-        <div class="payment-methods">
+        <div class="pm-grid">
             <button class="pm-btn" id="pm-stripe" onclick="selectPaymentMethod('stripe')">
-                <i class="fab fa-cc-stripe" style="color:#635bff;"></i>
-                بطاقة / Stripe
+                <span class="pm-emoji">💳</span> بطاقة / Stripe
             </button>
             <button class="pm-btn" id="pm-transfer" onclick="selectPaymentMethod('transfer')">
-                <i class="fas fa-university" style="color:#38b000;"></i>
-                تحويل بنكي
+                <span class="pm-emoji">🏦</span> تحويل بنكي
             </button>
             <button class="pm-btn" id="pm-paypal" onclick="selectPaymentMethod('paypal')">
-                <i class="fab fa-paypal" style="color:#003087;"></i>
-                PayPal
+                <span class="pm-emoji">🅿️</span> PayPal
             </button>
             <button class="pm-btn" id="pm-whatsapp" onclick="selectPaymentMethod('whatsapp')">
-                <i class="fab fa-whatsapp" style="color:#25d366;"></i>
-                واتساب
+                <span class="pm-emoji">💬</span> واتساب
             </button>
         </div>
 
-        <!-- ===== Stripe ===== -->
+        <!-- Stripe Form -->
         <div id="formStripe" style="display:none;">
-            <p style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:12px;">
-                <i class="fab fa-cc-stripe" style="color:#635bff;font-size:16px;"></i>
-                مدفوعات آمنة عبر Stripe — يقبل فيزا، ماستر، مدى، Apple Pay وأكثر من 40 دولة.
-            </p>
-
-            <!-- ===================================================
-                 ⚙️ إعداد Stripe:
-                 1. اذهب إلى https://dashboard.stripe.com
-                 2. اختر بلدك (الدنمارك، السعودية، أي بلد)
-                 3. انسخ PUBLISHABLE KEY وضعه هنا:
-                 =================================================== -->
-            <div id="stripe-element-wrap">
-                <div id="stripe-card-element"><!-- Stripe يحقن هنا تلقائياً --></div>
-                <div id="stripe-error"></div>
+            <div class="info-note">
+                <strong>Stripe غير مفعّل بعد.</strong> أضف Stripe Public Key في billing.html لتفعيله.
+                حالياً سيُحوّل طلبك لواتساب تلقائياً.
             </div>
-
-            <div id="stripeNotConfigured" style="
-                background:rgba(255,183,3,0.1); border:1px solid rgba(255,183,3,0.3);
-                border-radius:10px; padding:14px; margin-bottom:14px; font-size:12px; color:#ffb703;">
-                <i class="fas fa-info-circle"></i>
-                <strong>Stripe غير مفعّل بعد.</strong><br>
-                لتفعيله: أضف Stripe Public Key في السطر المحدد أدناه في الكود.
-                <br><small style="color:rgba(255,183,3,0.6);">حالياً سيُحوّل لطلب واتساب.</small>
-            </div>
-
+            <div id="stripe-card-element"></div>
+            <div id="stripe-error"></div>
             <div class="field-group">
                 <label>اسم حامل البطاقة</label>
                 <input type="text" id="cardholderName" placeholder="الاسم كما على البطاقة">
@@ -486,13 +287,10 @@
             <button class="btn-pay" id="btnStripePay" onclick="processStripePay()">
                 <i class="fas fa-lock"></i> ادفع الآن
             </button>
-            <div class="secure-badge">
-                <i class="fas fa-shield-alt" style="color:#635bff;"></i>
-                مشفر بـ TLS — Stripe لا نرى بيانات بطاقتك
-            </div>
+            <div class="secure-note"><i class="fas fa-shield-alt" style="color:#635bff;"></i> مشفر بـ TLS</div>
         </div>
 
-        <!-- ===== تحويل بنكي ===== -->
+        <!-- Transfer Form -->
         <div id="formTransfer" style="display:none;">
             <p style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;">
                 حوّل المبلغ لأحد الحسابات أدناه ثم أرسل إيصال التحويل.
@@ -502,7 +300,7 @@
                     <i class="fas fa-spinner fa-spin"></i> جاري تحميل بيانات البنوك...
                 </div>
             </div>
-            <div class="field-group" style="margin-top:14px;">
+            <div class="field-group" style="margin-top:12px;">
                 <label>اسمك الكامل</label>
                 <input type="text" id="transferName" placeholder="الاسم الكامل للمحول">
             </div>
@@ -513,78 +311,52 @@
             <button class="btn-pay" style="background:linear-gradient(135deg,#0077b6,#00b4d8);" onclick="submitTransferRequest()">
                 <i class="fas fa-paper-plane"></i> إرسال طلب التفعيل
             </button>
-            <p style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;margin-top:8px;">
-                سيُفعَّل اشتراكك خلال 24 ساعة بعد التحقق من التحويل
-            </p>
+            <p style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;margin-top:8px;">سيُفعَّل اشتراكك خلال 24 ساعة بعد التحقق</p>
         </div>
 
-        <!-- ===== PayPal ===== -->
+        <!-- PayPal Form -->
         <div id="formPaypal" style="display:none;">
-            <!-- ===================================================
-                 ⚙️ إعداد PayPal:
-                 ضع PayPal Client ID هنا بعد التسجيل في paypal.com/developer
-                 =================================================== -->
-            <p style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:14px;">
-                ستُحوَّل لبوابة PayPal الآمنة لإتمام الدفع.
-            </p>
+            <div class="info-note">PayPal غير مفعّل بعد. أضف PayPal Client ID في billing.html لتفعيله.</div>
             <div id="paypal-button-container" style="margin-bottom:14px;"></div>
-            <div id="paypalNotConfigured" style="
-                background:rgba(255,183,3,0.1); border:1px solid rgba(255,183,3,0.3);
-                border-radius:10px; padding:14px; margin-bottom:14px; font-size:12px; color:#ffb703;">
-                <i class="fas fa-info-circle"></i>
-                <strong>PayPal غير مفعّل بعد.</strong>
-                <br><small style="color:rgba(255,183,3,0.6);">أضف PayPal Client ID في السطر المحدد في الكود.</small>
-            </div>
-            <button class="btn-pay" style="background:linear-gradient(135deg,#003087,#009cde);" onclick="processPaypalFallback()">
-                <i class="fab fa-paypal"></i> متابعة عبر PayPal
+            <button class="btn-pay" style="background:linear-gradient(135deg,#003087,#009cde);" onclick="openWhatsappPayment()">
+                <i class="fab fa-paypal"></i> متابعة عبر PayPal (واتساب مؤقتاً)
             </button>
         </div>
 
-        <!-- ===== واتساب ===== -->
+        <!-- WhatsApp Form -->
         <div id="formWhatsapp" style="display:none;">
-            <p style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:14px;line-height:1.8;">
-                تواصل معنا مباشرة عبر واتساب لإتمام الاشتراك يدوياً.
+            <p style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:16px;line-height:1.8;">
+                تواصل معنا مباشرة عبر واتساب لإتمام الاشتراك.
             </p>
             <button class="btn-pay" style="background:linear-gradient(135deg,#128c7e,#25d366);" onclick="openWhatsappPayment()">
                 <i class="fab fa-whatsapp"></i> فتح واتساب للدفع
             </button>
         </div>
-
     </div>
 </div>
 
-<!-- Feature Comparison Table -->
+<!-- Compare Table -->
 <div class="compare-wrap">
     <div class="card-box">
         <div class="section-title"><i class="fas fa-table"></i> مقارنة الميزات</div>
         <div class="compare-tabs">
             <button class="compare-tab active" onclick="showCompare('summary')">ملخص الميزات</button>
-            <button class="compare-tab" onclick="showCompare('detail')">المميزات بالتفصيل</button>
+            <button class="compare-tab" onclick="showCompare('detail')">بالتفصيل</button>
         </div>
         <div id="compareSummary">
-            <div style="overflow-x:auto;">
+            <div class="tbl-wrap">
             <table class="compare-table">
-                <thead>
-                    <tr>
-                        <th style="min-width:140px;">الميزة</th>
-                        <th>Starter</th>
-                        <th>Plus</th>
-                        <th>Premium</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>الميزة</th><th>Starter</th><th>Plus</th><th>Premium</th></tr></thead>
                 <tbody>
                     <tr><td>عدد المستخدمين</td><td>2</td><td>5</td><td>20</td></tr>
-                    <tr><td>فواتير وعروض أسعار</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>تتبع المصروفات</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>إقرارات ضريبية</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>موردون وأوامر شراء</td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>مراكز التكلفة</td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>تتبع ربحية المشاريع</td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>فواتير مجدولة</td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>كشف الرواتب</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>مستودعات متعددة</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>إدارة الأصول الثابتة</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>وحدة البيانات المالية</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
+                    <tr><td>فواتير وعروض أسعار</td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>تتبع المصروفات</td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>إقرارات ضريبية</td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>موردون وأوامر شراء</td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>مراكز التكلفة</td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>كشف الرواتب</td><td><span class="ck-no">—</span></td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>مستودعات متعددة</td><td><span class="ck-no">—</span></td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>إدارة الأصول</td><td><span class="ck-no">—</span></td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td></tr>
                     <tr><td>مسح بالذكاء الاصطناعي</td><td>20/شهر</td><td>100/شهر</td><td>500/شهر</td></tr>
                     <tr><td>عدد الفروع</td><td>1</td><td>1</td><td>غير محدود</td></tr>
                 </tbody>
@@ -592,37 +364,29 @@
             </div>
         </div>
         <div id="compareDetail" style="display:none;">
-            <div style="overflow-x:auto;">
+            <div class="tbl-wrap">
             <table class="compare-table">
-                <thead>
-                    <tr>
-                        <th style="min-width:160px;">الميزة التفصيلية</th>
-                        <th>Starter</th>
-                        <th>Plus</th>
-                        <th>Premium</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>الميزة التفصيلية</th><th>Starter</th><th>Plus</th><th>Premium</th></tr></thead>
                 <tbody>
-                    <tr><td>أنشئ وأرسل فواتير</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>عروض أسعار</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>تتبع المصروفات وأسعار صرف العملات</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>مطابقة الحسابات</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>متوافق ZATCA المرحلة 2</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>إنشاء إقرارات ضريبية تلقائي</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>أنشئ فواتير موردين</td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>أنشئ أوامر الشراء</td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>مراكز التكلفة</td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>تتبع ربحية المشاريع</td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>أنشئ فواتير مجدولة</td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>قائمة تحقق الضريبة</td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>أدر كشف الرواتب</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>مطالبات مصروفات الموظفين</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>تتبع المخزون</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>مستودعات متعددة</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>إدارة الأصول الثابتة وإهلاك تلقائي</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
-                    <tr><td>وحد البيانات المالية لشركات متعددة</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
+                    <tr><td>أنشئ وأرسل فواتير</td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>عروض أسعار</td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>تتبع المصروفات وأسعار صرف العملات</td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>مطابقة الحسابات</td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>متوافق ZATCA المرحلة 2</td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>إنشاء إقرارات ضريبية تلقائي</td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>فواتير موردين وأوامر شراء</td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>مراكز التكلفة</td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>تتبع ربحية المشاريع</td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>فواتير مجدولة</td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>قائمة تحقق الضريبة</td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>أدر كشف الرواتب</td><td><span class="ck-no">—</span></td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>مطالبات مصروفات الموظفين</td><td><span class="ck-no">—</span></td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>تتبع المخزون</td><td><span class="ck-no">—</span></td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>مستودعات متعددة</td><td><span class="ck-no">—</span></td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>إدارة الأصول الثابتة وإهلاك تلقائي</td><td><span class="ck-no">—</span></td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td></tr>
+                    <tr><td>وحد البيانات المالية لشركات متعددة</td><td><span class="ck-no">—</span></td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td></tr>
                     <tr><td>مسح الفواتير بالذكاء الاصطناعي</td><td>20/شهر</td><td>100/شهر</td><td>500/شهر</td></tr>
-                    <tr><td>+3 تكاملات (فودكس، ستراب...)</td><td><span class="check-no">—</span></td><td><span class="check-no">—</span></td><td><span class="check-yes">✓</span></td></tr>
+                    <tr><td>+3 تكاملات (فودكس، ستراب...)</td><td><span class="ck-no">—</span></td><td><span class="ck-no">—</span></td><td><span class="ck-yes">✓</span></td></tr>
                 </tbody>
             </table>
             </div>
@@ -630,7 +394,6 @@
     </div>
 </div>
 
-<!-- Scripts -->
 <script type="module" src="firebase-config.js"></script>
 <script type="module">
 import { getAuth, onAuthStateChanged }
@@ -642,48 +405,42 @@ import { getSubscription, activateSubscription,
     from "./subscription.js";
 
 // ============================================================
-// ⚙️ إعدادات بوابات الدفع — عدّلها حسب حاجتك
+// ⚙️ إعدادات بوابات الدفع — عدّل هنا عند التفعيل
 // ============================================================
 const PAYMENT_CONFIG = {
-    // Stripe: اذهب لـ dashboard.stripe.com → Developers → API Keys → Publishable Key
-    // يعمل مع أي بلد: الدنمارك DK، السعودية SA، سوريا SY، إلخ
-    STRIPE_PUBLISHABLE_KEY: '',   // ← ضع مفتاحك هنا مثال: 'pk_live_xxxxx'
-
-    // PayPal: اذهب لـ developer.paypal.com → My Apps → Client ID
-    PAYPAL_CLIENT_ID: '',          // ← ضع Client ID هنا
-
-    // واتساب الدعم
-    WHATSAPP_NUMBER: '966501662547'
+    STRIPE_PUBLISHABLE_KEY: '',   // ← pk_live_xxxxx بعد فتح حساب Stripe
+    PAYPAL_CLIENT_ID:       '',   // ← Client ID بعد فتح حساب PayPal
+    WHATSAPP_NUMBER:        '966501662547'
 };
 
-// ============================================================
 const auth = getAuth();
 const db   = getFirestore();
 let currentUser, currentSub;
-let selectedPlan   = 'plus';     // افتراضي Plus
+let selectedPlan   = 'plus';
 let selectedPeriod = 'monthly';
 let selectedPM     = '';
-let stripeInstance = null;
-let stripeElements = null;
-let stripeCardEl   = null;
+let stripeInstance = null, stripeCardEl = null;
 
-// ============================================================
+// الأسعار المرجعية
+const PRICES = {
+    starter: { monthly: 99,  yearly: 1190 },
+    plus:    { monthly: 119, yearly: 1430 },
+    premium: { monthly: 199, yearly: 2390 }
+};
+
 // تهيئة
-// ============================================================
 onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = 'login.html'; return; }
     currentUser = user;
     currentSub  = await getSubscription(user.uid);
     renderStatusBar(currentSub);
     loadBankAccounts();
-    selectPlan('plus');           // تحديد Plus افتراضياً
+    selectPlan('plus');
     initStripe();
     initPayPal();
 });
 
-// ============================================================
 // Status Bar
-// ============================================================
 function renderStatusBar(sub) {
     const bar = document.getElementById('currentStatusBar');
     if (!bar || !sub) return;
@@ -691,181 +448,146 @@ function renderStatusBar(sub) {
     const end    = new Date(sub.subscriptionEndDate).toLocaleDateString('ar-SA');
     if (status.status === 'active') {
         bar.className = 'status-bar status-active';
-        bar.innerHTML = `<i class="fas fa-check-circle"></i> اشتراكك نشط (${PLANS[sub.plan]?.label || sub.plan}) — ينتهي في ${end} (${status.daysLeft} يوم متبقي)`;
+        bar.innerHTML = `<i class="fas fa-check-circle"></i> اشتراك نشط — ينتهي في ${end} (${status.daysLeft} يوم)`;
     } else if (status.status === 'trial') {
         bar.className = 'status-bar status-trial';
         bar.innerHTML = `<i class="fas fa-clock"></i> فترة تجريبية مجانية — تنتهي في ${end} (${status.daysLeft} يوماً متبقياً)`;
     } else {
         bar.className = 'status-bar status-expired';
-        bar.innerHTML = `<i class="fas fa-times-circle"></i> انتهى اشتراكك — اختر خطة لتجديده`;
+        bar.innerHTML = `<i class="fas fa-times-circle"></i> انتهى اشتراكك — اختر خطة للتجديد`;
     }
 }
 
 // ============================================================
-// Period Toggle
+// Period Toggle — الإصلاح الكامل هنا
 // ============================================================
 window.setPeriod = function(period) {
     selectedPeriod = period;
     const slider = document.getElementById('periodSlider');
+
     if (period === 'yearly') {
-        slider.style.right = '50%';
+        // تحريك الـ slider لليسار (سنوي)
+        slider.style.right = 'unset';
+        slider.style.left  = '4px';
         document.getElementById('btnMonthly').classList.remove('active');
         document.getElementById('btnYearly').classList.add('active');
-        // تحديث الأسعار للسنوي
-        updatePriceDisplay('starter', 99, 1190, true);
-        updatePriceDisplay('plus',    119, 1430, true);
-        updatePriceDisplay('premium', 199, 2390, true);
+        // تحديث الأسعار — شهرياً = السنوي ÷ 12
+        updatePrice('starter', Math.round(1190/12), 99,  1190, true);
+        updatePrice('plus',    Math.round(1430/12), 119, 1430, true);
+        updatePrice('premium', Math.round(2390/12), 199, 2390, true);
     } else {
-        slider.style.right = '0';
+        // تحريك الـ slider لليمين (شهري)
+        slider.style.left  = 'unset';
+        slider.style.right = '4px';
         document.getElementById('btnMonthly').classList.add('active');
         document.getElementById('btnYearly').classList.remove('active');
-        updatePriceDisplay('starter', 99, 1190, false);
-        updatePriceDisplay('plus',    119, 1430, false);
-        updatePriceDisplay('premium', 199, 2390, false);
+        // إعادة الأسعار الشهرية
+        updatePrice('starter', 99,  0, 1190, false);
+        updatePrice('plus',    119, 0, 1430, false);
+        updatePrice('premium', 199, 0, 2390, false);
     }
     updateOrderSummary();
 };
 
-function updatePriceDisplay(plan, monthlyPrice, yearlyPrice, isYearly) {
+function updatePrice(plan, newPrice, oldPrice, yearlyTotal, isYearly) {
     const priceEl  = document.getElementById('price-' + plan);
     const oldEl    = document.getElementById('old-' + plan);
     const yearlyEl = document.getElementById('yearly-' + plan);
-    const periodEl = document.querySelector(`#card-${plan} .plan-price .period`);
+    const periodEl = document.getElementById('period-' + plan);
     if (!priceEl) return;
+
+    priceEl.textContent = newPrice;
+
     if (isYearly) {
-        const monthlyEquiv = Math.round(yearlyPrice / 12);
-        priceEl.textContent = monthlyEquiv;
+        if (oldEl)    oldEl.textContent   = oldPrice + ' ﷼';
         if (periodEl) periodEl.textContent = '/ شهر (سنوي)';
-        if (oldEl) oldEl.textContent = monthlyPrice + ' ﷼';
-        if (yearlyEl) yearlyEl.textContent = `يُدفع ${yearlyPrice.toLocaleString()} ﷼ سنوياً — وفر ${(monthlyPrice * 12 - yearlyPrice).toLocaleString()} ﷼`;
+        const saving = (oldPrice * 12) - yearlyTotal;
+        if (yearlyEl) yearlyEl.textContent = `يُدفع ${yearlyTotal.toLocaleString()} ﷼ سنوياً — وفر ${saving} ﷼`;
     } else {
-        priceEl.textContent = monthlyPrice;
+        if (oldEl)    oldEl.textContent   = '';
         if (periodEl) periodEl.textContent = '/ شهر';
-        if (oldEl) oldEl.textContent = '';
-        if (yearlyEl) yearlyEl.textContent = `أو ${yearlyPrice.toLocaleString()} ﷼ / سنة`;
-    }
-}
-        const monthly = Math.round(yearlyPrice / 12);
-        priceEl.textContent = monthly;
-        if (oldEl) oldEl.textContent = monthlyPrice + ' ﷼';
-        if (yearlyEl) yearlyEl.textContent = `${yearlyPrice.toLocaleString()} ﷼ / سنة (وفر ${Math.round((monthlyPrice*12 - yearlyPrice)/12)} ﷼/شهر)`;
-    } else {
-        priceEl.textContent = monthlyPrice;
-        if (oldEl) oldEl.textContent = '';
-        if (yearlyEl) yearlyEl.textContent = `أو ${yearlyPrice.toLocaleString()} ﷼ / سنة`;
+        if (yearlyEl) yearlyEl.textContent = `أو ${yearlyTotal.toLocaleString()} ﷼ / سنة`;
     }
 }
 
-// ============================================================
 // Plan Selection
-// ============================================================
 window.selectPlan = function(plan) {
     selectedPlan = plan;
     document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
     const card = document.getElementById('card-' + plan);
     if (card) card.classList.add('selected');
     updateOrderSummary();
-    const paySection = document.getElementById('paymentSection');
-    if (paySection) {
-        paySection.style.display = 'block';
-        paySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const sec = document.getElementById('paymentSection');
+    if (sec) {
+        sec.style.display = 'block';
+        setTimeout(() => sec.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
     }
 };
 
-function getSelectedAmount() {
-    const prices = {
-        starter: { monthly: 99,  yearly: 1190 },
-        plus:    { monthly: 119, yearly: 1430 },
-        premium: { monthly: 199, yearly: 2390 }
-    };
-    const p = prices[selectedPlan] || prices['starter'];
+function getAmount() {
+    const p = PRICES[selectedPlan] || PRICES.plus;
     return selectedPeriod === 'yearly' ? p.yearly : p.monthly;
 }
 
 function updateOrderSummary() {
-    const planNames = { starter: 'Starter', plus: 'Plus', premium: 'Premium' };
-    document.getElementById('summaryPlan').textContent   = planNames[selectedPlan] || '—';
-    document.getElementById('summaryPeriod').textContent = selectedPeriod === 'yearly' ? 'سنوي' : 'شهري';
-    document.getElementById('summaryTotal').textContent  = getSelectedAmount().toLocaleString() + ' ﷼';
+    const names = { starter:'Starter', plus:'Plus', premium:'Premium' };
+    const el = {
+        plan:   document.getElementById('summaryPlan'),
+        period: document.getElementById('summaryPeriod'),
+        total:  document.getElementById('summaryTotal')
+    };
+    if (el.plan)   el.plan.textContent   = names[selectedPlan] || '—';
+    if (el.period) el.period.textContent = selectedPeriod === 'yearly' ? 'سنوي' : 'شهري';
+    if (el.total)  el.total.textContent  = getAmount().toLocaleString() + ' ﷼';
 }
 
-// ============================================================
-// Payment Method Selection
-// ============================================================
+// Payment Method
 window.selectPaymentMethod = function(pm) {
     selectedPM = pm;
     document.querySelectorAll('.pm-btn').forEach(b => b.classList.remove('selected'));
     const btn = document.getElementById('pm-' + pm);
     if (btn) btn.classList.add('selected');
     ['stripe','transfer','paypal','whatsapp'].forEach(f => {
-        const el = document.getElementById('form' + f.charAt(0).toUpperCase() + f.slice(1));
-        if (el) el.style.display = f === pm ? 'block' : 'none';
+        const id = 'form' + f.charAt(0).toUpperCase() + f.slice(1);
+        const el = document.getElementById(id);
+        if (el) el.style.display = (f === pm) ? 'block' : 'none';
     });
 };
 
-// ============================================================
 // Stripe
-// ============================================================
 function initStripe() {
     const key = PAYMENT_CONFIG.STRIPE_PUBLISHABLE_KEY;
-    if (!key) return; // غير مفعّل
-
-    // حقن Stripe.js
-    const script = document.createElement('script');
-    script.src = 'https://js.stripe.com/v3/';
-    script.onload = () => {
+    if (!key) return;
+    const s = document.createElement('script');
+    s.src = 'https://js.stripe.com/v3/';
+    s.onload = () => {
         stripeInstance = Stripe(key);
-        stripeElements = stripeInstance.elements();
-        stripeCardEl   = stripeElements.create('card', {
-            style: {
-                base: {
-                    color: '#ffffff',
-                    fontFamily: 'Cairo, sans-serif',
-                    fontSize: '14px',
-                    '::placeholder': { color: 'rgba(255,255,255,0.3)' }
-                },
-                invalid: { color: '#e63946' }
-            }
+        const elements = stripeInstance.elements();
+        stripeCardEl   = elements.create('card', {
+            style: { base: { color:'#fff', fontFamily:'Cairo,sans-serif', fontSize:'14px', '::placeholder':{ color:'rgba(255,255,255,0.3)' } }, invalid:{ color:'#e63946' } }
         });
         stripeCardEl.mount('#stripe-card-element');
-        document.getElementById('stripe-element-wrap').style.display = 'block';
-        document.getElementById('stripeNotConfigured').style.display = 'none';
+        document.querySelector('#formStripe .info-note').style.display = 'none';
     };
-    document.head.appendChild(script);
+    document.head.appendChild(s);
 }
 
 window.processStripePay = async function() {
-    const key = PAYMENT_CONFIG.STRIPE_PUBLISHABLE_KEY;
-    if (!key || !stripeInstance) {
-        // Stripe غير مفعّل → حوّل لواتساب
-        openWhatsappPayment();
-        return;
+    if (!PAYMENT_CONFIG.STRIPE_PUBLISHABLE_KEY || !stripeInstance) {
+        openWhatsappPayment(); return;
     }
     if (!selectedPlan) return showToast('اختر خطة أولاً', false);
     const name = document.getElementById('cardholderName')?.value.trim();
     if (!name) return showToast('أدخل اسم حامل البطاقة', false);
-
     const btn = document.getElementById('btnStripePay');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة...';
-
     try {
-        // ⚙️ هنا يجب إرسال طلب لـ Backend لإنشاء PaymentIntent
-        // مثال: const resp = await fetch('/create-payment-intent', { method:'POST', body: JSON.stringify({amount, currency}) })
-        // const { clientSecret } = await resp.json()
-        // const result = await stripeInstance.confirmCardPayment(clientSecret, { payment_method: { card: stripeCardEl } })
-
-        // ========================================================
-        // مؤقتاً: محاكاة الدفع (استبدل بالكود الحقيقي أعلاه)
-        // ========================================================
-        await new Promise(r => setTimeout(r, 2000));
-        const planKey = selectedPeriod === 'yearly'
-            ? (selectedPlan + '_yearly')
-            : selectedPlan;
-        const result = await activateSubscription(currentUser.uid,
-            selectedPeriod === 'yearly' ? 'yearly' : selectedPlan);
+        // ⚙️ هنا يجب إرسال طلب لـ Backend لإنشاء PaymentIntent وتأكيد الدفع
+        await new Promise(r => setTimeout(r, 2000)); // محاكاة مؤقتة
+        const result = await activateSubscription(currentUser.uid, selectedPlan);
         if (result.success) {
-            await logPayment('stripe', getSelectedAmount());
+            await logPayment('stripe');
             showToast('✅ تم الدفع وتفعيل الاشتراك!', true);
             setTimeout(() => window.location.href = 'index.html', 2200);
         }
@@ -878,63 +600,38 @@ window.processStripePay = async function() {
     }
 };
 
-// ============================================================
 // PayPal
-// ============================================================
 function initPayPal() {
-    const clientId = PAYMENT_CONFIG.PAYPAL_CLIENT_ID;
-    if (!clientId) return;
-
-    const script = document.createElement('script');
-    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=SAR`;
-    script.onload = () => {
-        document.getElementById('paypalNotConfigured').style.display = 'none';
+    const id = PAYMENT_CONFIG.PAYPAL_CLIENT_ID;
+    if (!id) return;
+    const s = document.createElement('script');
+    s.src = `https://www.paypal.com/sdk/js?client-id=${id}&currency=SAR`;
+    s.onload = () => {
+        document.querySelector('#formPaypal .info-note').style.display = 'none';
         paypal.Buttons({
-            createOrder: (data, actions) => {
-                return actions.order.create({
-                    purchase_units: [{ amount: { value: getSelectedAmount().toString() } }]
-                });
+            createOrder: (d,a) => a.order.create({ purchase_units:[{ amount:{ value: getAmount().toString() } }] }),
+            onApprove: async (d,a) => {
+                await a.order.capture();
+                const r = await activateSubscription(currentUser.uid, selectedPlan);
+                if (r.success) { await logPayment('paypal'); showToast('✅ تم الدفع عبر PayPal!', true); setTimeout(()=>window.location.href='index.html',2200); }
             },
-            onApprove: async (data, actions) => {
-                await actions.order.capture();
-                const result = await activateSubscription(currentUser.uid,
-                    selectedPeriod === 'yearly' ? 'yearly' : selectedPlan);
-                if (result.success) {
-                    await logPayment('paypal', getSelectedAmount());
-                    showToast('✅ تم الدفع عبر PayPal وتفعيل الاشتراك!', true);
-                    setTimeout(() => window.location.href = 'index.html', 2200);
-                }
-            },
-            onError: (err) => showToast('❌ خطأ PayPal: ' + err, false)
+            onError: (e) => showToast('❌ خطأ PayPal', false)
         }).render('#paypal-button-container');
     };
-    document.head.appendChild(script);
+    document.head.appendChild(s);
 }
 
-window.processPaypalFallback = function() {
-    openWhatsappPayment();
-};
-
-// ============================================================
-// التحويل البنكي
-// ============================================================
+// Bank Transfer
 async function loadBankAccounts() {
     const list = document.getElementById('bankAccountsList');
     if (!list) return;
     try {
         const snap = await getDoc(doc(db, 'admin', 'bankAccounts'));
-        const data = snap.exists() ? snap.data() : getDefaultBanks();
+        const data = snap.exists() ? snap.data() : { bank1:{ name:'لم تُضبط بيانات البنك بعد', iban:'أضفها من admin-billing.html', country:'' }, bank2:{name:'',iban:''} };
         renderBankBoxes(data, list);
     } catch(e) {
-        renderBankBoxes(getDefaultBanks(), list);
+        list.innerHTML = '<div style="color:#e63946;font-size:12px;text-align:center;">خطأ في تحميل البنوك</div>';
     }
-}
-
-function getDefaultBanks() {
-    return {
-        bank1: { name: 'البنك — غير مضبوط بعد', iban: 'أضف بياناتك من admin-billing.html', country: '' },
-        bank2: { name: '', iban: '', country: '' }
-    };
 }
 
 function renderBankBoxes(data, container) {
@@ -945,15 +642,15 @@ function renderBankBoxes(data, container) {
         container.innerHTML += `
             <div class="bank-box">
                 <div class="bank-name"><i class="fas fa-university"></i> ${b.name}
-                    ${b.country ? `<small style="font-size:10px;color:rgba(255,255,255,0.3);"> — ${b.country}</small>` : ''}
+                    ${b.currency ? `<small style="color:rgba(255,255,255,0.4);font-size:10px;"> — ${b.currency}</small>` : ''}
+                    ${b.country ? `<small style="color:rgba(255,255,255,0.3);font-size:10px;"> (${b.country})</small>` : ''}
                 </div>
                 <div class="iban-row">
-                    <span id="iban-${key}" style="direction:ltr;">${b.iban}</span>
-                    <button class="copy-btn" onclick="copyIban('${key}')">
-                        <i class="fas fa-copy"></i> نسخ
-                    </button>
+                    <span id="iban-${key}" style="direction:ltr;font-family:monospace;font-size:11px;overflow:hidden;text-overflow:ellipsis;">${b.iban}</span>
+                    <button class="copy-btn" onclick="copyIban('${key}')"><i class="fas fa-copy"></i> نسخ</button>
                 </div>
-                ${b.owner ? `<small style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;display:block;">اسم الحساب: ${b.owner}</small>` : ''}
+                ${b.owner ? `<small style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:5px;display:block;">اسم الحساب: ${b.owner}</small>` : ''}
+                ${b.swift ? `<small style="font-size:10px;color:rgba(255,255,255,0.3);display:block;">SWIFT: ${b.swift}</small>` : ''}
             </div>`;
     });
 }
@@ -961,18 +658,18 @@ function renderBankBoxes(data, container) {
 window.copyIban = function(key) {
     const el = document.getElementById('iban-' + key);
     if (!el) return;
-    navigator.clipboard.writeText(el.textContent.trim())
-        .then(() => showToast('✅ تم نسخ الآيبان', true))
-        .catch(() => {
-            const ta = document.createElement('textarea');
-            ta.value = el.textContent.trim();
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            ta.remove();
-            showToast('✅ تم نسخ الآيبان', true);
-        });
+    const text = el.textContent.trim();
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => showToast('✅ تم نسخ الآيبان', true)).catch(() => fallbackCopy(text));
+    } else { fallbackCopy(text); }
 };
+
+function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    ta.remove(); showToast('✅ تم نسخ الآيبان', true);
+}
 
 window.submitTransferRequest = async function() {
     if (!selectedPlan) return showToast('اختر خطة أولاً', false);
@@ -980,73 +677,61 @@ window.submitTransferRequest = async function() {
     const ref  = document.getElementById('transferRef')?.value.trim();
     if (!name || !ref) return showToast('يرجى إدخال اسمك ورقم الإيصال', false);
     try {
-        const amount = getSelectedAmount();
-        await setDoc(doc(db, 'users', currentUser.uid, 'payments', 'transfer-' + Date.now()), {
-            plan: selectedPlan, period: selectedPeriod, method: 'bank_transfer',
-            amount, status: 'pending_review',
-            transferName: name, transferRef: ref,
+        const amount = getAmount();
+        const ts = Date.now();
+        await setDoc(doc(db, 'users', currentUser.uid, 'payments', 'transfer-' + ts), {
+            plan:selectedPlan, period:selectedPeriod, method:'bank_transfer',
+            amount, status:'pending_review', transferName:name, transferRef:ref,
             requestedAt: serverTimestamp()
         });
-        await setDoc(doc(db, 'admin', 'pendingTransfers', currentUser.uid + '-' + Date.now()), {
-            uid: currentUser.uid, email: currentUser.email,
-            plan: selectedPlan, period: selectedPeriod,
-            amount, transferRef: ref, transferName: name,
+        await setDoc(doc(db, 'admin', 'pendingTransfers', currentUser.uid + '-' + ts), {
+            uid:currentUser.uid, email:currentUser.email,
+            plan:selectedPlan, period:selectedPeriod,
+            amount, transferRef:ref, transferName:name,
             requestedAt: serverTimestamp()
         });
         showToast('✅ تم إرسال طلبك — سيُفعَّل خلال 24 ساعة', true);
         setTimeout(() => window.location.href = 'index.html', 3000);
-    } catch(e) {
-        showToast('❌ خطأ: ' + e.message, false);
-    }
+    } catch(e) { showToast('❌ خطأ: ' + e.message, false); }
 };
 
-// ============================================================
-// واتساب
-// ============================================================
+// WhatsApp
 window.openWhatsappPayment = function() {
-    const planNames = { starter:'Starter (99﷼)', plus:'Plus (119﷼)', premium:'Premium (199﷼)' };
-    const planName  = planNames[selectedPlan] || selectedPlan;
-    const amount    = getSelectedAmount();
+    const names = { starter:'Starter (99﷼/شهر)', plus:'Plus (119﷼/شهر)', premium:'Premium (199﷼/شهر)' };
     const msg = encodeURIComponent(
         `مرحباً، أريد الاشتراك في تاجر برو\n` +
-        `الخطة: ${planName}\n` +
-        `الفترة: ${selectedPeriod === 'yearly' ? 'سنوي' : 'شهري'}\n` +
-        `المبلغ: ${amount} ﷼\n` +
-        `البريد: ${currentUser?.email || '—'}`
+        `الخطة: ${names[selectedPlan]||selectedPlan}\n` +
+        `الفترة: ${selectedPeriod==='yearly'?'سنوي':'شهري'}\n` +
+        `المبلغ: ${getAmount().toLocaleString()} ﷼\n` +
+        `البريد: ${currentUser?.email||'—'}`
     );
     window.open(`https://wa.me/${PAYMENT_CONFIG.WHATSAPP_NUMBER}?text=${msg}`, '_blank');
 };
 
-// ============================================================
-// تسجيل الدفع
-// ============================================================
-async function logPayment(method, amount) {
-    await setDoc(doc(db, 'users', currentUser.uid, 'payments', method + '-' + Date.now()), {
-        plan: selectedPlan, period: selectedPeriod, method,
-        amount, status: 'success', paidAt: serverTimestamp()
+// Log Payment
+async function logPayment(method) {
+    await setDoc(doc(db,'users',currentUser.uid,'payments',method+'-'+Date.now()), {
+        plan:selectedPlan, period:selectedPeriod, method,
+        amount:getAmount(), status:'success', paidAt:serverTimestamp()
     });
 }
 
-// ============================================================
-// مقارنة الميزات — تبديل
-// ============================================================
+// Compare toggle
 window.showCompare = function(tab) {
-    document.getElementById('compareSummary').style.display = tab === 'summary' ? 'block' : 'none';
-    document.getElementById('compareDetail').style.display  = tab === 'detail'  ? 'block' : 'none';
+    document.getElementById('compareSummary').style.display = tab==='summary' ? 'block' : 'none';
+    document.getElementById('compareDetail').style.display  = tab==='detail'  ? 'block' : 'none';
     document.querySelectorAll('.compare-tab').forEach((t,i) =>
-        t.classList.toggle('active', (i===0 && tab==='summary') || (i===1 && tab==='detail'))
+        t.classList.toggle('active', (i===0&&tab==='summary')||(i===1&&tab==='detail'))
     );
 };
 
-// ============================================================
 // Toast
-// ============================================================
-function showToast(msg, ok = true) {
+function showToast(msg, ok=true) {
     const t = document.getElementById('toastBox');
     t.innerText = msg;
     t.style.backgroundColor = ok ? '#2b9348' : '#d90429';
     t.style.display = 'block';
-    setTimeout(() => t.style.display = 'none', 4000);
+    setTimeout(() => t.style.display='none', 4000);
 }
 window.showToast = showToast;
 </script>

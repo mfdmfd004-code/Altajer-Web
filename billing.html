@@ -383,19 +383,24 @@
 </div>
 
 <!-- Trust Badges -->
-<div class="trust-wrap">
-    <div class="trust-item">
-        <i class="fas fa-shield-alt"></i>
-        <span>بيانات محمية ومشفرة</span>
+<div class="trust-wrap" style="max-width:780px;margin:20px auto 0;padding:0 12px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+    <div style="text-align:center;padding:16px 8px;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
+        <div style="font-size:28px;margin-bottom:6px;">🔒</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);">بيانات محمية ومشفرة</div>
     </div>
-    <div class="trust-item">
-        <i class="fas fa-undo"></i>
-        <span>ضمان استرجاع 14 يوم</span>
+    <div style="text-align:center;padding:16px 8px;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
+        <div style="font-size:28px;margin-bottom:6px;">↩️</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);">ضمان استرجاع 14 يوم</div>
     </div>
-    <div class="trust-item">
-        <i class="fas fa-headset"></i>
-        <span>دعم 24 ساعة</span>
+    <div style="text-align:center;padding:16px 8px;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
+        <div style="font-size:28px;margin-bottom:6px;">🎧</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);">دعم 24 ساعة</div>
     </div>
+    <div style="text-align:center;padding:16px 8px;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
+        <div style="font-size:28px;margin-bottom:6px;">📄</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);">متوافق ZATCA المرحلة 2</div>
+    </div>
+</div>
     <div class="trust-item">
         <i class="fas fa-file-invoice"></i>
         <span>متوافق ZATCA المرحلة 2</span>
@@ -725,8 +730,21 @@ function updatePriceDisplay(plan, monthlyPrice, yearlyPrice, isYearly) {
     const priceEl  = document.getElementById('price-' + plan);
     const oldEl    = document.getElementById('old-' + plan);
     const yearlyEl = document.getElementById('yearly-' + plan);
+    const periodEl = document.querySelector(`#card-${plan} .plan-price .period`);
     if (!priceEl) return;
     if (isYearly) {
+        const monthlyEquiv = Math.round(yearlyPrice / 12);
+        priceEl.textContent = monthlyEquiv;
+        if (periodEl) periodEl.textContent = '/ شهر (سنوي)';
+        if (oldEl) oldEl.textContent = monthlyPrice + ' ﷼';
+        if (yearlyEl) yearlyEl.textContent = `يُدفع ${yearlyPrice.toLocaleString()} ﷼ سنوياً — وفر ${(monthlyPrice * 12 - yearlyPrice).toLocaleString()} ﷼`;
+    } else {
+        priceEl.textContent = monthlyPrice;
+        if (periodEl) periodEl.textContent = '/ شهر';
+        if (oldEl) oldEl.textContent = '';
+        if (yearlyEl) yearlyEl.textContent = `أو ${yearlyPrice.toLocaleString()} ﷼ / سنة`;
+    }
+}
         const monthly = Math.round(yearlyPrice / 12);
         priceEl.textContent = monthly;
         if (oldEl) oldEl.textContent = monthlyPrice + ' ﷼';

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — قبول الدعوة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;font-family:'Cairo',sans-serif;}
+        body{background:linear-gradient(135deg,#0f172a,#1e3a5f);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;margin:0;}
+        .card{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:24px;width:100%;max-width:420px;padding:36px 26px;text-align:center;animation:up 0.5s ease;}
+        @keyframes up{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+        .logo-circle{width:80px;height:80px;background:linear-gradient(135deg,#0077b6,#00b4d8);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 0 30px rgba(0,180,216,0.4);}
+        .logo-circle i{font-size:34px;color:white;}
+        h2{font-size:20px;font-weight:900;color:white;margin-bottom:6px;}
+        .sub{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:24px;line-height:1.6;}
+        .invite-info{background:rgba(0,180,216,0.08);border:1px solid rgba(0,180,216,0.2);border-radius:12px;padding:16px;margin-bottom:22px;text-align:right;}
+        .invite-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;}
+        .invite-row span:first-child{color:rgba(255,255,255,0.5);}
+        .invite-row span:last-child{color:white;font-weight:600;}
+        .role-badge{display:inline-block;padding:2px 10px;border-radius:8px;font-size:11px;font-weight:700;}
+        .role-admin{background:rgba(230,57,70,0.2);color:#ff6b6b;}
+        .role-editor{background:rgba(0,180,216,0.2);color:#00b4d8;}
+        .role-viewer{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);}
+        .field-group{margin-bottom:14px;text-align:right;}
+        .field-group label{display:block;font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:5px;font-weight:600;}
+        .field-group input{width:100%;padding:12px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:white;font-size:14px;font-family:'Cairo',sans-serif;}
+        .field-group input:focus{outline:none;border-color:#00b4d8;}
+        .field-group input::placeholder{color:rgba(255,255,255,0.2);}
+        .btn-accept{width:100%;padding:14px;background:linear-gradient(135deg,#2b9348,#38b000);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer;transition:0.3s;margin-bottom:10px;}
+        .btn-accept:hover{transform:translateY(-2px);}
+        .btn-accept:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+        .divider{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+        .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.1);}
+        .divider span{font-size:11px;color:rgba(255,255,255,0.3);}
+        .btn-google{width:100%;padding:12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:white;font-size:13px;font-weight:600;font-family:'Cairo',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+        .btn-google img{width:18px;height:18px;}
+        .error-state,.success-state,.loading-state{padding:30px 0;}
+        .error-state i{font-size:48px;color:#e63946;display:block;margin-bottom:14px;}
+        .success-state i{font-size:48px;color:#38b000;display:block;margin-bottom:14px;}
+        .loading-state i{font-size:40px;color:#00b4d8;display:block;margin-bottom:14px;}
+        .spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-left:8px;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        .toast-box{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 26px;border-radius:30px;color:white;font-weight:700;font-size:13px;z-index:99999;display:none;box-shadow:0 5px 20px rgba(0,0,0,0.4);}
+    </style>
+</head>
+<body>
+<div id="toastBox" class="toast-box"></div>
+
+<div class="card" id="mainCard">
+    <!-- Loading State -->
+    <div id="stateLoading" class="loading-state">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p style="color:rgba(255,255,255,0.6);font-size:14px;">جاري التحقق من الدعوة...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="stateError" style="display:none;" class="error-state">
+        <i class="fas fa-times-circle"></i>
+        <h2 style="color:#e63946;">الدعوة غير صالحة</h2>
+        <p class="sub" id="errorMsg">رابط الدعوة منتهي أو غير صحيح.</p>
+        <a href="login.html" style="display:block;padding:12px;background:rgba(255,255,255,0.08);color:white;text-decoration:none;border-radius:12px;font-size:13px;">العودة لتسجيل الدخول</a>
+    </div>
+
+    <!-- Accept State (تسجيل + قبول) -->
+    <div id="stateAccept" style="display:none;">
+        <div class="logo-circle"><i class="fas fa-store"></i></div>
+        <h2>دعوة للانضمام لـ تاجر برو</h2>
+        <p class="sub">تمت دعوتك للانضمام كعضو في الفريق</p>
+
+        <div class="invite-info" id="inviteInfo">
+            <div class="invite-row"><span>البريد المدعو</span><span id="infoEmail">—</span></div>
+            <div class="invite-row"><span>الصلاحية</span><span id="infoRole">—</span></div>
+            <div class="invite-row"><span>دُعي بواسطة</span><span id="infoBy">—</span></div>
+        </div>
+
+        <p style="font-size:12px;color:rgba(255,255,255,0.5);text-align:right;margin-bottom:14px;">
+            أنشئ حسابك أو سجّل دخولك لقبول الدعوة:
+        </p>
+
+        <div class="field-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="acceptPassword" placeholder="اختر كلمة مرور (6 أحرف على الأقل)">
+        </div>
+
+        <button class="btn-accept" id="btnAccept" onclick="acceptInvite()">
+            <i class="fas fa-check"></i> قبول الدعوة وإنشاء الحساب
+        </button>
+
+        <div class="divider"><span>أو</span></div>
+        <button class="btn-google" onclick="acceptWithGoogle()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+            قبول الدعوة بـ Google
+        </button>
+    </div>
+
+    <!-- Success State -->
+    <div id="stateSuccess" style="display:none;" class="success-state">
+        <i class="fas fa-check-circle"></i>
+        <h2 style="color:#38b000;">مرحباً بك في الفريق!</h2>
+        <p class="sub">تم قبول الدعوة بنجاح. سيتم تحويلك للنظام...</p>
+    </div>
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module">
+import {
+    getAuth, onAuthStateChanged,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    GoogleAuthProvider, signInWithPopup
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import {
+    getFirestore, doc, getDoc, setDoc,
+    deleteDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const auth = getAuth();
+const db   = getFirestore();
+let inviteData = null, inviteToken = null;
+
+// قراءة التوكن من URL
+const urlParams  = new URLSearchParams(window.location.search);
+inviteToken      = urlParams.get('token');
+
+if (!inviteToken) {
+    showState('error');
+    document.getElementById('errorMsg').textContent = 'لا يوجد رابط دعوة صالح.';
+} else {
+    verifyInvite();
+}
+
+// ============================================================
+// التحقق من الدعوة
+// ============================================================
+async function verifyInvite() {
+    try {
+        const snap = await getDoc(doc(db, 'teamInvites', inviteToken));
+        if (!snap.exists()) {
+            showState('error');
+            document.getElementById('errorMsg').textContent = 'الدعوة غير موجودة أو تم إلغاؤها.';
+            return;
+        }
+        const data = snap.data();
+        if (data.status !== 'pending') {
+            showState('error');
+            document.getElementById('errorMsg').textContent = 'هذه الدعوة تم استخدامها مسبقاً.';
+            return;
+        }
+        // فحص الانتهاء
+        const inviteDocSnap = await getDoc(doc(db, 'users', data.ownerUid, 'teamInvites', data.inviteId));
+        if (inviteDocSnap.exists()) {
+            const exp = inviteDocSnap.data().expiresAt;
+            if (exp && new Date(exp) < new Date()) {
+                showState('error');
+                document.getElementById('errorMsg').textContent = 'انتهت صلاحية هذه الدعوة.';
+                return;
+            }
+        }
+
+        inviteData = data;
+        // عرض المعلومات
+        const roleNames = { admin:'مسؤول 👑', editor:'محرر ✏️', viewer:'مشاهد 👁️' };
+        document.getElementById('infoEmail').textContent = data.email;
+        document.getElementById('infoRole').innerHTML  = `<span class="role-badge role-${data.role}">${roleNames[data.role]||data.role}</span>`;
+        document.getElementById('infoBy').textContent  = data.invitedBy || '—';
+        showState('accept');
+
+    } catch(e) {
+        showState('error');
+        document.getElementById('errorMsg').textContent = 'خطأ: ' + e.message;
+    }
+}
+
+// ============================================================
+// قبول الدعوة بالإيميل
+// ============================================================
+window.acceptInvite = async function() {
+    if (!inviteData) return;
+    const password = document.getElementById('acceptPassword')?.value;
+    if (!password || password.length < 6) return showToast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', false);
+
+    const btn = document.getElementById('btnAccept');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> جاري المعالجة...';
+
+    try {
+        let user;
+        try {
+            // محاولة إنشاء حساب جديد
+            const result = await createUserWithEmailAndPassword(auth, inviteData.email, password);
+            user = result.user;
+        } catch(e) {
+            if (e.code === 'auth/email-already-in-use') {
+                // الحساب موجود — نحاول تسجيل الدخول
+                const result = await signInWithEmailAndPassword(auth, inviteData.email, password);
+                user = result.user;
+            } else { throw e; }
+        }
+        await completeInviteAcceptance(user);
+    } catch(e) {
+        let msg = 'خطأ: ' + e.message;
+        if (e.code === 'auth/wrong-password') msg = '❌ كلمة المرور خاطئة';
+        if (e.code === 'auth/weak-password')  msg = '❌ كلمة المرور ضعيفة جداً';
+        showToast(msg, false);
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> قبول الدعوة وإنشاء الحساب';
+    }
+};
+
+// ============================================================
+// قبول الدعوة بـ Google
+// ============================================================
+window.acceptWithGoogle = async function() {
+    if (!inviteData) return;
+    try {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ login_hint: inviteData.email });
+        const result = await signInWithPopup(auth, provider);
+        if (result.user.email.toLowerCase() !== inviteData.email.toLowerCase()) {
+            await auth.signOut();
+            return showToast('❌ يجب تسجيل الدخول بنفس البريد المدعو: ' + inviteData.email, false);
+        }
+        await completeInviteAcceptance(result.user);
+    } catch(e) {
+        if (e.code !== 'auth/popup-closed-by-user')
+            showToast('خطأ: ' + e.message, false);
+    }
+};
+
+// ============================================================
+// إتمام قبول الدعوة — يُحفظ في Firestore
+// ============================================================
+async function completeInviteAcceptance(user) {
+    const { ownerUid, role, inviteId } = inviteData;
+
+    // 1. إضافة المستخدم في قائمة الفريق لدى المالك
+    await setDoc(doc(db, 'users', ownerUid, 'teamMembers', user.uid), {
+        uid:       user.uid,
+        email:     user.email,
+        name:      user.displayName || user.email,
+        role,
+        status:    'active',
+        joinedAt:  serverTimestamp()
+    });
+
+    // 2. ربط المستخدم الجديد بالمالك (حتى يرى بيانات المالك)
+    await setDoc(doc(db, 'users', user.uid, 'teamInfo', 'meta'), {
+        ownerUid,
+        role,
+        joinedAt: serverTimestamp()
+    });
+
+    // 3. تحديث حالة الدعوة
+    await setDoc(doc(db, 'teamInvites', inviteToken),
+        { status:'accepted', acceptedAt: serverTimestamp() }, { merge: true }
+    );
+    await setDoc(doc(db, 'users', ownerUid, 'teamInvites', inviteId),
+        { status:'accepted', acceptedAt: serverTimestamp() }, { merge: true }
+    );
+
+    // عرض نجاح وتحويل
+    showState('success');
+    setTimeout(() => window.location.href = 'index.html', 2500);
+}
+
+// ============================================================
+// مساعدات
+// ============================================================
+function showState(state) {
+    ['loading','error','accept','success'].forEach(s =>
+        document.getElementById('state' + s.charAt(0).toUpperCase() + s.slice(1)).style.display =
+            s === state ? 'block' : 'none'
+    );
+}
+
+function showToast(msg, ok=true) {
+    const t = document.getElementById('toastBox');
+    t.innerText = msg; t.style.backgroundColor = ok ? '#2b9348' : '#d90429';
+    t.style.display = 'block'; setTimeout(()=>t.style.display='none', 4000);
+}
+window.showToast = showToast;
+</script>
+</body>
+</html>

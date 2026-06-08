@@ -1,65 +1,87 @@
 // ==========================================
 // التاجر برو المحاسبي - Altajer Pro Accountant
-// المحرك المركزي الموحد للترجمة السحابية الفورية عبر الإنترنت
+// محرك الترجمة التلقائي الصامت - بدون widget ظاهر
 // ==========================================
 
-/**
- * دالة تهيئة محرك ترجمة جوجل التلقائي للويب
- * يتم استدعاؤها برمجياً عبر سكريبت جوجل المربوط بالإنترنت
- */
 function googleTranslateElementInit() {
     new google.translate.TranslateElement({
-        // اللغة الأساسية والافتراضية لبناء كود البرنامج
-        pageLanguage: 'en', 
-        
-        // اللغات المتاحة للتحويل بينها (يمكنك توسيعها أو تركها مفتوحة لكل لغات العالم)
-        includedLanguages: 'ar,en,ur, hi', 
-        
-        // نمط العرض: مدمج وبسيط ليناسب شاشات الهواتف الذكية
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-        
-        // تفعيل الترجمة التلقائية بناءً على لغة متصفح المستخدم
-        autoDisplay: true 
+        pageLanguage: 'ar',
+        autoDisplay: false  // ← هذا يمنع ظهور أي شيء تلقائي
     }, 'google_translate_element');
+
+    // بعد تحميل الـ widget، نطبق لغة المتصفح فوراً
+    setTimeout(() => {
+        applyBrowserLanguage();
+    }, 800);
 }
 
-/**
- * حقن واستدعاء ملفات ربط محرك الترجمة السحابي من خوادم جوجل
- */
+function applyBrowserLanguage() {
+    // قراءة لغة المتصفح/الجهاز
+    const browserLang = navigator.language || navigator.userLanguage || 'ar';
+    const langCode = browserLang.split('-')[0].toLowerCase(); // مثال: "de-DE" → "de"
+
+    // إذا كانت اللغة عربية لا نفعل شيء (لغة التطبيق الأصلية)
+    if (langCode === 'ar') return;
+
+    // البحث عن select الخاص بجوجل ترانسليت وتغييره
+    const trySetLanguage = (attempts) => {
+        if (attempts <= 0) return;
+
+        const select = document.querySelector('.goog-te-combo');
+        if (select) {
+            select.value = langCode;
+            select.dispatchEvent(new Event('change'));
+        } else {
+            // لم يتحمل بعد، نحاول مرة أخرى
+            setTimeout(() => trySetLanguage(attempts - 1), 500);
+        }
+    };
+
+    trySetLanguage(10); // يحاول 10 مرات كل 500ms
+}
+
 function injectCloudTranslateEngine() {
-    // 1. إنشاء حاوية برمجية لتثبيت واجهة اختيار اللغة في الشاشة إن لم تكن موجودة
+    // إنشاء حاوية مخفية تماماً - لا تظهر للمستخدم
     if (!document.getElementById('google_translate_element')) {
         const translateContainer = document.createElement('div');
         translateContainer.id = 'google_translate_element';
-        
-        // تنسيق الحاوية لتظهر بشكل أنيق وثابت في أعلى يمين الشاشة دون تشويه التصميم
-        translateContainer.style.position = 'fixed';
-        translateContainer.style.top = '10px';
-        translateContainer.style.right = '10px';
-        translateContainer.style.zIndex = '99999';
-        translateContainer.style.padding = '5px';
-        translateContainer.style.borderRadius = '8px';
-        translateContainer.style.backgroundColor = 'rgba(30, 41, 59, 0.85)'; // متناسق مع المظهر الداكن للبرنامج
-        translateContainer.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-        
+        translateContainer.style.display = 'none'; // ← مخفي تماماً
         document.body.appendChild(translateContainer);
     }
 
-    // 2. حقن سكريبت جوجل الرسمي للترجمة الفورية برمجياً داخل الصفحة
+    // حقن سكريبت جوجل
     const googleScript = document.createElement('script');
     googleScript.type = 'text/javascript';
     googleScript.async = true;
     googleScript.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-    
     document.head.appendChild(googleScript);
 }
 
-// تشغيل المحرك السحابي فوراً وبشكل تلقائي عند تحميل أي صفحة في النظام
+// إخفاء شريط جوجل الأصفر الذي يظهر أعلى الصفحة
+function hideGoogleBanner() {
+    const style = document.createElement('style');
+    style.textContent = `
+        /* إخفاء شريط جوجل الأصفر */
+        .goog-te-banner-frame,
+        #goog-gt-tt,
+        .goog-te-balloon-frame,
+        div#goog-gt- { 
+            display: none !important; 
+        }
+        body { 
+            top: 0 !important; 
+        }
+        /* إخفاء الـ widget نهائياً */
+        #google_translate_element,
+        .goog-te-gadget {
+            display: none !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// تشغيل كل شيء عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
-    // تعيين إعدادات الصفحة الأساسية لتصبح بالإنجليزية افتراضياً ومن اليسار لليمين
-    document.documentElement.lang = 'en';
-    document.documentElement.dir = 'ltr';
-    
-    // تشغيل الاتصال بالإنترنت ومزامنة الترجمة الفورية
+    hideGoogleBanner();
     injectCloudTranslateEngine();
 });

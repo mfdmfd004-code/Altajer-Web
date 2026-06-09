@@ -424,8 +424,11 @@ export function showExpiredBlock() {
 export function applyPlanRestrictions(sub) {
     if (!sub) return;
     const status = checkSubscriptionStatus(sub);
-    // لا تقييد خلال فترة التجربة أو الاشتراك النشط
+
+    // ===== لا تقييد إطلاقاً خلال فترة التجربة أو الاشتراك النشط =====
+    // القفل يظهر فقط بعد انتهاء الاشتراك
     if (status.status === 'trial' || status.status === 'active') return;
+
     // قائمة الميزات المقيدة مع data-feature المقابل في HTML
     const featureMap = {
         'suppliers':       '[data-feature="suppliers"], [href="suppliers.html"], [onclick*="suppliers"]',

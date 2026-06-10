@@ -1,0 +1,539 @@
+cat > /home/claude/bank-accounts.html << 'BANKEOF'
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — الحسابات البنكية</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{background:#f0f4f8;font-family:'Cairo',sans-serif;color:#1e293b;padding-bottom:80px;}
+        .top-bar{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(0,0,0,0.08);position:sticky;top:0;z-index:100;}
+        .top-bar-title{font-size:16px;font-weight:900;color:#0077b6;display:flex;align-items:center;gap:8px;}
+        .btn-back{background:#f1f5f9;border:none;color:#64748b;padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:'Cairo',sans-serif;}
+        .wrap{max-width:700px;margin:0 auto;padding:16px 14px;}
+        .card-box{background:#fff;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+        .sec-title{font-size:14px;font-weight:700;color:#0077b6;display:flex;align-items:center;gap:7px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #f1f5f9;}
+        .field-group{margin-bottom:13px;}
+        .field-group label{font-size:11px;color:#64748b;display:block;margin-bottom:4px;font-weight:600;}
+        .field-group input,.field-group select{width:100%;padding:10px 13px;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;font-family:'Cairo',sans-serif;color:#1e293b;transition:0.2s;background:#fff;}
+        .field-group input:focus,.field-group select:focus{outline:none;border-color:#0077b6;box-shadow:0 0 0 3px rgba(0,119,182,0.1);}
+        .btn-main{width:100%;padding:13px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:0.2s;}
+        .btn-main:hover{transform:translateY(-1px);}
+        /* Bank Cards */
+        .bank-card{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,0.06);border-right:5px solid #0077b6;position:relative;overflow:hidden;}
+        .bank-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0077b6,#00b4d8);}
+        .bank-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+        .bank-name{font-size:15px;font-weight:900;color:#1e293b;}
+        .bank-type-badge{font-size:10px;padding:3px 10px;border-radius:8px;font-weight:700;}
+        .type-checking{background:#dbeafe;color:#1d4ed8;}
+        .type-savings{background:#dcfce7;color:#16a34a;}
+        .type-credit{background:#fef9c3;color:#ca8a04;}
+        .bank-balance{font-size:22px;font-weight:900;color:#0077b6;margin-bottom:4px;}
+        .bank-balance-label{font-size:10px;color:#94a3b8;}
+        .bank-iban{font-family:monospace;font-size:11px;color:#64748b;background:#f8fafc;padding:6px 10px;border-radius:8px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;}
+        .copy-btn{background:#e0f2fe;color:#0077b6;border:none;border-radius:6px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:'Cairo',sans-serif;}
+        .bank-actions{display:flex;gap:8px;margin-top:12px;}
+        .btn-sm{padding:7px 14px;border:none;border-radius:8px;font-size:12px;font-family:'Cairo',sans-serif;cursor:pointer;font-weight:600;}
+        .btn-edit{background:#f0f9ff;color:#0077b6;}
+        .btn-delete{background:#fee2e2;color:#e63946;}
+        .btn-tx{background:#f0fdf4;color:#16a34a;}
+        /* Transactions */
+        .tx-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;}
+        .tx-item:last-child{border-bottom:none;}
+        .tx-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;margin-left:10px;flex-shrink:0;}
+        .tx-icon.credit{background:#dcfce7;color:#16a34a;}
+        .tx-icon.debit{background:#fee2e2;color:#e63946;}
+        .tx-desc{font-size:13px;font-weight:600;flex:1;}
+        .tx-date{font-size:10px;color:#94a3b8;}
+        .tx-amount{font-size:14px;font-weight:900;}
+        .tx-amount.credit{color:#16a34a;}
+        .tx-amount.debit{color:#e63946;}
+        /* Stats */
+        .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+        .stat-box{background:#fff;border-radius:12px;padding:14px 10px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,0.05);}
+        .stat-num{font-size:18px;font-weight:900;color:#0077b6;}
+        .stat-lbl{font-size:10px;color:#94a3b8;margin-top:2px;}
+        /* Modal */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:none;align-items:flex-end;justify-content:center;}
+        .modal-overlay.show{display:flex;}
+        .modal-box{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:20px 16px 30px;}
+        .modal-handle{width:40px;height:4px;background:#e2e8f0;border-radius:2px;margin:0 auto 16px;}
+        .modal-title{font-size:15px;font-weight:900;color:#1e293b;margin-bottom:16px;}
+        /* Toast */
+        .toast-box{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:30px;color:white;font-weight:700;font-size:13px;z-index:99999;display:none;font-family:'Cairo',sans-serif;}
+        .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;}
+        .empty-state i{font-size:44px;margin-bottom:12px;display:block;opacity:0.4;}
+    </style>
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<!-- Add/Edit Bank Modal -->
+<div class="modal-overlay" id="bankModal" onclick="if(event.target===this)closeBankModal()">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <div class="modal-title" id="bankModalTitle">إضافة حساب بنكي جديد</div>
+        <input type="hidden" id="editBankId">
+        <div class="field-group">
+            <label>اسم البنك *</label>
+            <input type="text" id="bankName" placeholder="مثال: البنك الأهلي، Jyske Bank">
+        </div>
+        <div class="field-group">
+            <label>اسم صاحب الحساب *</label>
+            <input type="text" id="bankOwner" placeholder="الاسم الرسمي على الحساب">
+        </div>
+        <div class="row g-2">
+            <div class="col-6">
+                <div class="field-group">
+                    <label>نوع الحساب</label>
+                    <select id="bankType">
+                        <option value="checking">جاري</option>
+                        <option value="savings">توفير</option>
+                        <option value="credit">ائتماني</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="field-group">
+                    <label>العملة</label>
+                    <select id="bankCurrency">
+                        <option value="SAR">﷼ ريال سعودي</option>
+                        <option value="AED">د.إ درهم</option>
+                        <option value="USD">$ دولار</option>
+                        <option value="EUR">€ يورو</option>
+                        <option value="DKK">kr كرون دنماركي</option>
+                        <option value="GBP">£ جنيه</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="field-group">
+            <label>رقم IBAN / رقم الحساب</label>
+            <input type="text" id="bankIban" placeholder="SA0000000000000000000000" style="direction:ltr;text-align:left;font-family:monospace;" oninput="this.value=this.value.toUpperCase().replace(/\s/g,'')">
+        </div>
+        <div class="field-group">
+            <label>رمز SWIFT / BIC (اختياري)</label>
+            <input type="text" id="bankSwift" placeholder="XXXXXXXX" style="direction:ltr;text-align:left;font-family:monospace;">
+        </div>
+        <div class="field-group">
+            <label>الرصيد الافتتاحي</label>
+            <input type="number" id="bankOpeningBalance" placeholder="0.00" step="0.01" value="0">
+        </div>
+        <div class="field-group">
+            <label>ملاحظات</label>
+            <input type="text" id="bankNotes" placeholder="ملاحظة اختيارية">
+        </div>
+        <div style="display:flex;gap:10px;">
+            <button class="btn-main" onclick="saveBankAccount()"><i class="fas fa-save"></i> حفظ الحساب</button>
+            <button onclick="closeBankModal()" style="padding:13px 16px;background:#f1f5f9;color:#64748b;border:none;border-radius:12px;font-family:'Cairo',sans-serif;cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Transaction Modal -->
+<div class="modal-overlay" id="txModal" onclick="if(event.target===this)closeTxModal()">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <div class="modal-title">إضافة حركة بنكية</div>
+        <input type="hidden" id="txBankId">
+        <div class="field-group">
+            <label>نوع الحركة</label>
+            <div style="display:flex;gap:8px;margin-bottom:4px;">
+                <button id="txTypeCredit" onclick="setTxType('credit')" style="flex:1;padding:10px;background:#dcfce7;color:#16a34a;border:2px solid #16a34a;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+                    <i class="fas fa-arrow-down"></i> إيداع
+                </button>
+                <button id="txTypeDebit" onclick="setTxType('debit')" style="flex:1;padding:10px;background:#f1f5f9;color:#94a3b8;border:2px solid #e2e8f0;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+                    <i class="fas fa-arrow-up"></i> سحب
+                </button>
+            </div>
+        </div>
+        <div class="field-group">
+            <label>المبلغ *</label>
+            <input type="number" id="txAmount" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="field-group">
+            <label>الوصف / البيان *</label>
+            <input type="text" id="txDesc" placeholder="مثال: دفع فاتورة مورد">
+        </div>
+        <div class="field-group">
+            <label>التاريخ</label>
+            <input type="date" id="txDate">
+        </div>
+        <div class="field-group">
+            <label>مرجع العملية</label>
+            <input type="text" id="txRef" placeholder="رقم الحوالة أو المرجع">
+        </div>
+        <button class="btn-main" onclick="saveTransaction()"><i class="fas fa-save"></i> حفظ الحركة</button>
+    </div>
+</div>
+
+<!-- Transactions Detail Modal -->
+<div class="modal-overlay" id="txDetailModal" onclick="if(event.target===this)closeTxDetail()">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <div id="txDetailContent"></div>
+    </div>
+</div>
+
+<!-- Header -->
+<div class="top-bar">
+    <div class="top-bar-title"><i class="fas fa-university"></i> الحسابات البنكية</div>
+    <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> رجوع</a>
+</div>
+
+<div class="wrap">
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow">
+        <div class="stat-box">
+            <div class="stat-num" id="statAccounts">0</div>
+            <div class="stat-lbl">حساب بنكي</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" id="statTotalBalance" style="font-size:14px;">0</div>
+            <div class="stat-lbl">إجمالي الرصيد</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" id="statTxCount">0</div>
+            <div class="stat-lbl">حركة بنكية</div>
+        </div>
+    </div>
+
+    <!-- Add Button -->
+    <button class="btn-main" onclick="openAddBank()" style="margin-bottom:16px;">
+        <i class="fas fa-plus"></i> إضافة حساب بنكي جديد
+    </button>
+
+    <!-- Banks List -->
+    <div id="banksList">
+        <div class="empty-state" id="emptyBanks">
+            <i class="fas fa-university"></i>
+            <p style="font-size:14px;font-weight:600;color:#64748b;">لا توجد حسابات بنكية بعد</p>
+            <p style="font-size:12px;margin-top:4px;">اضغط "إضافة حساب بنكي" للبدء</p>
+        </div>
+    </div>
+
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module">
+import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, orderBy, addDoc }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { guardPage } from "./subscription.js";
+
+await guardPage({ blockOnExpired: false, blockInvoiceOnly: false });
+
+const auth = getAuth();
+const db   = getFirestore();
+let currentUser = null;
+let allBanks = [];
+let currentTxType = 'credit';
+
+onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    await loadBanks();
+    setTodayDate();
+});
+
+function setTodayDate() {
+    const today = new Date().toISOString().split('T')[0];
+    const txDate = document.getElementById('txDate');
+    if (txDate) txDate.value = today;
+}
+
+// ============================================================
+// Load Banks
+// ============================================================
+async function loadBanks() {
+    if (!currentUser) return;
+    try {
+        const snap = await getDocs(collection(db, 'users', currentUser.uid, 'bankAccounts'));
+        allBanks = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+        renderBanks();
+        updateStats();
+    } catch(e) { console.error('Load banks error:', e); }
+}
+
+function updateStats() {
+    document.getElementById('statAccounts').textContent = allBanks.length;
+    const totalSAR = allBanks.filter(b => b.currency === 'SAR' || !b.currency).reduce((s, b) => s + (b.balance || 0), 0);
+    document.getElementById('statTotalBalance').textContent = totalSAR.toFixed(2) + ' ﷼';
+}
+
+async function updateTxCount() {
+    let total = 0;
+    for (const bank of allBanks) {
+        try {
+            const snap = await getDocs(collection(db, 'users', currentUser.uid, 'bankAccounts', bank.docId, 'transactions'));
+            total += snap.size;
+        } catch(e) {}
+    }
+    document.getElementById('statTxCount').textContent = total;
+}
+
+function renderBanks() {
+    const container = document.getElementById('banksList');
+    const empty     = document.getElementById('emptyBanks');
+    if (allBanks.length === 0) {
+        container.innerHTML = '';
+        container.appendChild(empty);
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+    const typeLabels = { checking:'جاري', savings:'توفير', credit:'ائتماني' };
+    const typeClasses = { checking:'type-checking', savings:'type-savings', credit:'type-credit' };
+    container.innerHTML = allBanks.map(bank => `
+        <div class="bank-card" id="bank-${bank.docId}">
+            <div class="bank-card-header">
+                <div>
+                    <div class="bank-name">${bank.name}</div>
+                    <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${bank.owner||''}</div>
+                </div>
+                <span class="bank-type-badge ${typeClasses[bank.type]||'type-checking'}">${typeLabels[bank.type]||'جاري'}</span>
+            </div>
+            <div class="bank-balance">${(bank.balance||0).toFixed(2)} <span style="font-size:14px;">${bank.currency||'﷼'}</span></div>
+            <div class="bank-balance-label">الرصيد الحالي</div>
+            <div class="bank-iban">
+                <span style="direction:ltr;">${bank.iban||'—'}</span>
+                ${bank.iban ? `<button class="copy-btn" onclick="copyText('${bank.iban}')"><i class="fas fa-copy"></i> نسخ</button>` : ''}
+            </div>
+            ${bank.swift ? `<div style="font-size:10px;color:#94a3b8;margin-top:4px;">SWIFT: ${bank.swift}</div>` : ''}
+            <div class="bank-actions">
+                <button class="btn-sm btn-tx" onclick="openAddTx('${bank.docId}')"><i class="fas fa-exchange-alt"></i> حركة جديدة</button>
+                <button class="btn-sm btn-tx" onclick="viewTransactions('${bank.docId}','${bank.name}')" style="background:#f5f3ff;color:#7c3aed;"><i class="fas fa-list"></i> الحركات</button>
+                <button class="btn-sm btn-edit" onclick="openEditBank('${bank.docId}')"><i class="fas fa-edit"></i> تعديل</button>
+                <button class="btn-sm btn-delete" onclick="deleteBank('${bank.docId}')"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>`).join('');
+    updateTxCount();
+}
+
+// ============================================================
+// Bank CRUD
+// ============================================================
+window.openAddBank = function() {
+    document.getElementById('bankModalTitle').textContent = 'إضافة حساب بنكي جديد';
+    document.getElementById('editBankId').value = '';
+    ['bankName','bankOwner','bankIban','bankSwift','bankNotes'].forEach(id => { const el = document.getElementById(id); if (el) el.value=''; });
+    document.getElementById('bankOpeningBalance').value = '0';
+    document.getElementById('bankType').value     = 'checking';
+    document.getElementById('bankCurrency').value = 'SAR';
+    document.getElementById('bankModal').classList.add('show');
+};
+
+window.openEditBank = function(docId) {
+    const bank = allBanks.find(b => b.docId === docId);
+    if (!bank) return;
+    document.getElementById('bankModalTitle').textContent = 'تعديل الحساب البنكي';
+    document.getElementById('editBankId').value           = docId;
+    document.getElementById('bankName').value             = bank.name || '';
+    document.getElementById('bankOwner').value            = bank.owner || '';
+    document.getElementById('bankIban').value             = bank.iban || '';
+    document.getElementById('bankSwift').value            = bank.swift || '';
+    document.getElementById('bankNotes').value            = bank.notes || '';
+    document.getElementById('bankOpeningBalance').value   = bank.openingBalance || 0;
+    document.getElementById('bankType').value             = bank.type || 'checking';
+    document.getElementById('bankCurrency').value         = bank.currency || 'SAR';
+    document.getElementById('bankModal').classList.add('show');
+};
+
+window.closeBankModal = function() {
+    document.getElementById('bankModal').classList.remove('show');
+};
+
+window.saveBankAccount = async function() {
+    const name  = document.getElementById('bankName').value.trim();
+    const owner = document.getElementById('bankOwner').value.trim();
+    if (!name || !owner) return showToast('يرجى إدخال اسم البنك واسم الحساب', false);
+    const editId = document.getElementById('editBankId').value;
+    const opening = parseFloat(document.getElementById('bankOpeningBalance').value) || 0;
+
+    const data = {
+        name,
+        owner,
+        iban:           document.getElementById('bankIban').value.trim(),
+        swift:          document.getElementById('bankSwift').value.trim(),
+        notes:          document.getElementById('bankNotes').value.trim(),
+        type:           document.getElementById('bankType').value,
+        currency:       document.getElementById('bankCurrency').value,
+        openingBalance: opening,
+        balance:        editId ? (allBanks.find(b=>b.docId===editId)?.balance || opening) : opening,
+        updatedAt:      serverTimestamp()
+    };
+
+    try {
+        if (editId) {
+            await updateDoc(doc(db, 'users', currentUser.uid, 'bankAccounts', editId), data);
+            showToast('✅ تم تحديث الحساب البنكي', true);
+        } else {
+            const ref = doc(db, 'users', currentUser.uid, 'bankAccounts', 'bank-' + Date.now());
+            await setDoc(ref, { ...data, createdAt: serverTimestamp() });
+            showToast('✅ تم إضافة الحساب البنكي', true);
+        }
+        closeBankModal();
+        await loadBanks();
+    } catch(e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+window.deleteBank = async function(docId) {
+    if (!confirm('حذف هذا الحساب البنكي؟ سيتم حذف جميع حركاته أيضاً.')) return;
+    try {
+        await deleteDoc(doc(db, 'users', currentUser.uid, 'bankAccounts', docId));
+        showToast('تم حذف الحساب', false);
+        await loadBanks();
+    } catch(e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+// ============================================================
+// Transactions
+// ============================================================
+window.openAddTx = function(bankId) {
+    document.getElementById('txBankId').value = bankId;
+    document.getElementById('txAmount').value = '';
+    document.getElementById('txDesc').value   = '';
+    document.getElementById('txRef').value    = '';
+    setTxType('credit');
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('txDate').value = today;
+    document.getElementById('txModal').classList.add('show');
+};
+
+window.closeTxModal = function() {
+    document.getElementById('txModal').classList.remove('show');
+};
+
+window.setTxType = function(type) {
+    currentTxType = type;
+    const creditBtn = document.getElementById('txTypeCredit');
+    const debitBtn  = document.getElementById('txTypeDebit');
+    if (type === 'credit') {
+        creditBtn.style.background = '#dcfce7'; creditBtn.style.color = '#16a34a'; creditBtn.style.borderColor = '#16a34a';
+        debitBtn.style.background  = '#f1f5f9'; debitBtn.style.color  = '#94a3b8'; debitBtn.style.borderColor  = '#e2e8f0';
+    } else {
+        debitBtn.style.background  = '#fee2e2'; debitBtn.style.color  = '#e63946'; debitBtn.style.borderColor  = '#e63946';
+        creditBtn.style.background = '#f1f5f9'; creditBtn.style.color = '#94a3b8'; creditBtn.style.borderColor = '#e2e8f0';
+    }
+};
+
+window.saveTransaction = async function() {
+    const bankId = document.getElementById('txBankId').value;
+    const amount = parseFloat(document.getElementById('txAmount').value) || 0;
+    const desc   = document.getElementById('txDesc').value.trim();
+    const date   = document.getElementById('txDate').value;
+    const ref    = document.getElementById('txRef').value.trim();
+    if (!amount || amount <= 0) return showToast('يرجى إدخال مبلغ صحيح', false);
+    if (!desc) return showToast('يرجى إدخال وصف الحركة', false);
+
+    try {
+        const txId  = 'tx-' + Date.now();
+        const txRef = doc(db, 'users', currentUser.uid, 'bankAccounts', bankId, 'transactions', txId);
+        await setDoc(txRef, { type: currentTxType, amount, desc, date, ref, createdAt: serverTimestamp() });
+
+        // تحديث الرصيد
+        const bank   = allBanks.find(b => b.docId === bankId);
+        const oldBal = bank?.balance || 0;
+        const newBal = currentTxType === 'credit' ? oldBal + amount : Math.max(0, oldBal - amount);
+        await updateDoc(doc(db, 'users', currentUser.uid, 'bankAccounts', bankId), { balance: newBal });
+
+        showToast(`✅ تم ${currentTxType==='credit'?'الإيداع':'السحب'} — الرصيد الجديد: ${newBal.toFixed(2)}`, true);
+        closeTxModal();
+        await loadBanks();
+    } catch(e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+// ============================================================
+// View Transactions
+// ============================================================
+window.viewTransactions = async function(bankId, bankName) {
+    const bank = allBanks.find(b => b.docId === bankId);
+    let txList = [];
+    try {
+        const snap = await getDocs(query(
+            collection(db, 'users', currentUser.uid, 'bankAccounts', bankId, 'transactions'),
+            orderBy('createdAt', 'desc')
+        ));
+        txList = snap.docs.map(d => d.data());
+    } catch(e) {
+        try {
+            const snap2 = await getDocs(collection(db, 'users', currentUser.uid, 'bankAccounts', bankId, 'transactions'));
+            txList = snap2.docs.map(d => d.data()).sort((a,b) => b.date?.localeCompare(a.date||''));
+        } catch(e2) {}
+    }
+
+    const totalCredit = txList.filter(t => t.type==='credit').reduce((s,t) => s+(t.amount||0), 0);
+    const totalDebit  = txList.filter(t => t.type==='debit').reduce((s,t) => s+(t.amount||0), 0);
+
+    document.getElementById('txDetailContent').innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <h5 style="font-size:15px;font-weight:900;margin:0;">${bankName}</h5>
+            <span style="font-size:16px;font-weight:900;color:#0077b6;">${(bank?.balance||0).toFixed(2)} ${bank?.currency||'﷼'}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+            <div style="background:#dcfce7;border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:14px;font-weight:900;color:#16a34a;">+${totalCredit.toFixed(2)}</div>
+                <div style="font-size:10px;color:#16a34a;">إجمالي الإيداعات</div>
+            </div>
+            <div style="background:#fee2e2;border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:14px;font-weight:900;color:#e63946;">-${totalDebit.toFixed(2)}</div>
+                <div style="font-size:10px;color:#e63946;">إجمالي السحوبات</div>
+            </div>
+        </div>
+        <button onclick="openAddTx('${bankId}');closeTxDetail();" style="width:100%;padding:11px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">
+            <i class="fas fa-plus"></i> إضافة حركة جديدة
+        </button>
+        <div>
+            ${txList.length === 0
+                ? '<div style="text-align:center;padding:30px;color:#94a3b8;"><i class="fas fa-exchange-alt" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.4;"></i>لا توجد حركات بعد</div>'
+                : txList.map(tx => `
+                    <div class="tx-item">
+                        <div class="tx-icon ${tx.type}">${tx.type==='credit'?'<i class="fas fa-arrow-down"></i>':'<i class="fas fa-arrow-up"></i>'}</div>
+                        <div style="flex:1;">
+                            <div class="tx-desc">${tx.desc||'—'}</div>
+                            <div class="tx-date">${tx.date||'—'} ${tx.ref?'• '+tx.ref:''}</div>
+                        </div>
+                        <span class="tx-amount ${tx.type}">${tx.type==='credit'?'+':'-'}${(tx.amount||0).toFixed(2)}</span>
+                    </div>`).join('')
+            }
+        </div>`;
+    document.getElementById('txDetailModal').classList.add('show');
+};
+
+window.closeTxDetail = function() {
+    document.getElementById('txDetailModal').classList.remove('show');
+};
+
+// ============================================================
+// Copy
+// ============================================================
+window.copyText = function(text) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => showToast('✅ تم النسخ', true));
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+        showToast('✅ تم النسخ', true);
+    }
+};
+
+// ============================================================
+// Toast
+// ============================================================
+function showToast(msg, ok=true) {
+    const t = document.getElementById('toastBox');
+    t.innerText = msg; t.style.backgroundColor = ok ? '#2b9348' : '#d90429';
+    t.style.display = 'block'; setTimeout(() => t.style.display='none', 4000);
+}
+window.showToast = showToast;
+</script>
+</body>
+</html>
+BANKEOF
+echo "done"

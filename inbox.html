@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — البريد الوارد</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{background:#f0f4f8;font-family:'Cairo',sans-serif;color:#1e293b;padding-bottom:80px;}
+
+        /* Header */
+        .top-bar{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(0,0,0,0.08);position:sticky;top:0;z-index:100;}
+        .top-bar-title{font-size:16px;font-weight:900;color:#0077b6;display:flex;align-items:center;gap:8px;}
+        .btn-back{background:#f1f5f9;border:none;color:#64748b;padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:'Cairo',sans-serif;}
+        .btn-back:hover{background:#e2e8f0;}
+
+        /* Tabs */
+        .tabs-wrap{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 16px;display:flex;gap:0;}
+        .tab-btn{padding:12px 16px;border:none;background:transparent;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;color:#94a3b8;cursor:pointer;border-bottom:2px solid transparent;transition:0.2s;white-space:nowrap;}
+        .tab-btn.active{color:#0077b6;border-bottom-color:#0077b6;}
+        .badge-count{background:#e63946;color:white;font-size:9px;padding:1px 5px;border-radius:8px;margin-right:4px;}
+
+        /* Upload Zone */
+        .upload-zone{margin:16px;background:#fff;border:2px dashed #cbd5e1;border-radius:16px;padding:28px 20px;text-align:center;cursor:pointer;transition:0.3s;}
+        .upload-zone:hover,.upload-zone.dragover{border-color:#0077b6;background:#f0f9ff;}
+        .upload-zone i{font-size:36px;color:#0077b6;margin-bottom:10px;display:block;}
+        .upload-zone h6{font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px;}
+        .upload-zone p{font-size:11px;color:#94a3b8;}
+        .upload-zone input{display:none;}
+
+        /* AI Processing card */
+        .ai-card{margin:0 16px 16px;background:linear-gradient(135deg,#0f172a,#1e3a5f);border-radius:16px;padding:16px;display:none;}
+        .ai-card.show{display:block;}
+        .ai-steps{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+        .ai-step{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,0.7);}
+        .ai-step i{width:20px;text-align:center;}
+        .ai-step.done{color:#38b000;}
+        .ai-step.active{color:#00b4d8;}
+        .ai-step.active i{animation:spin 1s linear infinite;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+
+        /* Invoice Preview */
+        .invoice-preview{margin:0 16px 16px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);display:none;}
+        .invoice-preview.show{display:block;}
+        .preview-header{background:#0f172a;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
+        .preview-title{font-size:13px;font-weight:700;color:#00b4d8;}
+        .preview-img{width:100%;max-height:200px;object-fit:contain;background:#f8fafc;cursor:pointer;}
+        .preview-fields{padding:16px;}
+        .pf-row{display:flex;gap:10px;margin-bottom:12px;}
+        .pf-group{flex:1;}
+        .pf-group label{font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;font-weight:600;}
+        .pf-group input,.pf-group select{width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Cairo',sans-serif;color:#1e293b;transition:0.2s;}
+        .pf-group input:focus,.pf-group select:focus{outline:none;border-color:#0077b6;box-shadow:0 0 0 3px rgba(0,119,182,0.1);}
+        .pf-group select{background:#fff;}
+        .ai-badge{display:inline-flex;align-items:center;gap:4px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:20px;padding:2px 8px;font-size:9px;color:#0077b6;font-weight:700;margin-bottom:8px;}
+        .confidence-bar{height:3px;background:#e2e8f0;border-radius:2px;margin-top:3px;}
+        .confidence-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#38b000,#00b4d8);}
+
+        /* Action buttons */
+        .action-row{padding:0 16px;display:flex;gap:10px;margin-bottom:16px;}
+        .btn-save-inv{flex:1;padding:13px;background:linear-gradient(135deg,#2b9348,#38b000);color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:0.2s;}
+        .btn-save-inv:hover{transform:translateY(-1px);}
+        .btn-discard{padding:13px 16px;background:#f1f5f9;color:#64748b;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:13px;cursor:pointer;}
+
+        /* Inbox List */
+        .inbox-list{padding:0 16px;}
+        .inbox-item{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,0.06);cursor:pointer;transition:0.2s;border-right:4px solid transparent;}
+        .inbox-item:hover{transform:translateX(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+        .inbox-item.unread{border-right-color:#0077b6;background:#f8fbff;}
+        .inbox-item.processed{border-right-color:#38b000;}
+        .inbox-item.pending{border-right-color:#ffb703;}
+        .item-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;}
+        .item-supplier{font-size:13px;font-weight:700;color:#1e293b;}
+        .item-amount{font-size:14px;font-weight:900;color:#0077b6;}
+        .item-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:#94a3b8;}
+        .item-status{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:600;}
+        .status-processed{background:#dcfce7;color:#16a34a;}
+        .status-pending{background:#fef9c3;color:#ca8a04;}
+        .status-unread{background:#dbeafe;color:#1d4ed8;}
+        .item-preview-thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;margin-left:10px;border:1px solid #e2e8f0;}
+
+        /* Empty state */
+        .empty-state{text-align:center;padding:50px 20px;color:#94a3b8;}
+        .empty-state i{font-size:48px;margin-bottom:14px;display:block;opacity:0.4;}
+
+        /* Detail Modal */
+        .detail-modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:none;align-items:flex-end;justify-content:center;}
+        .detail-modal.show{display:flex;}
+        .detail-box{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:20px 16px 30px;}
+        .detail-handle{width:40px;height:4px;background:#e2e8f0;border-radius:2px;margin:0 auto 16px;}
+        .detail-img{width:100%;border-radius:10px;margin-bottom:14px;border:1px solid #e2e8f0;}
+
+        /* Toast */
+        .toast-box{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:30px;color:white;font-weight:700;font-size:13px;z-index:99999;display:none;font-family:'Cairo',sans-serif;}
+
+        /* Stats bar */
+        .stats-bar{margin:16px 16px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+        .stat-item{background:#fff;border-radius:12px;padding:12px 10px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,0.05);}
+        .stat-num{font-size:20px;font-weight:900;color:#0077b6;}
+        .stat-label{font-size:10px;color:#94a3b8;margin-top:2px;}
+
+        /* Image zoom overlay */
+        .img-zoom-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99998;display:none;align-items:center;justify-content:center;cursor:zoom-out;}
+        .img-zoom-overlay.show{display:flex;}
+        .img-zoom-overlay img{max-width:95vw;max-height:90vh;border-radius:8px;}
+    </style>
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<!-- Image Zoom -->
+<div class="img-zoom-overlay" id="imgZoom" onclick="closeZoom()">
+    <img id="zoomedImg" src="" alt="">
+</div>
+
+<!-- Detail Modal -->
+<div class="detail-modal" id="detailModal" onclick="if(event.target===this)closeDetail()">
+    <div class="detail-box">
+        <div class="detail-handle"></div>
+        <div id="detailContent"></div>
+    </div>
+</div>
+
+<!-- Header -->
+<div class="top-bar">
+    <div class="top-bar-title"><i class="fas fa-inbox"></i> البريد الوارد</div>
+    <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> رجوع</a>
+</div>
+
+<!-- Tabs -->
+<div class="tabs-wrap" id="tabsWrap">
+    <button class="tab-btn active" onclick="switchTab('upload')"><i class="fas fa-upload" style="margin-left:4px;"></i> رفع فاتورة</button>
+    <button class="tab-btn" onclick="switchTab('inbox')"><i class="fas fa-inbox" style="margin-left:4px;"></i> الفواتير الواردة <span class="badge-count" id="unreadBadge">0</span></button>
+</div>
+
+<!-- ======== تاب رفع الفاتورة ======== -->
+<div id="tabUpload">
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event)">
+        <i class="fas fa-file-invoice"></i>
+        <h6>ارفع صورة أو PDF لفاتورة المورد</h6>
+        <p>JPG, PNG, PDF — بحد أقصى 10MB</p>
+        <p style="margin-top:6px;font-size:10px;color:#0077b6;font-weight:600;">
+            <i class="fas fa-magic"></i> سيستخرج الذكاء الاصطناعي البيانات تلقائياً
+        </p>
+        <input type="file" id="fileInput" accept="image/*,.pdf" onchange="handleFileSelect(this)">
+    </div>
+
+    <!-- AI Processing Steps -->
+    <div class="ai-card" id="aiCard">
+        <div style="display:flex;align-items:center;gap:8px;color:white;">
+            <i class="fas fa-robot" style="color:#00b4d8;font-size:18px;"></i>
+            <span style="font-size:14px;font-weight:700;">جاري تحليل الفاتورة...</span>
+        </div>
+        <div class="ai-steps">
+            <div class="ai-step" id="step1"><i class="fas fa-check"></i> قراءة الملف</div>
+            <div class="ai-step" id="step2"><i class="fas fa-spinner"></i> استخراج البيانات بالذكاء الاصطناعي</div>
+            <div class="ai-step" id="step3"><i class="fas fa-circle" style="font-size:8px;"></i> التحقق من البيانات</div>
+            <div class="ai-step" id="step4"><i class="fas fa-circle" style="font-size:8px;"></i> جاهز للمراجعة</div>
+        </div>
+    </div>
+
+    <!-- Invoice Preview & Fields -->
+    <div class="invoice-preview" id="invoicePreview">
+        <div class="preview-header">
+            <span class="preview-title"><i class="fas fa-robot" style="margin-left:6px;"></i> استُخرجت البيانات تلقائياً — راجع وعدّل إن لزم</span>
+            <button onclick="zoomImage()" style="background:rgba(255,255,255,0.1);border:none;color:white;padding:4px 10px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'Cairo',sans-serif;">
+                <i class="fas fa-search-plus"></i> تكبير
+            </button>
+        </div>
+        <img id="previewImg" src="" alt="فاتورة" class="preview-img" onclick="zoomImage()">
+        <div class="preview-fields">
+            <div class="ai-badge"><i class="fas fa-magic"></i> مستخرج بالذكاء الاصطناعي</div>
+
+            <div class="pf-row">
+                <div class="pf-group">
+                    <label>اسم المورد <span id="conf-supplier" style="color:#38b000;font-size:9px;"></span></label>
+                    <input type="text" id="invSupplier" placeholder="اسم الشركة أو المورد">
+                    <div class="confidence-bar"><div class="confidence-fill" id="cbar-supplier" style="width:0%"></div></div>
+                </div>
+            </div>
+
+            <div class="pf-row">
+                <div class="pf-group">
+                    <label>رقم الفاتورة <span id="conf-invno" style="color:#38b000;font-size:9px;"></span></label>
+                    <input type="text" id="invNumber" placeholder="INV-XXXX">
+                    <div class="confidence-bar"><div class="confidence-fill" id="cbar-invno" style="width:0%"></div></div>
+                </div>
+                <div class="pf-group">
+                    <label>تاريخ الفاتورة</label>
+                    <input type="date" id="invDate">
+                </div>
+            </div>
+
+            <div class="pf-row">
+                <div class="pf-group">
+                    <label>الإجمالي قبل الضريبة <span id="conf-subtotal" style="color:#38b000;font-size:9px;"></span></label>
+                    <input type="number" id="invSubtotal" placeholder="0.00" step="0.01">
+                    <div class="confidence-bar"><div class="confidence-fill" id="cbar-subtotal" style="width:0%"></div></div>
+                </div>
+                <div class="pf-group">
+                    <label>ضريبة القيمة المضافة <span id="conf-vat" style="color:#38b000;font-size:9px;"></span></label>
+                    <input type="number" id="invVat" placeholder="0.00" step="0.01">
+                    <div class="confidence-bar"><div class="confidence-fill" id="cbar-vat" style="width:0%"></div></div>
+                </div>
+            </div>
+
+            <div class="pf-row">
+                <div class="pf-group">
+                    <label>الإجمالي الكلي <span id="conf-total" style="color:#38b000;font-size:9px;"></span></label>
+                    <input type="number" id="invTotal" placeholder="0.00" step="0.01" style="font-weight:700;font-size:15px;color:#0077b6;">
+                    <div class="confidence-bar"><div class="confidence-fill" id="cbar-total" style="width:0%"></div></div>
+                </div>
+                <div class="pf-group">
+                    <label>العملة</label>
+                    <select id="invCurrency">
+                        <option value="SAR">﷼ ريال سعودي</option>
+                        <option value="AED">د.إ درهم إماراتي</option>
+                        <option value="USD">$ دولار أمريكي</option>
+                        <option value="EUR">€ يورو</option>
+                        <option value="DKK">kr كرون دنماركي</option>
+                        <option value="GBP">£ جنيه إسترليني</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pf-row">
+                <div class="pf-group">
+                    <label>الرقم الضريبي للمورد <span id="conf-vatn" style="color:#38b000;font-size:9px;"></span></label>
+                    <input type="text" id="invSupplierVat" placeholder="300XXXXXXXXXXXX3" maxlength="15">
+                    <div class="confidence-bar"><div class="confidence-fill" id="cbar-vatn" style="width:0%"></div></div>
+                </div>
+            </div>
+
+            <div class="pf-row">
+                <div class="pf-group">
+                    <label>البنود / الوصف <span id="conf-items" style="color:#38b000;font-size:9px;"></span></label>
+                    <input type="text" id="invDescription" placeholder="وصف مختصر للبنود">
+                    <div class="confidence-bar"><div class="confidence-fill" id="cbar-items" style="width:0%"></div></div>
+                </div>
+            </div>
+
+            <div class="pf-row">
+                <div class="pf-group">
+                    <label>ملاحظات إضافية</label>
+                    <input type="text" id="invNotes" placeholder="أي ملاحظة اختيارية">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-row" id="actionRow" style="display:none;">
+        <button class="btn-save-inv" onclick="saveInvoice()">
+            <i class="fas fa-save"></i> حفظ في البريد الوارد
+        </button>
+        <button class="btn-discard" onclick="discardInvoice()">
+            <i class="fas fa-times"></i> إلغاء
+        </button>
+    </div>
+
+</div>
+
+<!-- ======== تاب البريد الوارد ======== -->
+<div id="tabInbox" style="display:none;">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-num" id="statTotal">0</div>
+            <div class="stat-label">إجمالي الفواتير</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num" id="statPending" style="color:#ffb703;">0</div>
+            <div class="stat-label">بانتظار المعالجة</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num" id="statProcessed" style="color:#38b000;">0</div>
+            <div class="stat-label">تمت المعالجة</div>
+        </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div style="margin:14px 16px 10px;display:flex;gap:8px;">
+        <input type="text" id="searchInbox" placeholder="🔍 بحث في الفواتير..." oninput="filterInbox(this.value)"
+            style="flex:1;padding:10px 14px;border:1px solid #e2e8f0;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;color:#1e293b;background:#fff;">
+        <select id="filterStatus" onchange="filterInbox(document.getElementById('searchInbox').value)"
+            style="padding:10px 12px;border:1px solid #e2e8f0;border-radius:10px;font-family:'Cairo',sans-serif;font-size:12px;background:#fff;color:#1e293b;">
+            <option value="all">الكل</option>
+            <option value="unread">جديدة</option>
+            <option value="pending">معلقة</option>
+            <option value="processed">مكتملة</option>
+        </select>
+    </div>
+
+    <!-- List -->
+    <div class="inbox-list" id="inboxList">
+        <div class="empty-state" id="emptyInbox">
+            <i class="fas fa-inbox"></i>
+            <p style="font-size:14px;font-weight:600;color:#64748b;">لا توجد فواتير واردة بعد</p>
+            <p style="font-size:12px;margin-top:4px;">ارفع فاتورة من تاب "رفع فاتورة"</p>
+        </div>
+    </div>
+
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module">
+import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, orderBy }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { guardPage } from "./subscription.js";
+
+await guardPage({ blockOnExpired: false, blockInvoiceOnly: false });
+
+const auth = getAuth();
+const db   = getFirestore();
+let currentUser = null;
+let currentFileData = null;   // base64 للصورة
+let currentFileType = null;   // image أو pdf
+let allInvoices = [];
+
+// ============================================================
+// Auth
+// ============================================================
+onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    await loadInboxInvoices();
+});
+
+// ============================================================
+// Tabs
+// ============================================================
+window.switchTab = function(tab) {
+    document.getElementById('tabUpload').style.display = tab === 'upload' ? 'block' : 'none';
+    document.getElementById('tabInbox').style.display  = tab === 'inbox'  ? 'block' : 'none';
+    document.querySelectorAll('.tab-btn').forEach((b,i) =>
+        b.classList.toggle('active', (i===0&&tab==='upload')||(i===1&&tab==='inbox'))
+    );
+    if (tab === 'inbox') loadInboxInvoices();
+};
+
+// ============================================================
+// رفع الملف
+// ============================================================
+window.handleFileSelect = function(input) {
+    const file = input.files[0];
+    if (file) processFile(file);
+};
+
+window.handleDrop = function(e) {
+    e.preventDefault();
+    document.getElementById('uploadZone').classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+};
+
+async function processFile(file) {
+    if (file.size > 10 * 1024 * 1024) return showToast('حجم الملف أكبر من 10MB', false);
+    const isImage = file.type.startsWith('image/');
+    const isPdf   = file.type === 'application/pdf';
+    if (!isImage && !isPdf) return showToast('يُقبل فقط JPG, PNG, PDF', false);
+
+    // قراءة الملف كـ base64
+    const base64 = await readFileAsBase64(file);
+    currentFileData = base64;
+    currentFileType = isImage ? 'image' : 'pdf';
+
+    // عرض الصورة (للصور فقط)
+    if (isImage) {
+        document.getElementById('previewImg').src = `data:${file.type};base64,${base64}`;
+        document.getElementById('previewImg').style.display = 'block';
+    } else {
+        document.getElementById('previewImg').src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+        document.getElementById('previewImg').style.display = 'block';
+    }
+
+    // بدء المعالجة بالذكاء الاصطناعي
+    showAiProcessing();
+    await extractWithAI(base64, file.type, isImage);
+}
+
+function readFileAsBase64(file) {
+    return new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = () => res(reader.result.split(',')[1]);
+        reader.onerror = rej;
+        reader.readAsDataURL(file);
+    });
+}
+
+// ============================================================
+// عرض خطوات الذكاء الاصطناعي
+// ============================================================
+function showAiProcessing() {
+    document.getElementById('aiCard').classList.add('show');
+    document.getElementById('invoicePreview').classList.remove('show');
+    document.getElementById('actionRow').style.display = 'none';
+
+    const steps = ['step1','step2','step3','step4'];
+    steps.forEach(s => {
+        const el = document.getElementById(s);
+        el.className = 'ai-step';
+        el.querySelector('i').className = 'fas fa-circle';
+        el.querySelector('i').style.fontSize = '8px';
+    });
+
+    // Step 1: قراءة الملف
+    setTimeout(() => {
+        setStepDone('step1', 'قراءة الملف ✓');
+        setStepActive('step2');
+    }, 600);
+}
+
+function setStepDone(id, text) {
+    const el = document.getElementById(id);
+    el.className = 'ai-step done';
+    el.querySelector('i').className = 'fas fa-check';
+    el.querySelector('i').style.fontSize = '';
+    el.childNodes[1] && (el.innerHTML = `<i class="fas fa-check"></i> ${text}`);
+}
+function setStepActive(id) {
+    const el = document.getElementById(id);
+    el.className = 'ai-step active';
+    el.querySelector('i').className = 'fas fa-spinner';
+    el.querySelector('i').style.fontSize = '';
+}
+
+// ============================================================
+// استخراج البيانات بالذكاء الاصطناعي (Claude API)
+// ============================================================
+async function extractWithAI(base64Data, mimeType, isImage) {
+    try {
+        const content = [];
+
+        if (isImage) {
+            content.push({
+                type: 'image',
+                source: { type: 'base64', media_type: mimeType, data: base64Data }
+            });
+        }
+
+        content.push({
+            type: 'text',
+            text: `أنت نظام محاسبي متخصص في استخراج بيانات الفواتير.
+استخرج المعلومات من هذه الفاتورة وأعدها بصيغة JSON فقط بدون أي نص إضافي.
+
+الحقول المطلوبة:
+{
+  "supplier_name": "اسم المورد أو الشركة",
+  "invoice_number": "رقم الفاتورة",
+  "invoice_date": "التاريخ بصيغة YYYY-MM-DD",
+  "subtotal": رقم الإجمالي قبل الضريبة,
+  "vat_amount": رقم مبلغ الضريبة,
+  "total": رقم الإجمالي الكلي,
+  "currency": "SAR أو USD أو EUR أو AED أو DKK أو GBP",
+  "supplier_vat": "الرقم الضريبي للمورد إن وجد",
+  "description": "وصف مختصر للبنود",
+  "confidence": {
+    "supplier_name": نسبة الثقة 0-100,
+    "invoice_number": نسبة الثقة 0-100,
+    "subtotal": نسبة الثقة 0-100,
+    "vat_amount": نسبة الثقة 0-100,
+    "total": نسبة الثقة 0-100,
+    "supplier_vat": نسبة الثقة 0-100,
+    "description": نسبة الثقة 0-100
+  }
+}
+
+إذا لم تجد قيمة معينة، ضع null أو 0 حسب نوع الحقل.
+أعد JSON فقط.`
+        });
+
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-20250514',
+                max_tokens: 1000,
+                messages: [{ role: 'user', content }]
+            })
+        });
+
+        setStepDone('step2', 'استخراج البيانات ✓');
+        setStepActive('step3');
+
+        const data = await response.json();
+        const text = data.content?.[0]?.text || '{}';
+
+        // تنظيف الـ JSON
+        const clean = text.replace(/```json|```/g, '').trim();
+        let parsed;
+        try { parsed = JSON.parse(clean); }
+        catch(e) { parsed = {}; }
+
+        setStepDone('step3', 'التحقق من البيانات ✓');
+        setStepDone('step4', 'جاهز للمراجعة ✓');
+
+        // ملء الحقول
+        setTimeout(() => fillFields(parsed), 400);
+
+    } catch(e) {
+        console.error('AI extraction error:', e);
+        setStepDone('step2', 'استخراج البيانات (يدوي)');
+        setStepDone('step3', 'يرجى إدخال البيانات يدوياً');
+        setStepDone('step4', 'جاهز');
+        setTimeout(() => showInvoiceForm({}), 400);
+    }
+}
+
+function fillFields(data) {
+    const conf = data.confidence || {};
+
+    setField('invSupplier',    data.supplier_name,   'supplier_name', conf);
+    setField('invNumber',      data.invoice_number,  'invoice_number', conf);
+    setField('invSubtotal',    data.subtotal,        'subtotal', conf);
+    setField('invVat',         data.vat_amount,      'vat_amount', conf);
+    setField('invTotal',       data.total,           'total', conf);
+    setField('invSupplierVat', data.supplier_vat,    'supplier_vat', conf);
+    setField('invDescription', data.description,     'description', conf);
+
+    if (data.invoice_date) document.getElementById('invDate').value = data.invoice_date;
+    if (data.currency) {
+        const sel = document.getElementById('invCurrency');
+        if (sel) sel.value = data.currency;
+    }
+
+    showInvoiceForm(data);
+}
+
+function setField(fieldId, value, confKey, conf) {
+    const el = document.getElementById(fieldId);
+    const confEl = document.getElementById('conf-' + confKey.split('_')[0]);
+    const barEl  = document.getElementById('cbar-' + confKey.split('_')[0]);
+
+    if (el && value !== null && value !== undefined) el.value = value;
+
+    const c = conf[confKey] || 0;
+    if (confEl && c > 0) confEl.textContent = `${c}%`;
+    if (barEl) barEl.style.width = c + '%';
+}
+
+function showInvoiceForm(data) {
+    document.getElementById('aiCard').classList.remove('show');
+    document.getElementById('invoicePreview').classList.add('show');
+    document.getElementById('actionRow').style.display = 'flex';
+}
+
+// ============================================================
+// حفظ الفاتورة
+// ============================================================
+window.saveInvoice = async function() {
+    if (!currentUser) return;
+    const supplier = document.getElementById('invSupplier').value.trim();
+    const total    = parseFloat(document.getElementById('invTotal').value) || 0;
+    if (!supplier) return showToast('يرجى إدخال اسم المورد', false);
+
+    const invId = 'INV-IN-' + Date.now();
+    const invoiceData = {
+        id:          invId,
+        type:        'incoming',
+        status:      'pending',
+        supplier:    supplier,
+        invNumber:   document.getElementById('invNumber').value.trim(),
+        invDate:     document.getElementById('invDate').value,
+        subtotal:    parseFloat(document.getElementById('invSubtotal').value) || 0,
+        vat:         parseFloat(document.getElementById('invVat').value) || 0,
+        total,
+        currency:    document.getElementById('invCurrency').value,
+        supplierVat: document.getElementById('invSupplierVat').value.trim(),
+        description: document.getElementById('invDescription').value.trim(),
+        notes:       document.getElementById('invNotes').value.trim(),
+        imageData:   currentFileType === 'image' ? currentFileData : null,
+        fileType:    currentFileType,
+        createdAt:   serverTimestamp(),
+        createdBy:   currentUser.email,
+        aiExtracted: true
+    };
+
+    try {
+        await setDoc(doc(db, 'users', currentUser.uid, 'inboxInvoices', invId), invoiceData);
+        showToast('✅ تم حفظ الفاتورة في البريد الوارد', true);
+        discardInvoice();
+        switchTab('inbox');
+    } catch(e) {
+        showToast('❌ خطأ في الحفظ: ' + e.message, false);
+    }
+};
+
+window.discardInvoice = function() {
+    currentFileData = null;
+    currentFileType = null;
+    document.getElementById('aiCard').classList.remove('show');
+    document.getElementById('invoicePreview').classList.remove('show');
+    document.getElementById('actionRow').style.display = 'none';
+    document.getElementById('fileInput').value = '';
+    // مسح الحقول
+    ['invSupplier','invNumber','invDate','invSubtotal','invVat','invTotal','invSupplierVat','invDescription','invNotes'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    document.querySelectorAll('.confidence-fill').forEach(b => b.style.width = '0%');
+    document.querySelectorAll('[id^="conf-"]').forEach(el => el.textContent = '');
+};
+
+// ============================================================
+// تحميل الفواتير الواردة
+// ============================================================
+async function loadInboxInvoices() {
+    if (!currentUser) return;
+    try {
+        const snap = await getDocs(query(
+            collection(db, 'users', currentUser.uid, 'inboxInvoices'),
+            orderBy('createdAt', 'desc')
+        ));
+        allInvoices = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+        renderInboxList(allInvoices);
+        updateStats(allInvoices);
+    } catch(e) {
+        console.error('Load inbox error:', e);
+        // محاولة بدون orderBy
+        try {
+            const snap2 = await getDocs(collection(db, 'users', currentUser.uid, 'inboxInvoices'));
+            allInvoices = snap2.docs.map(d => ({ docId: d.id, ...d.data() })).sort((a,b) => b.docId.localeCompare(a.docId));
+            renderInboxList(allInvoices);
+            updateStats(allInvoices);
+        } catch(e2) { console.error(e2); }
+    }
+}
+
+function updateStats(invoices) {
+    const total     = invoices.length;
+    const pending   = invoices.filter(i => i.status === 'pending').length;
+    const processed = invoices.filter(i => i.status === 'processed').length;
+    const unread    = invoices.filter(i => i.status === 'unread' || !i.status || i.status === 'pending').length;
+
+    document.getElementById('statTotal').textContent     = total;
+    document.getElementById('statPending').textContent   = pending;
+    document.getElementById('statProcessed').textContent = processed;
+    document.getElementById('unreadBadge').textContent   = unread > 0 ? unread : '';
+    document.getElementById('unreadBadge').style.display = unread > 0 ? 'inline' : 'none';
+}
+
+function renderInboxList(invoices) {
+    const container = document.getElementById('inboxList');
+    const empty     = document.getElementById('emptyInbox');
+
+    if (invoices.length === 0) {
+        empty.style.display = 'block';
+        container.innerHTML = '';
+        container.appendChild(empty);
+        return;
+    }
+    empty.style.display = 'none';
+
+    container.innerHTML = invoices.map(inv => {
+        const statusClass = inv.status === 'processed' ? 'processed' : inv.status === 'pending' ? 'pending' : 'unread';
+        const statusLabel = inv.status === 'processed' ? '<span class="item-status status-processed">مكتمل</span>' :
+                            inv.status === 'pending'   ? '<span class="item-status status-pending">معلق</span>' :
+                            '<span class="item-status status-unread">جديد</span>';
+        const thumb = inv.imageData ? `<img src="data:image/jpeg;base64,${inv.imageData}" class="item-preview-thumb" alt="">` : `<div class="item-preview-thumb" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;"><i class="fas fa-file-pdf" style="color:#e63946;font-size:18px;"></i></div>`;
+        const dateStr = inv.invDate || (inv.createdAt?.toDate ? inv.createdAt.toDate().toLocaleDateString('ar-SA') : '—');
+        return `
+        <div class="inbox-item ${statusClass}" onclick="openDetail('${inv.docId}')">
+            <div style="display:flex;align-items:center;">
+                ${thumb}
+                <div style="flex:1;min-width:0;">
+                    <div class="item-header">
+                        <span class="item-supplier">${inv.supplier || '—'}</span>
+                        <span class="item-amount">${(inv.total||0).toFixed(2)} ${inv.currency||'﷼'}</span>
+                    </div>
+                    <div class="item-meta">
+                        <span><i class="fas fa-hashtag" style="margin-left:3px;"></i>${inv.invNumber||'—'}</span>
+                        <span><i class="fas fa-calendar-alt" style="margin-left:3px;"></i>${dateStr}</span>
+                        ${statusLabel}
+                    </div>
+                    ${inv.description ? `<div style="font-size:11px;color:#64748b;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${inv.description}</div>` : ''}
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+window.filterInbox = function(search) {
+    const status = document.getElementById('filterStatus').value;
+    let list = allInvoices;
+    if (status !== 'all') list = list.filter(i => i.status === status || (!i.status && status === 'unread'));
+    if (search) list = list.filter(i =>
+        i.supplier?.includes(search) || i.invNumber?.includes(search) || i.description?.includes(search)
+    );
+    renderInboxList(list);
+};
+
+// ============================================================
+// تفاصيل الفاتورة
+// ============================================================
+window.openDetail = async function(docId) {
+    const inv = allInvoices.find(i => i.docId === docId);
+    if (!inv) return;
+
+    // تحديث الحالة لـ "مقروء"
+    if (inv.status === 'unread' || !inv.status) {
+        try {
+            await updateDoc(doc(db, 'users', currentUser.uid, 'inboxInvoices', docId), { status: 'pending' });
+            inv.status = 'pending';
+        } catch(e) {}
+    }
+
+    const imgHtml = inv.imageData
+        ? `<img src="data:image/jpeg;base64,${inv.imageData}" class="detail-img" onclick="document.getElementById('imgZoom').classList.add('show');document.getElementById('zoomedImg').src=this.src" alt="فاتورة">`
+        : `<div style="background:#f1f5f9;border-radius:10px;padding:30px;text-align:center;margin-bottom:14px;"><i class="fas fa-file-pdf" style="font-size:48px;color:#e63946;"></i><p style="margin-top:8px;font-size:12px;color:#94a3b8;">ملف PDF</p></div>`;
+
+    document.getElementById('detailContent').innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h5 style="font-size:15px;font-weight:900;color:#1e293b;margin:0;">${inv.supplier||'—'}</h5>
+            <span style="font-size:18px;font-weight:900;color:#0077b6;">${(inv.total||0).toFixed(2)} ${inv.currency||'﷼'}</span>
+        </div>
+        ${imgHtml}
+        <div style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;">
+                <div><span style="color:#94a3b8;">رقم الفاتورة</span><br><strong>${inv.invNumber||'—'}</strong></div>
+                <div><span style="color:#94a3b8;">تاريخ الفاتورة</span><br><strong>${inv.invDate||'—'}</strong></div>
+                <div><span style="color:#94a3b8;">قبل الضريبة</span><br><strong>${(inv.subtotal||0).toFixed(2)} ${inv.currency||'﷼'}</strong></div>
+                <div><span style="color:#94a3b8;">الضريبة</span><br><strong>${(inv.vat||0).toFixed(2)} ${inv.currency||'﷼'}</strong></div>
+                <div><span style="color:#94a3b8;">الرقم الضريبي</span><br><strong style="font-size:10px;">${inv.supplierVat||'—'}</strong></div>
+                <div><span style="color:#94a3b8;">الحالة</span><br>
+                    <span style="font-size:10px;padding:2px 8px;border-radius:8px;background:${inv.status==='processed'?'#dcfce7':'#fef9c3'};color:${inv.status==='processed'?'#16a34a':'#ca8a04'};">
+                        ${inv.status==='processed'?'مكتمل':'معلق'}
+                    </span>
+                </div>
+            </div>
+            ${inv.description ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b;">${inv.description}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:8px;">
+            <button onclick="markProcessed('${docId}')" style="flex:1;padding:12px;background:linear-gradient(135deg,#2b9348,#38b000);color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+                <i class="fas fa-check"></i> تم المعالجة
+            </button>
+            <button onclick="deleteInvoice('${docId}')" style="padding:12px 16px;background:#fee2e2;color:#e63946;border:none;border-radius:12px;font-family:'Cairo',sans-serif;cursor:pointer;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>`;
+
+    document.getElementById('detailModal').classList.add('show');
+};
+
+window.closeDetail = function() {
+    document.getElementById('detailModal').classList.remove('show');
+    loadInboxInvoices();
+};
+
+window.markProcessed = async function(docId) {
+    try {
+        await updateDoc(doc(db, 'users', currentUser.uid, 'inboxInvoices', docId), { status: 'processed' });
+        showToast('✅ تم تحديد الفاتورة كمكتملة', true);
+        closeDetail();
+    } catch(e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+window.deleteInvoice = async function(docId) {
+    if (!confirm('حذف هذه الفاتورة نهائياً؟')) return;
+    try {
+        await deleteDoc(doc(db, 'users', currentUser.uid, 'inboxInvoices', docId));
+        showToast('تم الحذف', false);
+        closeDetail();
+    } catch(e) { showToast('❌ خطأ: ' + e.message, false); }
+};
+
+// ============================================================
+// Image Zoom
+// ============================================================
+window.zoomImage = function() {
+    const src = document.getElementById('previewImg').src;
+    document.getElementById('zoomedImg').src = src;
+    document.getElementById('imgZoom').classList.add('show');
+};
+window.closeZoom = function() {
+    document.getElementById('imgZoom').classList.remove('show');
+};
+
+// ============================================================
+// Toast
+// ============================================================
+function showToast(msg, ok=true) {
+    const t = document.getElementById('toastBox');
+    t.innerText = msg;
+    t.style.backgroundColor = ok ? '#2b9348' : '#d90429';
+    t.style.display = 'block';
+    setTimeout(() => t.style.display='none', 4000);
+}
+window.showToast = showToast;
+</script>
+</body>
+</html>

@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تاجر برو — الأصول الثابتة</title>
+    <title>تاجر برو — مراكز التكلفة</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         *{box-sizing:border-box;margin:0;padding:0;}
         body{background:#f0f4f8;font-family:'Cairo',sans-serif;color:#1e293b;padding-bottom:80px;}
@@ -15,34 +16,33 @@
         .btn-back{background:#f1f5f9;border:none;color:#64748b;padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;font-family:'Cairo',sans-serif;display:flex;align-items:center;gap:5px;}
         .wrap{max-width:700px;margin:0 auto;padding:16px 14px;}
         /* Stats */
-        .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
-        .stat-box{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;}
-        .stat-num{font-size:20px;font-weight:900;color:#0077b6;}
+        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+        .stat-box{background:#fff;border-radius:14px;padding:14px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;}
+        .stat-num{font-size:18px;font-weight:900;color:#0077b6;}
         .stat-lbl{font-size:10px;color:#94a3b8;margin-top:2px;}
-        /* Asset Cards */
-        .asset-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,0.06);border-right:5px solid #0077b6;cursor:pointer;transition:0.2s;}
-        .asset-card:hover{transform:translateX(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.1);}
-        .asset-card.disposed{border-right-color:#94a3b8;opacity:0.7;}
-        .asset-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
-        .asset-name{font-size:14px;font-weight:900;color:#1e293b;}
-        .asset-category{font-size:10px;padding:3px 10px;border-radius:8px;font-weight:700;}
-        .cat-equipment{background:#dbeafe;color:#1d4ed8;}
-        .cat-vehicle{background:#fef9c3;color:#ca8a04;}
-        .cat-property{background:#dcfce7;color:#16a34a;}
-        .cat-furniture{background:#f3e8ff;color:#7c3aed;}
-        .cat-tech{background:#fce7f3;color:#be185d;}
-        .cat-other{background:#f1f5f9;color:#64748b;}
-        .asset-values{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
-        .val-box{background:#f8fafc;border-radius:10px;padding:8px;text-align:center;}
-        .val-num{font-size:13px;font-weight:700;color:#1e293b;}
-        .val-lbl{font-size:9px;color:#94a3b8;margin-top:2px;}
-        .depreciation-bar{background:#e2e8f0;border-radius:4px;height:6px;margin-bottom:8px;}
-        .dep-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#38b000,#ffb703,#e63946);}
-        .dep-labels{display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;}
-        .asset-actions{display:flex;gap:8px;flex-wrap:wrap;}
+        /* Cost Center Cards */
+        .cc-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,0.06);border-right:5px solid #0077b6;transition:0.2s;}
+        .cc-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+        .cc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+        .cc-name{font-size:14px;font-weight:900;color:#1e293b;}
+        .cc-code{font-size:10px;color:#94a3b8;margin-top:2px;font-family:monospace;}
+        .cc-type{font-size:10px;padding:3px 10px;border-radius:8px;font-weight:700;}
+        .type-dept{background:#dbeafe;color:#1d4ed8;}
+        .type-project{background:#dcfce7;color:#16a34a;}
+        .type-branch{background:#fef9c3;color:#ca8a04;}
+        .type-product{background:#f3e8ff;color:#7c3aed;}
+        .cc-bar-wrap{margin-bottom:8px;}
+        .cc-bar-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+        .cc-bar{background:#e2e8f0;border-radius:4px;height:8px;}
+        .cc-bar-fill{height:100%;border-radius:4px;transition:0.3s;}
+        .cc-amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+        .cc-amt{background:#f8fafc;border-radius:10px;padding:8px;text-align:center;}
+        .cc-amt-num{font-size:13px;font-weight:700;}
+        .cc-amt-lbl{font-size:9px;color:#94a3b8;margin-top:2px;}
+        .cc-actions{display:flex;gap:8px;flex-wrap:wrap;}
         .btn-sm{padding:7px 12px;border:none;border-radius:8px;font-size:11px;font-family:'Cairo',sans-serif;cursor:pointer;font-weight:600;}
-        .btn-detail{background:#f0f9ff;color:#0077b6;}
-        .btn-dep{background:#f0fdf4;color:#16a34a;}
+        .btn-add-tx{background:#f0f9ff;color:#0077b6;}
+        .btn-view{background:#f0fdf4;color:#16a34a;}
         .btn-edit{background:#fef9c3;color:#ca8a04;}
         .btn-delete{background:#fee2e2;color:#e63946;}
         /* Modal */
@@ -55,118 +55,116 @@
         .field-group label{font-size:11px;color:#64748b;display:block;margin-bottom:4px;font-weight:600;}
         .field-group input,.field-group select,.field-group textarea{width:100%;padding:10px 13px;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;font-family:'Cairo',sans-serif;color:#1e293b;transition:0.2s;background:#fff;}
         .field-group input:focus,.field-group select:focus{outline:none;border-color:#0077b6;box-shadow:0 0 0 3px rgba(0,119,182,0.1);}
-        .btn-main{width:100%;padding:13px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
-        .btn-main:hover{transform:translateY(-1px);}
-        /* Depreciation schedule table */
-        .dep-table{width:100%;border-collapse:collapse;font-size:12px;}
-        .dep-table th{background:#f8fafc;color:#64748b;padding:8px;text-align:center;font-weight:600;}
-        .dep-table td{padding:8px;text-align:center;border-bottom:1px solid #f1f5f9;}
+        .btn-main{width:100%;padding:13px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+        /* TX List */
+        .tx-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;}
+        .tx-item:last-child{border-bottom:none;}
+        .tx-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;margin-left:10px;flex-shrink:0;}
+        .tx-icon.revenue{background:#dcfce7;color:#16a34a;}
+        .tx-icon.expense{background:#fee2e2;color:#e63946;}
+        /* Chart */
+        .chart-wrap{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
         /* Toast */
         .toast-box{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:30px;color:white;font-weight:700;font-size:13px;z-index:99999;display:none;font-family:'Cairo',sans-serif;}
         .empty-state{text-align:center;padding:50px 20px;color:#94a3b8;}
         .empty-state i{font-size:48px;margin-bottom:14px;display:block;opacity:0.4;}
-        /* Info row */
-        .info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:13px;}
-        .info-row:last-child{border:none;}
-        .info-lbl{color:#94a3b8;}
-        .info-val{font-weight:600;}
+        .color-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-left:6px;}
     </style>
 </head>
 <body>
 <div class="toast-box" id="toastBox"></div>
 
-<!-- Add/Edit Modal -->
-<div class="modal-overlay" id="assetModal" onclick="if(event.target===this)closeAssetModal()">
+<!-- Add/Edit CC Modal -->
+<div class="modal-overlay" id="ccModal" onclick="if(event.target===this)closeCCModal()">
     <div class="modal-box">
         <div class="modal-handle"></div>
-        <div class="modal-title" id="assetModalTitle">إضافة أصل ثابت جديد</div>
-        <input type="hidden" id="editAssetId">
+        <div class="modal-title" id="ccModalTitle">إضافة مركز تكلفة جديد</div>
+        <input type="hidden" id="editCCId">
         <div class="field-group">
-            <label>اسم الأصل *</label>
-            <input type="text" id="assetName" placeholder="مثال: سيارة تويوتا، حاسوب مكتبي">
+            <label>اسم مركز التكلفة *</label>
+            <input type="text" id="ccName" placeholder="مثال: قسم المبيعات، مشروع أ">
         </div>
         <div class="row g-2">
             <div class="col-6">
                 <div class="field-group">
-                    <label>التصنيف</label>
-                    <select id="assetCategory">
-                        <option value="equipment">معدات وآلات</option>
-                        <option value="vehicle">مركبات</option>
-                        <option value="property">عقارات</option>
-                        <option value="furniture">أثاث</option>
-                        <option value="tech">تقنية ومعلومات</option>
-                        <option value="other">أخرى</option>
-                    </select>
+                    <label>كود المركز</label>
+                    <input type="text" id="ccCode" placeholder="CC-001" style="font-family:monospace;">
                 </div>
             </div>
             <div class="col-6">
                 <div class="field-group">
-                    <label>العملة</label>
-                    <select id="assetCurrency">
-                        <option value="SAR">﷼ ريال</option>
-                        <option value="USD">$ دولار</option>
-                        <option value="EUR">€ يورو</option>
-                        <option value="DKK">kr كرون</option>
+                    <label>النوع</label>
+                    <select id="ccType">
+                        <option value="dept">قسم</option>
+                        <option value="project">مشروع</option>
+                        <option value="branch">فرع</option>
+                        <option value="product">خط منتج</option>
                     </select>
                 </div>
             </div>
         </div>
-        <div class="row g-2">
-            <div class="col-6">
-                <div class="field-group">
-                    <label>تكلفة الشراء *</label>
-                    <input type="number" id="assetCost" placeholder="0.00" step="0.01" min="0">
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="field-group">
-                    <label>القيمة التخريدية</label>
-                    <input type="number" id="assetSalvage" placeholder="0.00" step="0.01" min="0" value="0">
-                </div>
-            </div>
-        </div>
-        <div class="row g-2">
-            <div class="col-6">
-                <div class="field-group">
-                    <label>تاريخ الشراء *</label>
-                    <input type="date" id="assetPurchaseDate">
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="field-group">
-                    <label>العمر الافتراضي (سنوات)</label>
-                    <input type="number" id="assetLife" placeholder="5" min="1" max="50" value="5">
-                </div>
-            </div>
+        <div class="field-group">
+            <label>الميزانية المخصصة (اختياري)</label>
+            <input type="number" id="ccBudget" placeholder="0.00" step="0.01" min="0">
         </div>
         <div class="field-group">
-            <label>طريقة الإهلاك</label>
-            <select id="assetDepMethod">
-                <option value="straight_line">القسط الثابت (Straight Line)</option>
-                <option value="declining">رصيد متناقص (Declining Balance)</option>
-            </select>
+            <label>المدير المسؤول</label>
+            <input type="text" id="ccManager" placeholder="اسم المدير أو المسؤول">
         </div>
         <div class="field-group">
-            <label>الموقع / الفرع</label>
-            <input type="text" id="assetLocation" placeholder="مثال: المكتب الرئيسي">
-        </div>
-        <div class="field-group">
-            <label>رقم الأصل / Serial Number</label>
-            <input type="text" id="assetSerial" placeholder="اختياري">
+            <label>اللون التمييزي</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;" id="colorPicker">
+                <div class="color-option" data-color="#0077b6" onclick="selectColor('#0077b6')" style="width:28px;height:28px;border-radius:50%;background:#0077b6;cursor:pointer;border:3px solid transparent;"></div>
+                <div class="color-option" data-color="#38b000" onclick="selectColor('#38b000')" style="width:28px;height:28px;border-radius:50%;background:#38b000;cursor:pointer;border:3px solid transparent;"></div>
+                <div class="color-option" data-color="#e63946" onclick="selectColor('#e63946')" style="width:28px;height:28px;border-radius:50%;background:#e63946;cursor:pointer;border:3px solid transparent;"></div>
+                <div class="color-option" data-color="#ffb703" onclick="selectColor('#ffb703')" style="width:28px;height:28px;border-radius:50%;background:#ffb703;cursor:pointer;border:3px solid transparent;"></div>
+                <div class="color-option" data-color="#7c3aed" onclick="selectColor('#7c3aed')" style="width:28px;height:28px;border-radius:50%;background:#7c3aed;cursor:pointer;border:3px solid transparent;"></div>
+                <div class="color-option" data-color="#be185d" onclick="selectColor('#be185d')" style="width:28px;height:28px;border-radius:50%;background:#be185d;cursor:pointer;border:3px solid transparent;"></div>
+            </div>
+            <input type="hidden" id="ccColor" value="#0077b6">
         </div>
         <div class="field-group">
             <label>ملاحظات</label>
-            <input type="text" id="assetNotes" placeholder="ملاحظة اختيارية">
-        </div>
-        <!-- معاينة الإهلاك السنوي -->
-        <div id="depPreview" style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:12px;margin-bottom:14px;display:none;">
-            <div style="font-size:12px;font-weight:700;color:#0077b6;margin-bottom:4px;"><i class="fas fa-calculator"></i> معاينة الإهلاك السنوي</div>
-            <div id="depPreviewText" style="font-size:12px;color:#1e293b;"></div>
+            <input type="text" id="ccNotes" placeholder="ملاحظة اختيارية">
         </div>
         <div style="display:flex;gap:10px;">
-            <button class="btn-main" onclick="saveAsset()"><i class="fas fa-save"></i> حفظ الأصل</button>
-            <button onclick="closeAssetModal()" style="padding:13px 16px;background:#f1f5f9;color:#64748b;border:none;border-radius:12px;font-family:'Cairo',sans-serif;cursor:pointer;"><i class="fas fa-times"></i></button>
+            <button class="btn-main" onclick="saveCC()"><i class="fas fa-save"></i> حفظ المركز</button>
+            <button onclick="closeCCModal()" style="padding:13px 16px;background:#f1f5f9;color:#64748b;border:none;border-radius:12px;font-family:'Cairo',sans-serif;cursor:pointer;"><i class="fas fa-times"></i></button>
         </div>
+    </div>
+</div>
+
+<!-- Add Transaction Modal -->
+<div class="modal-overlay" id="txModal" onclick="if(event.target===this)closeTxModal()">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <div class="modal-title">إضافة حركة لمركز التكلفة</div>
+        <input type="hidden" id="txCCId">
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+            <button id="btnRevenue" onclick="setTxType('revenue')" style="flex:1;padding:10px;background:#dcfce7;color:#16a34a;border:2px solid #16a34a;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+                <i class="fas fa-arrow-up"></i> إيراد
+            </button>
+            <button id="btnExpense" onclick="setTxType('expense')" style="flex:1;padding:10px;background:#f1f5f9;color:#94a3b8;border:2px solid #e2e8f0;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+                <i class="fas fa-arrow-down"></i> تكلفة
+            </button>
+        </div>
+        <div class="field-group">
+            <label>المبلغ *</label>
+            <input type="number" id="txAmount" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="field-group">
+            <label>الوصف *</label>
+            <input type="text" id="txDesc" placeholder="وصف العملية">
+        </div>
+        <div class="field-group">
+            <label>التاريخ</label>
+            <input type="date" id="txDate">
+        </div>
+        <div class="field-group">
+            <label>ربط بفاتورة (اختياري)</label>
+            <input type="text" id="txInvRef" placeholder="رقم الفاتورة">
+        </div>
+        <button class="btn-main" onclick="saveTx()"><i class="fas fa-save"></i> حفظ الحركة</button>
     </div>
 </div>
 
@@ -180,7 +178,7 @@
 
 <!-- Header -->
 <div class="top-bar">
-    <div class="top-bar-title"><i class="fas fa-building"></i> الأصول الثابتة</div>
+    <div class="top-bar-title"><i class="fas fa-sitemap"></i> مراكز التكلفة</div>
     <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> رجوع</a>
 </div>
 
@@ -188,49 +186,36 @@
     <!-- Stats -->
     <div class="stats-grid">
         <div class="stat-box">
-            <div class="stat-num" id="statAssets">0</div>
-            <div class="stat-lbl">عدد الأصول</div>
+            <div class="stat-num" id="statCCs">0</div>
+            <div class="stat-lbl">مركز تكلفة</div>
         </div>
         <div class="stat-box">
-            <div class="stat-num" id="statTotalCost" style="font-size:14px;">0</div>
-            <div class="stat-lbl">إجمالي التكلفة</div>
+            <div class="stat-num" id="statRevenue" style="color:#38b000;font-size:14px;">0</div>
+            <div class="stat-lbl">إجمالي الإيرادات</div>
         </div>
         <div class="stat-box">
-            <div class="stat-num" id="statNetBook" style="font-size:14px;color:#38b000;">0</div>
-            <div class="stat-lbl">القيمة الدفترية</div>
+            <div class="stat-num" id="statExpenses" style="color:#e63946;font-size:14px;">0</div>
+            <div class="stat-lbl">إجمالي التكاليف</div>
         </div>
-        <div class="stat-box">
-            <div class="stat-num" id="statYearDep" style="font-size:14px;color:#e63946;">0</div>
-            <div class="stat-lbl">إهلاك هذا العام</div>
-        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-wrap">
+        <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:10px;"><i class="fas fa-chart-bar" style="color:#0077b6;margin-left:6px;"></i>مقارنة الإيرادات والتكاليف</div>
+        <canvas id="ccChart" height="180"></canvas>
     </div>
 
     <!-- Add Button -->
-    <button class="btn-main" onclick="openAddAsset()" style="margin-bottom:16px;">
-        <i class="fas fa-plus"></i> إضافة أصل ثابت جديد
+    <button class="btn-main" onclick="openAddCC()" style="margin-bottom:16px;">
+        <i class="fas fa-plus"></i> إضافة مركز تكلفة جديد
     </button>
 
-    <!-- Filter -->
-    <div style="display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;">
-        <button class="filter-btn active" data-cat="all" onclick="setFilter('all')">الكل</button>
-        <button class="filter-btn" data-cat="equipment" onclick="setFilter('equipment')">معدات</button>
-        <button class="filter-btn" data-cat="vehicle" onclick="setFilter('vehicle')">مركبات</button>
-        <button class="filter-btn" data-cat="property" onclick="setFilter('property')">عقارات</button>
-        <button class="filter-btn" data-cat="tech" onclick="setFilter('tech')">تقنية</button>
-        <button class="filter-btn" data-cat="furniture" onclick="setFilter('furniture')">أثاث</button>
-    </div>
-
-    <style>
-    .filter-btn{padding:7px 14px;border:1px solid #e2e8f0;border-radius:20px;background:#fff;color:#64748b;font-family:'Cairo',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;transition:0.2s;}
-    .filter-btn.active{background:#0077b6;color:white;border-color:#0077b6;}
-    </style>
-
-    <!-- Assets List -->
-    <div id="assetsList">
-        <div class="empty-state" id="emptyAssets">
-            <i class="fas fa-building"></i>
-            <p style="font-size:14px;font-weight:600;color:#64748b;">لا توجد أصول ثابتة بعد</p>
-            <p style="font-size:12px;margin-top:4px;">اضغط "إضافة أصل ثابت" للبدء</p>
+    <!-- List -->
+    <div id="ccList">
+        <div class="empty-state" id="emptyCCs">
+            <i class="fas fa-sitemap"></i>
+            <p style="font-size:14px;font-weight:600;color:#64748b;">لا توجد مراكز تكلفة بعد</p>
+            <p style="font-size:12px;margin-top:4px;">اضغط "إضافة مركز تكلفة" للبدء</p>
         </div>
     </div>
 </div>
@@ -239,7 +224,7 @@
 <script type="module">
 import { getAuth, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp }
+import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, orderBy }
     from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { guardPage } from "./subscription.js";
 
@@ -248,353 +233,311 @@ await guardPage({ blockOnExpired:false, blockInvoiceOnly:false });
 const auth = getAuth();
 const db   = getFirestore();
 let currentUser = null;
-let allAssets   = [];
-let currentFilter = 'all';
+let allCCs      = [];
+let currentTxType = 'expense';
+let selectedColor = '#0077b6';
+let chartInstance = null;
 
 onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href='login.html'; return; }
     currentUser = user;
-    setDefaultDate();
-    setupPreviewListeners();
-    await loadAssets();
+    document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
+    selectColor('#0077b6');
+    await loadCCs();
 });
 
-function setDefaultDate() {
-    const today = new Date().toISOString().split('T')[0];
-    const el = document.getElementById('assetPurchaseDate');
-    if (el) el.value = today;
-}
-
-function setupPreviewListeners() {
-    ['assetCost','assetSalvage','assetLife','assetDepMethod'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('input', updateDepPreview);
-    });
-}
-
-function updateDepPreview() {
-    const cost    = parseFloat(document.getElementById('assetCost')?.value) || 0;
-    const salvage = parseFloat(document.getElementById('assetSalvage')?.value) || 0;
-    const life    = parseInt(document.getElementById('assetLife')?.value) || 5;
-    const method  = document.getElementById('assetDepMethod')?.value;
-    const preview = document.getElementById('depPreview');
-    const text    = document.getElementById('depPreviewText');
-    if (!preview || !text || cost <= 0) { if (preview) preview.style.display='none'; return; }
-    preview.style.display = 'block';
-    if (method === 'straight_line') {
-        const annual = (cost - salvage) / life;
-        text.innerHTML = `إهلاك سنوي: <strong>${annual.toFixed(2)}</strong> | إهلاك شهري: <strong>${(annual/12).toFixed(2)}</strong>`;
-    } else {
-        const rate = (2 / life) * 100;
-        text.innerHTML = `معدل الإهلاك: <strong>${rate.toFixed(1)}%</strong> من القيمة الدفترية سنوياً`;
-    }
-}
-
 // ============================================================
-// حساب الإهلاك
+// Load
 // ============================================================
-function calcDepreciation(asset) {
-    const cost     = asset.cost    || 0;
-    const salvage  = asset.salvage || 0;
-    const life     = asset.life    || 5;
-    const method   = asset.depMethod || 'straight_line';
-    const purchase = new Date(asset.purchaseDate);
-    const now      = new Date();
-    const yearsUsed = Math.max(0, (now - purchase) / (365.25 * 24 * 3600 * 1000));
-
-    let accDep = 0, annualDep = 0, bookValue = cost;
-
-    if (method === 'straight_line') {
-        annualDep = (cost - salvage) / life;
-        accDep    = Math.min(annualDep * yearsUsed, cost - salvage);
-        bookValue = Math.max(salvage, cost - accDep);
-    } else {
-        const rate = 2 / life;
-        bookValue  = cost;
-        let y = yearsUsed;
-        while (y > 0) {
-            const dep = bookValue * rate * Math.min(1, y);
-            accDep   += dep;
-            bookValue = Math.max(salvage, bookValue - dep);
-            y -= 1;
-        }
-        annualDep = cost * rate;
-    }
-
-    const depPct = cost > 0 ? Math.min(100, (accDep / cost) * 100) : 0;
-    return { annualDep, accDep, bookValue, depPct, yearsUsed };
-}
-
-function calcYearDepreciation(asset) {
-    const cost    = asset.cost    || 0;
-    const salvage = asset.salvage || 0;
-    const life    = asset.life    || 5;
-    const method  = asset.depMethod || 'straight_line';
-    if (method === 'straight_line') return (cost - salvage) / life;
-    const dep = calcDepreciation(asset);
-    return dep.bookValue * (2 / life);
-}
-
-// ============================================================
-// Load Assets
-// ============================================================
-async function loadAssets() {
+async function loadCCs() {
     if (!currentUser) return;
     try {
-        const snap = await getDocs(collection(db,'users',currentUser.uid,'fixedAssets'));
-        allAssets = snap.docs.map(d => ({ docId:d.id, ...d.data() }));
-        renderAssets();
+        const snap = await getDocs(collection(db,'users',currentUser.uid,'costCenters'));
+        const rawCCs = snap.docs.map(d => ({ docId:d.id, ...d.data() }));
+        // تحميل الحركات لكل مركز
+        allCCs = await Promise.all(rawCCs.map(async cc => {
+            try {
+                const txSnap = await getDocs(collection(db,'users',currentUser.uid,'costCenters',cc.docId,'transactions'));
+                const txs    = txSnap.docs.map(d => d.data());
+                const revenue = txs.filter(t=>t.type==='revenue').reduce((s,t)=>s+(t.amount||0),0);
+                const expense = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+(t.amount||0),0);
+                return { ...cc, revenue, expense, profit:revenue-expense, txs };
+            } catch(e) { return { ...cc, revenue:0, expense:0, profit:0, txs:[] }; }
+        }));
+        renderCCs();
         updateStats();
-    } catch(e) { console.error('Load assets:', e); }
+        renderChart();
+    } catch(e) { console.error('Load CCs:', e); }
 }
 
 function updateStats() {
-    const active = allAssets.filter(a => a.status !== 'disposed');
-    const totalCost = active.reduce((s,a) => s+(a.cost||0), 0);
-    const totalBook = active.reduce((s,a) => { const d=calcDepreciation(a); return s+d.bookValue; }, 0);
-    const yearDep   = active.reduce((s,a) => s+calcYearDepreciation(a), 0);
-    document.getElementById('statAssets').textContent   = active.length;
-    document.getElementById('statTotalCost').textContent = totalCost.toFixed(2)+' ﷼';
-    document.getElementById('statNetBook').textContent   = totalBook.toFixed(2)+' ﷼';
-    document.getElementById('statYearDep').textContent   = yearDep.toFixed(2)+' ﷼';
+    document.getElementById('statCCs').textContent      = allCCs.length;
+    document.getElementById('statRevenue').textContent  = allCCs.reduce((s,c)=>s+(c.revenue||0),0).toFixed(2)+' ﷼';
+    document.getElementById('statExpenses').textContent = allCCs.reduce((s,c)=>s+(c.expense||0),0).toFixed(2)+' ﷼';
 }
 
-function setFilter(cat) {
-    currentFilter = cat;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat===cat));
-    renderAssets();
+function renderChart() {
+    const ctx = document.getElementById('ccChart');
+    if (!ctx || allCCs.length===0) return;
+    if (chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: allCCs.map(c => c.name?.substring(0,8)||'—'),
+            datasets: [
+                { label:'إيرادات', data:allCCs.map(c=>c.revenue||0), backgroundColor:'#38b000', borderRadius:6 },
+                { label:'تكاليف', data:allCCs.map(c=>c.expense||0), backgroundColor:'#e63946', borderRadius:6 }
+            ]
+        },
+        options: {
+            responsive:true, maintainAspectRatio:true,
+            plugins:{ legend:{ labels:{ color:'#64748b', font:{size:11}, boxWidth:12 } } },
+            scales:{
+                x:{ ticks:{color:'#94a3b8',font:{size:10}}, grid:{display:false} },
+                y:{ ticks:{color:'#94a3b8',font:{size:10}} }
+            }
+        }
+    });
 }
-window.setFilter = setFilter;
 
-function renderAssets() {
-    const container = document.getElementById('assetsList');
-    const empty     = document.getElementById('emptyAssets');
-    const list = currentFilter==='all' ? allAssets : allAssets.filter(a => a.category===currentFilter);
-    if (list.length===0) {
+// ============================================================
+// Render
+// ============================================================
+function renderCCs() {
+    const container = document.getElementById('ccList');
+    const empty     = document.getElementById('emptyCCs');
+    if (allCCs.length===0) {
         container.innerHTML=''; container.appendChild(empty); empty.style.display='block'; return;
     }
     empty.style.display='none';
-    const catLabels  = {equipment:'معدات',vehicle:'مركبة',property:'عقار',furniture:'أثاث',tech:'تقنية',other:'أخرى'};
-    const catClasses = {equipment:'cat-equipment',vehicle:'cat-vehicle',property:'cat-property',furniture:'cat-furniture',tech:'cat-tech',other:'cat-other'};
-    container.innerHTML = list.map(asset => {
-        const dep = calcDepreciation(asset);
-        const cur = asset.currency || '﷼';
-        const isDisposed = asset.status === 'disposed';
+    const typeLabels  = {dept:'قسم',project:'مشروع',branch:'فرع',product:'خط منتج'};
+    const typeClasses = {dept:'type-dept',project:'type-project',branch:'type-branch',product:'type-product'};
+    container.innerHTML = allCCs.map(cc => {
+        const color    = cc.color || '#0077b6';
+        const budget   = cc.budget || 0;
+        const budgetPct= budget>0 ? Math.min(100,(cc.expense/budget)*100) : 0;
+        const profitColor = cc.profit>=0 ? '#38b000' : '#e63946';
         return `
-        <div class="asset-card ${isDisposed?'disposed':''}" onclick="openDetail('${asset.docId}')">
-            <div class="asset-header">
+        <div class="cc-card" style="border-right-color:${color};">
+            <div class="cc-header">
                 <div>
-                    <div class="asset-name">${asset.name}</div>
-                    <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${asset.location||''} ${asset.serial?'• '+asset.serial:''}</div>
+                    <div class="cc-name">
+                        <span class="color-dot" style="background:${color};"></span>
+                        ${cc.name}
+                    </div>
+                    <div class="cc-code">${cc.code||''} ${cc.manager?'• '+cc.manager:''}</div>
                 </div>
-                <span class="asset-category ${catClasses[asset.category]||'cat-other'}">${catLabels[asset.category]||'أخرى'}</span>
+                <span class="cc-type ${typeClasses[cc.type]||'type-dept'}">${typeLabels[cc.type]||'قسم'}</span>
             </div>
-            <div class="asset-values">
-                <div class="val-box">
-                    <div class="val-num">${(asset.cost||0).toFixed(0)} ${cur}</div>
-                    <div class="val-lbl">تكلفة الشراء</div>
+            <div class="cc-amounts">
+                <div class="cc-amt">
+                    <div class="cc-amt-num" style="color:#38b000;">${(cc.revenue||0).toFixed(0)} ﷼</div>
+                    <div class="cc-amt-lbl">الإيرادات</div>
                 </div>
-                <div class="val-box">
-                    <div class="val-num" style="color:#e63946;">${dep.accDep.toFixed(0)} ${cur}</div>
-                    <div class="val-lbl">إهلاك متراكم</div>
+                <div class="cc-amt">
+                    <div class="cc-amt-num" style="color:#e63946;">${(cc.expense||0).toFixed(0)} ﷼</div>
+                    <div class="cc-amt-lbl">التكاليف</div>
                 </div>
-                <div class="val-box">
-                    <div class="val-num" style="color:#38b000;">${dep.bookValue.toFixed(0)} ${cur}</div>
-                    <div class="val-lbl">القيمة الدفترية</div>
+                <div class="cc-amt">
+                    <div class="cc-amt-num" style="color:${profitColor};">${(cc.profit||0).toFixed(0)} ﷼</div>
+                    <div class="cc-amt-lbl">${cc.profit>=0?'الربح':'الخسارة'}</div>
                 </div>
             </div>
-            <div class="depreciation-bar">
-                <div class="dep-fill" style="width:${dep.depPct.toFixed(1)}%"></div>
-            </div>
-            <div class="dep-labels">
-                <span>الإهلاك: ${dep.depPct.toFixed(1)}%</span>
-                <span>العمر: ${dep.yearsUsed.toFixed(1)} / ${asset.life||5} سنة</span>
-            </div>
-            <div class="asset-actions" onclick="event.stopPropagation()">
-                <button class="btn-sm btn-detail" onclick="openDetail('${asset.docId}')"><i class="fas fa-chart-bar"></i> جدول الإهلاك</button>
-                <button class="btn-sm btn-edit" onclick="openEditAsset('${asset.docId}')"><i class="fas fa-edit"></i> تعديل</button>
-                ${!isDisposed?`<button class="btn-sm btn-dep" onclick="disposeAsset('${asset.docId}')"><i class="fas fa-archive"></i> إتلاف</button>`:''}
-                <button class="btn-sm btn-delete" onclick="deleteAsset('${asset.docId}')"><i class="fas fa-trash"></i></button>
+            ${budget>0 ? `
+            <div class="cc-bar-wrap">
+                <div class="cc-bar-label">
+                    <span style="font-size:10px;color:#64748b;">الميزانية: ${budget.toFixed(0)} ﷼</span>
+                    <span style="font-size:10px;color:${budgetPct>90?'#e63946':'#64748b'};">${budgetPct.toFixed(0)}% مستخدم</span>
+                </div>
+                <div class="cc-bar"><div class="cc-bar-fill" style="width:${budgetPct}%;background:${budgetPct>90?'#e63946':budgetPct>70?'#ffb703':'#38b000'};"></div></div>
+            </div>` : ''}
+            <div class="cc-actions">
+                <button class="btn-sm btn-add-tx" onclick="openAddTx('${cc.docId}')"><i class="fas fa-plus"></i> إضافة حركة</button>
+                <button class="btn-sm btn-view" onclick="openDetail('${cc.docId}')"><i class="fas fa-list"></i> التفاصيل</button>
+                <button class="btn-sm btn-edit" onclick="openEditCC('${cc.docId}')"><i class="fas fa-edit"></i></button>
+                <button class="btn-sm btn-delete" onclick="deleteCC('${cc.docId}')"><i class="fas fa-trash"></i></button>
             </div>
         </div>`;
     }).join('');
 }
 
 // ============================================================
-// CRUD
+// CC CRUD
 // ============================================================
-window.openAddAsset = function() {
-    document.getElementById('assetModalTitle').textContent = 'إضافة أصل ثابت جديد';
-    document.getElementById('editAssetId').value = '';
-    ['assetName','assetSerial','assetLocation','assetNotes'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-    document.getElementById('assetCost').value     = '';
-    document.getElementById('assetSalvage').value  = '0';
-    document.getElementById('assetLife').value     = '5';
-    document.getElementById('assetCategory').value = 'equipment';
-    document.getElementById('assetCurrency').value = 'SAR';
-    document.getElementById('assetDepMethod').value= 'straight_line';
-    setDefaultDate();
-    document.getElementById('depPreview').style.display = 'none';
-    document.getElementById('assetModal').classList.add('show');
+window.openAddCC = function() {
+    document.getElementById('ccModalTitle').textContent='إضافة مركز تكلفة جديد';
+    document.getElementById('editCCId').value='';
+    ['ccName','ccCode','ccManager','ccNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('ccBudget').value='';
+    document.getElementById('ccType').value='dept';
+    selectColor('#0077b6');
+    document.getElementById('ccModal').classList.add('show');
 };
 
-window.openEditAsset = function(docId) {
-    const a = allAssets.find(x => x.docId===docId);
-    if (!a) return;
-    document.getElementById('assetModalTitle').textContent = 'تعديل الأصل الثابت';
-    document.getElementById('editAssetId').value           = docId;
-    document.getElementById('assetName').value             = a.name||'';
-    document.getElementById('assetCost').value             = a.cost||0;
-    document.getElementById('assetSalvage').value          = a.salvage||0;
-    document.getElementById('assetLife').value             = a.life||5;
-    document.getElementById('assetPurchaseDate').value     = a.purchaseDate||'';
-    document.getElementById('assetCategory').value         = a.category||'equipment';
-    document.getElementById('assetCurrency').value         = a.currency||'SAR';
-    document.getElementById('assetDepMethod').value        = a.depMethod||'straight_line';
-    document.getElementById('assetLocation').value         = a.location||'';
-    document.getElementById('assetSerial').value           = a.serial||'';
-    document.getElementById('assetNotes').value            = a.notes||'';
-    updateDepPreview();
-    document.getElementById('assetModal').classList.add('show');
+window.openEditCC = function(docId) {
+    const cc = allCCs.find(c=>c.docId===docId);
+    if (!cc) return;
+    document.getElementById('ccModalTitle').textContent='تعديل مركز التكلفة';
+    document.getElementById('editCCId').value  = docId;
+    document.getElementById('ccName').value    = cc.name||'';
+    document.getElementById('ccCode').value    = cc.code||'';
+    document.getElementById('ccManager').value = cc.manager||'';
+    document.getElementById('ccNotes').value   = cc.notes||'';
+    document.getElementById('ccBudget').value  = cc.budget||'';
+    document.getElementById('ccType').value    = cc.type||'dept';
+    selectColor(cc.color||'#0077b6');
+    document.getElementById('ccModal').classList.add('show');
 };
 
-window.closeAssetModal = function() {
-    document.getElementById('assetModal').classList.remove('show');
+window.closeCCModal = function() { document.getElementById('ccModal').classList.remove('show'); };
+
+window.selectColor = function(color) {
+    selectedColor = color;
+    document.getElementById('ccColor').value = color;
+    document.querySelectorAll('.color-option').forEach(el => {
+        el.style.border = el.dataset.color===color ? '3px solid #1e293b' : '3px solid transparent';
+    });
 };
 
-window.saveAsset = async function() {
-    const name = document.getElementById('assetName').value.trim();
-    const cost = parseFloat(document.getElementById('assetCost').value)||0;
-    const date = document.getElementById('assetPurchaseDate').value;
-    if (!name) return showToast('يرجى إدخال اسم الأصل', false);
-    if (cost<=0) return showToast('يرجى إدخال تكلفة الشراء', false);
-    if (!date)   return showToast('يرجى إدخال تاريخ الشراء', false);
-
-    const editId = document.getElementById('editAssetId').value;
+window.saveCC = async function() {
+    const name = document.getElementById('ccName').value.trim();
+    if (!name) return showToast('يرجى إدخال اسم المركز', false);
+    const editId = document.getElementById('editCCId').value;
     const data = {
-        name, cost,
-        salvage:      parseFloat(document.getElementById('assetSalvage').value)||0,
-        life:         parseInt(document.getElementById('assetLife').value)||5,
-        purchaseDate: date,
-        category:     document.getElementById('assetCategory').value,
-        currency:     document.getElementById('assetCurrency').value,
-        depMethod:    document.getElementById('assetDepMethod').value,
-        location:     document.getElementById('assetLocation').value.trim(),
-        serial:       document.getElementById('assetSerial').value.trim(),
-        notes:        document.getElementById('assetNotes').value.trim(),
-        status:       'active',
-        updatedAt:    serverTimestamp()
+        name,
+        code:    document.getElementById('ccCode').value.trim(),
+        type:    document.getElementById('ccType').value,
+        budget:  parseFloat(document.getElementById('ccBudget').value)||0,
+        manager: document.getElementById('ccManager').value.trim(),
+        color:   selectedColor,
+        notes:   document.getElementById('ccNotes').value.trim(),
+        updatedAt: serverTimestamp()
     };
-
     try {
         if (editId) {
-            await updateDoc(doc(db,'users',currentUser.uid,'fixedAssets',editId), data);
-            showToast('✅ تم تحديث الأصل', true);
+            await updateDoc(doc(db,'users',currentUser.uid,'costCenters',editId), data);
+            showToast('✅ تم تحديث المركز', true);
         } else {
-            const id = 'asset-'+Date.now();
-            await setDoc(doc(db,'users',currentUser.uid,'fixedAssets',id), { ...data, createdAt:serverTimestamp() });
-            showToast('✅ تم إضافة الأصل الثابت', true);
+            const id = 'cc-'+Date.now();
+            await setDoc(doc(db,'users',currentUser.uid,'costCenters',id),{...data,createdAt:serverTimestamp()});
+            showToast('✅ تم إضافة مركز التكلفة', true);
         }
-        closeAssetModal();
-        await loadAssets();
+        closeCCModal();
+        await loadCCs();
     } catch(e) { showToast('❌ خطأ: '+e.message, false); }
 };
 
-window.disposeAsset = async function(docId) {
-    if (!confirm('تأكيد إتلاف / بيع هذا الأصل؟ سيُحدَّد كمتصرف فيه.')) return;
+window.deleteCC = async function(docId) {
+    if (!confirm('حذف مركز التكلفة وجميع حركاته؟')) return;
     try {
-        await updateDoc(doc(db,'users',currentUser.uid,'fixedAssets',docId), { status:'disposed', disposedAt:serverTimestamp() });
-        showToast('تم تسجيل التصرف في الأصل', false);
-        await loadAssets();
-    } catch(e) { showToast('❌ خطأ: '+e.message, false); }
-};
-
-window.deleteAsset = async function(docId) {
-    if (!confirm('حذف هذا الأصل نهائياً؟')) return;
-    try {
-        await deleteDoc(doc(db,'users',currentUser.uid,'fixedAssets',docId));
+        await deleteDoc(doc(db,'users',currentUser.uid,'costCenters',docId));
         showToast('تم الحذف', false);
-        await loadAssets();
+        await loadCCs();
     } catch(e) { showToast('❌ خطأ: '+e.message, false); }
 };
 
 // ============================================================
-// Detail — جدول الإهلاك التفصيلي
+// Transactions
+// ============================================================
+window.openAddTx = function(ccId) {
+    document.getElementById('txCCId').value = ccId;
+    document.getElementById('txAmount').value='';
+    document.getElementById('txDesc').value='';
+    document.getElementById('txInvRef').value='';
+    document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
+    setTxType('expense');
+    document.getElementById('txModal').classList.add('show');
+};
+
+window.closeTxModal = function() { document.getElementById('txModal').classList.remove('show'); };
+
+window.setTxType = function(type) {
+    currentTxType = type;
+    const rv = document.getElementById('btnRevenue');
+    const ex = document.getElementById('btnExpense');
+    if (type==='revenue') {
+        rv.style.background='#dcfce7'; rv.style.color='#16a34a'; rv.style.borderColor='#16a34a';
+        ex.style.background='#f1f5f9'; ex.style.color='#94a3b8'; ex.style.borderColor='#e2e8f0';
+    } else {
+        ex.style.background='#fee2e2'; ex.style.color='#e63946'; ex.style.borderColor='#e63946';
+        rv.style.background='#f1f5f9'; rv.style.color='#94a3b8'; rv.style.borderColor='#e2e8f0';
+    }
+};
+
+window.saveTx = async function() {
+    const ccId   = document.getElementById('txCCId').value;
+    const amount = parseFloat(document.getElementById('txAmount').value)||0;
+    const desc   = document.getElementById('txDesc').value.trim();
+    const date   = document.getElementById('txDate').value;
+    const invRef = document.getElementById('txInvRef').value.trim();
+    if (!amount||amount<=0) return showToast('يرجى إدخال مبلغ صحيح', false);
+    if (!desc) return showToast('يرجى إدخال وصف الحركة', false);
+    try {
+        const txId = 'tx-'+Date.now();
+        await setDoc(doc(db,'users',currentUser.uid,'costCenters',ccId,'transactions',txId),
+            { type:currentTxType, amount, desc, date, invRef, createdAt:serverTimestamp() });
+        showToast(`✅ تم إضافة ${currentTxType==='revenue'?'الإيراد':'التكلفة'}`, true);
+        closeTxModal();
+        await loadCCs();
+    } catch(e) { showToast('❌ خطأ: '+e.message, false); }
+};
+
+// ============================================================
+// Detail
 // ============================================================
 window.openDetail = function(docId) {
-    const a = allAssets.find(x => x.docId===docId);
-    if (!a) return;
-    const dep = calcDepreciation(a);
-    const cur = a.currency||'﷼';
-    const catLabels = {equipment:'معدات',vehicle:'مركبة',property:'عقار',furniture:'أثاث',tech:'تقنية',other:'أخرى'};
-
-    // جدول الإهلاك السنوي
-    let tableRows = '';
-    let bookVal = a.cost||0;
-    const life  = a.life||5;
-    const cost  = a.cost||0;
-    const salvage = a.salvage||0;
-    const method  = a.depMethod||'straight_line';
-    const purchaseYear = new Date(a.purchaseDate).getFullYear();
-    const currentYear  = new Date().getFullYear();
-
-    for (let y=1; y<=life; y++) {
-        let annDep;
-        if (method==='straight_line') { annDep=(cost-salvage)/life; }
-        else { annDep=bookVal*(2/life); }
-        annDep = Math.min(annDep, Math.max(0, bookVal-salvage));
-        const openVal = bookVal;
-        bookVal = Math.max(salvage, bookVal-annDep);
-        const yr = purchaseYear+y-1;
-        const isCurrentYear = yr===currentYear;
-        tableRows += `<tr style="${isCurrentYear?'background:#f0f9ff;font-weight:700;':''}">
-            <td>${yr}</td>
-            <td>${annDep.toFixed(2)}</td>
-            <td>${(cost-bookVal).toFixed(2)}</td>
-            <td style="color:#38b000;">${bookVal.toFixed(2)}</td>
-        </tr>`;
-    }
+    const cc = allCCs.find(c=>c.docId===docId);
+    if (!cc) return;
+    const color    = cc.color||'#0077b6';
+    const profitColor = cc.profit>=0?'#38b000':'#e63946';
+    const txsSorted = [...(cc.txs||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 
     document.getElementById('detailContent').innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-            <h5 style="font-size:15px;font-weight:900;margin:0;">${a.name}</h5>
-            <span style="font-size:11px;padding:3px 10px;border-radius:8px;background:#dbeafe;color:#1d4ed8;">${catLabels[a.category]||'أخرى'}</span>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+            <div style="width:14px;height:14px;border-radius:50%;background:${color};flex-shrink:0;"></div>
+            <h5 style="font-size:15px;font-weight:900;margin:0;flex:1;">${cc.name}</h5>
         </div>
-        <div style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:14px;">
-            <div class="info-row"><span class="info-lbl">تكلفة الشراء</span><span class="info-val">${cost.toFixed(2)} ${cur}</span></div>
-            <div class="info-row"><span class="info-lbl">القيمة التخريدية</span><span class="info-val">${salvage.toFixed(2)} ${cur}</span></div>
-            <div class="info-row"><span class="info-lbl">الإهلاك المتراكم</span><span class="info-val" style="color:#e63946;">${dep.accDep.toFixed(2)} ${cur}</span></div>
-            <div class="info-row"><span class="info-lbl">القيمة الدفترية الحالية</span><span class="info-val" style="color:#38b000;font-size:15px;">${dep.bookValue.toFixed(2)} ${cur}</span></div>
-            <div class="info-row"><span class="info-lbl">طريقة الإهلاك</span><span class="info-val">${method==='straight_line'?'القسط الثابت':'رصيد متناقص'}</span></div>
-            <div class="info-row"><span class="info-lbl">تاريخ الشراء</span><span class="info-val">${a.purchaseDate||'—'}</span></div>
-            <div class="info-row"><span class="info-lbl">العمر الافتراضي</span><span class="info-val">${life} سنوات</span></div>
-            ${a.location?`<div class="info-row"><span class="info-lbl">الموقع</span><span class="info-val">${a.location}</span></div>`:''}
-            ${a.serial?`<div class="info-row"><span class="info-lbl">Serial</span><span class="info-val" style="direction:ltr;">${a.serial}</span></div>`:''}
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+            <div style="background:#dcfce7;border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:14px;font-weight:900;color:#16a34a;">${(cc.revenue||0).toFixed(2)}</div>
+                <div style="font-size:10px;color:#16a34a;">إيرادات</div>
+            </div>
+            <div style="background:#fee2e2;border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:14px;font-weight:900;color:#e63946;">${(cc.expense||0).toFixed(2)}</div>
+                <div style="font-size:10px;color:#e63946;">تكاليف</div>
+            </div>
+            <div style="background:${cc.profit>=0?'#f0fdf4':'#fff5f5'};border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:14px;font-weight:900;color:${profitColor};">${(cc.profit||0).toFixed(2)}</div>
+                <div style="font-size:10px;color:${profitColor};">${cc.profit>=0?'ربح':'خسارة'}</div>
+            </div>
         </div>
-        <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:10px;"><i class="fas fa-table" style="margin-left:6px;color:#0077b6;"></i>جدول الإهلاك السنوي</div>
-        <div style="overflow-x:auto;">
-        <table class="dep-table">
-            <thead><tr><th>السنة</th><th>الإهلاك</th><th>م. الإهلاك</th><th>القيمة الدفترية</th></tr></thead>
-            <tbody>${tableRows}</tbody>
-        </table>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-            <button onclick="openEditAsset('${a.docId}');closeDetail();" style="flex:1;padding:12px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
-                <i class="fas fa-edit"></i> تعديل
-            </button>
-            <button onclick="closeDetail()" style="padding:12px 16px;background:#f1f5f9;color:#64748b;border:none;border-radius:12px;font-family:'Cairo',sans-serif;cursor:pointer;">
-                إغلاق
-            </button>
+        <button onclick="openAddTx('${cc.docId}');closeDetail();" style="width:100%;padding:11px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">
+            <i class="fas fa-plus"></i> إضافة حركة جديدة
+        </button>
+        <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:8px;">سجل الحركات (${txsSorted.length})</div>
+        <div>
+        ${txsSorted.length===0
+            ? '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:12px;">لا توجد حركات بعد</div>'
+            : txsSorted.map(tx=>`
+            <div class="tx-item">
+                <div class="tx-icon ${tx.type}">${tx.type==='revenue'?'<i class="fas fa-arrow-up"></i>':'<i class="fas fa-arrow-down"></i>'}</div>
+                <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;">${tx.desc||'—'}</div>
+                    <div style="font-size:10px;color:#94a3b8;">${tx.date||'—'} ${tx.invRef?'• فاتورة: '+tx.invRef:''}</div>
+                </div>
+                <span style="font-size:14px;font-weight:900;color:${tx.type==='revenue'?'#16a34a':'#e63946'};">
+                    ${tx.type==='revenue'?'+':'-'}${(tx.amount||0).toFixed(2)}
+                </span>
+            </div>`).join('')
+        }
         </div>`;
     document.getElementById('detailModal').classList.add('show');
 };
 
-window.closeDetail = function() {
-    document.getElementById('detailModal').classList.remove('show');
-};
+window.closeDetail = function() { document.getElementById('detailModal').classList.remove('show'); };
 
 // Toast
-function showToast(msg, ok=true) {
+function showToast(msg,ok=true) {
     const t=document.getElementById('toastBox');
     t.innerText=msg; t.style.backgroundColor=ok?'#2b9348':'#d90429';
     t.style.display='block'; setTimeout(()=>t.style.display='none',4000);

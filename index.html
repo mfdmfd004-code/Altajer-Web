@@ -109,9 +109,9 @@
             <small id="userDisplayName" style="font-size:10px;color:var(--neon-cyan);display:block;"></small>
         </div>
     </div>
-    <div class="text-end">
-    </div>
-
+    <div style="text-align:center;line-height:1.2;padding:0 8px;">
+        <div id="headerTime" style="font-size:10px;font-weight:bold;color:var(--neon-cyan);letter-spacing:1px;font-family:monospace;">00:00:00</div>
+        <div id="headerDate" style="font-size:8px;font-weight:bold;color:var(--text-muted);margin-top:1px;"></div>
     </div>
     <div class="d-flex align-items-center gap-2">
         <select id="themeSelector" class="form-select form-select-sm bg-transparent text-white" style="width:80px;font-size:10px;" onchange="changeTheme(this.value)">
@@ -144,8 +144,9 @@
     <div class="container-fluid">
         <div class="p-3 mb-3 rounded d-flex justify-content-center align-items-center" style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--neon-cyan);">
             <button class="btn btn-info text-white fw-bold px-4 py-2" onclick="switchView(3)" style="border-radius:20px;font-size:13px;">
-                <div class="d-flex justify-content-between align-items-center w-100 px-2">
-    <h5 class="m-0 text-white fw-bold">الفاتورة</h5>
+                <i class="fas fa-bolt me-1"></i><span data-i18n="fast-inv-btn">⚡ فاتورة جديدة ⚡</span>
+            </button>
+        </div>
     
     <div class="text-end" style="font-variant-numeric: lining-nums tabular-nums;">
         <div id="headerTime" style="font-size: 13px; font-weight: bold; color: #87ceeb; letter-spacing: 0.5px; font-family: sans-serif;"></div>

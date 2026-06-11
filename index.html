@@ -109,10 +109,7 @@
             <small id="userDisplayName" style="font-size:10px;color:var(--neon-cyan);display:block;"></small>
         </div>
     </div>
-    <div style="text-align:center;line-height:1.2;padding:0 8px;">
-        <div id="headerTime" style="font-size:8px;font-weight:bold;color:var(--neon-cyan);letter-spacing:1px;font-family:monospace;">00:00:00</div>
-        <div id="headerDate" style="font-size:6px;font-weight:bold;color:var(--text-muted);margin-top:1px;"></div>
-    </div>
+    
     <div class="d-flex align-items-center gap-2">
         <select id="themeSelector" class="form-select form-select-sm bg-transparent text-white" style="width:60px;font-size:10px;" onchange="changeTheme(this.value)">
             <option value="winter" style="color:#000;">Winter ❄️</option>
@@ -127,6 +124,10 @@
         <span style="color: #0dcaf0; font-weight: bold; font-size: 12px; margin-right: 8px; white-space: ;">Accountant</span>
 
         <button onclick="changeLanguage('en')" class="btn btn-sm text-white p-0 fw-bold" style="font-size:10px;">EN</button>
+        <div style="text-align:center;line-height:1.2;padding:0 8px;">
+        <div id="headerTime" style="font-size:8px;font-weight:bold;color:var(--neon-cyan);letter-spacing:1px;font-family:monospace;">00:00:00</div>
+        <div id="headerDate" style="font-size:6px;font-weight:bold;color:var(--text-muted);margin-top:1px;"></div>
+    </div>
         <a href="settings.html" style="color:white;font-size:14px;margin-right:4px;"><i class="fas fa-cogs"></i></a>
     </div>
 </nav>

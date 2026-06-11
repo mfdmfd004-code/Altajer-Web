@@ -1,0 +1,583 @@
+cat > /home/claude/trial-balance.html << 'TBEOF'
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — ميزان المراجعة</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{background:#f0f4f8;font-family:'Cairo',sans-serif;color:#1e293b;padding-bottom:80px;}
+        .top-bar{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(0,0,0,0.08);position:sticky;top:0;z-index:100;}
+        .top-bar-title{font-size:16px;font-weight:900;color:#0077b6;display:flex;align-items:center;gap:8px;}
+        .btn-back{background:#f1f5f9;border:none;color:#64748b;padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;font-family:'Cairo',sans-serif;display:flex;align-items:center;gap:5px;}
+        .wrap{max-width:800px;margin:0 auto;padding:16px 14px;}
+
+        /* Filter Card */
+        .filter-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+        .filter-title{font-size:13px;font-weight:700;color:#0077b6;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+        .field-group{margin-bottom:0;}
+        .field-group label{font-size:11px;color:#64748b;display:block;margin-bottom:4px;font-weight:600;}
+        .field-group input,.field-group select{width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;font-family:'Cairo',sans-serif;color:#1e293b;background:#fff;}
+        .field-group input:focus,.field-group select:focus{outline:none;border-color:#0077b6;}
+        .btn-main{padding:11px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+        .btn-print{padding:11px 16px;background:#f1f5f9;color:#64748b;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;cursor:pointer;}
+
+        /* Summary Cards */
+        .summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+        .sum-box{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;}
+        .sum-num{font-size:16px;font-weight:900;}
+        .sum-lbl{font-size:10px;color:#94a3b8;margin-top:3px;}
+        .balance-status{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;margin-bottom:14px;border:2px solid transparent;}
+        .balance-status.balanced{border-color:#38b000;background:#f0fdf4;}
+        .balance-status.unbalanced{border-color:#e63946;background:#fff5f5;}
+
+        /* Table */
+        .table-card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow-x:auto;}
+        .tb-table{width:100%;border-collapse:collapse;font-size:12px;min-width:500px;}
+        .tb-table thead tr{background:#f8fafc;}
+        .tb-table th{padding:10px 8px;text-align:center;color:#64748b;font-weight:700;border-bottom:2px solid #e2e8f0;}
+        .tb-table th:first-child{text-align:right;}
+        .tb-table td{padding:9px 8px;text-align:center;border-bottom:1px solid #f1f5f9;}
+        .tb-table td:first-child{text-align:right;}
+        .tb-table tr:hover td{background:#f8fbff;}
+        .tb-table tfoot tr{background:#f0f9ff;font-weight:900;}
+        .tb-table tfoot td{padding:11px 8px;border-top:2px solid #0077b6;color:#0077b6;}
+        /* Account type rows */
+        .row-assets{border-right:3px solid #0077b6;}
+        .row-liabilities{border-right:3px solid #e63946;}
+        .row-equity{border-right:3px solid #7c3aed;}
+        .row-revenue{border-right:3px solid #38b000;}
+        .row-expense{border-right:3px solid #ffb703;}
+        /* Category header */
+        .cat-row td{background:#f8fafc;font-weight:700;color:#64748b;font-size:11px;}
+        /* Amount colors */
+        .debit-amt{color:#1e293b;}
+        .credit-amt{color:#1e293b;}
+        .zero-amt{color:#cbd5e1;}
+
+        /* Loading */
+        .loading-state{text-align:center;padding:50px 20px;color:#94a3b8;}
+        .loading-state i{font-size:36px;margin-bottom:12px;display:block;}
+        .empty-state{text-align:center;padding:50px 20px;color:#94a3b8;}
+        .empty-state i{font-size:48px;margin-bottom:14px;display:block;opacity:0.4;}
+
+        /* Toast */
+        .toast-box{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:30px;color:white;font-weight:700;font-size:13px;z-index:99999;display:none;font-family:'Cairo',sans-serif;}
+
+        /* Print */
+        @media print {
+            .top-bar,.filter-card,.btn-print,.btn-main{display:none!important;}
+            body{background:white;padding:0;}
+            .wrap{padding:0;}
+            .table-card{box-shadow:none;border:1px solid #e2e8f0;}
+            .print-header{display:block!important;}
+        }
+        .print-header{display:none;text-align:center;margin-bottom:16px;}
+    </style>
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<!-- Header -->
+<div class="top-bar">
+    <div class="top-bar-title"><i class="fas fa-balance-scale"></i> ميزان المراجعة</div>
+    <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> رجوع</a>
+</div>
+
+<div class="wrap">
+
+    <!-- Print Header -->
+    <div class="print-header">
+        <h3 style="font-size:18px;font-weight:900;">تاجر برو المحاسبي</h3>
+        <h4 style="font-size:15px;">ميزان المراجعة</h4>
+        <p id="printPeriod" style="font-size:12px;color:#64748b;"></p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-card">
+        <div class="filter-title"><i class="fas fa-filter"></i> فترة التقرير</div>
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <div class="field-group">
+                    <label>من تاريخ</label>
+                    <input type="date" id="dateFrom">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="field-group">
+                    <label>إلى تاريخ</label>
+                    <input type="date" id="dateTo">
+                </div>
+            </div>
+        </div>
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <div class="field-group">
+                    <label>عرض الحسابات</label>
+                    <select id="filterType">
+                        <option value="all">جميع الحسابات</option>
+                        <option value="nonzero">الحسابات ذات الأرصدة فقط</option>
+                        <option value="assets">الأصول فقط</option>
+                        <option value="liabilities">الخصوم فقط</option>
+                        <option value="equity">حقوق الملكية</option>
+                        <option value="revenue">الإيرادات فقط</option>
+                        <option value="expenses">المصروفات فقط</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="field-group">
+                    <label>ترتيب حسب</label>
+                    <select id="sortBy">
+                        <option value="code">رقم الحساب</option>
+                        <option value="name">اسم الحساب</option>
+                        <option value="debit">المدين تنازلي</option>
+                        <option value="credit">الدائن تنازلي</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <button class="btn-main" onclick="generateReport()">
+                <i class="fas fa-calculator"></i> توليد الميزان
+            </button>
+            <button class="btn-print" onclick="window.print()">
+                <i class="fas fa-print"></i> طباعة
+            </button>
+            <button class="btn-print" onclick="exportCSV()">
+                <i class="fas fa-file-csv"></i> CSV
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div id="summarySection" style="display:none;">
+        <div class="summary-grid">
+            <div class="sum-box">
+                <div class="sum-num" id="totalDebit" style="color:#0077b6;">0.00</div>
+                <div class="sum-lbl">إجمالي المدين ﷼</div>
+            </div>
+            <div class="sum-box">
+                <div class="sum-num" id="totalCredit" style="color:#7c3aed;">0.00</div>
+                <div class="sum-lbl">إجمالي الدائن ﷼</div>
+            </div>
+            <div class="sum-box">
+                <div class="sum-num" id="totalAssets" style="color:#38b000;">0.00</div>
+                <div class="sum-lbl">إجمالي الأصول</div>
+            </div>
+            <div class="sum-box">
+                <div class="sum-num" id="totalLiabilities" style="color:#e63946;">0.00</div>
+                <div class="sum-lbl">إجمالي الخصوم</div>
+            </div>
+        </div>
+        <!-- Balance Status -->
+        <div class="balance-status" id="balanceStatus">
+            <div id="balanceIcon" style="font-size:28px;margin-bottom:6px;">⚖️</div>
+            <div id="balanceText" style="font-size:14px;font-weight:700;">جاري الحساب...</div>
+            <div id="balanceDiff" style="font-size:12px;color:#64748b;margin-top:4px;"></div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div id="tableSection">
+        <div class="empty-state">
+            <i class="fas fa-balance-scale"></i>
+            <p style="font-size:14px;font-weight:600;color:#64748b;">اضغط "توليد الميزان" لعرض التقرير</p>
+            <p style="font-size:12px;margin-top:4px;">سيتم قراءة جميع حركاتك المالية تلقائياً</p>
+        </div>
+    </div>
+
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module">
+import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, query, where }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { guardPage } from "./subscription.js";
+
+await guardPage({ blockOnExpired:false, blockInvoiceOnly:false });
+
+const auth = getAuth();
+const db   = getFirestore();
+let currentUser = null;
+let reportData  = [];
+
+// تعريف دليل الحسابات المحاسبية
+const CHART_OF_ACCOUNTS = [
+    // الأصول
+    { code:'1100', name:'النقدية وما في حكمها',    type:'assets',      normal:'debit'  },
+    { code:'1110', name:'الحسابات البنكية',         type:'assets',      normal:'debit'  },
+    { code:'1200', name:'المدينون / العملاء',        type:'assets',      normal:'debit'  },
+    { code:'1300', name:'المخزون',                  type:'assets',      normal:'debit'  },
+    { code:'1400', name:'المصروفات المدفوعة مقدماً', type:'assets',      normal:'debit'  },
+    { code:'1500', name:'الأصول الثابتة',            type:'assets',      normal:'debit'  },
+    { code:'1510', name:'مجمع إهلاك الأصول',         type:'assets',      normal:'credit' },
+    // الخصوم
+    { code:'2100', name:'الدائنون / الموردون',       type:'liabilities', normal:'credit' },
+    { code:'2200', name:'القروض قصيرة الأجل',        type:'liabilities', normal:'credit' },
+    { code:'2300', name:'الضريبة المستحقة',          type:'liabilities', normal:'credit' },
+    { code:'2400', name:'المصروفات المستحقة',        type:'liabilities', normal:'credit' },
+    { code:'2500', name:'القروض طويلة الأجل',        type:'liabilities', normal:'credit' },
+    // حقوق الملكية
+    { code:'3100', name:'رأس المال',                 type:'equity',      normal:'credit' },
+    { code:'3200', name:'الاحتياطيات',               type:'equity',      normal:'credit' },
+    { code:'3300', name:'الأرباح المحتجزة',          type:'equity',      normal:'credit' },
+    { code:'3400', name:'السحوبات',                  type:'equity',      normal:'debit'  },
+    // الإيرادات
+    { code:'4100', name:'إيرادات المبيعات',          type:'revenue',     normal:'credit' },
+    { code:'4200', name:'إيرادات الخدمات',           type:'revenue',     normal:'credit' },
+    { code:'4300', name:'إيرادات أخرى',              type:'revenue',     normal:'credit' },
+    // المصروفات
+    { code:'5100', name:'تكلفة البضاعة المباعة',     type:'expenses',    normal:'debit'  },
+    { code:'5200', name:'مصروفات الرواتب',           type:'expenses',    normal:'debit'  },
+    { code:'5300', name:'مصروفات الإيجار',           type:'expenses',    normal:'debit'  },
+    { code:'5400', name:'مصروفات المرافق',           type:'expenses',    normal:'debit'  },
+    { code:'5500', name:'مصروفات الإهلاك',           type:'expenses',    normal:'debit'  },
+    { code:'5600', name:'مصروفات التسويق',           type:'expenses',    normal:'debit'  },
+    { code:'5700', name:'مصروفات إدارية',            type:'expenses',    normal:'debit'  },
+    { code:'5800', name:'مصروفات ضريبية',            type:'expenses',    normal:'debit'  },
+    { code:'5900', name:'مصروفات أخرى',              type:'expenses',    normal:'debit'  },
+];
+
+onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href='login.html'; return; }
+    currentUser = user;
+    setDefaultDates();
+});
+
+function setDefaultDates() {
+    const now   = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    document.getElementById('dateFrom').value = start.toISOString().split('T')[0];
+    document.getElementById('dateTo').value   = now.toISOString().split('T')[0];
+}
+
+// ============================================================
+// توليد الميزان — يقرأ من Firebase
+// ============================================================
+window.generateReport = async function() {
+    if (!currentUser) return;
+    const dateFrom  = document.getElementById('dateFrom').value;
+    const dateTo    = document.getElementById('dateTo').value;
+    const filterType = document.getElementById('filterType').value;
+    const sortBy    = document.getElementById('sortBy').value;
+
+    // إظهار التحميل
+    document.getElementById('tableSection').innerHTML = `
+        <div class="loading-state">
+            <i class="fas fa-spinner fa-spin" style="color:#0077b6;"></i>
+            <p>جاري قراءة البيانات المالية...</p>
+        </div>`;
+    document.getElementById('summarySection').style.display = 'none';
+
+    try {
+        // قراءة جميع مصادر البيانات
+        const [
+            ordersSnap, expensesSnap, journalSnap,
+            purchasesSnap, employeesSnap, assetsSnap
+        ] = await Promise.all([
+            getDocs(collection(db,'users',currentUser.uid,'orders')),
+            getDocs(collection(db,'users',currentUser.uid,'expenses')).catch(()=>({docs:[]})),
+            getDocs(collection(db,'users',currentUser.uid,'journalEntries')).catch(()=>({docs:[]})),
+            getDocs(collection(db,'users',currentUser.uid,'purchases')).catch(()=>({docs:[]})),
+            getDocs(collection(db,'users',currentUser.uid,'employees')).catch(()=>({docs:[]})),
+            getDocs(collection(db,'users',currentUser.uid,'fixedAssets')).catch(()=>({docs:[]}))
+        ]);
+
+        // إنشاء الأرصدة
+        const balances = {};
+        CHART_OF_ACCOUNTS.forEach(acc => { balances[acc.code] = { debit:0, credit:0 }; });
+
+        // دالة مساعدة للتحقق من الفترة
+        const inPeriod = (dateStr) => {
+            if (!dateStr) return true;
+            const d = dateStr.substring(0,10);
+            return (!dateFrom || d >= dateFrom) && (!dateTo || d <= dateTo);
+        };
+
+        // 1. قيود الفواتير (المبيعات)
+        ordersSnap.docs.forEach(d => {
+            const o = d.data();
+            if (!inPeriod(o.date||o.timestamp)) return;
+            const subtotal = o.subtotal || (o.total/(1+(o.taxRate||15)/100));
+            const vat      = o.tax || (o.total - subtotal);
+            // مدين: المدينون
+            balances['1200'].debit    += (o.total||0);
+            // دائن: إيرادات المبيعات
+            balances['4100'].credit   += subtotal;
+            // دائن: الضريبة المستحقة
+            balances['2300'].credit   += vat;
+        });
+
+        // 2. المشتريات
+        purchasesSnap.docs.forEach(d => {
+            const p = d.data();
+            if (!inPeriod(p.date)) return;
+            const total = p.total||p.amount||0;
+            const vat   = p.vat||0;
+            const net   = total - vat;
+            // مدين: المخزون أو تكلفة البضاعة
+            balances['1300'].debit  += net;
+            balances['5100'].debit  += net;
+            // مدين: ضريبة المدخلات
+            balances['1400'].debit  += vat;
+            // دائن: الدائنون
+            balances['2100'].credit += total;
+        });
+
+        // 3. المصروفات
+        expensesSnap.docs.forEach(d => {
+            const e = d.data();
+            if (!inPeriod(e.date)) return;
+            const amount = e.amount||0;
+            // تصنيف المصروف
+            const catMap = {
+                salary:'5200', rent:'5300', utilities:'5400',
+                marketing:'5600', admin:'5700', tax:'5800'
+            };
+            const accCode = catMap[e.category] || '5900';
+            balances[accCode].debit   += amount;
+            balances['1110'].credit   += amount;
+        });
+
+        // 4. الرواتب
+        employeesSnap.docs.forEach(d => {
+            const e = d.data();
+            if (!e.salary) return;
+            balances['5200'].debit  += (e.salary||0);
+            balances['1110'].credit += (e.salary||0);
+        });
+
+        // 5. الأصول الثابتة
+        assetsSnap.docs.forEach(d => {
+            const a = d.data();
+            if (!inPeriod(a.purchaseDate)) return;
+            balances['1500'].debit  += (a.cost||0);
+            balances['1110'].credit += (a.cost||0);
+            // إهلاك
+            if (a.cost && a.life) {
+                const annDep = (a.cost-(a.salvage||0)) / (a.life||5);
+                const now2   = new Date();
+                const pDate  = new Date(a.purchaseDate||now2);
+                const yrs    = Math.max(0,(now2-pDate)/(365.25*86400000));
+                const accDep = Math.min(annDep*yrs, a.cost-(a.salvage||0));
+                balances['1510'].credit += accDep;
+                balances['5500'].debit  += accDep;
+            }
+        });
+
+        // 6. قيود يومية يدوية
+        journalSnap.docs.forEach(d => {
+            const j = d.data();
+            if (!inPeriod(j.date)) return;
+            (j.entries||[]).forEach(entry => {
+                const code = entry.accountCode;
+                if (balances[code] !== undefined) {
+                    balances[code].debit  += entry.debit||0;
+                    balances[code].credit += entry.credit||0;
+                }
+            });
+        });
+
+        // بناء بيانات الجدول
+        reportData = CHART_OF_ACCOUNTS.map(acc => {
+            const b = balances[acc.code]||{debit:0,credit:0};
+            const netDebit  = Math.max(0, b.debit  - b.credit) * (acc.normal==='debit' ?1:0) +
+                              Math.max(0, b.debit  - b.credit) * (acc.normal==='credit'?1:0);
+            const netCredit = Math.max(0, b.credit - b.debit)  * (acc.normal==='credit'?1:0) +
+                              Math.max(0, b.credit - b.debit)  * (acc.normal==='debit' ?1:0);
+            const finalDebit  = acc.normal==='debit'  ? Math.max(0,b.debit-b.credit) : 0;
+            const finalCredit = acc.normal==='credit' ? Math.max(0,b.credit-b.debit) : 0;
+            return {
+                ...acc,
+                rawDebit:   b.debit,
+                rawCredit:  b.credit,
+                finalDebit,
+                finalCredit
+            };
+        });
+
+        // تصفية
+        let filtered = reportData;
+        if (filterType !== 'all') {
+            if (filterType === 'nonzero') {
+                filtered = reportData.filter(a => a.finalDebit>0 || a.finalCredit>0);
+            } else {
+                filtered = reportData.filter(a => a.type===filterType);
+            }
+        }
+
+        // ترتيب
+        if (sortBy==='name')   filtered.sort((a,b)=>a.name.localeCompare(b.name));
+        else if (sortBy==='debit')  filtered.sort((a,b)=>b.finalDebit-a.finalDebit);
+        else if (sortBy==='credit') filtered.sort((a,b)=>b.finalCredit-a.finalCredit);
+        else filtered.sort((a,b)=>a.code.localeCompare(b.code));
+
+        renderTable(filtered, dateFrom, dateTo);
+        updateSummary(reportData);
+
+    } catch(e) {
+        console.error('Trial balance error:', e);
+        document.getElementById('tableSection').innerHTML=`
+            <div class="empty-state">
+                <i class="fas fa-exclamation-circle" style="color:#e63946;"></i>
+                <p style="color:#e63946;">خطأ في تحميل البيانات: ${e.message}</p>
+            </div>`;
+    }
+};
+
+// ============================================================
+// عرض الجدول
+// ============================================================
+function renderTable(data, dateFrom, dateTo) {
+    const typeLabels = {
+        assets:'الأصول',liabilities:'الخصوم',
+        equity:'حقوق الملكية',revenue:'الإيرادات',expenses:'المصروفات'
+    };
+    const typeClasses = {
+        assets:'row-assets',liabilities:'row-liabilities',
+        equity:'row-equity',revenue:'row-revenue',expenses:'row-expense'
+    };
+
+    // تجميع حسب النوع
+    const groups = {};
+    data.forEach(a => {
+        if (!groups[a.type]) groups[a.type] = [];
+        groups[a.type].push(a);
+    });
+
+    let rows = '';
+    let grandDebit=0, grandCredit=0;
+
+    const typeOrder = ['assets','liabilities','equity','revenue','expenses'];
+    typeOrder.forEach(type => {
+        if (!groups[type] || groups[type].length===0) return;
+        rows += `<tr class="cat-row"><td colspan="4" style="padding:8px 10px;">
+            <i class="fas fa-folder-open" style="margin-left:6px;color:#0077b6;"></i>${typeLabels[type]||type}
+        </td></tr>`;
+        groups[type].forEach(acc => {
+            grandDebit  += acc.finalDebit;
+            grandCredit += acc.finalCredit;
+            const dClass = acc.finalDebit>0  ? 'debit-amt'  : 'zero-amt';
+            const cClass = acc.finalCredit>0 ? 'credit-amt' : 'zero-amt';
+            rows += `<tr class="${typeClasses[acc.type]||''}">
+                <td style="font-family:monospace;font-size:11px;color:#94a3b8;">${acc.code}</td>
+                <td style="text-align:right;">${acc.name}</td>
+                <td class="${dClass}">${acc.finalDebit>0?acc.finalDebit.toFixed(2):'—'}</td>
+                <td class="${cClass}">${acc.finalCredit>0?acc.finalCredit.toFixed(2):'—'}</td>
+            </tr>`;
+        });
+    });
+
+    // إجمالي
+    const diff = Math.abs(grandDebit - grandCredit);
+    const isBalanced = diff < 0.01;
+
+    document.getElementById('tableSection').innerHTML = `
+        <div class="table-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <div style="font-size:13px;font-weight:700;color:#1e293b;">
+                    <i class="fas fa-balance-scale" style="color:#0077b6;margin-left:6px;"></i>
+                    ميزان المراجعة — ${dateFrom||'بداية'} إلى ${dateTo||'اليوم'}
+                </div>
+                <div style="font-size:11px;color:#94a3b8;">${data.length} حساب</div>
+            </div>
+            <table class="tb-table">
+                <thead>
+                    <tr>
+                        <th style="width:70px;">رقم الحساب</th>
+                        <th style="text-align:right;">اسم الحساب</th>
+                        <th>مدين ﷼</th>
+                        <th>دائن ﷼</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" style="text-align:right;font-size:13px;">الإجمالي</td>
+                        <td style="font-size:14px;">${grandDebit.toFixed(2)}</td>
+                        <td style="font-size:14px;">${grandCredit.toFixed(2)}</td>
+                    </tr>
+                    ${!isBalanced?`<tr>
+                        <td colspan="2" style="text-align:right;color:#e63946;">الفرق</td>
+                        <td colspan="2" style="color:#e63946;">${diff.toFixed(2)}</td>
+                    </tr>`:''}
+                </tfoot>
+            </table>
+        </div>`;
+
+    // تحديث حالة الميزان
+    const statusEl = document.getElementById('balanceStatus');
+    const iconEl   = document.getElementById('balanceIcon');
+    const textEl   = document.getElementById('balanceText');
+    const diffEl   = document.getElementById('balanceDiff');
+    if (isBalanced) {
+        statusEl.className='balance-status balanced';
+        iconEl.textContent='✅';
+        textEl.textContent='الميزان متوازن';
+        textEl.style.color='#16a34a';
+        diffEl.textContent='مجموع المدين = مجموع الدائن';
+    } else {
+        statusEl.className='balance-status unbalanced';
+        iconEl.textContent='⚠️';
+        textEl.textContent='الميزان غير متوازن';
+        textEl.style.color='#e63946';
+        diffEl.textContent=`الفرق: ${diff.toFixed(2)} ﷼ — يرجى مراجعة القيود`;
+    }
+
+    // تحديث print header
+    document.getElementById('printPeriod').textContent=`الفترة: ${dateFrom||'—'} إلى ${dateTo||'—'}`;
+}
+
+// ============================================================
+// ملخص
+// ============================================================
+function updateSummary(data) {
+    const totDebit    = data.reduce((s,a)=>s+a.finalDebit,0);
+    const totCredit   = data.reduce((s,a)=>s+a.finalCredit,0);
+    const totAssets   = data.filter(a=>a.type==='assets').reduce((s,a)=>s+a.finalDebit,0);
+    const totLiab     = data.filter(a=>a.type==='liabilities').reduce((s,a)=>s+a.finalCredit,0);
+
+    document.getElementById('totalDebit').textContent      = totDebit.toFixed(2);
+    document.getElementById('totalCredit').textContent     = totCredit.toFixed(2);
+    document.getElementById('totalAssets').textContent     = totAssets.toFixed(2)+' ﷼';
+    document.getElementById('totalLiabilities').textContent= totLiab.toFixed(2)+' ﷼';
+    document.getElementById('summarySection').style.display='block';
+}
+
+// ============================================================
+// تصدير CSV
+// ============================================================
+window.exportCSV = function() {
+    if (!reportData.length) return showToast('ولّد الميزان أولاً', false);
+    const typeLabels={assets:'الأصول',liabilities:'الخصوم',equity:'حقوق الملكية',revenue:'الإيرادات',expenses:'المصروفات'};
+    let csv = 'رقم الحساب,اسم الحساب,النوع,مدين,دائن\n';
+    reportData.forEach(a => {
+        csv += `${a.code},"${a.name}","${typeLabels[a.type]||a.type}",${a.finalDebit.toFixed(2)},${a.finalCredit.toFixed(2)}\n`;
+    });
+    const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download='trial-balance.csv';
+    link.click(); URL.revokeObjectURL(url);
+    showToast('✅ تم تصدير الملف', true);
+};
+
+// Toast
+function showToast(msg,ok=true){
+    const t=document.getElementById('toastBox');
+    t.innerText=msg;t.style.backgroundColor=ok?'#2b9348':'#d90429';
+    t.style.display='block';setTimeout(()=>t.style.display='none',4000);
+}
+window.showToast=showToast;
+</script>
+</body>
+</html>
+TBEOF
+echo "done"

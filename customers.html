@@ -352,7 +352,11 @@
     import {
         collection, doc, setDoc, getDoc, deleteDoc, onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+    const auth = getAuth();
+    let currentUser = null;
+    
     // ===== تطبيق الثيم =====
     const savedTheme = localStorage.getItem('altajer_preferred_theme') || 'winter';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -395,7 +399,10 @@
     };
 
     // ===== الاستماع الحي من Firestore =====
-    onSnapshot(collection(db, "customers"), (snapshot) => {
+    onAuthStateChanged(auth, (user) => {
+        if (!user) { window.location.href = 'login.html'; return; }
+        currentUser = user;
+    onSnapshot(collection(db, 'users', user.uid, 'customers'), (snapshot) => {
         const tbody = document.getElementById('customersTableBody');
         tbody.innerHTML = '';
         const list = [];
@@ -427,6 +434,7 @@
         // تحديث عداد الرئيسية إن وُجد
         if(document.getElementById('customerCount'))
             document.getElementById('customerCount').innerText = snapshot.size;
+    });
     });
 
     // ===== حفظ العميل =====
@@ -478,7 +486,7 @@
         };
 
         try {
-            await setDoc(doc(db, "customers", id), payload, { merge: true });
+            await setDoc(doc(db, 'users', currentUser.uid, 'customers', id), payload, { merge: true });
             showToast("✅ تم حفظ العميل بنجاح في Firebase.");
             clearCustomerForm();
         } catch(err) {
@@ -513,7 +521,7 @@
     async function deleteCustomer(id) {
         if (!confirm("هل أنت متأكد من حذف هذا العميل نهائياً؟")) return;
         try {
-            await deleteDoc(doc(db, "customers", id));
+            await deleteDoc(doc(db, 'users', currentUser.uid, 'customers', id));
             showToast("تم الحذف بنجاح.", false);
             if (editModeId === id) clearCustomerForm();
         } catch(err) {

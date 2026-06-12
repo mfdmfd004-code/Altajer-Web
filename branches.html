@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — الفروع</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{background:#f0f4f8;font-family:'Cairo',sans-serif;color:#1e293b;padding-bottom:80px;}
+        .top-bar{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(0,0,0,0.08);position:sticky;top:0;z-index:100;}
+        .top-bar-title{font-size:16px;font-weight:900;color:#0077b6;display:flex;align-items:center;gap:8px;}
+        .btn-back{background:#f1f5f9;border:none;color:#64748b;padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;font-family:'Cairo',sans-serif;display:flex;align-items:center;gap:5px;}
+        .wrap{max-width:700px;margin:0 auto;padding:16px 14px;}
+
+        /* Plan Notice */
+        .plan-notice{background:linear-gradient(135deg,#fff7ed,#ffedd5);border:1px solid #fdba74;border-radius:14px;padding:14px;margin-bottom:14px;font-size:12px;color:#92400e;display:none;}
+        .plan-notice.show{display:block;}
+
+        /* Stats */
+        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+        .stat-box{background:#fff;border-radius:14px;padding:14px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;}
+        .stat-num{font-size:18px;font-weight:900;color:#0077b6;}
+        .stat-lbl{font-size:10px;color:#94a3b8;margin-top:2px;}
+
+        /* Branch Cards */
+        .branch-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,0.06);border-top:4px solid #0077b6;transition:0.2s;}
+        .branch-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+        .branch-card.main-branch{border-top-color:#38b000;background:linear-gradient(135deg,#f0fdf4,#ffffff);}
+        .branch-card.inactive{opacity:0.6;border-top-color:#94a3b8;}
+        .branch-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+        .branch-name{font-size:14px;font-weight:900;color:#1e293b;display:flex;align-items:center;gap:6px;}
+        .branch-main-badge{font-size:9px;background:#38b000;color:white;padding:2px 8px;border-radius:6px;font-weight:700;}
+        .branch-address{font-size:11px;color:#94a3b8;margin-top:2px;}
+        .branch-status{font-size:10px;padding:3px 10px;border-radius:8px;font-weight:700;}
+        .status-active{background:#dcfce7;color:#16a34a;}
+        .status-inactive{background:#f1f5f9;color:#94a3b8;}
+        /* Sales comparison */
+        .branch-sales{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+        .sale-box{background:#f8fafc;border-radius:10px;padding:10px;text-align:center;}
+        .sale-num{font-size:14px;font-weight:900;}
+        .sale-lbl{font-size:9px;color:#94a3b8;margin-top:2px;}
+        /* Info row */
+        .branch-info{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:#64748b;margin-bottom:10px;}
+        .branch-info span{display:flex;align-items:center;gap:4px;}
+        /* Actions */
+        .branch-actions{display:flex;gap:8px;flex-wrap:wrap;}
+        .btn-sm{padding:7px 12px;border:none;border-radius:8px;font-size:11px;font-family:'Cairo',sans-serif;cursor:pointer;font-weight:600;}
+        .btn-view{background:#f0f9ff;color:#0077b6;}
+        .btn-edit{background:#fef9c3;color:#ca8a04;}
+        .btn-toggle{background:#f3e8ff;color:#7c3aed;}
+        .btn-delete{background:#fee2e2;color:#e63946;}
+
+        /* Chart */
+        .chart-wrap{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+
+        /* Modal */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:none;align-items:flex-end;justify-content:center;}
+        .modal-overlay.show{display:flex;}
+        .modal-box{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;padding:20px 16px 30px;}
+        .modal-handle{width:40px;height:4px;background:#e2e8f0;border-radius:2px;margin:0 auto 16px;}
+        .modal-title{font-size:15px;font-weight:900;color:#1e293b;margin-bottom:16px;}
+        .field-group{margin-bottom:13px;}
+        .field-group label{font-size:11px;color:#64748b;display:block;margin-bottom:4px;font-weight:600;}
+        .field-group input,.field-group select,.field-group textarea{width:100%;padding:10px 13px;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;font-family:'Cairo',sans-serif;color:#1e293b;transition:0.2s;background:#fff;}
+        .field-group input:focus,.field-group select:focus{outline:none;border-color:#0077b6;box-shadow:0 0 0 3px rgba(0,119,182,0.1);}
+        .btn-main{width:100%;padding:13px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+        .btn-main:disabled{opacity:0.5;cursor:not-allowed;}
+
+        /* Toast */
+        .toast-box{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:30px;color:white;font-weight:700;font-size:13px;z-index:99999;display:none;font-family:'Cairo',sans-serif;}
+        .empty-state{text-align:center;padding:50px 20px;color:#94a3b8;}
+        .empty-state i{font-size:48px;margin-bottom:14px;display:block;opacity:0.4;}
+
+        /* Upgrade prompt */
+        .upgrade-card{background:linear-gradient(135deg,#1e293b,#0f172a);border-radius:16px;padding:24px 20px;text-align:center;margin-bottom:14px;}
+        .upgrade-card i{font-size:36px;color:#ffd700;margin-bottom:10px;display:block;}
+        .upgrade-card h5{color:white;font-size:15px;font-weight:900;margin-bottom:6px;}
+        .upgrade-card p{color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:14px;}
+        .upgrade-btn{display:inline-block;padding:11px 24px;background:linear-gradient(135deg,#ff6b35,#f7c59f);color:white;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;}
+    </style>
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<!-- Add/Edit Branch Modal -->
+<div class="modal-overlay" id="branchModal" onclick="if(event.target===this)closeBranchModal()">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <div class="modal-title" id="branchModalTitle">إضافة فرع جديد</div>
+        <input type="hidden" id="editBranchId">
+        <div class="field-group">
+            <label>اسم الفرع *</label>
+            <input type="text" id="branchName" placeholder="مثال: فرع الرياض، فرع جدة">
+        </div>
+        <div class="field-group">
+            <label>المدينة / المنطقة</label>
+            <input type="text" id="branchCity" placeholder="مثال: الرياض">
+        </div>
+        <div class="field-group">
+            <label>العنوان التفصيلي</label>
+            <input type="text" id="branchAddress" placeholder="الحي، الشارع، رقم المبنى">
+        </div>
+        <div class="row g-2">
+            <div class="col-6">
+                <div class="field-group">
+                    <label>رقم الهاتف</label>
+                    <input type="text" id="branchPhone" placeholder="05xxxxxxxx">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="field-group">
+                    <label>مدير الفرع</label>
+                    <input type="text" id="branchManager" placeholder="اسم المدير">
+                </div>
+            </div>
+        </div>
+        <div class="field-group">
+            <label>رقم تسجيل ضريبي فرعي (اختياري)</label>
+            <input type="text" id="branchVat" placeholder="إن وُجد رقم مختلف">
+        </div>
+        <div class="field-group">
+            <label>ملاحظات</label>
+            <input type="text" id="branchNotes" placeholder="ملاحظة اختيارية">
+        </div>
+        <div style="display:flex;gap:10px;">
+            <button class="btn-main" onclick="saveBranch()" id="btnSaveBranch"><i class="fas fa-save"></i> حفظ الفرع</button>
+            <button onclick="closeBranchModal()" style="padding:13px 16px;background:#f1f5f9;color:#64748b;border:none;border-radius:12px;font-family:'Cairo',sans-serif;cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- Branch Detail Modal -->
+<div class="modal-overlay" id="detailModal" onclick="if(event.target===this)closeDetail()">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <div id="detailContent"></div>
+    </div>
+</div>
+
+<!-- Header -->
+<div class="top-bar">
+    <div class="top-bar-title"><i class="fas fa-store"></i> الفروع</div>
+    <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> رجوع</a>
+</div>
+
+<div class="wrap">
+
+    <!-- Plan Limit Notice -->
+    <div class="plan-notice" id="planNotice">
+        <i class="fas fa-info-circle"></i>
+        <span id="planNoticeText"></span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-num" id="statBranches">0</div>
+            <div class="stat-lbl">إجمالي الفروع</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" id="statActiveBranches" style="color:#38b000;">0</div>
+            <div class="stat-lbl">فرع نشط</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" id="statTotalSales" style="font-size:13px;color:#7c3aed;">0</div>
+            <div class="stat-lbl">إجمالي المبيعات</div>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-wrap" id="chartWrap" style="display:none;">
+        <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:10px;"><i class="fas fa-chart-pie" style="color:#0077b6;margin-left:6px;"></i>مقارنة مبيعات الفروع</div>
+        <canvas id="branchChart" height="180"></canvas>
+    </div>
+
+    <!-- Add Button -->
+    <button class="btn-main" onclick="openAddBranch()" style="margin-bottom:16px;" id="btnAddBranch">
+        <i class="fas fa-plus"></i> إضافة فرع جديد
+    </button>
+
+    <!-- List -->
+    <div id="branchesList">
+        <div class="empty-state" id="emptyBranches">
+            <i class="fas fa-store"></i>
+            <p style="font-size:14px;font-weight:600;color:#64748b;">لا توجد فروع إضافية بعد</p>
+            <p style="font-size:12px;margin-top:4px;">الفرع الرئيسي يُعرض تلقائياً</p>
+        </div>
+    </div>
+
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module">
+import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { guardPage, getSubscription, checkSubscriptionStatus, PLANS, canUseFeature }
+    from "./subscription.js";
+
+const { sub } = await guardPage({ blockOnExpired:false, blockInvoiceOnly:false });
+
+const auth = getAuth();
+const db   = getFirestore();
+let currentUser   = null;
+let allBranches   = [];
+let chartInstance = null;
+let userSettings  = {};
+
+// حدود الفروع حسب الباقة
+const BRANCH_LIMITS = { trial:1, starter:1, plus:1, premium:Infinity, monthly:1, yearly:1 };
+
+onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href='login.html'; return; }
+    currentUser = user;
+    await loadSettings();
+    await loadBranches();
+    checkPlanLimits();
+});
+
+// ============================================================
+// تحميل إعدادات المنشأة (للفرع الرئيسي)
+// ============================================================
+async function loadSettings() {
+    try {
+        const snap = await getDocs(collection(db,'users',currentUser.uid,'settings'));
+        if (!snap.empty) userSettings = snap.docs[0].data();
+    } catch(e) {
+        try {
+            const localSettings = JSON.parse(localStorage.getItem('altajer_settings'))||{};
+            userSettings = localSettings;
+        } catch(e2) {}
+    }
+}
+
+// ============================================================
+// فحص حدود الباقة
+// ============================================================
+function checkPlanLimits() {
+    const plan  = sub?.plan || 'trial';
+    const limit = BRANCH_LIMITS[plan] ?? 1;
+    const notice = document.getElementById('planNotice');
+    const noticeText = document.getElementById('planNoticeText');
+    const btnAdd = document.getElementById('btnAddBranch');
+
+    if (limit === Infinity) {
+        notice.classList.remove('show');
+        btnAdd.disabled = false;
+        return;
+    }
+
+    const currentCount = allBranches.length + 1; // +1 للفرع الرئيسي
+    notice.classList.add('show');
+
+    if (currentCount >= limit) {
+        noticeText.innerHTML = `🔒 خطتك الحالية (${PLANS[plan]?.label||plan}) تدعم فرعاً واحداً فقط. <a href="billing.html" style="color:#92400e;font-weight:700;text-decoration:underline;">ارقِّ لباقة Premium</a> لإضافة فروع غير محدودة.`;
+        btnAdd.disabled = true;
+        btnAdd.innerHTML = '<i class="fas fa-lock"></i> أضف فرعاً جديداً — يتطلب Premium';
+    } else {
+        noticeText.innerHTML = `ℹ️ خطتك تدعم ${limit===1?'فرعاً واحداً':limit+' فروع'}. باقة Premium تدعم فروعاً غير محدودة.`;
+        btnAdd.disabled = false;
+        btnAdd.innerHTML = '<i class="fas fa-plus"></i> إضافة فرع جديد';
+    }
+}
+
+// ============================================================
+// Load Branches
+// ============================================================
+async function loadBranches() {
+    if (!currentUser) return;
+    try {
+        const snap = await getDocs(collection(db,'users',currentUser.uid,'branches'));
+        const rawBranches = snap.docs.map(d => ({ docId:d.id, ...d.data() }));
+
+        // حساب مبيعات كل فرع
+        const ordersSnap = await getDocs(collection(db,'users',currentUser.uid,'orders'));
+        const orders = ordersSnap.docs.map(d => d.data());
+
+        // مبيعات الفرع الرئيسي (الطلبات بدون branchId أو branchId='main')
+        const mainSales = orders.filter(o => !o.branchId || o.branchId==='main')
+            .reduce((s,o)=>s+(o.total||0),0);
+        const mainCount = orders.filter(o => !o.branchId || o.branchId==='main').length;
+
+        allBranches = rawBranches.map(b => {
+            const branchOrders = orders.filter(o => o.branchId===b.docId);
+            const sales = branchOrders.reduce((s,o)=>s+(o.total||0),0);
+            return { ...b, sales, orderCount:branchOrders.length };
+        });
+
+        window._mainBranchSales = mainSales;
+        window._mainBranchCount = mainCount;
+
+        renderBranches();
+        updateStats();
+        checkPlanLimits();
+    } catch(e) { console.error('Load branches:', e); }
+}
+
+function updateStats() {
+    const totalBranches = allBranches.length + 1; // +1 رئيسي
+    const activeBranches = allBranches.filter(b=>b.status!=='inactive').length + 1;
+    const totalSales = allBranches.reduce((s,b)=>s+(b.sales||0),0) + (window._mainBranchSales||0);
+
+    document.getElementById('statBranches').textContent       = totalBranches;
+    document.getElementById('statActiveBranches').textContent = activeBranches;
+    document.getElementById('statTotalSales').textContent     = totalSales.toFixed(2)+' ﷼';
+}
+
+// ============================================================
+// Render
+// ============================================================
+function renderBranches() {
+    const container = document.getElementById('branchesList');
+    const mainSales = window._mainBranchSales||0;
+    const mainCount = window._mainBranchCount||0;
+    const companyName = userSettings.companyName || 'المنشأة';
+    const companyCity = userSettings.address?.city || userSettings.city || '';
+    const companyPhone= userSettings.phone || '';
+
+    // كل المبيعات الإجمالية لحساب النسب
+    const totalAllSales = (mainSales||0) + allBranches.reduce((s,b)=>s+(b.sales||0),0);
+
+    // بطاقة الفرع الرئيسي (دائماً موجودة)
+    let html = `
+    <div class="branch-card main-branch">
+        <div class="branch-header">
+            <div>
+                <div class="branch-name"><i class="fas fa-crown" style="color:#ffb703;font-size:13px;"></i> ${companyName} <span class="branch-main-badge">رئيسي</span></div>
+                <div class="branch-address">${companyCity||'—'}</div>
+            </div>
+            <span class="branch-status status-active">نشط</span>
+        </div>
+        <div class="branch-sales">
+            <div class="sale-box">
+                <div class="sale-num" style="color:#38b000;">${mainSales.toFixed(0)} ﷼</div>
+                <div class="sale-lbl">إجمالي المبيعات</div>
+            </div>
+            <div class="sale-box">
+                <div class="sale-num" style="color:#0077b6;">${mainCount}</div>
+                <div class="sale-lbl">عدد الفواتير</div>
+            </div>
+            <div class="sale-box">
+                <div class="sale-num" style="color:#7c3aed;">${totalAllSales>0?((mainSales/totalAllSales)*100).toFixed(0):0}%</div>
+                <div class="sale-lbl">حصة المبيعات</div>
+            </div>
+        </div>
+        <div class="branch-info">
+            ${companyPhone?`<span><i class="fas fa-phone"></i> ${companyPhone}</span>`:''}
+            <span><i class="fas fa-info-circle"></i> الفرع الرئيسي — لا يمكن حذفه أو تعديله من هنا</span>
+        </div>
+    </div>`;
+
+    // الفروع الإضافية
+    if (allBranches.length === 0) {
+        document.getElementById('emptyBranches').style.display='none';
+    } else {
+        const statusLabels = {active:'نشط',inactive:'متوقف'};
+        const statusClasses= {active:'status-active',inactive:'status-inactive'};
+        html += allBranches.map(b => {
+            const pct = totalAllSales>0 ? ((b.sales/totalAllSales)*100).toFixed(0) : 0;
+            return `
+            <div class="branch-card ${b.status==='inactive'?'inactive':''}">
+                <div class="branch-header">
+                    <div>
+                        <div class="branch-name"><i class="fas fa-store" style="color:#0077b6;font-size:13px;"></i> ${b.name}</div>
+                        <div class="branch-address">${b.city||''} ${b.address?'• '+b.address:''}</div>
+                    </div>
+                    <span class="branch-status ${statusClasses[b.status]||'status-active'}">${statusLabels[b.status]||'نشط'}</span>
+                </div>
+                <div class="branch-sales">
+                    <div class="sale-box">
+                        <div class="sale-num" style="color:#38b000;">${(b.sales||0).toFixed(0)} ﷼</div>
+                        <div class="sale-lbl">إجمالي المبيعات</div>
+                    </div>
+                    <div class="sale-box">
+                        <div class="sale-num" style="color:#0077b6;">${b.orderCount||0}</div>
+                        <div class="sale-lbl">عدد الفواتير</div>
+                    </div>
+                    <div class="sale-box">
+                        <div class="sale-num" style="color:#7c3aed;">${pct}%</div>
+                        <div class="sale-lbl">حصة المبيعات</div>
+                    </div>
+                </div>
+                <div class="branch-info">
+                    ${b.manager?`<span><i class="fas fa-user-tie"></i> ${b.manager}</span>`:''}
+                    ${b.phone?`<span><i class="fas fa-phone"></i> ${b.phone}</span>`:''}
+                    ${b.vat?`<span><i class="fas fa-receipt"></i> ${b.vat}</span>`:''}
+                </div>
+                <div class="branch-actions">
+                    <button class="btn-sm btn-view" onclick="openDetail('${b.docId}')"><i class="fas fa-chart-bar"></i> التفاصيل</button>
+                    <button class="btn-sm btn-edit" onclick="openEditBranch('${b.docId}')"><i class="fas fa-edit"></i> تعديل</button>
+                    <button class="btn-sm btn-toggle" onclick="toggleBranchStatus('${b.docId}','${b.status||'active'}')"><i class="fas fa-power-off"></i> ${b.status==='inactive'?'تفعيل':'تعطيل'}</button>
+                    <button class="btn-sm btn-delete" onclick="deleteBranch('${b.docId}')"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    container.innerHTML = html;
+    if (allBranches.length===0) {
+        const empty = document.getElementById('emptyBranches');
+        container.appendChild(empty);
+        empty.style.display='block';
+    }
+
+    renderChart(companyName, mainSales, totalAllSales);
+}
+
+function renderChart(mainName, mainSales, totalAllSales) {
+    const ctx = document.getElementById('branchChart');
+    const wrap = document.getElementById('chartWrap');
+    if (totalAllSales<=0 || allBranches.length===0) { wrap.style.display='none'; return; }
+    wrap.style.display='block';
+    if (chartInstance) chartInstance.destroy();
+    const labels = [mainName+' (رئيسي)', ...allBranches.map(b=>b.name)];
+    const data   = [mainSales, ...allBranches.map(b=>b.sales||0)];
+    const colors = ['#38b000','#0077b6','#7c3aed','#ffb703','#e63946','#00b4d8','#be185d'];
+    chartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels, datasets:[{ data, backgroundColor:colors, borderWidth:0 }] },
+        options: { responsive:true, maintainAspectRatio:true, plugins:{ legend:{ position:'bottom', labels:{color:'#64748b',font:{size:10},boxWidth:12} } } }
+    });
+}
+
+// ============================================================
+// CRUD
+// ============================================================
+window.openAddBranch = function() {
+    const plan  = sub?.plan || 'trial';
+    const limit = BRANCH_LIMITS[plan] ?? 1;
+    const currentCount = allBranches.length + 1;
+    if (currentCount >= limit) {
+        return showToast('🔒 ارقِّ لباقة Premium لإضافة فروع غير محدودة', false);
+    }
+    document.getElementById('branchModalTitle').textContent='إضافة فرع جديد';
+    document.getElementById('editBranchId').value='';
+    ['branchName','branchCity','branchAddress','branchPhone','branchManager','branchVat','branchNotes'].forEach(id=>{
+        const el=document.getElementById(id); if(el) el.value='';
+    });
+    document.getElementById('branchModal').classList.add('show');
+};
+
+window.openEditBranch = function(docId) {
+    const b = allBranches.find(x=>x.docId===docId);
+    if (!b) return;
+    document.getElementById('branchModalTitle').textContent='تعديل الفرع';
+    document.getElementById('editBranchId').value   = docId;
+    document.getElementById('branchName').value     = b.name||'';
+    document.getElementById('branchCity').value     = b.city||'';
+    document.getElementById('branchAddress').value  = b.address||'';
+    document.getElementById('branchPhone').value    = b.phone||'';
+    document.getElementById('branchManager').value  = b.manager||'';
+    document.getElementById('branchVat').value      = b.vat||'';
+    document.getElementById('branchNotes').value    = b.notes||'';
+    document.getElementById('branchModal').classList.add('show');
+};
+
+window.closeBranchModal = function() { document.getElementById('branchModal').classList.remove('show'); };
+
+window.saveBranch = async function() {
+    const name = document.getElementById('branchName').value.trim();
+    if (!name) return showToast('يرجى إدخال اسم الفرع', false);
+    const editId = document.getElementById('editBranchId').value;
+    const data = {
+        name,
+        city:    document.getElementById('branchCity').value.trim(),
+        address: document.getElementById('branchAddress').value.trim(),
+        phone:   document.getElementById('branchPhone').value.trim(),
+        manager: document.getElementById('branchManager').value.trim(),
+        vat:     document.getElementById('branchVat').value.trim(),
+        notes:   document.getElementById('branchNotes').value.trim(),
+        status:  editId ? (allBranches.find(b=>b.docId===editId)?.status||'active') : 'active',
+        updatedAt: serverTimestamp()
+    };
+    try {
+        if (editId) {
+            await updateDoc(doc(db,'users',currentUser.uid,'branches',editId), data);
+            showToast('✅ تم تحديث الفرع', true);
+        } else {
+            const id='branch-'+Date.now();
+            await setDoc(doc(db,'users',currentUser.uid,'branches',id), {...data, createdAt:serverTimestamp()});
+            showToast('✅ تم إضافة الفرع', true);
+        }
+        closeBranchModal();
+        await loadBranches();
+    } catch(e) { showToast('❌ خطأ: '+e.message, false); }
+};
+
+window.toggleBranchStatus = async function(docId, currentStatus) {
+    const newStatus = currentStatus==='inactive' ? 'active' : 'inactive';
+    try {
+        await updateDoc(doc(db,'users',currentUser.uid,'branches',docId), { status:newStatus });
+        showToast(newStatus==='active'?'✅ تم تفعيل الفرع':'تم تعطيل الفرع', newStatus==='active');
+        await loadBranches();
+    } catch(e) { showToast('❌ خطأ: '+e.message, false); }
+};
+
+window.deleteBranch = async function(docId) {
+    if (!confirm('حذف هذا الفرع؟ ستبقى فواتيره مرتبطة به لأغراض السجلات.')) return;
+    try {
+        await deleteDoc(doc(db,'users',currentUser.uid,'branches',docId));
+        showToast('تم الحذف', false);
+        await loadBranches();
+    } catch(e) { showToast('❌ خطأ: '+e.message, false); }
+};
+
+// ============================================================
+// Detail
+// ============================================================
+window.openDetail = function(docId) {
+    const b = allBranches.find(x=>x.docId===docId);
+    if (!b) return;
+    const statusLabels = {active:'نشط',inactive:'متوقف'};
+    document.getElementById('detailContent').innerHTML=`
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h5 style="font-size:15px;font-weight:900;margin:0;">${b.name}</h5>
+            <span class="branch-status ${b.status==='inactive'?'status-inactive':'status-active'}">${statusLabels[b.status]||'نشط'}</span>
+        </div>
+        <div style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;">
+                <div><span style="color:#94a3b8;">المدينة</span><br><strong>${b.city||'—'}</strong></div>
+                <div><span style="color:#94a3b8;">المدير</span><br><strong>${b.manager||'—'}</strong></div>
+                <div><span style="color:#94a3b8;">الهاتف</span><br><strong>${b.phone||'—'}</strong></div>
+                <div><span style="color:#94a3b8;">رقم ضريبي</span><br><strong style="font-size:10px;">${b.vat||'—'}</strong></div>
+            </div>
+            ${b.address?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b;"><i class="fas fa-map-marker-alt"></i> ${b.address}</div>`:''}
+            ${b.notes?`<div style="margin-top:8px;font-size:12px;color:#64748b;">${b.notes}</div>`:''}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;">
+            <div style="background:#dcfce7;border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:18px;font-weight:900;color:#16a34a;">${(b.sales||0).toFixed(2)}</div>
+                <div style="font-size:10px;color:#16a34a;">إجمالي المبيعات ﷼</div>
+            </div>
+            <div style="background:#dbeafe;border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:18px;font-weight:900;color:#1d4ed8;">${b.orderCount||0}</div>
+                <div style="font-size:10px;color:#1d4ed8;">عدد الفواتير</div>
+            </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <button onclick="openEditBranch('${b.docId}');closeDetail();" style="flex:1;padding:12px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+                <i class="fas fa-edit"></i> تعديل الفرع
+            </button>
+            <button onclick="closeDetail()" style="padding:12px 16px;background:#f1f5f9;color:#64748b;border:none;border-radius:12px;font-family:'Cairo',sans-serif;cursor:pointer;">إغلاق</button>
+        </div>`;
+    document.getElementById('detailModal').classList.add('show');
+};
+
+window.closeDetail = function() { document.getElementById('detailModal').classList.remove('show'); };
+
+// Toast
+function showToast(msg,ok=true){
+    const t=document.getElementById('toastBox');
+    t.innerText=msg;t.style.backgroundColor=ok?'#2b9348':'#d90429';
+    t.style.display='block';setTimeout(()=>t.style.display='none',4000);
+}
+window.showToast=showToast;
+</script>
+</body>
+</html>

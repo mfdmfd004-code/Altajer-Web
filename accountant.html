@@ -220,13 +220,12 @@
                 <span>عرض القيود</span>
                 <small>جميع القيود المسجلة</small>
             </a>
-            <a class="sub-item" onclick="showToastAcc('قريباً: تصدير القيود PDF','#ffb703')">
+            <a class="sub-item" onclick="exportEntries()">
                 <div class="sub-icon" style="background:linear-gradient(135deg,#ffb703,#f59e0b);">
                     <i class="fas fa-file-export"></i>
                 </div>
                 <span>تصدير</span>
                 <small>PDF / Excel</small>
-                <span class="badge-soon">قريباً</span>
             </a>
         </div>
         <!-- منطقة العرض الديناميكية -->
@@ -716,7 +715,70 @@ function renderEntries() {
             ${e.notes ? `<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">📝 ${e.notes}</div>` : ''}
         </div>`).join('');
 }
+// ===== تصدير القيود =====
+window.exportEntries = function() {
+    if (allEntries.length === 0) { showToastAcc('❌ لا توجد قيود لتصديرها','#d90429'); return; }
+    const choice = confirm('اضغط "موافق" لتصدير PDF، أو "إلغاء" لتصدير Excel');
+    if (choice) exportEntriesPDF(); else exportEntriesExcel();
+};
 
+window.exportEntriesPDF = function() {
+    const accounts = allAccounts.length > 0 ? allAccounts : DEFAULT_ACCOUNTS;
+    const getAccName = code => accounts.find(a => a.code === code)?.name || code;
+    let rows = allEntries.map(e => `
+        <tr>
+            <td style="padding:6px;border:1px solid #ccc;font-size:11px;">${e.id}</td>
+            <td style="padding:6px;border:1px solid #ccc;font-size:11px;">${e.date}</td>
+            <td style="padding:6px;border:1px solid #ccc;font-size:11px;">${e.ref}</td>
+            <td style="padding:6px;border:1px solid #ccc;font-size:11px;">${getAccName(e.debit)}</td>
+            <td style="padding:6px;border:1px solid #ccc;font-size:11px;">${getAccName(e.credit)}</td>
+            <td style="padding:6px;border:1px solid #ccc;font-size:11px;">${parseFloat(e.amount).toFixed(2)}</td>
+        </tr>`).join('');
+    const html = `
+        <div style="font-family:'Cairo',sans-serif;direction:rtl;padding:10px;">
+            <h3 style="text-align:center;color:#0077b6;">تقرير القيود المحاسبية</h3>
+            <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+                <thead>
+                    <tr style="background:#0077b6;color:#fff;">
+                        <th style="padding:6px;border:1px solid #ccc;font-size:11px;">المرجع</th>
+                        <th style="padding:6px;border:1px solid #ccc;font-size:11px;">التاريخ</th>
+                        <th style="padding:6px;border:1px solid #ccc;font-size:11px;">الوصف</th>
+                        <th style="padding:6px;border:1px solid #ccc;font-size:11px;">مدين</th>
+                        <th style="padding:6px;border:1px solid #ccc;font-size:11px;">دائن</th>
+                        <th style="padding:6px;border:1px solid #ccc;font-size:11px;">المبلغ</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>`;
+    const el = document.createElement('div');
+    el.innerHTML = html;
+    document.body.appendChild(el);
+    html2pdf().from(el).set({
+        margin: 10,
+        filename: 'القيود-المحاسبية.pdf',
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).save().then(() => document.body.removeChild(el));
+};
+
+window.exportEntriesExcel = function() {
+    const accounts = allAccounts.length > 0 ? allAccounts : DEFAULT_ACCOUNTS;
+    const getAccName = code => accounts.find(a => a.code === code)?.name || code;
+    const data = allEntries.map(e => ({
+        'المرجع': e.id,
+        'التاريخ': e.date,
+        'الوصف': e.ref,
+        'الحساب المدين': getAccName(e.debit),
+        'الحساب الدائن': getAccName(e.credit),
+        'المبلغ': parseFloat(e.amount).toFixed(2),
+        'ملاحظات': e.notes || ''
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'القيود');
+    XLSX.writeFile(wb, 'القيود-المحاسبية.xlsx');
+};
 </script>
 </body>
 </html>

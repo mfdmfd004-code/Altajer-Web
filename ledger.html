@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تاجر برو — دفتر الأستاذ العام</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{background:#f0f4f8;font-family:'Cairo',sans-serif;color:#1e293b;padding-bottom:80px;}
+        .top-bar{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(0,0,0,0.08);position:sticky;top:0;z-index:100;}
+        .top-bar-title{font-size:16px;font-weight:900;color:#0077b6;display:flex;align-items:center;gap:8px;}
+        .btn-back{background:#f1f5f9;border:none;color:#64748b;padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;font-family:'Cairo',sans-serif;display:flex;align-items:center;gap:5px;}
+        .wrap{max-width:800px;margin:0 auto;padding:16px 14px;}
+
+        /* Filter Card */
+        .filter-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+        .filter-title{font-size:13px;font-weight:700;color:#0077b6;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+        .field-group{margin-bottom:0;}
+        .field-group label{font-size:11px;color:#64748b;display:block;margin-bottom:4px;font-weight:600;}
+        .field-group input,.field-group select{width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;font-family:'Cairo',sans-serif;color:#1e293b;background:#fff;}
+        .field-group input:focus,.field-group select:focus{outline:none;border-color:#0077b6;}
+        .btn-main{padding:11px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+        .btn-print{padding:11px 16px;background:#f1f5f9;color:#64748b;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;cursor:pointer;}
+
+        /* Account Selector */
+        .account-pills{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;}
+        .pill{padding:8px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#fff;color:#64748b;font-family:'Cairo',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;transition:0.2s;}
+        .pill.active{background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border-color:transparent;}
+
+        /* Ledger Card per Account */
+        .ledger-card{background:#fff;border-radius:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.06);overflow:hidden;}
+        .ledger-header{background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
+        .ledger-acc-name{font-size:14px;font-weight:900;color:white;}
+        .ledger-acc-code{font-size:10px;color:#94a3b8;font-family:monospace;margin-top:2px;}
+        .ledger-balance{font-size:16px;font-weight:900;color:#00b4d8;}
+        .ledger-balance-label{font-size:9px;color:rgba(255,255,255,0.5);text-align:left;}
+        /* Table */
+        .ldg-table-wrap{overflow-x:auto;}
+        .ldg-table{width:100%;border-collapse:collapse;font-size:12px;min-width:550px;}
+        .ldg-table thead tr{background:#f8fafc;}
+        .ldg-table th{padding:9px 8px;text-align:center;color:#64748b;font-weight:700;border-bottom:2px solid #e2e8f0;}
+        .ldg-table th:nth-child(2){text-align:right;}
+        .ldg-table td{padding:9px 8px;text-align:center;border-bottom:1px solid #f1f5f9;}
+        .ldg-table td:nth-child(2){text-align:right;}
+        .ldg-table tr:hover td{background:#f8fbff;}
+        .ldg-table tfoot tr{background:#f0f9ff;font-weight:900;}
+        .ldg-table tfoot td{padding:11px 8px;color:#0077b6;border-top:2px solid #0077b6;}
+        .opening-row td{background:#fef9c3;font-weight:700;color:#92400e;}
+        .debit-cell{color:#1d4ed8;}
+        .credit-cell{color:#7c3aed;}
+        .balance-cell{font-weight:700;}
+        .balance-positive{color:#16a34a;}
+        .balance-negative{color:#e63946;}
+        .source-badge{font-size:9px;padding:2px 7px;border-radius:6px;font-weight:600;}
+        .src-sales{background:#dcfce7;color:#16a34a;}
+        .src-purchase{background:#fef9c3;color:#ca8a04;}
+        .src-expense{background:#fee2e2;color:#e63946;}
+        .src-journal{background:#dbeafe;color:#1d4ed8;}
+        .src-asset{background:#f3e8ff;color:#7c3aed;}
+        .src-payroll{background:#fce7f3;color:#be185d;}
+
+        /* Summary */
+        .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+        .sum-box{background:#fff;border-radius:14px;padding:14px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;}
+        .sum-num{font-size:16px;font-weight:900;}
+        .sum-lbl{font-size:10px;color:#94a3b8;margin-top:3px;}
+
+        /* States */
+        .loading-state,.empty-state{text-align:center;padding:50px 20px;color:#94a3b8;}
+        .loading-state i,.empty-state i{font-size:40px;margin-bottom:12px;display:block;}
+        .empty-state i{opacity:0.4;font-size:48px;}
+
+        /* Toast */
+        .toast-box{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:30px;color:white;font-weight:700;font-size:13px;z-index:99999;display:none;font-family:'Cairo',sans-serif;}
+
+        @media print {
+            .top-bar,.filter-card,.btn-print{display:none!important;}
+            body{background:white;padding:0;}
+            .wrap{padding:0;}
+            .ledger-card{box-shadow:none;border:1px solid #e2e8f0;page-break-inside:avoid;}
+            .print-header{display:block!important;}
+        }
+        .print-header{display:none;text-align:center;margin-bottom:16px;}
+    </style>
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<!-- Header -->
+<div class="top-bar">
+    <div class="top-bar-title"><i class="fas fa-book"></i> دفتر الأستاذ العام</div>
+    <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> رجوع</a>
+</div>
+
+<div class="wrap">
+
+    <!-- Print Header -->
+    <div class="print-header">
+        <h3 style="font-size:18px;font-weight:900;">تاجر برو المحاسبي</h3>
+        <h4 style="font-size:15px;">دفتر الأستاذ العام</h4>
+        <p id="printPeriod" style="font-size:12px;color:#64748b;"></p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-card">
+        <div class="filter-title"><i class="fas fa-filter"></i> الفترة والحساب</div>
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <div class="field-group">
+                    <label>من تاريخ</label>
+                    <input type="date" id="dateFrom">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="field-group">
+                    <label>إلى تاريخ</label>
+                    <input type="date" id="dateTo">
+                </div>
+            </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <button class="btn-main" onclick="generateLedger()">
+                <i class="fas fa-book-open"></i> عرض دفتر الأستاذ
+            </button>
+            <button class="btn-print" onclick="window.print()">
+                <i class="fas fa-print"></i> طباعة
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-grid" id="summaryGrid" style="display:none;">
+        <div class="sum-box">
+            <div class="sum-num" id="statAccounts" style="color:#0077b6;">0</div>
+            <div class="sum-lbl">حساب نشط</div>
+        </div>
+        <div class="sum-box">
+            <div class="sum-num" id="statEntries" style="color:#38b000;">0</div>
+            <div class="sum-lbl">إجمالي القيود</div>
+        </div>
+        <div class="sum-box">
+            <div class="sum-num" id="statAmount" style="font-size:13px;color:#7c3aed;">0</div>
+            <div class="sum-lbl">إجمالي الحركات ﷼</div>
+        </div>
+    </div>
+
+    <!-- Account Filter Pills -->
+    <div class="account-pills" id="accountPills" style="display:none;"></div>
+
+    <!-- Ledger Content -->
+    <div id="ledgerContent">
+        <div class="empty-state">
+            <i class="fas fa-book"></i>
+            <p style="font-size:14px;font-weight:600;color:#64748b;">اضغط "عرض دفتر الأستاذ" لعرض حركات الحسابات</p>
+            <p style="font-size:12px;margin-top:4px;">سيتم تجميع جميع الحركات من المبيعات والمشتريات والمصروفات تلقائياً</p>
+        </div>
+    </div>
+
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module">
+import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, getDocs }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { guardPage } from "./subscription.js";
+
+await guardPage({ blockOnExpired:false, blockInvoiceOnly:false });
+
+const auth = getAuth();
+const db   = getFirestore();
+let currentUser = null;
+let ledgerData  = {};   // { accountCode: { name, type, entries:[], openingBalance } }
+let currentAccountFilter = 'all';
+
+// دليل الحسابات (نفس دليل ميزان المراجعة)
+const ACCOUNTS = {
+    '1110':{name:'الحسابات البنكية والصندوق', type:'assets',  normal:'debit'},
+    '1200':{name:'المدينون / العملاء',         type:'assets',  normal:'debit'},
+    '1300':{name:'المخزون',                   type:'assets',  normal:'debit'},
+    '1400':{name:'ضريبة المدخلات',             type:'assets',  normal:'debit'},
+    '1500':{name:'الأصول الثابتة',             type:'assets',  normal:'debit'},
+    '1510':{name:'مجمع إهلاك الأصول',          type:'assets',  normal:'credit'},
+    '2100':{name:'الدائنون / الموردون',        type:'liabilities', normal:'credit'},
+    '2300':{name:'الضريبة المستحقة (مخرجات)',  type:'liabilities', normal:'credit'},
+    '4100':{name:'إيرادات المبيعات',           type:'revenue', normal:'credit'},
+    '5100':{name:'تكلفة البضاعة المباعة',      type:'expenses', normal:'debit'},
+    '5200':{name:'مصروفات الرواتب',            type:'expenses', normal:'debit'},
+    '5300':{name:'مصروفات الإيجار',            type:'expenses', normal:'debit'},
+    '5400':{name:'مصروفات المرافق',            type:'expenses', normal:'debit'},
+    '5500':{name:'مصروفات الإهلاك',            type:'expenses', normal:'debit'},
+    '5600':{name:'مصروفات التسويق',            type:'expenses', normal:'debit'},
+    '5700':{name:'مصروفات إدارية',             type:'expenses', normal:'debit'},
+    '5800':{name:'مصروفات ضريبية',             type:'expenses', normal:'debit'},
+    '5900':{name:'مصروفات أخرى',               type:'expenses', normal:'debit'},
+};
+
+onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href='login.html'; return; }
+    currentUser = user;
+    setDefaultDates();
+});
+
+function setDefaultDates() {
+    const now   = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    document.getElementById('dateFrom').value = start.toISOString().split('T')[0];
+    document.getElementById('dateTo').value   = now.toISOString().split('T')[0];
+}
+
+// ============================================================
+// توليد دفتر الأستاذ
+// ============================================================
+window.generateLedger = async function() {
+    if (!currentUser) return;
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo   = document.getElementById('dateTo').value;
+
+    document.getElementById('ledgerContent').innerHTML = `
+        <div class="loading-state">
+            <i class="fas fa-spinner fa-spin" style="color:#0077b6;"></i>
+            <p>جاري تجميع الحركات...</p>
+        </div>`;
+    document.getElementById('summaryGrid').style.display='none';
+    document.getElementById('accountPills').style.display='none';
+
+    try {
+        const [ordersSnap, expensesSnap, purchasesSnap, assetsSnap, employeesSnap, journalSnap, vouchersSnap] = await Promise.all([
+            getDocs(collection(db,'users',currentUser.uid,'orders')),
+            getDocs(collection(db,'users',currentUser.uid,'expenses')).catch(()=>({docs:[]})),
+            getDocs(collection(db,'users',currentUser.uid,'purchases')).catch(()=>({docs:[]})),
+            getDocs(collection(db,'users',currentUser.uid,'fixedAssets')).catch(()=>({docs:[]})),
+            getDocs(collection(db,'users',currentUser.uid,'employees')).catch(()=>({docs:[]})),
+            getDocs(collection(db,'users',currentUser.uid,'journalEntries')).catch(()=>({docs:[]})),
+            getDocs(collection(db,'users',currentUser.uid,'vouchers')).catch(()=>({docs:[]}))
+        ]);
+
+        const inPeriod = (dateStr) => {
+            if (!dateStr) return true;
+            const d = (dateStr.toDate ? dateStr.toDate().toISOString() : dateStr).substring(0,10);
+            return (!dateFrom || d>=dateFrom) && (!dateTo || d<=dateTo);
+        };
+
+        // تهيئة دفتر الأستاذ
+        ledgerData = {};
+        Object.entries(ACCOUNTS).forEach(([code,info]) => {
+            ledgerData[code] = { ...info, code, entries:[] };
+        });
+
+        // 1. المبيعات
+        ordersSnap.docs.forEach(d => {
+            const o = d.data();
+            const date = (o.date || (o.timestamp?.toDate?.()?.toISOString())||'').substring(0,10);
+            if (!inPeriod(date)) return;
+            const subtotal = o.subtotal || (o.total/(1+(o.taxRate||15)/100));
+            const vat = o.tax || (o.total - subtotal);
+            const desc = `فاتورة مبيعات #${o.invoiceNumber||d.id} — ${o.customer||'عميل'}`;
+            addEntry('1200', date, desc, o.total||0, 0, 'sales', o.invoiceNumber);
+            addEntry('4100', date, desc, 0, subtotal, 'sales', o.invoiceNumber);
+            if (vat>0) addEntry('2300', date, desc, 0, vat, 'sales', o.invoiceNumber);
+        });
+
+        // 2. المشتريات
+        purchasesSnap.docs.forEach(d => {
+            const p = d.data();
+            const date = (p.date||'').substring(0,10);
+            if (!inPeriod(date)) return;
+            const total = p.total||p.amount||0;
+            const vat   = p.vat||0;
+            const net   = total-vat;
+            const desc  = `فاتورة شراء #${p.invoiceNumber||d.id} — ${p.supplier||'مورد'}`;
+            addEntry('1300', date, desc, net, 0, 'purchase', p.invoiceNumber);
+            if (vat>0) addEntry('1400', date, desc, vat, 0, 'purchase', p.invoiceNumber);
+            addEntry('2100', date, desc, 0, total, 'purchase', p.invoiceNumber);
+        });
+
+        // 3. المصروفات
+        expensesSnap.docs.forEach(d => {
+            const e = d.data();
+            const date = (e.date||'').substring(0,10);
+            if (!inPeriod(date)) return;
+            const amount = e.amount||0;
+            const catMap = {salary:'5200',rent:'5300',utilities:'5400',marketing:'5600',admin:'5700',tax:'5800'};
+            const code = catMap[e.category]||'5900';
+            const desc = `${e.description||e.desc||'مصروف'}`;
+            addEntry(code, date, desc, amount, 0, 'expense', e.ref||'');
+            addEntry('1110', date, desc, 0, amount, 'expense', e.ref||'');
+        });
+
+        // 4. الرواتب
+        employeesSnap.docs.forEach(d => {
+            const e = d.data();
+            if (!e.salary) return;
+            const date = dateTo; // افتراض دفع آخر الفترة
+            const desc = `راتب ${e.name||'موظف'}`;
+            addEntry('5200', date, desc, e.salary||0, 0, 'payroll', '');
+            addEntry('1110', date, desc, 0, e.salary||0, 'payroll', '');
+        });
+
+        // 5. الأصول الثابتة (الإهلاك)
+        assetsSnap.docs.forEach(d => {
+            const a = d.data();
+            if (!a.cost || !a.life) return;
+            const annDep = (a.cost-(a.salvage||0))/(a.life||5);
+            const monthlyDep = annDep/12;
+            // توزيع شهري ضمن الفترة
+            if (!dateFrom || !dateTo) return;
+            const start = new Date(dateFrom), end = new Date(dateTo);
+            const cur = new Date(start);
+            while (cur<=end) {
+                const dateStr = cur.toISOString().substring(0,10);
+                const desc = `إهلاك شهري — ${a.name}`;
+                addEntry('5500', dateStr, desc, monthlyDep, 0, 'asset', '');
+                addEntry('1510', dateStr, desc, 0, monthlyDep, 'asset', '');
+                cur.setMonth(cur.getMonth()+1);
+            }
+        });
+
+        // 6. سندات القبض والصرف
+        vouchersSnap.docs.forEach(d => {
+            const v = d.data();
+            const date = (v.date||'').substring(0,10);
+            if (!inPeriod(date)) return;
+            const amount = v.amount||0;
+            const desc = `${v.type==='receipt'?'سند قبض':'سند صرف'} #${v.voucherNo} — ${v.name||''}`;
+            if (v.type==='receipt') {
+                addEntry('1110', date, desc, amount, 0, 'journal', v.voucherNo);
+                addEntry('1200', date, desc, 0, amount, 'journal', v.voucherNo);
+            } else {
+                addEntry('5900', date, desc, amount, 0, 'journal', v.voucherNo);
+                addEntry('1110', date, desc, 0, amount, 'journal', v.voucherNo);
+            }
+        });
+
+        // 7. قيود يومية يدوية
+        journalSnap.docs.forEach(d => {
+            const j = d.data();
+            const date = (j.date||'').substring(0,10);
+            if (!inPeriod(date)) return;
+            (j.entries||[]).forEach(entry => {
+                if (ledgerData[entry.accountCode]) {
+                    addEntry(entry.accountCode, date, j.description||'قيد يومي', entry.debit||0, entry.credit||0, 'journal', j.ref||'');
+                }
+            });
+        });
+
+        renderLedger(dateFrom, dateTo);
+
+    } catch(e) {
+        console.error('Ledger error:', e);
+        document.getElementById('ledgerContent').innerHTML=`
+            <div class="empty-state">
+                <i class="fas fa-exclamation-circle" style="color:#e63946;"></i>
+                <p style="color:#e63946;">خطأ: ${e.message}</p>
+            </div>`;
+    }
+};
+
+function addEntry(code, date, desc, debit, credit, source, ref) {
+    if (!ledgerData[code]) return;
+    if (debit===0 && credit===0) return;
+    ledgerData[code].entries.push({ date, desc, debit, credit, source, ref });
+}
+
+// ============================================================
+// عرض دفتر الأستاذ
+// ============================================================
+function renderLedger(dateFrom, dateTo) {
+    // فقط الحسابات ذات الحركات
+    const activeAccounts = Object.values(ledgerData).filter(a => a.entries.length>0);
+
+    if (activeAccounts.length===0) {
+        document.getElementById('ledgerContent').innerHTML=`
+            <div class="empty-state">
+                <i class="fas fa-book"></i>
+                <p style="font-size:14px;font-weight:600;color:#64748b;">لا توجد حركات في هذه الفترة</p>
+            </div>`;
+        return;
+    }
+
+    // ترتيب كل حساب حسب التاريخ
+    activeAccounts.forEach(acc => acc.entries.sort((a,b)=>(a.date||'').localeCompare(b.date||'')));
+
+    // إحصائيات
+    let totalEntries=0, totalAmount=0;
+    activeAccounts.forEach(acc => {
+        totalEntries += acc.entries.length;
+        totalAmount  += acc.entries.reduce((s,e)=>s+e.debit+e.credit,0);
+    });
+    document.getElementById('statAccounts').textContent = activeAccounts.length;
+    document.getElementById('statEntries').textContent  = totalEntries;
+    document.getElementById('statAmount').textContent   = totalAmount.toFixed(2)+' ﷼';
+    document.getElementById('summaryGrid').style.display='grid';
+
+    // Pills للتصفية
+    const pillsContainer = document.getElementById('accountPills');
+    pillsContainer.innerHTML = `<button class="pill active" onclick="filterAccount('all')">جميع الحسابات</button>` +
+        activeAccounts.map(acc => `<button class="pill" onclick="filterAccount('${acc.code}')">${acc.name}</button>`).join('');
+    pillsContainer.style.display='flex';
+    currentAccountFilter='all';
+
+    document.getElementById('printPeriod').textContent=`الفترة: ${dateFrom||'—'} إلى ${dateTo||'—'}`;
+
+    renderAccountCards(activeAccounts);
+}
+
+window.filterAccount = function(code) {
+    currentAccountFilter = code;
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    event?.target?.classList.add('active');
+    const activeAccounts = Object.values(ledgerData).filter(a => a.entries.length>0);
+    const filtered = code==='all' ? activeAccounts : activeAccounts.filter(a=>a.code===code);
+    renderAccountCards(filtered);
+};
+
+const sourceLabels = {sales:'مبيعات',purchase:'مشتريات',expense:'مصروف',journal:'سند/قيد',asset:'إهلاك',payroll:'رواتب'};
+const sourceClasses= {sales:'src-sales',purchase:'src-purchase',expense:'src-expense',journal:'src-journal',asset:'src-asset',payroll:'src-payroll'};
+
+function renderAccountCards(accounts) {
+    const html = accounts.map(acc => {
+        let balance = 0;
+        const rows = acc.entries.map(e => {
+            balance += (e.debit - e.credit) * (acc.normal==='debit'?1:-1);
+            const balDisplay = acc.normal==='debit' ? balance : -balance;
+            return `<tr>
+                <td>${e.date||'—'}</td>
+                <td>${e.desc} ${e.ref?`<br><small style="color:#94a3b8;">#${e.ref}</small>`:''}
+                    <span class="source-badge ${sourceClasses[e.source]||''}">${sourceLabels[e.source]||''}</span>
+                </td>
+                <td class="debit-cell">${e.debit>0?e.debit.toFixed(2):'—'}</td>
+                <td class="credit-cell">${e.credit>0?e.credit.toFixed(2):'—'}</td>
+                <td class="balance-cell ${balDisplay>=0?'balance-positive':'balance-negative'}">${Math.abs(balDisplay).toFixed(2)} ${balDisplay>=0?(acc.normal==='debit'?'مدين':'دائن'):(acc.normal==='debit'?'دائن':'مدين')}</td>
+            </tr>`;
+        }).join('');
+
+        const totalDebit  = acc.entries.reduce((s,e)=>s+e.debit,0);
+        const totalCredit = acc.entries.reduce((s,e)=>s+e.credit,0);
+        const finalBalance = acc.normal==='debit' ? (totalDebit-totalCredit) : (totalCredit-totalDebit);
+
+        return `
+        <div class="ledger-card">
+            <div class="ledger-header">
+                <div>
+                    <div class="ledger-acc-name">${acc.name}</div>
+                    <div class="ledger-acc-code">${acc.code} • ${acc.entries.length} حركة</div>
+                </div>
+                <div style="text-align:left;">
+                    <div class="ledger-balance">${Math.abs(finalBalance).toFixed(2)} ﷼</div>
+                    <div class="ledger-balance-label">${finalBalance>=0?'مدين':'دائن'}</div>
+                </div>
+            </div>
+            <div class="ldg-table-wrap">
+            <table class="ldg-table">
+                <thead><tr><th>التاريخ</th><th>البيان</th><th>مدين</th><th>دائن</th><th>الرصيد</th></tr></thead>
+                <tbody>${rows}</tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" style="text-align:right;">الإجمالي</td>
+                        <td>${totalDebit.toFixed(2)}</td>
+                        <td>${totalCredit.toFixed(2)}</td>
+                        <td>${Math.abs(finalBalance).toFixed(2)}</td>
+                    </tr>
+                </tfoot>
+            </table>
+            </div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('ledgerContent').innerHTML = html;
+}
+
+// Toast
+function showToast(msg,ok=true){
+    const t=document.getElementById('toastBox');
+    t.innerText=msg;t.style.backgroundColor=ok?'#2b9348':'#d90429';
+    t.style.display='block';setTimeout(()=>t.style.display='none',4000);
+}
+window.showToast=showToast;
+</script>
+</body>
+</html>

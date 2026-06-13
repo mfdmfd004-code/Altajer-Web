@@ -320,7 +320,7 @@ window.generateNow = async function(docId) {
         showToast('✅ تم إنشاء الفاتورة وتحديث المخزون');
         await loadTemplates();
 
-        setTimeout(() => { window.location.href = `invoice.html?id=${invoiceRef.id}`; }, 1200);
+        setTimeout(() => { window.location.href = `invoice.html?id=${invoicePayload.invoice_id}`; }, 1200);
     } catch(e) {
         showToast('❌ خطأ: ' + e.message, false);
     }

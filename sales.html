@@ -972,7 +972,11 @@ window.saveInvoiceToFirebase = saveInvoiceToFirebase;
             const qty      = parseInt(document.getElementById('itemQty').value);
             const isIncl   = document.getElementById('itemTaxMethodToggle').checked;
             const lang     = localStorage.getItem('altajer_lang') || 'ar';
-
+// جلب نسبة الضريبة من TaxEngine حسب دولة التاجر
+const taxRate = (window.TaxEngine
+    ? window.TaxEngine.getRate()
+    : 0.15);
+            
             // فحص البيانات
             if (!name || !code) {
                 window.showToast && window.showToast(
@@ -992,12 +996,12 @@ window.saveInvoiceToFirebase = saveInvoiceToFirebase;
             // حساب الضريبة بدقة
             let priceExcl, taxVal, totalIncl;
             if (isIncl) {
-                priceExcl = rawPrice / 1.15;
-                taxVal    = parseFloat((priceExcl * qty * 0.15).toFixed(4));
+                priceExcl = rawPrice / (1 + taxRate);
+                taxVal    = parseFloat((priceExcl * qty * taxRate).toFixed(4));
                 totalIncl = parseFloat((rawPrice * qty).toFixed(4));
             } else {
                 priceExcl = rawPrice;
-                taxVal    = parseFloat((priceExcl * qty * 0.15).toFixed(4));
+                taxVal    = parseFloat((priceExcl * qty * taxRate).toFixed(4));
                 totalIncl = parseFloat(((priceExcl * qty) + taxVal).toFixed(4));
             }
 

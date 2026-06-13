@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>تاجر برو - إشعارات التسليم</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #0d1b2a; --card-bg: #1b263b;
+            --sea-blue: #0077b6; --light-green: #38b000;
+            --neon-cyan: #00b4d8; --text-white: #ffffff;
+            --danger-red: #e63946; --warning-orange: #ffb703;
+        }
+        * { box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
+        body { background:var(--dark-bg); color:var(--text-white); margin:0; padding:20px 10px 60px; }
+        .wrap { max-width:900px; margin:0 auto; background:var(--card-bg); border:2px solid var(--sea-blue); border-radius:16px; padding:20px; position:relative; }
+        .wrap::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,var(--neon-cyan),var(--sea-blue),var(--light-green)); border-radius:14px 14px 0 0; }
+        .top-row { display:flex; justify-content:space-between; align-items:center; border-bottom:2px dashed rgba(0,180,216,0.3); padding-bottom:12px; margin-bottom:18px; }
+        .title { font-size:18px; font-weight:bold; color:var(--neon-cyan); display:flex; align-items:center; gap:8px; }
+        .btn-neon { background:#2d3748; color:#fff; border:none; padding:9px 16px; font-weight:600; font-size:13px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+        .btn-neon:hover { background:var(--clr); box-shadow:0 0 12px var(--clr); color:#fff; }
+        .field-group { margin-bottom:12px; }
+        .field-group label { font-size:12px; color:var(--neon-cyan); display:block; margin-bottom:4px; }
+        .field-group input, .field-group select, .field-group textarea {
+            width:100%; padding:9px 10px; border:1px solid #4a5568; border-radius:8px;
+            background:transparent; color:#fff; font-size:13px; font-family:inherit;
+        }
+        .row-g { display:flex; gap:10px; flex-wrap:wrap; }
+        .row-g > div { flex:1; min-width:140px; }
+        .items-table { width:100%; font-size:12px; margin:14px 0; border-collapse:collapse; }
+        .items-table th { background:#0c3f65; color:var(--neon-cyan); padding:8px; }
+        .items-table td { padding:8px; border-bottom:1px solid rgba(255,255,255,0.06); text-align:center; }
+        .dn-card { background:rgba(0,0,0,0.2); border-radius:12px; padding:14px; margin-bottom:12px; border:1px solid rgba(0,180,216,0.15); }
+        .badge-status { font-size:11px; padding:2px 8px; border-radius:8px; font-weight:700; }
+        .badge-pending { background:var(--warning-orange); color:#222; }
+        .badge-converted { background:var(--light-green); color:#fff; }
+        .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); padding:11px 22px; border-radius:30px; color:#fff; font-weight:700; font-size:13px; z-index:9999; display:none; max-width:90%; }
+        .empty-state { text-align:center; color:#a0aec0; padding:30px; }
+    </style>
+</head>
+<body>
+
+<div id="toastBox" class="toast"></div>
+
+<div class="wrap">
+    <div class="top-row">
+        <div class="title"><i class="fas fa-truck-loading"></i> إشعارات التسليم</div>
+        <a href="index.html" class="btn-neon" style="--clr:var(--sea-blue)"><i class="fas fa-home"></i> الرئيسية</a>
+    </div>
+
+    <!-- بيانات العميل -->
+    <div class="row-g">
+        <div class="field-group">
+            <label>اسم العميل / الجهة المستلمة *</label>
+            <input type="text" id="dnCustName" placeholder="اسم العميل">
+        </div>
+        <div class="field-group">
+            <label>عنوان التسليم (اختياري)</label>
+            <input type="text" id="dnAddress" placeholder="---">
+        </div>
+        <div class="field-group">
+            <label>تاريخ التسليم</label>
+            <input type="date" id="dnDate">
+        </div>
+    </div>
+    <div class="field-group">
+        <label>ملاحظات (اختياري)</label>
+        <textarea id="dnNotes" rows="2" placeholder="ملاحظات إضافية..."></textarea>
+    </div>
+
+    <!-- إضافة بنود -->
+    <div class="row-g">
+        <div class="field-group"><label>كود الصنف</label><input type="text" id="itCode" placeholder="كود"></div>
+        <div class="field-group"><label>اسم المنتج</label><input type="text" id="itName" placeholder="اسم المنتج"></div>
+        <div class="field-group"><label>السعر (قبل الضريبة)</label><input type="number" step="0.01" id="itPrice" placeholder="0.00"></div>
+        <div class="field-group"><label>الكمية</label><input type="number" id="itQty" value="1" min="1"></div>
+    </div>
+    <button class="btn-neon" style="--clr:var(--sea-blue)" onclick="addDnItem()"><i class="fas fa-plus"></i> إضافة بند</button>
+
+    <table class="items-table" id="dnItemsTable">
+        <thead><tr><th>الكود</th><th>المنتج</th><th>السعر</th><th>الكمية</th><th></th></tr></thead>
+        <tbody id="dnItemsBody"></tbody>
+    </table>
+
+    <button class="btn-neon" style="--clr:var(--light-green);width:100%;justify-content:center;padding:12px;" onclick="saveDeliveryNote()">
+        <i class="fas fa-save"></i> حفظ إشعار التسليم
+    </button>
+
+    <hr style="border-color:rgba(0,180,216,0.2);margin:24px 0;">
+
+    <div class="title" style="font-size:15px;"><i class="fas fa-list"></i> إشعارات التسليم المسجلة</div>
+    <div id="dnList" style="margin-top:12px;"></div>
+</div>
+
+<script type="module">
+import { db } from "./firebase-config.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { collection, doc, getDocs, getDoc, deleteDoc, updateDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const auth = getAuth();
+let currentUser = null;
+let dnItems = [];
+let allNotes = [];
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    document.getElementById('dnDate').value = new Date().toISOString().split('T')[0];
+    await loadNotes();
+});
+
+window.showToast = function(msg, ok=true) {
+    const t = document.getElementById('toastBox');
+    t.innerText = msg;
+    t.style.backgroundColor = ok ? '#38b000' : '#e63946';
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+};
+
+// ===== إضافة بند =====
+window.addDnItem = function() {
+    const code = document.getElementById('itCode').value.trim();
+    const name = document.getElementById('itName').value.trim();
+    const price = parseFloat(document.getElementById('itPrice').value);
+    const qty = parseInt(document.getElementById('itQty').value);
+
+    if (!code || !name || isNaN(price) || price <= 0 || isNaN(qty) || qty <= 0) {
+        showToast('يرجى إدخال بيانات الصنف بشكل صحيح', false);
+        return;
+    }
+
+    const priceExclTax = price;
+    const taxAmount = parseFloat((priceExclTax * qty * 0.15).toFixed(4));
+    const totalInclTax = parseFloat(((priceExclTax * qty) + taxAmount).toFixed(4));
+
+    dnItems.push({ code, name, priceExclTax, qty, taxAmount, totalInclTax });
+    renderDnItems();
+
+    document.getElementById('itCode').value = '';
+    document.getElementById('itName').value = '';
+    document.getElementById('itPrice').value = '';
+    document.getElementById('itQty').value = '1';
+};
+
+function renderDnItems() {
+    const body = document.getElementById('dnItemsBody');
+    if (dnItems.length === 0) {
+        body.innerHTML = `<tr><td colspan="5" class="text-muted">لا توجد بنود بعد</td></tr>`;
+        return;
+    }
+    body.innerHTML = dnItems.map((it, i) => `
+        <tr>
+            <td>${it.code}</td>
+            <td>${it.name}</td>
+            <td>${it.priceExclTax.toFixed(2)}</td>
+            <td>${it.qty}</td>
+            <td><i class="fas fa-trash-alt" style="color:var(--danger-red);cursor:pointer;" onclick="removeDnItem(${i})"></i></td>
+        </tr>`).join('');
+}
+
+window.removeDnItem = function(i) {
+    dnItems.splice(i, 1);
+    renderDnItems();
+};
+
+// ===== حفظ إشعار التسليم =====
+window.saveDeliveryNote = async function() {
+    const custName = document.getElementById('dnCustName').value.trim();
+    const address = document.getElementById('dnAddress').value.trim();
+    const date = document.getElementById('dnDate').value;
+    const notes = document.getElementById('dnNotes').value.trim();
+
+    if (!custName || !date || dnItems.length === 0) {
+        showToast('يرجى إدخال اسم العميل، التاريخ، وإضافة بند واحد على الأقل', false);
+        return;
+    }
+
+    try {
+        await addDoc(collection(db, 'users', currentUser.uid, 'deliveryNotes'), {
+            dn_id: 'DN-' + Date.now(),
+            customer_name: custName,
+            customer_address: address || '---',
+            date: date,
+            notes: notes || '',
+            items: dnItems,
+            converted: false,
+            createdAt: serverTimestamp()
+        });
+        showToast('✅ تم حفظ إشعار التسليم');
+        dnItems = [];
+        renderDnItems();
+        document.getElementById('dnCustName').value = '';
+        document.getElementById('dnAddress').value = '';
+        document.getElementById('dnNotes').value = '';
+        await loadNotes();
+    } catch(e) {
+        showToast('❌ خطأ: ' + e.message, false);
+    }
+};
+
+// ===== تحميل الإشعارات =====
+async function loadNotes() {
+    const snap = await getDocs(collection(db, 'users', currentUser.uid, 'deliveryNotes'));
+    allNotes = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+    allNotes.sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    renderNotes();
+}
+
+function renderNotes() {
+    const container = document.getElementById('dnList');
+    if (allNotes.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-truck" style="font-size:36px;opacity:0.2;display:block;margin-bottom:8px;"></i>لا توجد إشعارات تسليم بعد</div>`;
+        return;
+    }
+
+    container.innerHTML = allNotes.map(n => {
+        const itemsCount = (n.items||[]).length;
+        return `
+        <div class="dn-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                <div>
+                    <strong style="color:var(--neon-cyan);">${n.customer_name}</strong>
+                    <span class="badge-status ${n.converted ? 'badge-converted' : 'badge-pending'}">
+                        ${n.converted ? 'تم التحويل لفاتورة' : 'بانتظار التحويل'}
+                    </span>
+                </div>
+                <div style="font-size:12px;color:#a0aec0;">${n.date} — ${itemsCount} بند</div>
+            </div>
+            ${n.notes ? `<div style="font-size:11px;color:#a0aec0;margin-top:6px;"><i class="fas fa-sticky-note"></i> ${n.notes}</div>` : ''}
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+                ${!n.converted ? `<button class="btn-neon" style="--clr:var(--light-green)" onclick="convertToInvoice('${n.docId}')"><i class="fas fa-file-invoice-dollar"></i> تحويل لفاتورة مبيعات</button>` : ''}
+                <button class="btn-neon" style="--clr:var(--danger-red)" onclick="deleteNote('${n.docId}')"><i class="fas fa-trash-alt"></i> حذف</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+window.deleteNote = async function(docId) {
+    if (!confirm('هل تريد حذف هذا الإشعار نهائياً؟')) return;
+    await deleteDoc(doc(db, 'users', currentUser.uid, 'deliveryNotes', docId));
+    showToast('🗑️ تم حذف الإشعار');
+    await loadNotes();
+};
+
+// ===== تحويل لفاتورة مبيعات =====
+window.convertToInvoice = async function(docId) {
+    const note = allNotes.find(n => n.docId === docId);
+    if (!note) return;
+
+    if (!confirm(`سيتم إنشاء فاتورة مبيعات للعميل "${note.customer_name}" وتحديث المخزون. متابعة؟`)) return;
+
+    const subtotal = note.items.reduce((s,i) => s + (i.priceExclTax * i.qty), 0);
+    const tax = note.items.reduce((s,i) => s + (i.taxAmount||0), 0);
+    const total_net = subtotal + tax;
+
+    const invoicePayload = {
+        invoice_id: 'INV-' + Date.now(),
+        invoice_date: new Date().toISOString(),
+        customer_id: 'CUST-' + Math.floor(Math.random()*9000+1000),
+        customer_name: note.customer_name,
+        customer_vat: '---',
+        customer_address: note.customer_address || '---',
+        subtotal: subtotal.toFixed(2),
+        tax: tax.toFixed(2),
+        discount: '0.00',
+        total_net: total_net.toFixed(2),
+        items: note.items,
+        currency: 'SAR',
+        source: 'delivery_note',
+        delivery_note_id: note.dn_id
+    };
+
+    try {
+        await addDoc(collection(db, 'users', currentUser.uid, 'invoices'), {
+            ...invoicePayload,
+            createdAt: serverTimestamp(),
+            syncedAt: new Date().toISOString()
+        });
+
+        // تحديث المخزون
+        for (const soldItem of note.items) {
+            try {
+                const productRef = doc(db, 'users', currentUser.uid, 'products', soldItem.code);
+                const productSnap = await getDoc(productRef);
+                if (productSnap.exists()) {
+                    const currentQty = productSnap.data().quantity || 0;
+                    const newQty = Math.max(0, currentQty - soldItem.qty);
+                    await updateDoc(productRef, { quantity: newQty, lastUpdated: serverTimestamp() });
+                }
+            } catch(e) { console.warn('Stock update error:', soldItem.code, e); }
+        }
+
+        await updateDoc(doc(db, 'users', currentUser.uid, 'deliveryNotes', docId), { converted: true });
+
+        showToast('✅ تم إنشاء الفاتورة وتحديث المخزون');
+        await loadNotes();
+
+        setTimeout(() => { window.location.href = `invoice.html?id=${invoicePayload.invoice_id}`; }, 1200);
+    } catch(e) {
+        showToast('❌ خطأ: ' + e.message, false);
+    }
+};
+</script>
+</body>
+</html>

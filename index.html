@@ -42,6 +42,20 @@
         .menu-item-support { background: linear-gradient(135deg,#003d6b,#006994); border: 2px solid #00b4d8 !important; }
         .menu-item-support i { color: #00e5ff !important; }
         .menu-item-support span { color: #fff; font-weight: 700; }
+        .accordion-section { margin-bottom: 10px; }
+.accordion-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card-bg); border-radius: 12px; padding: 14px 16px;
+    cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; transition: 0.2s;
+}
+.accordion-header:active { transform: scale(0.98); }
+.accordion-header .ah-title { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; color: var(--text-white); }
+.accordion-header .ah-title i { font-size: 18px; color: var(--neon-cyan); width: 22px; text-align: center; }
+.accordion-header .ah-chevron { color: var(--text-muted); transition: transform 0.3s; font-size: 14px; }
+.accordion-header.open .ah-chevron { transform: rotate(180deg); }
+.accordion-content { display: none; }
+.accordion-content.open { display: block; animation: fadeIn 0.3s ease; }
         .stat-card { background: var(--card-bg); border-radius: 12px; padding: 15px; border-right: 4px solid var(--neon-cyan); margin-bottom: 15px; }
         .input-container { position: relative; margin-bottom: 20px; }
         .input-container input, .input-container select { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--text-muted); border-radius: 8px; color: var(--text-white); outline: none; font-size: 14px; }
@@ -164,36 +178,101 @@
     </div>
 </div>
         <div class="dashboard-grid">
+            <div class="accordion-section">
+    <div class="accordion-header open" onclick="toggleAcc(this)">
+        <div class="ah-title"><i class="fas fa-file-invoice-dollar"></i> المبيعات والفواتير</div>
+        <i class="fas fa-chevron-down ah-chevron"></i>
+    </div>
+    <div class="accordion-content open">
+        <div class="dashboard-grid">
             <div class="menu-item" onclick="switchView(3)"><i class="fas fa-file-invoice-dollar"></i><span data-i18n="m-invoice">فاتورة مبيعات</span></div>
-            <div class="menu-item" onclick="switchView(2)"><i class="fas fa-cubes"></i><span data-i18n="m-products">المستودع</span></div>
-            <div class="menu-item" onclick="window.location.href='purchases.html'"><i class="fas fa-shopping-cart"></i><span data-i18n="m-purchases">المشتريات</span></div>
-            <div class="menu-item" onclick="window.location.href='returns.html'"><i class="fas fa-undo"></i><span data-i18n="m-returns">المرتجعات</span></div>
-            <div class="menu-item" onclick="window.location.href='profits.html'"><i class="fas fa-chart-line"></i><span data-i18n="m-profits">الأرباح</span></div>
-            <div class="menu-item" onclick="window.location.href='vat-filing.html'"><i class="fas fa-percent"></i><span data-i18n="m-vat">الإقرار الضريبي</span></div>
-            <div class="menu-item" onclick="window.location.href='inventory-count.html'"><i class="fas fa-clipboard-list"></i><span data-i18n="m-inventory">الجرد الدوري</span></div>
-            <div class="menu-item" onclick="window.location.href='expenses.html'"><i class="fas fa-wallet"></i><span data-i18n="m-expenses">المصاريف</span></div>
-            <div class="menu-item" onclick="switchView(4)"><i class="fas fa-receipt"></i><span data-i18n="m-vouchers">السندات</span></div>
-            <div class="menu-item" onclick="window.location.href='settings.html'"><i class="fas fa-cogs"></i><span data-i18n="m-settings">الإعدادات</span></div>
-            <div class="menu-item" onclick="window.location.href='employees.html'"><i class="fas fa-user-tie"></i><span data-i18n="m-employees">الموظفين</span></div>
-            <div class="menu-item" onclick="window.location.href='receipts.html'"><i class="fas fa-file-alt"></i><span data-i18n="m-receipts">السندات المالية</span></div>
-            <div class="menu-item" onclick="window.location.href='products.html'"><i class="fas fa-box-open"></i><span>المنتجات</span></div>
-            <div class="menu-item" onclick="window.location.href='barcode-gen.html'"><i class="fas fa-barcode"></i><span>الباركود</span></div>
-            <div class="menu-item" onclick="window.location.href='accountant.html'"><i class="fas fa-calculator"></i><span>المحاسب</span></div>
-            <div class="menu-item" onclick="window.location.href='templates.html'"><i class="fas fa-layer-group"></i><span>القوالب</span></div>
-            <div class="menu-item" onclick="switchView(5)"><i class="fas fa-user-clock"></i><span>كشف الحساب</span></div>
-            <div class="menu-item" onclick="window.location.href='team.html'"><i class="fas fa-users-cog"></i><span>الفريق</span></div>
-            <div class="menu-item" onclick="window.location.href='inbox.html'"><i class="fas fa-inbox"></i><span>البريد الوارد</span></div>
-            <div class="menu-item" onclick="window.location.href='bank-accounts.html'"><i class="fas fa-university"></i><span>الحسابات البنكية</span></div>
-            <div class="menu-item" onclick="window.location.href='assets.html'"><i class="fas fa-building"></i><span>الأصول الثابتة</span></div>
-            <div class="menu-item" onclick="window.location.href='cost-centers.html'"><i class="fas fa-sitemap"></i><span>مراكز التكلفة</span></div>
-            <div class="menu-item" onclick="window.location.href='projects.html'"><i class="fas fa-project-diagram"></i><span>المشاريع</span></div>
-            <div class="menu-item" onclick="window.location.href='trial-balance.html'"><i class="fas fa-balance-scale"></i><span>ميزان المراجعة</span></div>
-            <div class="menu-item" onclick="window.location.href='ledger.html'"><i class="fas fa-book"></i><span>دفتر الأستاذ</span></div>
-            <div class="menu-item" onclick="window.location.href='branches.html'"><i class="fas fa-store"></i><span>الفروع</span></div>
-            <div class="menu-item" onclick="window.location.href='suppliers.html'"><i class="fas fa-truck"></i><span data-i18n="m-suppliers">الموردين</span></div>
+            <div class="menu-item" onclick="window.location.href='cash-invoice.html'"><i class="fas fa-cash-register"></i><span>فاتورة نقدية</span></div>
             <div class="menu-item" onclick="window.location.href='scheduled-invoices.html'"><i class="fas fa-calendar-check"></i><span>الفواتير المجدولة</span></div>
             <div class="menu-item" onclick="window.location.href='delivery-notes.html'"><i class="fas fa-truck-loading"></i><span>إشعارات التسليم</span></div>
-            <div class="menu-item" onclick="window.location.href='cash-invoice.html'"><i class="fas fa-cash-register"></i><span>فاتورة نقدية</span></div>
+            <div class="menu-item" onclick="window.location.href='returns.html'"><i class="fas fa-undo"></i><span data-i18n="m-returns">المرتجعات</span></div>
+            <div class="menu-item" onclick="window.location.href='templates.html'"><i class="fas fa-layer-group"></i><span>القوالب</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="accordion-section">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="ah-title"><i class="fas fa-cubes"></i> المخزون والمنتجات</div>
+        <i class="fas fa-chevron-down ah-chevron"></i>
+    </div>
+    <div class="accordion-content">
+        <div class="dashboard-grid">
+            <div class="menu-item" onclick="switchView(2)"><i class="fas fa-cubes"></i><span data-i18n="m-products">المستودع</span></div>
+            <div class="menu-item" onclick="window.location.href='products.html'"><i class="fas fa-box-open"></i><span>المنتجات</span></div>
+            <div class="menu-item" onclick="window.location.href='barcode-gen.html'"><i class="fas fa-barcode"></i><span>الباركود</span></div>
+            <div class="menu-item" onclick="window.location.href='inventory-count.html'"><i class="fas fa-clipboard-list"></i><span data-i18n="m-inventory">الجرد الدوري</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="accordion-section">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="ah-title"><i class="fas fa-shopping-cart"></i> المشتريات والموردين</div>
+        <i class="fas fa-chevron-down ah-chevron"></i>
+    </div>
+    <div class="accordion-content">
+        <div class="dashboard-grid">
+            <div class="menu-item" onclick="window.location.href='purchases.html'"><i class="fas fa-shopping-cart"></i><span data-i18n="m-purchases">المشتريات</span></div>
+            <div class="menu-item" onclick="window.location.href='suppliers.html'"><i class="fas fa-truck"></i><span data-i18n="m-suppliers">الموردين</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="accordion-section">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="ah-title"><i class="fas fa-calculator"></i> المحاسبة والتقارير</div>
+        <i class="fas fa-chevron-down ah-chevron"></i>
+    </div>
+    <div class="accordion-content">
+        <div class="dashboard-grid">
+            <div class="menu-item" onclick="window.location.href='accountant.html'"><i class="fas fa-calculator"></i><span>المحاسب</span></div>
+            <div class="menu-item" onclick="window.location.href='ledger.html'"><i class="fas fa-book"></i><span>دفتر الأستاذ</span></div>
+            <div class="menu-item" onclick="window.location.href='trial-balance.html'"><i class="fas fa-balance-scale"></i><span>ميزان المراجعة</span></div>
+            <div class="menu-item" onclick="window.location.href='profits.html'"><i class="fas fa-chart-line"></i><span data-i18n="m-profits">الأرباح</span></div>
+            <div class="menu-item" onclick="window.location.href='vat-filing.html'"><i class="fas fa-percent"></i><span data-i18n="m-vat">الإقرار الضريبي</span></div>
+            <div class="menu-item" onclick="window.location.href='cost-centers.html'"><i class="fas fa-sitemap"></i><span>مراكز التكلفة</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="accordion-section">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="ah-title"><i class="fas fa-user-tie"></i> الموارد والإدارة</div>
+        <i class="fas fa-chevron-down ah-chevron"></i>
+    </div>
+    <div class="accordion-content">
+        <div class="dashboard-grid">
+            <div class="menu-item" onclick="window.location.href='employees.html'"><i class="fas fa-user-tie"></i><span data-i18n="m-employees">الموظفين</span></div>
+            <div class="menu-item" onclick="window.location.href='team.html'"><i class="fas fa-users-cog"></i><span>الفريق</span></div>
+            <div class="menu-item" onclick="window.location.href='branches.html'"><i class="fas fa-store"></i><span>الفروع</span></div>
+            <div class="menu-item" onclick="window.location.href='projects.html'"><i class="fas fa-project-diagram"></i><span>المشاريع</span></div>
+            <div class="menu-item" onclick="window.location.href='bank-accounts.html'"><i class="fas fa-university"></i><span>الحسابات البنكية</span></div>
+            <div class="menu-item" onclick="window.location.href='assets.html'"><i class="fas fa-building"></i><span>الأصول الثابتة</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="accordion-section">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="ah-title"><i class="fas fa-cogs"></i> العمليات والنظام</div>
+        <i class="fas fa-chevron-down ah-chevron"></i>
+    </div>
+    <div class="accordion-content">
+        <div class="dashboard-grid">
+            <div class="menu-item" onclick="switchView(4)"><i class="fas fa-receipt"></i><span data-i18n="m-vouchers">السندات</span></div>
+            <div class="menu-item" onclick="window.location.href='receipts.html'"><i class="fas fa-file-alt"></i><span data-i18n="m-receipts">السندات المالية</span></div>
+            <div class="menu-item" onclick="window.location.href='expenses.html'"><i class="fas fa-wallet"></i><span data-i18n="m-expenses">المصاريف</span></div>
+            <div class="menu-item" onclick="switchView(5)"><i class="fas fa-user-clock"></i><span>كشف الحساب</span></div>
+            <div class="menu-item" onclick="window.location.href='inbox.html'"><i class="fas fa-inbox"></i><span>البريد الوارد</span></div>
+            <div class="menu-item" onclick="window.location.href='settings.html'"><i class="fas fa-cogs"></i><span data-i18n="m-settings">الإعدادات</span></div>
+        </div>
+    </div>
+</div>
             <!-- بطاقة الاشتراك الثابتة -->
             <div class="menu-item menu-item-subscription" onclick="window.location.href='billing.html'">
                 <i class="fas fa-crown"></i>
@@ -694,7 +773,12 @@ function fillItemSelect(items) {
     });
     if (cur) sel.value = cur;
 }
-
+window.toggleAcc = function(header) {
+    const content = header.nextElementSibling;
+    header.classList.toggle('open');
+    content.classList.toggle('open');
+};
+    
 function renderItemTable(items, filter='') {
     const tbody = document.getElementById('tblItems');
     if (!tbody) return;

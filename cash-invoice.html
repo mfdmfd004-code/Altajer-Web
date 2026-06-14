@@ -152,6 +152,7 @@ window.setPayMethod = function(m) {
 
 // ===== إضافة صنف (السعر المُدخل شامل الضريبة) =====
 window.addItem = function() {
+    const taxRate = (window.TaxEngine ? window.TaxEngine.getRate() : 0.15);
     const code = document.getElementById('itCode').value.trim();
     const name = document.getElementById('itName').value.trim() || code;
     const priceIncl = parseFloat(document.getElementById('itPrice').value);
@@ -162,8 +163,8 @@ window.addItem = function() {
         return;
     }
 
-    const priceExclTax = parseFloat((priceIncl / 1.15).toFixed(4));
-    const taxAmount = parseFloat(((priceExclTax * qty) * 0.15).toFixed(4));
+    const priceExclTax = parseFloat((priceIncl / (1 + taxRate)).toFixed(4));
+    const taxAmount = parseFloat(((priceExclTax * qty) * taxRate).toFixed(4));
     const totalInclTax = parseFloat((priceIncl * qty).toFixed(4));
 
     items.push({ code, name, priceExclTax, qty, taxAmount, totalInclTax });
@@ -186,7 +187,7 @@ function renderItems() {
     body.innerHTML = items.map((it, i) => `
         <tr>
             <td>${it.name}</td>
-            <td>${(it.priceExclTax * 1.15).toFixed(2)}</td>
+            <td>${(it.priceExclTax * (1 + (window.TaxEngine ? window.TaxEngine.getRate() : 0.15))).toFixed(2)}</td>
             <td>${it.qty}</td>
             <td class="fw-bold text-success">${it.totalInclTax.toFixed(2)}</td>
             <td><i class="fas fa-trash-alt" style="color:var(--danger-red);cursor:pointer;" onclick="removeItem(${i})"></i></td>

@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="winter">
 <head>
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#E8804A">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title data-i18n="app-title">تاجر برو المحاسبي</title>
@@ -852,7 +856,17 @@ function renderChart(items) {
         options: { responsive:true, maintainAspectRatio:true, plugins:{ legend:{ labels:{ color:'#888', font:{ size:10 }, boxWidth:12 } } } }
     });
 }
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(() => console.log('Service Worker registered'))
+      .catch((err) => console.log('Service Worker error:', err));
+  });
+}
 </script>
-
 </body>
 </html>
+
+
+
